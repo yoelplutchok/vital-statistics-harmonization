@@ -1,0 +1,213 @@
+position_start,position_end,length,field_name,description,version,values_summary,notes
+1,4,4,DATAYEAR,Year of Delivery (Data Year),1989,1992,
+5,5,1,TABFLAG,Tabulation Inclusion Flag,1989,1=Under 20 wk (exclude); 2=20 wk or more (include),NVSR-tabulated subset is TABFLAG='2'
+6,6,1,RECTYPE,Record Type,1989,1=Residents; 2=Nonresidents,Based on occurrence vs residence state/county
+7,7,1,RESTATUS,Resident Status,1989,1=Residents; 2=Intrastate nonresident; 3=Interstate nonresident; 4=Foreign resident,Exclude '4' for U.S.-resident tabulations
+8,8,1,PLDEL,Place of Delivery,1989,1=Hospital; 2=Doctor/home/public/etc; 3=En route; 9=Unknown,
+9,9,1,PLDEL2,Place of Delivery Recode,1989,1=In hospital; 2=Not in hospital (incl unknown),
+10,10,1,FATTND,Attendant at Delivery,1989,1=MD; 2=DO; 3=CNM; 4=Other midwife; 5=Other; 9=Unknown,
+11,11,1,FATTNDR,Attendant at Delivery Recode,1989,1=Physician; 2=Midwife; 3=Other; 9=Unknown,
+12,12,1,REGNOCC,Region of Occurrence,1989,1=Northeast; 2=Midwest; 3=South; 4=West,Part of FOCCUR 12-27 umbrella
+13,13,1,DIVOCC,Division of Occurrence,1989,1-9 per NCHS division codes,PDF OCR shows 'Drvocc'; corrected to DIVOCC
+14,14,1,STSDBOCC,State Subcode of Occurrence,1989,State subcode within division,
+15,16,2,STFETEXP,Expanded State of Occurrence,1989,01-52 incl separate 34=New York City,Identifies NYC separately from rest of NY State
+17,18,2,STATEFET,State of Occurrence,1989,01-51 (50 states + DC; NY combined),NCHS state code
+19,21,3,CNTYFET,County of Occurrence,1989,001-nnn NCHS county codes within state,100K+ counties only (1980 census)
+22,23,2,STOCCFIP,FIPS State of Occurrence,1989,FIPS state code,
+24,26,3,CNTOCFIP,FIPS County of Occurrence,1989,FIPS county code,
+27,27,1,CNTOCPOP,Population Size of County of Occurrence,1989,0=1M+; 1=500K-1M; 2=250K-500K; 3=100K-250K; 9=<100K,Based on 1980 Census
+28,28,1,REGNRES,Region of Residence,1989,1=Northeast; 2=Midwest; 3=South; 4=West,Part of FRESID 28-59 umbrella
+29,29,1,DIVRES,Division of Residence,1989,1-9 per NCHS division codes,
+30,30,1,STSUBRES,State Subcode of Residence,1989,State subcode within division,
+31,32,2,STRESEXP,Expanded State of Residence,1989,01-52 incl NYC as 34,
+33,34,2,STATERES,State of Residence,1989,01-51 (50 states + DC; NY combined),
+35,37,3,CNTYRES,County of Residence,1989,001-nnn NCHS county codes,100K+ counties only
+38,40,3,CITYRES,City of Residence,1989,000-nnn NCHS city codes,Only cities 100K+ identified
+41,41,1,CITRSPOP,Population Size of City of Residence,1989,1=1M+; 2=500K-1M; 3=250K-500K; 4=100K-250K; 9=<100K,
+42,42,1,METRORES,Metropolitan/Nonmetropolitan County of Residence,1989,1=Metro; 2=Nonmetro,
+43,44,2,STRESFIP,FIPS State of Residence,1989,FIPS state code,Part of FIPSRES 43-58 umbrella
+45,47,3,CNTYRFIP,FIPS County of Residence,1989,FIPS county code,
+48,52,5,FILLER,Filler,1989,,"Unlabeled gap within FIPSRES 43-58 umbrella; guide does not document a subfield here"
+53,54,2,CMSA,FIPS CMSA of Residence,1989,FIPS CMSA code; 00=not in CMSA,Consolidated Metropolitan Statistical Area
+55,58,4,SMSARFIP,FIPS PMSA/MSA of Residence,1989,0000=Nonmetro/foreign; 0040-9360=MSA/PMSA; 9999=<100K,FIPS-based (June 1990 OMB definitions)
+59,59,1,CNTRSPOP,Population Size of County of Residence,1989,0=1M+; 1=500K-1M; 2=250K-500K; 3=100K-250K; 9=<100K; z=Foreign,Based on 1980 Census
+60,68,9,FILLER,Filler,1989,,Reserved Positions per guide
+69,69,1,MAGERFLG,Reported Age of Mother Used Flag,1989,Blank=Not used; 1=Reported age used,
+70,70,1,MAGEIMP,Age of Mother Imputation Flag,1989,Blank=Not imputed; 1=Imputed,
+71,72,2,DMAGE,Age of Mother,1989,10-49 single years; computed/reported/imputed,Age item used in NCHS publications
+73,74,2,MAGE12,Age of Mother Recode 12,1989,01=<15; 02=15; 03=16; 04=17; 05=18; 06=19; 07=20-24; 08=25-29; 09=30-34; 10=35-39; 11=40-44; 12=45-49,
+75,75,1,MAGE8,Age of Mother Recode 8,1989,1=<15; 2=15-19; 3=20-24; 4=25-29; 5=30-34; 6=35-39; 7=40-44; 8=45-49,
+76,76,1,ORMOTH,Hispanic Origin of Mother,1989,0=Non-Hispanic; 1=Mexican; 2=Puerto Rican; 3=Cuban; 4=Central/South American; 5=Other Hispanic; 9=Unknown,PDF OCR shows 'OI?MOTH'; corrected to ORMOTH; see reporting flag ORIGM (316)
+77,77,1,ORRACEM,Hispanic Origin and Race of Mother Recode,1989,1=Mexican; 2=Puerto Rican; 3=Cuban; 4=Central/South American; 5=Other Hispanic; 6=NH White; 7=NH Black; 8=NH other; 9=Unknown,
+78,78,1,MRACEIMP,Race of Mother Imputation Flag,1989,Blank=Not imputed; 1=Imputed,
+79,80,2,MRACE,Race of Mother,1989,01=White; 02=Black; 03=AIAN; 04-07+18-78=Asian/PI detail,1992+ expands API codes 18-78; see guide p28
+81,81,1,MRACE3,Race of Mother Recode,1989,1=White; 2=Other; 3=Black,PDF OCR shows 'ldItAcF13'; corrected to MRACE3
+82,83,2,DMEDUC,Education of Mother,1989,00=No formal; 01-08=Elementary; 09-12=HS years; 13-17=College years; 99=Not stated,PDF position shows '82-03' (OCR); guide narrative confirms 82-83; see reporting flag EDUCM (318)
+84,84,1,MEDUC6,Education of Mother Recode,1989,1=0-8; 2=9-11; 3=12; 4=13-15; 5=16+; 6=Not stated,PDF OCR shows apostrophe artifact
+85,85,1,FILLER,Filler,1989,,Reserved Position per guide
+86,86,1,DMAR,Marital Status of Mother,1989,1=Married; 2=Unmarried; 9=Unknown,PDF OCR shows 'mu-m'; corrected to DMAR; see reporting flag DMARF (321)
+87,88,2,DMAGERPT,Reported Age of Mother,1989,10-49 single years; 99=Unknown,Raw reported age (DMAGE at 71-72 is edited)
+89,97,9,FILLER,Filler,1989,,Reserved Positions per guide
+98,99,2,NLBNL,Number of Live Births Now Living,1989,00-30 stated count; 99=Unknown,
+100,101,2,NLBND,Number of Live Births Now Dead,1989,00-30 stated count; 99=Unknown,
+102,103,2,NOTERM,Number of Other Terminations,1989,00-30 stated count; 99=Unknown,Includes spontaneous and induced
+104,104,1,FILLER,Filler,1989,,Reserved Position per guide (labeled R2A)
+105,106,2,DLIVORD,Detail Live Birth Order,1989,00-40 count; 99=Unknown,Sum of NLBNL+NLBND
+107,107,1,LIVORD9,Live Birth Order Recode,1989,0=None; 1-7=count; 8=8+; 9=Unknown,
+108,108,1,FILLER,Filler,1989,,Reserved Position per guide
+109,110,2,DTOTORD,Detail Total Birth Order,1989,01-41 count; 99=Unknown,Sum of live birth order + other terms + 1
+111,111,1,TOTORD9,Total Birth Order Recode,1989,1-7=count; 8=8+; 9=Unknown,
+112,112,1,FILLER,Filler,1989,,Reserved Position per guide
+113,114,2,MONPRE,Detail Month of Pregnancy Prenatal Care Began,1989,00=None; 01-09=1st-9th month; 99=Unknown,See reporting flag PNCF (323)
+115,115,1,MPRE6,Month Prenatal Care Began Recode 6,1989,1=1-2mo; 2=3mo; 3=4-6mo; 4=7-9mo; 5=No PNC; 6=Unknown,
+116,116,1,MPRE5,Month Prenatal Care Began Recode 5,1989,1=T1; 2=T2; 3=T3; 4=No PNC; 5=Unknown,
+117,118,2,NPREVIST,Total Number of Prenatal Visits,1989,00=None; 01-48 count; 49=49+; 99=Unknown,See reporting flag PNVF (324)
+119,120,2,NPREV12,Number of Prenatal Visits Recode,1989,01=None; 02-11 grouped ranges; 12=Unknown,
+121,122,2,LMPMON,Month of Last Normal Menses,1989,01-12=month; 99=Unknown,Part of LMPDATE 121-128 umbrella; see reporting flag DATELMP (322)
+123,124,2,LMPDAY,Day of Last Normal Menses,1989,01-31=day; 99=Unknown,PDF OCR shows 'LKPDAY'; corrected to LMPDAY
+125,128,4,LMPYR,Year of Last Normal Menses,1989,YYYY; 9999=Unknown,
+129,130,2,LLBMON,Month of Last Live Birth,1989,01-12=month; 99=Unknown,Part of LLBDATE 129-134 umbrella; see reporting flag LLBF (320)
+131,134,4,LLBYR,Year of Last Live Birth,1989,YYYY 1900-1992; 9999=Unknown; 7777=No prior live birth,
+135,137,3,DISLLB,Interval Since Last Live Birth,1989,000=Plural birth; 001-500=months; 777=No prior LB; 999=Unknown,
+138,139,2,ISLLBIO,Interval Since Last Live Birth Recode,1989,00=Not applicable; 01=Plural; 02-09 ranges; 10=Unknown,
+140,159,20,FILLER,Filler,1989,,Reserved Positions per guide
+160,160,1,FAGERFLG,Reported Age of Father Used Flag,1989,Blank=Not used; 1=Reported age used,
+161,162,2,DFAGE,Age of Father,1989,10-98 single years; 99=Unknown,Age item used in NCHS publications
+163,164,2,FAGE11,Age of Father Recode,1989,01=<15; 02-11 grouped; 12=Not stated,
+165,165,1,ORFATH,Hispanic Origin of Father,1989,0=Non-Hispanic; 1-5 subgroups; 9=Unknown,See reporting flag ORIGF (317)
+166,166,1,ORRACEF,Hispanic Origin and Race of Father Recode,1989,1-5=Hispanic; 6=NH White; 7=NH Black; 8=NH other; 9=Unknown,
+167,168,2,FRACE,Race of Father,1989,01=White; 02=Black; 03=AIAN; 04-07+18-78=API detail; 99=Unknown,
+169,169,1,FRACE4,Race of Father Recode,1989,1=White; 2=Other; 3=Black; 4=Unknown,
+170,171,2,DFEDUC,Education of Father,1989,00=No formal; 01-17=years; 99=Not stated,See reporting flag EDUCF (319)
+172,172,1,FEDUC6,Education of Father Recode,1989,1=0-8; 2=9-11; 3=12; 4=13-15; 5=16+; 6=Not stated,
+173,174,2,DFAGERPT,Reported Age of Father,1989,10-98 single years; 99=Unknown,Raw reported age
+175,183,9,FILLER,Filler,1989,,Reserved Positions per guide
+184,184,1,FDODMIMP,Month of Delivery Imputation Flag,1989,Blank=Not imputed; 1=Imputed,
+185,185,1,FILLER,Filler,1989,,Reserved Position per guide (labeled WA in guide)
+186,187,2,DELMON,Month of Delivery,1989,01-12=month,
+188,189,2,FILLER,Filler,1989,,Reserved Positions per guide (labeled R4B)
+190,193,4,DELYR,Year of Delivery,1989,1992,
+194,194,1,WEEKDAY,Day of Week of Delivery,1989,1=Sun; 2=Mon; 3=Tue; 4=Wed; 5=Thu; 6=Fri; 7=Sat,
+195,195,1,GESTESTM,Clinical Estimate of Gestation Used Flag,1989,Blank=Not used; 1=Clinical estimate used,
+196,196,1,GESTIMP,Gestation Imputation Flag,1989,Blank=Not imputed; 1=Imputed,PDF OCR shows 'GESTIM.P'; corrected to GESTIMP
+197,198,2,DGESTAT,Gestation,1989,02-47 weeks; 99=Unknown,Gestation item used in NCHS publications
+199,200,2,GESTAT12,Gestation Recode 12,1989,01=<16; 02-11 grouped weeks; 12=Unknown,
+201,201,1,GESTAT5,Gestation Recode 5,1989,1=<20; 2=20-23; 3=24-27; 4=28+; 5=Unknown,
+202,202,1,FSEXIMP,Sex Imputation Flag,1989,Blank=Not imputed; 1=Imputed,PDF OCR shows 'FSEX~'; corrected to FSEXIMP; imputed only for records >=20wk
+203,203,1,FSEX,Sex,1989,1=Male; 2=Female; 9=Unknown,
+204,205,2,RACEF,Race of Fetus,1989,01=White; 02=Black; 03=AIAN; 04-07+18-78=API detail,
+206,206,1,FRACE3,Race of Fetus Recode,1989,1=White; 2=Other; 3=Black,
+207,210,4,DBIRWT,Weight at Delivery (grams),1989,0000-8165 grams; 9999=Unknown,
+211,212,2,BIRWT14,Weight at Delivery Recode 14,1989,01=<=249g; 02-13 grouped ranges; 14=Unknown,
+213,213,1,BIRWT4,Weight at Delivery Recode 4,1989,1=<=1499g; 2=1500-2499; 3=2500+; 4=Unknown,
+214,214,1,PLURIMP,Plurality Imputation Flag,1989,Blank=Not imputed; 1=Imputed,
+215,215,1,DPLURAL,Plurality,1989,1=Single; 2=Twin; 3=Triplet; 4=Quadruplet; 5=Quadruplet or higher; 9=LA resident (not reported),PDF OCR shows 'DPLUR.AL'; corrected to DPLURAL; Louisiana does not report plurality
+216,217,2,CLINGEST,Clinical Estimate of Gestation,1989,02-47 weeks; 99=Unknown,See reporting flag GESTE (325)
+218,219,2,FILLER,Filler,1989,,Reserved Positions per guide (guide text shows '210-219' which is an OCR artifact for 218-219)
+220,220,1,VAGINAL,Vaginal Delivery,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,Part of DEWTH 220-226 umbrella; reporting flag DELMETRF (326)
+221,221,1,VEAC,Vaginal Birth After Previous C-Section,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,
+222,222,1,PRIMAC,Primary C-Section,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,
+223,223,1,REPEAC,Repeat C-Section,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,
+224,224,1,FORCEP,Forceps,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,
+225,225,1,VACUUM,Vacuum,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,
+226,226,1,HYSTER,Hysterotomy/Hysterectomy,1989,1=Used; 2=Not used; 8=Not on cert; 9=Unknown,
+227,227,1,DELMETH6,Method of Delivery Recode,1989,1=Vaginal (excl VBAC); 2=VBAC; 3=Primary C; 4=Repeat C; 5=Hyst; 6=Not stated,1992 PDF OCR shows 'DEmTH6'; canonical name DELMETH6 confirmed in 1998 & 2002 guides (AUDIT-PARSE-2)
+228,228,1,ANEMIA,Anemia (Hct<30/Hgb<10),1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,Part of B5EDRISK 228-244 umbrella; reporting flag MEDRSK (327)
+229,229,1,CARDIAC,Cardiac Disease,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+230,230,1,LUNG,Acute or Chronic Lung Disease,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+231,231,1,DIABETES,Diabetes,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+232,232,1,HERPES,Genital Herpes,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+233,233,1,HYDRA,Hydramnios/Oligohydramnios,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+234,234,1,HEMO,Hemoglobinopathy,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+235,235,1,CHYPER,Hypertension Chronic,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+236,236,1,PHYPER,Hypertension Pregnancy-Associated,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+237,237,1,ECLAMP,Eclampsia,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+238,238,1,INCERVIX,Incompetent Cervix,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+239,239,1,PRE4000,Previous Infant 4000+ Grams,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows 'PRE4 000'; corrected to PRE4000
+240,240,1,PRETERM,Previous Preterm or SGA Infant,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+241,241,1,RENAL,Renal Disease,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+242,242,1,RH,Rh Sensitization,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows '~' placeholder; name RH inferred from guide description text 'Rh sensitization'
+243,243,1,UTERINE,Uterine Bleeding,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+244,244,1,OTHERMR,Other Medical Risk Factors,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows 'OTHE~'; corrected to OTHERMR
+245,245,1,TOBACCO,Tobacco Use During Pregnancy,1989,1=Yes; 2=No; 9=Unknown,Part of OTHERRSK 245-255 umbrella; reporting flag TOBUSE (328)
+246,247,2,CIGAR,Average Number of Cigarettes Per Day,1989,00-97 count; 98=98+; 99=Unknown,See reporting flag CIGARSF (329)
+248,248,1,CIGAR6,Average Number of Cigarettes Per Day Recode,1989,0=Non-smoker; 1-5 grouped; 6=Unknown,
+249,249,1,ALCOHOL,Alcohol Use During Pregnancy,1989,1=Yes; 2=No; 9=Unknown,See reporting flag ALCUSE (330)
+250,251,2,DRINK,Average Number of Drinks Per Week,1989,00-97 count; 98=98+; 99=Unknown,See reporting flag DRINKSF (331)
+252,252,1,DRINKS,Average Number of Drinks Per Week Recode,1989,0=Non-drinker; 1-4 grouped; 5=Unknown,
+253,254,2,WTGAIN,Weight Gain During Pregnancy (pounds),1989,00-97 count; 98=98+; 99=Unknown,See reporting flag WTGN (332)
+255,255,1,WTGAIN8,Weight Gain Recode,1989,1=<10; 2=10-14; 3=15-19; 4=20-24; 5=25-29; 6=30-34; 7=35+; 8=Unknown,
+256,256,1,AMNIO,Amniocentesis,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,Part of OBSTETRC 256-262 umbrella; reporting flag OBSTRC (333)
+257,257,1,MONITOR,Electronic Fetal Monitoring,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+258,258,1,INDUCT,Induction of Labor,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows '250 INDUCT' (position mis-OCR); corrected to 258
+259,259,1,STIMULA,Stimulation of Labor,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,1992 PDF OCR shows 'ST=A'; canonical name STIMULA confirmed in 1998 & 2002 guides (AUDIT-PARSE-2)
+260,260,1,TOCOL,Tocolysis,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+261,261,1,ULTRAS,Ultrasound,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+262,262,1,OTHEROB,Other Obstetric Procedures,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+263,263,1,FEBRILE,Febrile (>100F/38C),1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,Part of LABOR 263-278 umbrella; reporting flag CLABOR (334)
+264,264,1,MECONIUM,Meconium,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows 'WCONIUM'; corrected to MECONIUM (guide description confirms)
+265,265,1,RUPTURE,Premature Rupture of Membrane,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+266,266,1,ABRUPTIO,Abruptio Placenta,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+267,267,1,PREPLACE,Placenta Previa,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+268,268,1,EXCEBLD,Other Excessive Bleeding,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+269,269,1,SEIZURE,Seizures During Labor,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+270,270,1,PRECIP,Precipitous Labor (<3 hours),1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+271,271,1,PROLONG,Prolonged Labor (>20 hours),1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+272,272,1,DYSFUNC,Dysfunctional Labor,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+273,273,1,BREECH,Breech/Malpresentation,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+274,274,1,CEPHALO,Cephalopelvic Disproportion,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+275,275,1,CORD,Cord Prolapse,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+276,276,1,ANESTHE,Anesthetic Complications,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+277,277,1,DISTRESS,Fetal Distress,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+278,278,1,OTHERLB,Other Complication of Labor/Delivery,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+279,279,1,ANEN,Anencephalus,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,Part of CONGENIT 279-300 umbrella; 1992 PDF OCR shows '~'; canonical name ANEN confirmed in 1998 & 2002 guides (AUDIT-PARSE-2); reporting flag CONGAN (335)
+280,280,1,SPINA,Spina Bifida/Meningocele,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+281,281,1,HYDRO,Hydrocephalus,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+282,282,1,MICROCE,Microcephalus,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+283,283,1,NERVOUS,Other Central Nervous System Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows '~RVOUS'; corrected to NERVOUS
+284,284,1,HEART,Heart Malformations,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+285,285,1,CIRCUL,Other Circulatory/Respiratory Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+286,286,1,RECTAL,Rectal Atresia/Stenosis,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+287,287,1,TRACHEO,Tracheo-Esophageal Fistula/Esophageal Atresia,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,PDF OCR shows 'T~CHEO'; corrected to TRACHEO
+288,288,1,OMPHALO,Omphalocele/Gastroschisis,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+289,289,1,GASTRO,Other Gastrointestinal Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+290,290,1,GENITAL,Malformed Genitalia,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+291,291,1,RENALAGE,Renal Agenesis,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+292,292,1,UROGEN,Other Urogenital Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+293,293,1,CLEFTLP,Cleft Lip/Palate,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+294,294,1,ADACTYLY,Polydactyly/Syndactyly/Adactyly,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+295,295,1,CLUBFOOT,Club Foot,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+296,296,1,HERNIA,Diaphragmatic Hernia,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+297,297,1,MUSCULO,Other Musculoskeletal/Integumental Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+298,298,1,DOWNS,Down Syndrome,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+299,299,1,CHROMO,Other Chromosomal Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+300,300,1,OTHERCON,Other Congenital Anomalies,1989,1=Reported; 2=Not reported; 8=Not on cert; 9=Not classifiable,
+301,314,14,FILLER,Filler,1989,,Reserved Positions per guide (labeled R5A)
+315,315,1,GESTALL,Reporting Flag: All Gestations Reported,1989,0=Item not reported by state of residence; 1=Item reported,Part of FLRES 315-339 residence reporting flags umbrella
+316,316,1,ORIGM,Reporting Flag: Origin of Mother,1989,0=Not reported; 1=Reported,Indicates whether residence state reports ORMOTH (76)
+317,317,1,ORIGF,Reporting Flag: Origin of Father,1989,0=Not reported; 1=Reported,Indicates whether residence state reports ORFATH (165)
+318,318,1,EDUCM,Reporting Flag: Education of Mother,1989,0=Not reported; 1=Reported,Indicates whether residence state reports DMEDUC (82-83)
+319,319,1,EDUCF,Reporting Flag: Education of Father,1989,0=Not reported; 1=Reported,Indicates whether residence state reports DFEDUC (170-171)
+320,320,1,LLBF,Reporting Flag: Date of Last Live Birth,1989,0=Not reported; 1=Reported,Indicates whether residence state reports LLBMON/LLBYR
+321,321,1,DMARF,Reporting Flag: Marital Status,1989,0=Not reported; 1=Reported,Indicates whether residence state reports DMAR (86)
+322,322,1,DATELMP,Reporting Flag: Date of Last Normal Menses,1989,0=Not reported; 1=Reported,Indicates whether residence state reports LMP dates
+323,323,1,PNCF,Reporting Flag: Month Prenatal Care Began,1989,0=Not reported; 1=Reported,Indicates whether residence state reports MONPRE (113-114)
+324,324,1,PNVF,Reporting Flag: Number of Prenatal Visits,1989,0=Not reported; 1=Reported,Indicates whether residence state reports NPREVIST (117-118)
+325,325,1,GESTE,Reporting Flag: Clinical Estimate of Gestation,1989,0=Not reported; 1=Reported,Indicates whether residence state reports CLINGEST (216-217)
+326,326,1,DELMETRF,Reporting Flag: Method of Delivery,1989,0=Not reported; 1=Reported,1992 PDF OCR shows 'DHJ4ETRF'; canonical name DELMETRF confirmed in 1998 & 2002 guides (AUDIT-PARSE-2)
+327,327,1,MEDRSK,Reporting Flag: Medical Risk Factors,1989,0=Not reported; 1=Reported,Indicates whether residence state reports B5EDRISK 228-244
+328,328,1,TOBUSE,Reporting Flag: Tobacco Use,1989,0=Not reported; 1=Reported,
+329,329,1,CIGARSF,Reporting Flag: Number of Cigarettes,1989,0=Not reported; 1=Reported,
+330,330,1,ALCUSE,Reporting Flag: Alcohol Use,1989,0=Not reported; 1=Reported,
+331,331,1,DRINKSF,Reporting Flag: Number of Drinks,1989,0=Not reported; 1=Reported,
+332,332,1,WTGN,Reporting Flag: Weight Gain,1989,0=Not reported; 1=Reported,
+333,333,1,OBSTRC,Reporting Flag: Obstetric Procedures,1989,0=Not reported; 1=Reported,
+334,334,1,CLABOR,Reporting Flag: Complications of Labor/Delivery,1989,0=Not reported; 1=Reported,PDF OCR shows '33=4'; corrected to position 334
+335,335,1,CONGAN,Reporting Flag: Congenital Anomalies,1989,0=Not reported; 1=Reported,
+336,336,1,UCF,Reporting Flag: Underlying Cause,1989,0=Not reported; 1=Reported,
+337,337,1,PLURALF,Reporting Flag: Plurality,1989,0=Not reported; 1=Reported,
+338,339,2,FILLER,Filler,1989,,Reserved Positions per guide (within FLRES umbrella)
+340,340,1,ALLGOCC,All Gestations Reporting Flag for Place of Occurrence,1989,0=Not all gestations reported; 1=All reported,Companion to GESTALL (315); refers to state of occurrence in positions 15-16
+341,356,16,FILLER,Filler,1989,,Reserved Positions per guide
+357,359,3,S14SARES,NCHS PMSA/MSA of Residence,1989,000=Nonmetro; 001-320=MSA code; 999=<100K pop; ZZZ=Foreign,NCHS-assigned MSA codes (distinct from FIPS MSA at 55-58)
+360,360,1,POPSMAS,PMSA/MSA Population Size,1989,1=MSA 250K+; 2=MSA 100-250K; 9=MSA <100K or nonmetro; Z=Foreign,Based on 1990 Census

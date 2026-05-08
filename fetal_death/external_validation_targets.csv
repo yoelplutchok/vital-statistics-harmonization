@@ -1,0 +1,82 @@
+year,metric,metric_detail,expected_value,source,notes
+1992,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,30256,1992 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block
+1993,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,28766,1993 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block
+1994,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,27937,1994 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block
+1995,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,27294,NVSR 57-08 Table B,Residence-based count
+1996,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,27069,NVSR 57-08 Table B,Residence-based count; resolves stale 1996 user-guide control (27323 = 1995 figure copy-pasted)
+1997,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,26486,NVSR 57-08 Table B,Residence-based count
+1998,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,26702,NVSR 57-08 Table B,Residence-based count
+1999,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,26884,NVSR 57-08 Table B,Residence-based count
+2000,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,27003,NVSR 57-08 Table B,Residence-based count
+2001,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,26373,NVSR 57-08 Table B,Residence-based count; resolves stale 2001 user-guide control (27046 = 2000 figure copy-pasted)
+2002,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,25943,NVSR 57-08 Table B,Residence-based count; resolves stale 2002 user-guide control (27046 = 2000 figure copy-pasted)
+1995,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.95,NVSR 57-08 Table B,Denominator: 3899589 live births
+1996,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.91,NVSR 57-08 Table B,Denominator: 3891494 live births
+1997,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.78,NVSR 57-08 Table B,Denominator: 3880894 live births
+1998,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.73,NVSR 57-08 Table B,Denominator: 3941553 live births
+1999,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.74,NVSR 57-08 Table B,Denominator: 3959417 live births
+2000,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.61,NVSR 57-08 Table B,Denominator: 4058882 live births
+2001,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.51,NVSR 57-08 Table B,Denominator: 4026036 live births
+2002,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.41,NVSR 57-08 Table B,Denominator: 4021825 live births
+2005,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,25894,NVSR 73-09 Table 1,Residence-based count
+2006,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,25972,NVSR 73-09 Table 1,Residence-based count
+2007,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,26593,NVSR 73-09 Table 1,Residence-based count
+2008,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,26335,NVSR 73-09 Table 1,Residence-based count
+2009,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,24872,NVSR 73-09 Table 1,Residence-based count
+2010,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,24258,NVSR 73-09 Table 1,Residence-based count
+2011,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,24289,NVSR 73-09 Table 1,Residence-based count
+2012,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,24073,NVSR 73-09 Table 1,Residence-based count
+2013,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,23595,NVSR 73-09 Table 1,Residence-based count
+2014,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,23980,NVSR 73-09 Table 1,Residence-based count
+2015,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,23776,NVSR 73-09 Table 1,Residence-based count
+2016,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,23880,NVSR 73-09 Table 1,Residence-based count
+2017,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,22827,NVSR 73-09 Table 1,Residence-based count
+2018,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,22459,NVSR 73-09 Table 1,Residence-based count
+2019,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,21478,NVSR 73-09 Table 1,Residence-based count
+2020,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,20854,NVSR 73-09 Table 1,Residence-based count
+2021,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,21105,NVSR 73-09 Table 1,Residence-based count
+2022,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,20202,NVSR 73-09 Table 1,Residence-based count; verified in prior audit
+2005,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.22,NVSR 73-09 Table 1,Denominator: 4138573 live births
+2006,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.05,NVSR 73-09 Table 1,Denominator: 4265593 live births
+2007,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.12,NVSR 73-09 Table 1,Denominator: 4316233 live births
+2008,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.16,NVSR 73-09 Table 1,Denominator: 4247726 live births
+2009,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.99,NVSR 73-09 Table 1,Denominator: 4130665 live births
+2010,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.03,NVSR 73-09 Table 1,Denominator: 3999386 live births
+2011,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.11,NVSR 73-09 Table 1,Denominator: 3953590 live births
+2012,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.05,NVSR 73-09 Table 1,Denominator: 3952841 live births
+2013,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.96,NVSR 73-09 Table 1,Denominator: 3932181 live births
+2014,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.98,NVSR 73-09 Table 1,Denominator: 3988076 live births
+2015,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.94,NVSR 73-09 Table 1,Denominator: 3978497 live births
+2016,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,6.02,NVSR 73-09 Table 1,Denominator: 3945875 live births
+2017,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.89,NVSR 73-09 Table 1,Denominator: 3855500 live births
+2018,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.89,NVSR 73-09 Table 1,Denominator: 3791712 live births
+2019,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.70,NVSR 73-09 Table 1,Denominator: 3747540 live births
+2020,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.74,NVSR 73-09 Table 1,Denominator: 3613647 live births
+2021,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.73,NVSR 73-09 Table 1,Denominator: 3664292 live births
+2022,fetal_mortality_rate,Rate per 1000 live births + fetal deaths,5.48,NVSR 73-09 Table 1,Denominator: 3667758 live births; verified in prior audit
+2022,fetal_deaths_male,Male fetal deaths >=20wk resident,10519,NVSR 73-09 Table A,By sex of fetus
+2022,fetal_deaths_female,Female fetal deaths >=20wk resident,9683,NVSR 73-09 Table A,By sex of fetus
+2022,fetal_deaths_singleton,Singleton fetal deaths >=20wk resident,18805,NVSR 73-09 Table A,By plurality
+2022,fetal_deaths_twin,Twin fetal deaths >=20wk resident,1326,NVSR 73-09 Table A,By plurality
+2022,fetal_deaths_triplet_plus,Triplet+ fetal deaths >=20wk resident,71,NVSR 73-09 Table A,By plurality
+2022,live_births_total,Total live births (for rate denominator),3667758,NVSR 73-09 Table A,Used as denominator for rates
+2022,fetal_deaths_age_under15,Fetal deaths age <15,16,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_15_19,Fetal deaths age 15-19,991,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_20_24,Fetal deaths age 20-24,3631,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_25_29,Fetal deaths age 25-29,5071,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_30_34,Fetal deaths age 30-34,5634,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_35_39,Fetal deaths age 35-39,3613,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_40_44,Fetal deaths age 40-44,1138,NVSR 73-09 Table 4,By maternal age
+2022,fetal_deaths_age_45_plus,Fetal deaths age 45+,108,NVSR 73-09 Table 4,By maternal age
+2022,cod_all_causes_43state,All causes (43 states + DC reporting area),15476,NVSR 73-09 Table 8,Restricted to 43-state COD reporting area
+2022,cod_p95_43state,P95 unspecified cause,5142,NVSR 73-09 Table 8,43-state reporting area
+2022,cod_p02_43state,P02 placenta/cord/membrane complications,3743,NVSR 73-09 Table 8,43-state reporting area
+2022,cod_p01_43state,P01 maternal complications of pregnancy,1804,NVSR 73-09 Table 8,43-state reporting area
+2022,cod_p00_43state,P00 maternal conditions unrelated to pregnancy,1740,NVSR 73-09 Table 8,43-state reporting area
+2022,cod_q00_q99_43state,Q00-Q99 congenital malformations,1502,NVSR 73-09 Table 8,43-state reporting area
+2022,fetal_deaths_early_20_27wk,Early fetal deaths 20-27 weeks,10246,NVSR 73-09 Table 1,GA-specific count
+2022,fetal_deaths_late_28wk_plus,Late fetal deaths 28+ weeks,9956,NVSR 73-09 Table 1,GA-specific count
+2022,early_fetal_mortality_rate,Early rate (20-27wk) per 1000,2.79,NVSR 73-09 Table 1,2022 specific
+2022,late_fetal_mortality_rate,Late rate (28+wk) per 1000,2.71,NVSR 73-09 Table 1,2022 specific
+2014,fetal_deaths_early_20_27wk,Early fetal deaths 20-27 weeks,12652,NVSR 73-09 Table 1,GA-specific count
+2014,fetal_deaths_late_28wk_plus,Late fetal deaths 28+ weeks,11328,NVSR 73-09 Table 1,GA-specific count

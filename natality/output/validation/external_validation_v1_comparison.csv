@@ -1,0 +1,184 @@
+metric_id,year,universe,actual_value,expected_value,tolerance_abs,diff_actual_minus_expected,status,pass,value_source,notes
+resident_births,2005,resident,4138349,4138349.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2005,resident,8.189035,8.200000,0.050000,-0.010965,pass,1,"NCHS Births: Final Data for 2005 (NVSR Vol 56 No 6, 2007-12-05)",Highlights/narrative LBW rate.
+preterm_rate_pct,2005,resident,12.726629,12.700000,0.050000,0.026629,pass,1,"NCHS Births: Final Data for 2005 (NVSR Vol 56 No 6, 2007-12-05)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2005,resident,32.167901,32.200000,0.100000,-0.032099,pass,1,"NCHS Births: Final Data for 2005 (NVSR Vol 56 No 6, 2007-12-05)",Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2005,resident,161.755328,161.800000,0.200000,-0.044672,pass,1,"NCHS Births: Final Data for 2005 (NVSR Vol 56 No 6, 2007-12-05)",Narrative triplet+ birth rate (per 100
+resident_births,2006,resident,4265555,4265555.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2006,resident,8.260656,8.300000,0.050000,-0.039344,pass,1,"NCHS Births: Final Data for 2006 (NVSR Vol 57 No 7, 2009-01-07)",Highlights/narrative LBW rate (rounded in report).
+preterm_rate_pct,2006,resident,12.804373,12.800000,0.050000,0.004373,pass,1,"NCHS Births: Final Data for 2006 (NVSR Vol 57 No 7, 2009-01-07)",Highlights/narrative preterm rate (rounded in report).
+twin_rate_per_1000,2006,resident,32.137670,32.100000,0.100000,0.037670,pass,1,"NCHS Births: Final Data for 2006 (NVSR Vol 57 No 7, 2009-01-07)",Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2006,resident,153.321197,153.300000,0.200000,0.021197,pass,1,"NCHS Births: Final Data for 2006 (NVSR Vol 57 No 7, 2009-01-07)",Narrative triplet+ birth rate (per 100
+resident_births,2007,resident,4316233,4316233.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2007,resident,8.218051,8.200000,0.050000,0.018051,pass,1,"NCHS Births: Final Data for 2007 (NVSR Vol 58 No 24, 2010-08-09)",Highlights/narrative LBW rate.
+preterm_rate_pct,2007,resident,12.683985,12.700000,0.050000,-0.016015,pass,1,"NCHS Births: Final Data for 2007 (NVSR Vol 58 No 24, 2010-08-09)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2007,resident,32.194972,32.200000,0.100000,-0.005028,pass,1,"NCHS Births: Final Data for 2007 (NVSR Vol 58 No 24, 2010-08-09)",Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2007,resident,148.902990,148.900000,0.200000,0.002990,pass,1,"NCHS Births: Final Data for 2007 (NVSR Vol 58 No 24, 2010-08-09)",Narrative triplet+ birth rate (per 100
+resident_births,2008,resident,4247694,4247694.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2008,resident,8.182459,8.180000,0.020000,0.002459,pass,1,"NCHS Births: Final Data for 2008 (NVSR Vol 59 No 1, 2010-12-08)",Highlights/narrative LBW rate.
+preterm_rate_pct,2008,resident,12.330202,12.300000,0.050000,0.030202,pass,1,"NCHS Births: Final Data for 2008 (NVSR Vol 59 No 1, 2010-12-08)",Highlights/narrative preterm rate (rounded in report).
+twin_rate_per_1000,2008,resident,32.643594,32.600000,0.100000,0.043594,pass,1,"NCHS Births: Final Data for 2008 (NVSR Vol 59 No 1, 2010-12-08)",Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2008,resident,147.562419,147.600000,0.200000,-0.037581,pass,1,"NCHS Births: Final Data for 2008 (NVSR Vol 59 No 1, 2010-12-08)",Narrative triplet+ birth rate (per 100
+resident_births,2009,resident,4130665,4130665.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2009,resident,8.160325,8.160000,0.020000,0.000325,pass,1,"NCHS Births: Final Data for 2009 (NVSR Vol 60 No 1, 2011-11-03)",Highlights/narrative LBW rate.
+preterm_rate_pct,2009,resident,12.175993,12.180000,0.020000,-0.004007,pass,1,"NCHS Births: Final Data for 2009 (NVSR Vol 60 No 1, 2011-11-03)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2009,resident,33.219106,33.200000,0.100000,0.019106,pass,1,"NCHS Births: Final Data for 2009 (NVSR Vol 60 No 1, 2011-11-03)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2009,resident,153.486182,153.500000,0.200000,-0.013818,pass,1,"NCHS Births: Final Data for 2009 (NVSR Vol 60 No 1, 2011-11-03)",Highlights/narrative triplet+ birth rate (per 100
+resident_births,2010,resident,3999386,3999386.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2010,resident,8.148401,8.150000,0.020000,-0.001599,pass,1,"NCHS Births: Final Data for 2010 (NVSR Vol 61 No 1, 2012-08-28)",Highlights/narrative LBW rate.
+preterm_rate_pct,2010,resident,11.987410,11.990000,0.020000,-0.002590,pass,1,"NCHS Births: Final Data for 2010 (NVSR Vol 61 No 1, 2012-08-28)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2010,resident,33.145588,33.100000,0.100000,0.045588,pass,1,"NCHS Births: Final Data for 2010 (NVSR Vol 61 No 1, 2012-08-28)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2010,resident,137.596121,137.600000,0.200000,-0.003879,pass,1,"NCHS Births: Final Data for 2010 (NVSR Vol 61 No 1, 2012-08-28)",Highlights/narrative triplet+ birth rate (per 100
+resident_births,2011,resident,3953590,3953590.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2011,resident,8.095958,8.100000,0.020000,-0.004042,pass,1,"NCHS Births: Final Data for 2011 (NVSR Vol 62 No 1, 2013-06-28)",Highlights/narrative LBW rate.
+preterm_rate_pct,2011,resident,11.729375,11.730000,0.020000,-0.000625,pass,1,"NCHS Births: Final Data for 2011 (NVSR Vol 62 No 1, 2013-06-28)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2011,resident,33.202482,33.200000,0.100000,0.002482,pass,1,"NCHS Births: Final Data for 2011 (NVSR Vol 62 No 1, 2013-06-28)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2011,resident,137.014713,137.000000,0.200000,0.014713,pass,1,"NCHS Births: Final Data for 2011 (NVSR Vol 62 No 1, 2013-06-28)",Highlights/narrative triplet+ birth rate (per 100
+resident_births,2012,resident,3952841,3952841.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2012,resident,7.994995,7.990000,0.020000,0.004995,pass,1,"NCHS Births: Final Data for 2012 (NVSR Vol 62 No 9, 2013-12-30)",Highlights/narrative LBW rate.
+preterm_rate_pct,2012,resident,11.545849,11.550000,0.020000,-0.004151,pass,1,"NCHS Births: Final Data for 2012 (NVSR Vol 62 No 9, 2013-12-30)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2012,resident,33.146792,33.100000,0.100000,0.046792,pass,1,"NCHS Births: Final Data for 2012 (NVSR Vol 62 No 9, 2013-12-30)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2012,resident,124.442142,124.400000,0.200000,0.042142,pass,1,"NCHS Births: Final Data for 2012 (NVSR Vol 62 No 9, 2013-12-30)",Highlights/narrative triplet+ birth rate (per 100
+resident_births,2013,resident,3932181,3932181.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2013,resident,8.022422,8.020000,0.020000,0.002422,pass,1,"NCHS Births: Final Data for 2013 (NVSR Vol 64 No 1, 2015-01-15)",Highlights/narrative LBW rate.
+preterm_rate_pct,2013,resident,11.387575,11.390000,0.020000,-0.002425,pass,1,"NCHS Births: Final Data for 2013 (NVSR Vol 64 No 1, 2015-01-15)",Highlights/narrative preterm rate.
+twin_rate_per_1000,2013,resident,33.651554,33.700000,0.100000,-0.048446,pass,1,"NCHS Births: Final Data for 2013 (NVSR Vol 64 No 1, 2015-01-15)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2013,resident,119.526543,119.500000,0.200000,0.026543,pass,1,"NCHS Births: Final Data for 2013 (NVSR Vol 64 No 1, 2015-01-15)",Highlights/narrative triplet+ birth rate (per 100
+resident_births,2014,resident,3988076,3988076.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2014,resident,8.001569,8.000000,0.020000,0.001569,pass,1,"NCHS Births: Final Data for 2014 (NVSR Vol 64 No 12, 2015-12-23)",Highlights/narrative LBW rate.
+preterm_rate_pct,2014,resident,9.569317,9.570000,0.020000,-0.000683,pass,1,"NCHS Births: Final Data for 2014 (NVSR Vol 64 No 12, 2015-12-23)",Highlights/narrative preterm rate (obstetric estimate era).
+twin_rate_per_1000,2014,resident,33.935161,33.900000,0.100000,0.035161,pass,1,"NCHS Births: Final Data for 2014 (NVSR Vol 64 No 12, 2015-12-23)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2014,resident,113.488309,113.500000,0.200000,-0.011691,pass,1,"NCHS Births: Final Data for 2014 (NVSR Vol 64 No 12, 2015-12-23)",Highlights/narrative triplet+ birth rate (per 100
+resident_births,2015,resident,3978497,3978497.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`; see `output/validation/row_count_validation_nchs_2005_2015.csv`),Resident births (exclude foreign residents; `restatus != 4`).
+lbw_rate_pct,2015,resident,8.072428,8.070000,0.020000,0.002428,pass,1,"NCHS Births: Final Data for 2015 (NVSR Vol 66 No 1, 2017-01-05)",Highlights/narrative LBW rate.
+preterm_rate_pct,2015,resident,9.628453,9.630000,0.020000,-0.001547,pass,1,"NCHS Births: Final Data for 2015 (NVSR Vol 66 No 1, 2017-01-05)",Highlights/narrative preterm rate (obstetric estimate era).
+twin_rate_per_1000,2015,resident,33.468669,33.500000,0.100000,-0.031331,pass,1,"NCHS Births: Final Data for 2015 (NVSR Vol 66 No 1, 2017-01-05)",Highlights/narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2015,resident,103.632100,103.600000,0.200000,0.032100,pass,1,"NCHS Births: Final Data for 2015 (NVSR Vol 66 No 1, 2017-01-05)",Highlights/narrative triplet+ birth rate (per 100
+singleton_rate_pct,2015,resident,96.549501,96.546400,0.050000,0.003101,pass,1,"Derived from NCHS 2015 twin + triplet+ rates (NVSR Vol 66 No 1, 2017-01-05)",Computed as 100 - (twin_rate_per_1000/10) - (triplet_plus_rate_per_100000/1000).
+male_rate_pct,2015,resident,51.179151,51.171875,0.050000,0.007276,pass,1,"Derived from NCHS 2015 sex ratio (NVSR Vol 66 No 1, 2017-01-05)","Sex ratio (male per 1,000 female) = 1,048 ⇒ male% = 1048/(1048+1000)*100."
+resident_births,2016,resident,3945875,3945875.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2016,resident,8.165690,8.170000,0.050000,-0.004310,pass,1,"NCHS Births: Final Data for 2016 (NVSR Vol 67 No 1, 2018-01-31)",Highlights/narrative LBW rate.
+preterm_rate_pct,2016,resident,9.847198,9.850000,0.050000,-0.002802,pass,1,"NCHS Births: Final Data for 2016 (NVSR Vol 67 No 1, 2018-01-31)",Highlights/narrative preterm rate (obstetric estimate era).
+resident_births,2017,resident,3855500,3855500.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2017,resident,8.277045,8.280000,0.050000,-0.002955,pass,1,"NCHS Births: Final Data for 2017 (NVSR Vol 67 No 8, 2018-11-07)",Highlights/narrative LBW rate.
+preterm_rate_pct,2017,resident,9.933863,9.930000,0.050000,0.003863,pass,1,"NCHS Births: Final Data for 2017 (NVSR Vol 67 No 8, 2018-11-07)",Highlights/narrative preterm rate (obstetric estimate era).
+resident_births,2018,resident,3791712,3791712.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2018,resident,8.281083,8.280000,0.050000,0.001083,pass,1,"NCHS Births: Final Data for 2018 (NVSR Vol 68 No 13, 2019-11-27)",Highlights/narrative LBW rate.
+preterm_rate_pct,2018,resident,10.022604,10.020000,0.050000,0.002604,pass,1,"NCHS Births: Final Data for 2018 (NVSR Vol 68 No 13, 2019-11-27)",Highlights/narrative preterm rate (obstetric estimate era).
+resident_births,2019,resident,3747540,3747540.000000,0.000000,0.000000,pass,1,"NCHS Births: Final Data for 2019 (NVSR Vol 70 No 2, 2021-03-23)",Resident births (exclude foreign residents).
+lbw_rate_pct,2019,resident,8.313452,8.310000,0.050000,0.003452,pass,1,"NCHS Births: Final Data for 2019 (NVSR Vol 70 No 2, 2021-03-23)",Highlights/narrative LBW rate.
+preterm_rate_pct,2019,resident,10.228232,10.230000,0.050000,-0.001768,pass,1,"NCHS Births: Final Data for 2019 (NVSR Vol 70 No 2, 2021-03-23)",Highlights/narrative preterm rate (obstetric estimate era).
+resident_births,2020,resident,3613647,3613647.000000,0.000000,0.000000,pass,1,"NCHS Births: Final Data for 2020 (NVSR Vol 70 No 17, 2022-02-07)",Resident births (exclude foreign residents).
+lbw_rate_pct,2020,resident,8.242348,8.240000,0.050000,0.002348,pass,1,"NCHS Births: Final Data for 2020 (NVSR Vol 70 No 17, 2022-02-07)",Highlights/narrative LBW rate.
+preterm_rate_pct,2020,resident,10.093324,10.090000,0.050000,0.003324,pass,1,"NCHS Births: Final Data for 2020 (NVSR Vol 70 No 17, 2022-02-07)",Highlights/narrative preterm rate (obstetric estimate era).
+resident_births,2021,resident,3664292,3664292.000000,0.000000,0.000000,pass,1,"NCHS Births: Final Data for 2021 (NVSR Vol 72 No 1, 2023-01-31)",Resident births (exclude foreign residents).
+lbw_rate_pct,2021,resident,8.520495,8.520000,0.050000,0.000495,pass,1,"NCHS Births: Final Data for 2021 (NVSR Vol 72 No 1, 2023-01-31)",Highlights/narrative LBW rate (obstetric estimate era).
+preterm_rate_pct,2021,resident,10.487504,10.490000,0.050000,-0.002496,pass,1,"NCHS Births: Final Data for 2021 (NVSR Vol 72 No 1, 2023-01-31)",Highlights/narrative preterm rate (obstetric estimate era).
+twin_rate_per_1000,2021,resident,31.154995,31.200000,0.100000,-0.045005,pass,1,"NCHS Births: Final Data for 2021 (NVSR Vol 72 No 1, 2023-01-31)",Narrative twin birth rate (per 1
+resident_births,2022,resident,3667758,3667758.000000,0.000000,0.000000,pass,1,"NCHS Births: Final Data for 2022 (NVSR Vol 73 No 2, 2024-04-04)",Resident births (exclude foreign residents).
+lbw_rate_pct,2022,resident,8.603219,8.600000,0.050000,0.003219,pass,1,"NCHS Births: Final Data for 2022 (NVSR Vol 73 No 2, 2024-04-04)",Highlights/narrative LBW rate (obstetric estimate era).
+preterm_rate_pct,2022,resident,10.383055,10.380000,0.050000,0.003055,pass,1,"NCHS Births: Final Data for 2022 (NVSR Vol 73 No 2, 2024-04-04)",Highlights/narrative preterm rate (obstetric estimate era).
+twin_rate_per_1000,2022,resident,31.213346,31.200000,0.100000,0.013346,pass,1,"NCHS Births: Final Data for 2022 (NVSR Vol 73 No 2, 2024-04-04)",Narrative twin birth rate (per 1
+resident_births,2023,resident,3596017,3596017.000000,0.000000,0.000000,pass,1,"NCHS Births: Final Data for 2023 (NVSR Vol 74 No 1, 2025-03-18)",Resident births (exclude foreign residents).
+lbw_rate_pct,2023,resident,8.579300,8.580000,0.050000,-0.000700,pass,1,"NCHS Births: Final Data for 2023 (NVSR Vol 74 No 1, 2025-03-18)",Highlights/narrative LBW rate (obstetric estimate era).
+preterm_rate_pct,2023,resident,10.405315,10.410000,0.050000,-0.004685,pass,1,"NCHS Births: Final Data for 2023 (NVSR Vol 74 No 1, 2025-03-18)",Highlights/narrative preterm rate (obstetric estimate era).
+twin_rate_per_1000,2023,resident,30.698687,30.700000,0.100000,-0.001313,pass,1,"NCHS Births: Final Data for 2023 (NVSR Vol 74 No 1, 2025-03-18)",Narrative twin birth rate (per 1
+resident_births,2004,resident,4112052,4112052.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2004,resident,8.075764,8.100000,0.050000,-0.024236,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,2004,resident,12.493150,12.500000,0.150000,-0.006850,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,2004,resident,32.154019,32.200000,0.150000,-0.045981,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2004,resident,176.918969,176.900000,1.000000,0.018969,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate; wider tolerance for historical rate.
+resident_births,2003,resident,4089950,4089950.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2003,resident,7.930402,7.900000,0.050000,0.030402,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,2003,resident,12.333037,12.300000,0.150000,0.033037,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,2003,resident,31.458820,31.500000,0.150000,-0.041180,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2003,resident,187.361704,187.400000,1.000000,-0.038296,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate; wider tolerance for historical rate.
+resident_births,2002,resident,4021726,4021726.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2002,resident,7.815322,7.800000,0.050000,0.015322,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,2002,resident,12.079277,12.100000,0.150000,-0.020723,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,2002,resident,31.114502,31.100000,0.150000,0.014502,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2002,resident,184.025466,184.000000,1.000000,0.025466,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate; wider tolerance for historical rate.
+resident_births,2001,resident,4025933,4025933.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2001,resident,7.675016,7.700000,0.050000,-0.024984,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,2001,resident,11.947763,11.900000,0.150000,0.047763,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,2001,resident,30.116249,30.100000,0.150000,0.016249,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2001,resident,185.571891,185.600000,1.000000,-0.028109,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate; wider tolerance for historical rate.
+resident_births,2000,resident,4058814,4058814.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,2000,resident,7.573558,7.570000,0.050000,0.003558,pass,1,"NCHS Births: Final Data for 2000 (NVSR Vol 50 No 5, 2002-02-12)",Highlights/narrative LBW rate.
+preterm_rate_pct,2000,resident,11.635009,11.600000,0.150000,0.035009,pass,1,"NCHS Births: Final Data for 2000 (NVSR Vol 50 No 5, 2002-02-12)",LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,2000,resident,29.298214,29.300000,0.150000,-0.001786,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,2000,resident,180.471438,180.500000,1.000000,-0.028562,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate; wider tolerance for historical rate.
+resident_births,1999,resident,3959417,3959417.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1999,resident,7.615992,7.600000,0.050000,0.015992,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1999,resident,11.767029,11.800000,0.150000,-0.032971,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1999,resident,28.869654,28.900000,0.150000,-0.030346,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,1999,resident,184.900959,184.900000,1.000000,0.000959,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate; wider tolerance for historical rate.
+resident_births,1998,resident,3941553,3941553.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1998,resident,7.574623,7.600000,0.050000,-0.025377,pass,1,"NCHS Births: Final Data for 1998 (NVSR Vol 48 No 3, 2000-03-28); childstats.gov HEALTH1.B",Highlights/narrative LBW rate.
+preterm_rate_pct,1998,resident,11.593356,11.600000,0.150000,-0.006644,pass,1,"NCHS Births: Final Data for 1998 (NVSR Vol 48 No 3, 2000-03-28); childstats.gov HEALTH1.A",LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1998,resident,28.077765,28.100000,0.150000,-0.022235,pass,1,NCHS Data Brief No. 351 tables; NVSR Vol 48 No 3 Table J,Narrative twin birth rate (per 1
+triplet_plus_rate_per_100000,1998,resident,193.451667,193.500000,1.000000,-0.048333,pass,1,NCHS Data Brief No. 512 (October 2024); NCHS NVSS Natality,Triplet+ rate (1998 peak); wider tolerance for historical rate.
+resident_births,1997,resident,3880894,3880894.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1997,resident,7.510035,7.500000,0.050000,0.010035,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1997,resident,11.362584,11.400000,0.150000,-0.037416,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1997,resident,26.833250,26.800000,0.150000,0.033250,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+resident_births,1996,resident,3891494,3891494.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1996,resident,7.390127,7.400000,0.050000,-0.009873,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1996,resident,10.987381,11.000000,0.150000,-0.012619,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1996,resident,25.889800,25.900000,0.150000,-0.010200,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+resident_births,1995,resident,3899589,3899589.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1995,resident,7.319976,7.300000,0.050000,0.019976,pass,1,"NCHS Births: Final Data for 1995 (MVSR Vol 45 No 11 Supp 2, 1997-06-10); childstats.gov HEALTH1.B",Highlights/narrative LBW rate.
+preterm_rate_pct,1995,resident,10.987363,11.000000,0.150000,-0.012637,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1995,resident,24.806717,24.800000,0.150000,0.006717,pass,1,NCHS Data Brief No. 351 tables,Narrative twin birth rate (per 1
+resident_births,1994,resident,3952767,3952767.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1994,resident,7.284485,7.300000,0.050000,-0.015515,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1994,resident,11.017056,11.000000,0.150000,0.017056,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1994,resident,24.555963,24.600000,0.150000,-0.044037,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+resident_births,1993,resident,4000240,4000240.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1993,resident,7.220267,7.200000,0.050000,0.020267,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1993,resident,10.988439,11.000000,0.150000,-0.011561,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1993,resident,24.109803,24.100000,0.150000,0.009803,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+resident_births,1992,resident,4065014,4065014.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1992,resident,7.080182,7.100000,0.050000,-0.019818,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1992,resident,10.690846,10.700000,0.150000,-0.009154,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1992,resident,23.461666,23.500000,0.150000,-0.038334,pass,1,NCHS Data Brief No. 351 tables,Narrative twin birth rate (per 1
+resident_births,1991,resident,4110907,4110907.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Resident births (exclude foreign residents).
+lbw_rate_pct,1991,resident,7.116863,7.100000,0.050000,0.016863,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),LBW rate from childstats.gov time series.
+preterm_rate_pct,1991,resident,10.818798,10.800000,0.150000,0.018798,pass,1,childstats.gov HEALTH1.A (from NCHS NVSS Natality data),LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1991,resident,23.055496,23.100000,0.150000,-0.044504,pass,1,NCHS Data Brief No. 351 tables; NCHS NVSS Natality,Narrative twin birth rate (per 1
+resident_births,1990,resident,4158212,4158212.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`); MVSR Vol 41 No 9 Supp,Resident births (exclude foreign residents).
+lbw_rate_pct,1990,resident,6.969044,7.000000,0.050000,-0.030956,pass,1,childstats.gov HEALTH1.B; Pediatrics Annual Summary 2010-2011 Table 4,LBW rate from childstats.gov time series.
+preterm_rate_pct,1990,resident,10.619021,10.600000,0.150000,0.019021,pass,1,childstats.gov HEALTH1.A; NVSR Vol 48 No 3 p.14,LMP-based preterm rate; wider tolerance due to LMP measurement differences.
+twin_rate_per_1000,1990,resident,22.573404,22.600000,0.150000,-0.026596,pass,1,NCHS Data Brief No. 351 tables; Pediatrics Annual Summary 2010-2011 Table 4,Narrative twin birth rate (per 1
+cesarean_rate_pct,1990,resident,22.709106,22.700000,0.200000,0.009106,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate.
+cesarean_rate_pct,1992,resident,22.274957,22.300000,0.200000,-0.025043,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate.
+cesarean_rate_pct,1995,resident,20.843128,20.800000,0.200000,0.043128,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate.
+cesarean_rate_pct,1996,resident,20.660327,20.700000,0.200000,-0.039673,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate (trough year).
+cesarean_rate_pct,1998,resident,21.152252,21.200000,0.200000,-0.047748,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate.
+cesarean_rate_pct,2000,resident,22.915426,22.900000,0.200000,0.015426,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate.
+cesarean_rate_pct,2002,resident,26.081355,26.100000,0.200000,-0.018645,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate.
+cesarean_rate_pct,2003,resident,27.508803,27.500000,0.200000,0.008803,pass,1,NVSR Vol. 63 No. 6 Table A (birth certificate data 1990-2013),Cesarean delivery rate (still DELMETH5-style coding; DMETH_REC starts 2005).
+cesarean_rate_pct,2005,resident,30.290950,30.300000,0.200000,-0.009050,pass,1,Births: Final Data for 2005 (NVSR Vol. 56 No. 6); also NVSR Vol. 63 No. 6 Table A,Cesarean delivery rate. PDF: raw_docs/nvsr/Births_Final_Data_2005.pdf.
+cesarean_rate_pct,2008,resident,32.342872,32.300000,0.200000,0.042872,pass,1,Births: Final Data for 2008 (NVSR Vol. 59 No. 1); also NVSR Vol. 63 No. 6 Table A,Cesarean delivery rate.
+cesarean_rate_pct,2010,resident,32.810518,32.800000,0.200000,0.010518,pass,1,Births: Final Data for 2010 (NVSR Vol. 61 No. 1); also NVSR Vol. 63 No. 6 Table A,Cesarean delivery rate.
+cesarean_rate_pct,2013,resident,32.703424,32.700000,0.200000,0.003424,pass,1,Births: Final Data for 2013 (NVSR Vol. 64 No. 1); also NVSR Vol. 63 No. 6 Table A (preliminary),Cesarean delivery rate.
+cesarean_rate_pct,2014,resident,32.238684,32.200000,0.200000,0.038684,pass,1,NVSR Vol. 64 No. 12 (Births: Final Data for 2014),Cesarean delivery rate.
+cesarean_rate_pct,2015,resident,32.004546,32.000000,0.200000,0.004546,pass,1,NVSR Vol. 66 No. 1 (Births: Final Data for 2015),Cesarean delivery rate.
+cesarean_rate_pct,2019,resident,31.677133,31.700000,0.200000,-0.022867,pass,1,NVSR Vol. 70 No. 2 (Births: Final Data for 2019),Cesarean delivery rate.
+cesarean_rate_pct,2020,resident,31.805662,31.800000,0.200000,0.005662,pass,1,NVSR Vol. 70 No. 17 (Births: Final Data for 2020),Cesarean delivery rate.
+cesarean_rate_pct,2021,resident,32.079114,32.100000,0.200000,-0.020886,pass,1,NVSR Vol. 72 No. 1 (Births: Final Data for 2021),Cesarean delivery rate.
+cesarean_rate_pct,2022,resident,32.143429,32.100000,0.200000,0.043429,pass,1,NVSR Vol. 73 No. 2 (Births: Final Data for 2022),Cesarean delivery rate.
+cesarean_rate_pct,2023,resident,32.334204,32.400000,0.200000,-0.065796,pass,1,NVSR Vol. 74 No. 1 (Births: Final Data for 2023),Cesarean delivery rate.
+cesarean_rate_pct,2024,resident,32.379143,32.400000,0.200000,-0.020857,pass,1,VSRR No. 38 (Births: Provisional Data for 2024),Cesarean delivery rate. PROVISIONAL — final data not yet published.
+smoking_rate_pct,2016,resident,7.200078,7.200000,0.200000,0.000078,pass,1,NVSR Vol. 67 No. 1 (Births: Final Data for 2016); NCHS Data Brief No. 305,First national figure; all states adopted 2003 revision.
+smoking_rate_pct,2019,resident,5.955919,6.000000,0.200000,-0.044081,pass,1,NVSR Vol. 70 No. 2 (Births: Final Data for 2019),Smoking during pregnancy.
+smoking_rate_pct,2020,resident,5.544237,5.500000,0.200000,0.044237,pass,1,NVSR Vol. 70 No. 17 (Births: Final Data for 2020),Smoking during pregnancy.
+smoking_rate_pct,2021,resident,4.606403,4.600000,0.200000,0.006403,pass,1,NVSR Vol. 72 No. 1 (Births: Final Data for 2021),Smoking during pregnancy.
+smoking_rate_pct,2022,resident,3.672320,3.700000,0.200000,-0.027680,pass,1,NVSR Vol. 73 No. 2 (Births: Final Data for 2022),Smoking during pregnancy.
+smoking_rate_pct,2023,resident,3.007796,3.000000,0.200000,0.007796,pass,1,NVSR Vol. 74 No. 1 (Births: Final Data for 2023),Smoking during pregnancy.
+medicaid_pct,2016,resident,42.593828,42.600000,0.500000,-0.006172,pass,1,NVSR Vol. 67 No. 1 (Births: Final Data for 2016),Medicaid share of deliveries; first national figure.
+medicaid_pct,2019,resident,42.123151,42.100000,0.500000,0.023151,pass,1,NVSR Vol. 70 No. 2 (Births: Final Data for 2019),Medicaid share of deliveries.
+medicaid_pct,2020,resident,41.999836,42.000000,0.500000,-0.000164,pass,1,NVSR Vol. 70 No. 17 (Births: Final Data for 2020),Medicaid share of deliveries.
+medicaid_pct,2021,resident,40.978708,41.000000,0.500000,-0.021292,pass,1,NVSR Vol. 72 No. 1 (Births: Final Data for 2021),Medicaid share of deliveries.
+medicaid_pct,2022,resident,41.324097,41.300000,0.500000,0.024097,pass,1,NVSR Vol. 74 No. 1 (Births: Final Data for 2023; 2022 value from year-over-year comparison in text: 'an increase from 2022 (41.3%)'),Medicaid share of deliveries. Source is prior-year comparison text not a same-year table.
+medicaid_pct,2023,resident,41.455284,41.500000,0.500000,-0.044716,pass,1,NVSR Vol. 74 No. 1 (Births: Final Data for 2023),Medicaid share of deliveries.

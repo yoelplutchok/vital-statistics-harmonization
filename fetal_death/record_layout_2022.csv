@@ -1,0 +1,183 @@
+position_start,position_end,length,field_name,description,version,values_summary,notes
+1,6,6,FILLER,Filler,,,
+7,7,1,VERSION,Version,"A,S",A=2003 revision; S=1989 revision,
+8,9,2,FILLER,Filler,,,
+10,10,1,OE_TABFLG,Obstetric Estimate Tabulation Flag,"A,S",1=Under 20 weeks (exclude); 2=20 weeks or more (include),Use with NCHS Standard item
+11,14,4,DOD_YY,Delivery Year,"A,S",4-digit year of delivery,
+15,16,2,DOD_MM,Delivery Month,"A,S",01-12 Month of delivery,
+17,20,4,FILLER,Filler,,,
+21,24,4,DOD_TT,Delivery Time,A,0000-2359 Time of birth; 9999=Not stated,Reporting flag c409
+25,25,1,DOD_WK,Weekday,"A,S",1=Sunday through 7=Saturday,
+26,27,2,OSTATE,Territory of Occurrence,"A,S",AS=American Samoa; GU=Guam; MP=Northern Marianas; PR=Puerto Rico; VI=Virgin Islands,Territory file only; not available in U.S. file
+28,29,2,FILLER,Filler,,,
+30,32,3,OCNTYFIPS,Occurrence FIPS County,"A,S","000=No county; 001-998=County of occurrence; 999=County <100,000","Territory file only; suppressed if pop <100,000"
+33,33,1,OCNTYPOP,Occurrence Territory County Population,"A,S","0=>=1,000,000; 1=500K-1M; 2=250K-500K; 3=100K-250K; 9=<100,000",Territory file only
+34,34,1,BFACIL,Delivery Place (Revised),A,1=Hospital; 2=Freestanding Birth Center; 3=Home(intended); 4=Home(not intended); 5=Home(unknown); 6=Clinic/Doctor's Office; 7=Other; 9=Unknown,Reporting flag 409
+35,51,17,FILLER,Filler,,,
+52,52,1,BFACIL3,Delivery Place Recode,"A,S",1=In Hospital; 2=Not in Hospital; 3=Unknown/not stated,
+53,83,31,FILLER,Filler,,,
+84,84,1,MAGE_IMPFLG,Mother's Age Imputed,"A,S",Blank=Age not imputed; 1=Age imputed,
+85,85,1,MAGE_REPFLG,Reported Age of Mother Flag,"A,S",Blank=Reported age not used; 1=Reported age used,
+86,87,2,MAGER,Mother's Single Year of Age,"A,S",12=12 and under; 13-49=Single year; 50=50 and over,Reporting flag 432
+88,89,2,MAGER14,Mother's Age Recode 14,"A,S",01=Under 15; 03=15; 04=16; 05=17; 06=18; 07=19; 08=20-24; 09=25-29; 10=30-34; 11=35-39; 12=40-44; 13=45-49; 14=50-54,Reporting flag 432
+90,90,1,MAGER9,Mother's Age Recode 9,"A,S",1=Under 15; 2=15-19; 3=20-24; 4=25-29; 5=30-34; 6=35-39; 7=40-44; 8=45-49; 9=50-54,Reporting flag 432
+91,92,2,MBCNTRY,Mother's Birth Country,A,AA-ZZ See Geographic Documentation,Territory file only; reporting flag c409
+93,96,4,FILLER,Filler,,,
+97,97,1,MBSTATE_REC,Mother's Birth State Recode,A,1=Native born (50 US States); 2=Foreign born (incl territories); 3=Unknown or Not Stated,Reporting flag c409
+98,101,4,FILLER,Filler,,,
+102,103,2,MRSTATEPSTL,Mother's Residence Postal State,"A,S",2-letter state/territory/Canadian province code; XX=Foreign; ZZ=Not Classifiable,Territory file only
+104,106,3,MRCNTYFIPS,Mother's FIPS County of Residence,"A,s","000=No county; 001-998=County of residence; 999=County <100,000","Territory file only; suppressed if pop <100,000"
+107,111,5,FILLER,Filler,,,
+112,112,1,RCNTY_POP,Population of Residence County,"A,S","0=>=1,000,000; 1=500K-1M; 2=250K-500K; 3=100K-250K; 9=<100,000; Z=Foreign resident",Territory file only
+113,129,17,FILLER,Filler,,,
+130,130,1,RECTYPE,Record Type,"A,S",1=Resident (same state/county); 2=Nonresident (different state/county),Territory file only
+131,131,1,RESTATUS,Residence Status,"A,S",1=Resident; 2=Intrastate nonresident; 3=Interstate nonresident; 4=Foreign resident,
+132,133,2,MRACE31,Mother's Race Recode 31,A,"01-31 Race recode (31 categories, single and multi-race)",Reporting flag 425
+134,134,1,MRACE6,Mother's Race Recode 6,A,1=White; 2=Black; 3=AIAN; 4=Asian; 5=NHOPI; 6=More than one race,Reporting flag 425
+135,136,2,MRACE15,Mother's Race Recode 15,A,01=White; 02=Black; 03=AIAN; 04=Asian Indian; 05=Chinese; 06=Filipino; 07=Japanese; 08=Korean; 09=Vietnamese; 10=Other Asian; 11=Hawaiian; 12=Guamanian; 13=Samoan; 14=Other PI; 15=More than one race,Reporting flag 425
+137,137,1,FILLER,Filler,,,
+138,138,1,MRACEIMP,Mother's Race Imputed,"A,S",Blank=Not imputed; 1=Unknown race imputed; 2=All other races imputed,
+139,141,3,FILLER,Filler,,,
+142,142,1,UMHISP,Mother's Hispanic Origin,"A,S",0=Non-Hispanic; 1=Mexican; 2=Puerto Rican; 3=Cuban; 4=Central/South American; 5=Other/Unknown Hispanic; 9=Origin unknown/not stated,Reporting flag 424
+143,143,1,MHISPX,Mother's Hispanic Origin (expanded),,0=Non-Hispanic; 1=Mexican; 2=Puerto Rican; 3=Cuban; 4=Central/South American; 5=Dominican; 6=Other/Unknown Hispanic; 9=Origin unknown/not stated,
+144,144,1,SR_MRACEHISP,Mother's Race/Hispanic Origin,A,1=NH White; 2=NH Black; 3=NH AIAN; 4=NH Asian; 5=NH NHOPI; 6=NH more than one race; 7=Hispanic; 8=Origin unknown/not stated,Reporting flag c425
+145,145,1,MEDUC,Mother's Education (Revised),A,1=8th grade or less; 2=9-12th no diploma; 3=HS grad/GED; 4=Some college; 5=Associate; 6=Bachelor's; 7=Master's; 8=Doctorate/Professional; 9=Unknown,Reporting flag 372
+146,171,26,FILLER,Filler,,,
+172,172,1,FAGERPT_FLG,Father's Reported Age Used,"A,S",Blank=Not used; 1=Father's reported age used,
+173,176,4,FILLER,Filler,,,
+177,178,2,FAGECOMB,Father's Combined Age,"A,S",09-98=Father's combined age in years; 99=Unknown or not stated,Reporting flag 426
+179,180,2,FAGEREC11,Father's Age Recode 11,"A,S",01=Under 15; 02=15-19; 03=20-24; 04=25-29; 05=30-34; 06=35-39; 07=40-44; 08=45-49; 09=50-54; 10=55-98; 11=Not stated,Reporting flag 426
+181,182,2,PRIORLIVE,Prior Births Now Living,"A,S",00-30=Number of children still living; 99=Unknown or not stated,Reporting flag 440
+183,184,2,PRIORDEAD,Prior Births Now Dead,"A,S",00-30=Number of children dead; 99=Unknown or not stated,Reporting flag 441
+185,186,2,FILLER,Filler,,,
+187,187,1,LBO_REC,Live Birth Order Recode,"A,S",0-7=Number of live birth order; 8=8 or more; 9=Unknown or not stated,Reporting flag 441
+188,196,9,FILLER,Filler,,,
+197,199,3,ILLB_R,Interval Since Last Live Birth Recode,A,000-003=Plural delivery; 004-300=Months since last live birth; 888=Not applicable; 999=Unknown or not stated,Reporting flag 427
+200,201,2,ILLB_R11,Interval Since Last Live Birth Recode 11,A,00=0-3 months (plural); 01=4-11; 02=12-17; 03=18-23; 04=24-35; 05=36-47; 06=48-59; 07=60-71; 08=72+; 88=Not applicable; 99=Unknown,Reporting flag 427
+202,203,2,PRECARE,Month Prenatal Care Began (Revised),A,00=No prenatal care; 01-10=Month prenatal care began; 99=Unknown or not stated,Reporting flag 403
+204,204,1,PRECARE_REC,Month Prenatal Care Began Recode (Revised),A,1=1st-3rd month; 2=4th-6th month; 3=7th-final month; 4=No prenatal care; 5=Unknown or not stated,Reporting flag 403
+205,228,24,FILLER,Filler,,,
+229,229,1,WIC,WIC,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 377
+230,231,2,CIG_0,Cigarettes Before Pregnancy,A,00-97=Number of cigarettes daily; 98=98 or more; 99=Unknown or not stated,Reporting flag 405
+232,233,2,CIG_1,Cigarettes 1st Trimester,A,00-97=Number of cigarettes daily; 98=98 or more; 99=Unknown or not stated,Reporting flag 406
+234,235,2,CIG_2,Cigarettes 2nd Trimester,A,00-97=Number of cigarettes daily; 98=98 or more; 99=Unknown or not stated,Reporting flag 407
+236,237,2,CIG_3,Cigarettes 3rd Trimester,A,00-97=Number of cigarettes daily; 98=98 or more; 99=Unknown or not stated,Reporting flag 408
+238,238,1,CIG_REC,Cigarette Recode (Revised),A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 374
+239,242,4,FILLER,Filler,,,
+243,244,2,M_Ht_In,Mother's Height in Inches,A,30-78=Height in inches; 99=Unknown or not stated,Reporting flag 375
+245,248,4,BMI,BMI (prepregnancy),A,13.0-69.9=Body Mass Index; 99.9=Unknown or not stated,Reporting flag 445
+249,249,1,BMI_R,Body Mass Index Recode (prepregnancy),A,1=Underweight <18.5; 2=Normal 18.5-24.9; 3=Overweight 25.0-29.9; 4=Obesity I 30.0-34.9; 5=Obesity II 35.0-39.9; 6=Extreme Obesity III >=40.0; 9=Unknown or not stated,Reporting flag 445
+250,252,3,FILLER,Filler,,,
+253,255,3,PWgt_R,Prepregnancy Weight Recode,A,075-375=Weight in pounds; 999=Unknown or not stated,Reporting flag 376
+256,256,1,FILLER,Filler,,,
+257,257,1,RF_DIAB,Prepregnancy Diabetes,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 378
+258,258,1,RF_GEST,Gestational Diabetes,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 379
+259,259,1,RF_PHYP,Prepregnancy Hypertension,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 380
+260,260,1,RF_GHYP,Gestational Hypertension,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 381
+261,261,1,RF_ECLAM,Hypertension Eclampsia,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 382
+262,262,1,RF_INFTR,Infertility Treatment,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 383
+263,263,1,RF_FEDRG,Fertility Enhancing Drugs,A,Y=Yes; N=No; X=Not applicable; U=Unknown or not stated,Reporting flag 384
+264,264,1,RF_ARTEC,Asst. Reproductive Technology,A,Y=Yes; N=No; X=Not applicable; U=Unknown,Reporting flag 385
+265,265,1,RF_CESAR,Previous Cesareans,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 386
+266,267,2,RF_CESARN,Previous Cesareans Number,A,00=None; 01-30=Number of previous cesareans; 99=Unknown or not stated,Reporting flag 387
+268,273,6,FILLER,Filler,,,
+274,274,1,ME_PRES,Fetal Presentation,A,1=Cephalic; 2=Breech; 3=Other; 9=Unknown or not stated,Reporting flag 388
+275,275,1,ME_ROUT,Route & Method of Delivery,A,1=Spontaneous; 2=Forceps; 3=Vacuum; 4=Cesarean; 9=Unknown or not stated,Reporting flag 389
+276,276,1,ME_TRIAL,Trial of Labor Attempted,A,Y=Yes; N=No; X=Not applicable; U=Unknown or not stated,Reporting flag 390
+277,277,1,RDMETH_REC,Delivery Method Recode (Revised),A,1=Vaginal; 2=VBAC; 3=Primary C-section; 4=Repeat C-section; 5=Vaginal (unknown if prev C-sec); 6=C-section (unknown if prev C-sec); 9=Not stated,Reporting flag c389
+278,279,2,FILLER,Filler,,,
+280,280,1,DMETH_REC,Delivery Method Recode,"A,S",1=Vaginal; 2=C-section; 9=Not stated,Reporting flag 410
+281,281,1,MM_RUPT,Ruptured Uterus,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 391
+282,282,1,MM_ICU,Admit to Intensive Care,A,Y=Yes; N=No; U=Unknown or not stated,Reporting flag 392
+283,283,1,ATTEND,Attendant,"A,S",1=MD; 2=DO; 3=CNM; 4=Other Midwife; 5=Other; 9=Unknown or not stated,Reporting flag 433
+284,300,17,FILLER,Filler,,,
+301,301,1,DPLURAL,Plurality Recode,"A,S",1=Single; 2=Twin; 3=Triplet; 4=Quadruplet or higher,
+302,302,1,FILLER,Filler,,,
+303,303,1,IMP_PLUR,Plurality Imputed,"A,S",Blank=Not imputed; 1=Plurality is imputed,
+304,315,12,FILLER,Filler,,,
+316,316,1,SEX,Sex of Infant,"A,S",M=Male; F=Female,
+317,317,1,IMP_SEX,Sex Imputed,"A,S",Blank=Not imputed; 1=Sex is imputed,Only where gestation >=20 weeks
+318,319,2,DLMP_MM,Last Normal Menses Month,"A,S",01-12=Month; 99=Unknown or not stated,Reporting flag 429
+320,321,2,FILLER,Filler,,,
+322,325,4,DLMP_YY,Last Normal Menses Year,"A,S",nnnn=Year; 9999=Unknown or not stated,Reporting flag 431
+326,328,3,FILLER,Filler,,,
+329,329,1,GEST_IMP,Gestation Imputed Flag,"A,S",Blank=Not imputed; 1=Gestation is imputed,
+330,330,1,OBGEST_FLG,Obstetric Estimate of Gestation Used Flag,"A,S",Blank=Obstetric estimate not used; 1=Obstetric estimate is used,
+331,332,2,COMBGEST,Gestation - Detail in Weeks,"A,S",02-47=Weeks of gestation; 99=Unknown,Reporting flag 404
+333,334,2,GESTREC12,Gestation Recode 12,"A,S",01=Under 16 wks; 02=16-19; 03=20-23; 04=24-27; 05=28-31; 06=32-33; 07=34-36; 08=37-38; 09=39-40; 10=41; 11=42+; 12=Unknown,Reporting flag 404
+335,335,1,GESTREC5,Gestation Recode 5,"A,S",1=Under 20 wks; 2=20-23; 3=24-27; 4=28+; 5=Unknown,Reporting flag 404
+336,337,2,OEGest_Unedt,Obstetric Gestation (unedited),"A,S",00-98=Weeks (revised); 02-47=Weeks (unrevised); 99=Unknown or not stated,Reporting flag 373
+338,338,1,FILLER,Filler,,,
+339,339,1,COMBGEST_USED,Combined Gestation Used Flag,"A,S",Blank=Combined gestation not used; 1=Combined gestation used,
+340,341,2,OEGest_Comb,Obstetric Estimate Edited (NCHS Standard item),"A,S",02-47=Weeks of gestation; 99=Not stated,Reporting flag 373
+342,343,2,OEGest_R12,Obstetric Estimate Recode12 (NCHS Standard item),"A,S",01=Under 16 wks; 02=16-19; 03=20-23; 04=24-27; 05=28-31; 06=32-33; 07=34-36; 08=37-38; 09=39-40; 10=41; 11=42+; 12=Unknown,Reporting flag 373
+344,344,1,OEGest_R5,Obstetric Estimate Recode 5 (NCHS Standard item),"A,S",1=Under 20 wks; 2=20-23; 3=24-27; 4=28+; 5=Unknown,Reporting flag 373
+345,348,4,FILLER,Filler,,,
+349,352,4,DBWT,Birth Weight - Detail in Grams,"A,S",0001-8165=Number of grams; 9999=Not stated birth weight,Reporting flag 442
+353,354,2,BWTR14,Birth Weight Recode 14,"A,S",01=<=249g; 02=250-349; 03=350-499; 04=500-999; 05=1000-1499; 06=1500-1999; 07=2000-2499; 08=2500-2999; 09=3000-3499; 10=3500-3999; 11=4000-4499; 12=4500-4999; 13=5000-8165; 14=Unknown,Reporting flag 442
+355,355,1,BWTR4,Birth Weight Recode 4,"A,S",1=<=1499g; 2=1500-2499; 3=2500-8165; 4=Unknown or not stated,Reporting flag 442
+356,356,1,FILLER,Filler,,,
+357,357,1,ESTOFD,Estimated Time of Fetal Death,A,"N=At assessment, no labor; L=At assessment, labor; A=Labor, no assessment; U=Unknown",Reporting flag 435
+358,358,1,AUTOPSY,Was Autopsy Performed?,A,Y=Yes; N=No; P=Planned,Reporting flag 436
+359,359,1,HISTOPF,Was Histological Placental Exam Performed?,A,Y=Yes; N=No; P=Planned,Reporting flag 437
+360,360,1,AUTOPF,Was Autopsy/Histological Results Used in Cause?,A,Y=Yes; N=No; X=Not applicable,Reporting flag 438
+361,371,11,FILLER,Filler,,,
+372,372,1,F_MEDUC,Flag: Education of Mother,A,0=Not reporting; 1=Reporting,
+373,373,1,F_CLINEST,Flag: Obstetric Estimate of Gestation,"A,S",0=Not reporting; 1=Reporting,
+374,374,1,F_TOBACO,Flag: Tobacco Use,A,0=Not reporting; 1=Reporting,
+375,375,1,F_M_HT,Flag: Mother's Height,A,0=Not reporting; 1=Reporting,
+376,376,1,F_PWGT,Flag: Prepregnancy Weight,A,0=Not reporting; 1=Reporting,
+377,377,1,F_WIC,Flag: WIC,A,0=Not reporting; 1=Reporting,
+378,378,1,F_RF_PDIAB,Flag: Prepregnancy Diabetes,A,0=Not reporting; 1=Reporting,
+379,379,1,F_RF_GDIAB,Flag: Gestational Diabetes,A,0=Not reporting; 1=Reporting,
+380,380,1,F_RF_PHYPER,Flag: Prepregnancy Hypertension,A,0=Not reporting; 1=Reporting,
+381,381,1,F_RF_GHYPER,Flag: Gestational Hypertension,A,0=Not reporting; 1=Reporting,
+382,382,1,F_RF_ECLAMP,Flag: Hypertension Eclampsia,A,0=Not reporting; 1=Reporting,
+383,383,1,F_RF_INFT,Flag: Infertility Treatment,A,0=Not reporting; 1=Reporting,
+384,384,1,F_RF_INFT_DRG,Flag: Fertility Enhancing Drugs,A,0=Not reporting; 1=Reporting,
+385,385,1,F_RF_INFT_ART,Flag: Reproductive Technology,A,0=Not reporting; 1=Reporting,
+386,386,1,F_RF_CESAR,Flag: Previous Cesarean,A,0=Not reporting; 1=Reporting,
+387,387,1,F_RF_NCESAR,Flag: Number of Previous Cesareans,A,0=Not reporting; 1=Reporting,
+388,388,1,F_MD_PRESENT,Flag: Fetal Presentation,A,0=Not reporting; 1=Reporting,
+389,389,1,F_MD_ROUTE,Flag: Final Route and Method of Delivery,A,0=Not reporting; 1=Reporting,
+390,390,1,F_MD_TRIAL,Flag: Trial of Labor Attempted,A,0=Not reporting; 1=Reporting,
+391,391,1,F_MM_RUPTUR,Flag: Ruptured Uterus,A,0=Not reporting; 1=Reporting,
+392,392,1,F_MM_ICU,Flag: Admission to Intensive Care,A,0=Not reporting; 1=Reporting,
+393,402,10,FILLER,Filler,,,
+403,403,1,F_MPCB,Flag: Month Prenatal Care Began,A,0=Not reporting; 1=Reporting,
+404,404,1,F_CMBGST,Flag: Combined Gestation,"A,S",0=Not reporting; 1=Reporting,
+405,405,1,F_CIGS_0,Flag: Cigarettes Before Pregnancy,A,0=Not reporting; 1=Reporting,
+406,406,1,F_CIGS_1,Flag: Cigarettes 1st Trimester,A,0=Not reporting; 1=Reporting,
+407,407,1,F_CIGS_2,Flag: Cigarettes 2nd Trimester,A,0=Not reporting; 1=Reporting,
+408,408,1,F_CIGS_3,Flag: Cigarettes 3rd Trimester,A,0=Not reporting; 1=Reporting,
+409,409,1,F_FACILITY,Flag: Facility,A,0=Not reporting; 1=Reporting,
+410,410,1,DelMethRecF,Flag: Delivery Method Recode,"A,S",0=Not reporting; 1=Reporting,
+411,423,13,FILLER,Filler,,,
+424,424,1,F_MORIGIN,Flag: Mother's Hispanic Origin,"A,S",0=Not reporting; 1=Reporting,
+425,425,1,F_MRACE_R,Flag: Mother's Race (Revised),A,0=Not reporting; 1=Reporting,
+426,426,1,F_FAGE_u,Flag: Father's Age,"A,S",0=Not reporting; 1=Reporting,
+427,427,1,F_DLLB_MM,Flag: Last Live Birth Month (Revised),A,0=Not reporting; 1=Reporting,
+428,428,1,FILLER,Filler,,,
+429,429,1,F_DLMP_MM,Flag: Last Normal Menses Month,"A,S",0=Not reporting; 1=Reporting,
+430,430,1,FILLER,Filler,,,
+431,431,1,F_DLMP_YY,Flag: Last Normal Menses Year,"A,S",0=Not reporting; 1=Reporting,
+432,432,1,F_MAGE,Flag: Mother's Age,"A,S",0=Not reporting; 1=Reporting,
+433,433,1,F_ATTENDANT,Flag: Attendant,"A,S",0=Not reporting; 1=Reporting,
+434,434,1,FILLER,Filler,,,
+435,435,1,F_ESTOFD,Flag: Estimated Time of Fetal Death (Revised),A,0=Not reporting; 1=Reporting,
+436,436,1,F_AUTOPSY,Flag: Autopsy (Revised),A,0=Not reporting; 1=Reporting,
+437,437,1,F_HISTOPF,Flag: Histological Placental Exam (Revised),A,0=Not reporting; 1=Reporting,
+438,438,1,F_AUTOPF,Flag: Autopsy/Histological Exam Used in Cause,A,0=Not reporting; 1=Reporting,
+439,439,1,F_MRACEREC,Flag: Mother's Bridged Race Recode,"A,S",0=Not reporting; 1=Reporting,
+440,440,1,F_PLBL,Flag: Number of Previous Live Births Living,"A,S",0=Not reporting; 1=Reporting,
+441,441,1,F_PLBD,Flag: Number of Previous Live Births Dead,"A,S",0=Not reporting; 1=Reporting,
+442,442,1,F_DBWT,Flag: Birthweight,"A,S",0=Not reporting; 1=Reporting,
+443,444,2,FILLER,Filler,,,
+445,445,1,F_BMI,Flag: Body Mass Index,A,0=Not reporting; 1=Reporting,
+446,2602,2157,FILLER,Filler,,,Large filler block. PDF says 2164 length but 2602-446+1=2157
+2603,2607,5,IICOD,Initiating Cause or Condition Code,A,ICD10 Code; Blank=None reported,Reporting flag 2651
+2608,2642,35,FILLER,Filler (Coded Causes area),,,
+2643,2645,3,IC_124_Fetal,Initiating Fetal Recode 124,A,001-124,Reporting flag 2651
+2646,2650,5,FILLER,Filler,,,
+2651,2651,1,F_ICOD,Flag: Init Cause or Condition,A,0=Not reporting; 1=Reporting,
+2652,2652,1,FILLER,Filler (end of record),,,Record ends at position 2652

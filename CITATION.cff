@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use the U.S. Harmonized Vital Statistics resource, please cite the relevant subproject deposit(s) below."
+title: "U.S. Harmonized Vital Statistics Microdata"
+abstract: >
+  A unified resource integrating harmonized U.S. natality, linked birth–infant death, and fetal death public-use microdata
+  released by the National Center for Health Statistics (NCHS) into stable parquet column schemas spanning multiple
+  Standard Certificate revisions and NCHS layout reformats. Each product is validated against every per-year figure
+  NCHS publishes in the relevant National Vital Statistics Reports series.
+authors:
+  - family-names: Plutchok
+    given-names: Yoel
+license: CC-BY-4.0
+type: dataset
+keywords:
+  - vital statistics
+  - natality
+  - fetal death
+  - stillbirth
+  - linked birth-infant death
+  - perinatal epidemiology
+  - National Vital Statistics System
+  - NCHS
+  - data harmonization
+  - public use microdata
+  - United States
+references:
+  - type: dataset
+    title: "Harmonized U.S. Natality and Linked Birth–Infant Death Microdata"
+    authors:
+      - family-names: Plutchok
+        given-names: Yoel
+    doi: 10.5281/zenodo.19363074
+    notes: "Concept DOI; resolves to latest version. Current version v2.7.0."
+  - type: dataset
+    title: "Harmonized U.S. Fetal Death Microdata, 1992–2022"
+    authors:
+      - family-names: Plutchok
+        given-names: Yoel
+    version: v2.0.0
+    doi: 10.5281/zenodo.20031571

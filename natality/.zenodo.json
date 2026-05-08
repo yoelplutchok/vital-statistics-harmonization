@@ -1,0 +1,45 @@
+{
+  "doi": "10.5281/zenodo.19363074",
+  "version": "v2.7.0",
+  "title": "Harmonized U.S. Natality and Linked Infant Death Microdata, 1990-2024",
+  "description": "A harmonized dataset of 138.8 million U.S. birth records (1990-2024) and 74.9 million linked birth-infant death records (2005-2023), derived from NCHS public-use natality files. The pipeline resolves five record layouts, two birth certificate revisions, and dozens of field-name and coding changes into a stable schema with explicit comparability documentation. Validated against 183 published NCHS benchmarks (all pass) and 35 linked-file targets (all pass).",
+  "upload_type": "dataset",
+  "creators": [
+    {
+      "name": "Plutchok, Yoel"
+    }
+  ],
+  "keywords": [
+    "natality",
+    "birth certificate",
+    "infant mortality",
+    "NCHS",
+    "vital statistics",
+    "data harmonization",
+    "low birthweight",
+    "preterm birth",
+    "United States",
+    "public health"
+  ],
+  "license": {
+    "id": "CC-BY-4.0"
+  },
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/yoelplutchok/natality-harmonization",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://www.cdc.gov/nchs/data_access/Vitalstatsonline.htm",
+      "relation": "isDerivedFrom",
+      "scheme": "url"
+    }
+  ],
+  "subjects": [
+    {"term": "Public health"},
+    {"term": "Vital statistics"},
+    {"term": "Epidemiology"}
+  ],
+  "notes": "Source data: NCHS public-use period natality files (1990-2024) and cohort linked birth-infant death files (2005-2023). Code: MIT License. Data outputs: CC-BY 4.0."
+}

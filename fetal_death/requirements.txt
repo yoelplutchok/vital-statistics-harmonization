@@ -1,0 +1,12 @@
+# Runtime requirements for the U.S. Fetal Death Harmonization pipeline.
+#
+# Pinned to lower bounds matching the versions used to produce V2.0 (Python
+# 3.13.9, 2026-05-02). The pipeline only relies on stable, long-standing APIs;
+# any pandas >=2.x and pyarrow >=14 should work, but exact V2.0 reproducibility
+# is guaranteed only at the pinned versions.
+#
+# These three packages are sufficient to load and analyze the deposit's
+# parquet files (e.g., to run quickstart.py).
+pandas>=2.3.0
+pyarrow>=18.0.0
+numpy>=2.0.0

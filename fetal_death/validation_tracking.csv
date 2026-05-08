@@ -1,0 +1,30 @@
+year,row_count_checked,missingness_checked,frequencies_checked,external_validation_done,notes
+1992,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 30256 >=20wk resident matches 1992 NCHS Fetal Death User Guide; 70929 total records confirmed against guide page 7
+1993,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 28766 matches 1993 user guide
+1994,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 27937 matches 1994 user guide
+1995,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 27294 matches NVSR 57-08 Table B; rate matches NVSR exact
+1996,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 27069 matches NVSR 57-08 (resolves stale 1996 user guide control count copy-pasted from 1995)
+1997,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 26486 matches NVSR 57-08; rate exact
+1998,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 26702 matches NVSR 57-08; rate exact
+1999,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 26884 matches NVSR 57-08; rate exact
+2000,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 27003 matches NVSR 57-08; rate exact
+2001,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 26373 matches NVSR 57-08 (resolves stale 2001 user guide control count copy-pasted from 2000)
+2002,yes,yes,yes,yes,AUDIT-PARSE-2 + AUDIT-EXTERNAL-2: 25943 matches NVSR 57-08 (resolves stale 2002 user guide control count copy-pasted from 2000)
+2005,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 25894 >=20wk resident matches NVSR 73-09; rate 6.22 exact
+2006,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 25972 matches NVSR; rate 6.05 exact; prior benchmark audit
+2007,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 26593 matches NVSR; rate 6.12 exact; 801-byte records verified
+2008,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 26335 matches NVSR; rate 6.16 exact
+2009,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 24872 matches NVSR; rate 5.99 exact
+2010,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 24258 matches NVSR; rate 6.03 exact
+2011,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 24289 matches NVSR; rate 6.11 exact
+2012,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 24073 matches NVSR; rate 6.05 exact
+2013,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 23595 matches NVSR; rate 5.96 exact; COD boundary verified
+2014,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 23980 matches NVSR; rate 5.98 exact; prior benchmark audit
+2015,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 23776 matches NVSR; rate 5.94 exact
+2016,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 23880 matches NVSR; rate 6.02 exact
+2017,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 22827 matches NVSR; rate 5.89 exact
+2018,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 22459 matches NVSR; rate 5.89 exact; 100% A-version verified
+2019,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 21478 matches NVSR; rate 5.70 exact
+2020,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 20854 matches NVSR; rate 5.74 exact
+2021,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL: 21105 matches NVSR; rate 5.73 exact
+2022,yes,yes,yes,yes,AUDIT-SCALE + AUDIT-EXTERNAL + validation_2022.md: 20202 matches NVSR; rate 5.48 exact; 46/46 Table 5A cells matched; prior benchmark audit

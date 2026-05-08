@@ -1,0 +1,14 @@
+# Python deps for the harmonized natality dataset (Zenodo concept DOI
+# 10.5281/zenodo.19363074, latest version v2.7.0 = 10.5281/zenodo.19868835).
+# Pinned to >= the versions used for the v2.6 / v2.7 build to allow minor
+# patch-level upgrades without forcing environment churn; if you need a
+# byte-identical rebuild, pin to exact == versions.
+
+pandas>=2.3.2
+pyarrow>=18.1.0
+matplotlib>=3.10.5
+numpy>=2.3.1
+
+# Notebook runtime for notebooks/quickstart.ipynb.
+jupyter>=1.0
+nbformat>=5.9

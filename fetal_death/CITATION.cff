@@ -1,0 +1,55 @@
+cff-version: 1.2.0
+title: "Harmonized U.S. Fetal Death Microdata, 1992-2022"
+message: "If you use this dataset, please cite it using the metadata in this file."
+type: dataset
+authors:
+  - family-names: Plutchok
+    given-names: Yoel
+    email: yoelyehudaplutchok@gmail.com
+abstract: >-
+  A modern, researcher-ready release of harmonized U.S. fetal death microdata
+  for cross-year stillbirth research. Spans 29 years (1992-2022, with 2003-2004
+  deferred to V2.1) of NCHS public-use fetal death files reconciled into a
+  single Parquet file with one stable schema. Three revisions of the Standard
+  Report of Fetal Death (1978, 1989, 2003) and staggered state adoption are
+  bridged via documented crosswalks. Validation: 74 checks against
+  published NCHS/NVSR statistics (55 V1 + 19 V2): 68 byte-exact matches plus
+  6 documented differences in V1 detail-cell tabulations (NVSR's proportional
+  redistribution of unknown-gestational-age records, and a 43-state cause-of-death
+  reporting area vs all-states totals); all 29 per-year counts and 26 per-year
+  rates match exactly. Companion
+  to the
+  U.S. Natality Harmonization Project (Zenodo concept DOI 10.5281/zenodo.19363074),
+  which supplies the live-birth denominators needed for fetal mortality rate
+  computation.
+keywords:
+  - stillbirth
+  - fetal death
+  - perinatal epidemiology
+  - National Vital Statistics System
+  - NCHS
+  - data harmonization
+  - cross-revision
+  - 1989 revision
+  - 2003 revision
+  - public health
+  - epidemiology
+  - United States
+license: CC-BY-4.0
+version: "2.0.0"
+date-released: "2026-05-05"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20031571"
+    description: "Zenodo DOI (v2.0.0)"
+repository-code: "https://github.com/yoelplutchok/fetal-death-harmonization"
+preferred-citation:
+  type: dataset
+  title: "Harmonized U.S. Fetal Death Microdata, 1992-2022"
+  authors:
+    - family-names: Plutchok
+      given-names: Yoel
+  year: 2026
+  version: "2.0.0"
+  doi: "10.5281/zenodo.20031571"
+  url: "https://github.com/yoelplutchok/fetal-death-harmonization"

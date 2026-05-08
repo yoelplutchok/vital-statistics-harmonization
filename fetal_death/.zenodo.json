@@ -1,0 +1,46 @@
+{
+  "title": "Harmonized U.S. Fetal Death Microdata, 1992-2022",
+  "version": "v2.0.0",
+  "publication_date": "2026-05-05",
+  "upload_type": "dataset",
+  "description": "<p>A modern, researcher-ready release of harmonized U.S. fetal death microdata for cross-year stillbirth research. Spans 29 years (1992-2022, with 2003-2004 deferred to V2.1) of NCHS public-use fetal death files reconciled into a single Parquet file with one stable schema.</p><p><strong>Scope.</strong> 1,634,195 total records across 29 years (V2 era 1992-2002: 700,704 rows, all 1989 revision; V1 era 2005-2022: 933,491 rows, 2003-revision transition). 73 harmonized variables in the base file plus 16 derived analytic variables (89 columns total) in the derived file. <strong>727,155</strong> records form the standard NVSR-comparable subset (<code>tabulation_flag == '2'</code> AND <code>residence_status != '4'</code>).</p><p><strong>Cross-era V2 code-system fixes.</strong> 5 V2 value-level normalizations (B1 fetal_sex, B2 delivery_method_recode, B3 maternal_race_bridged, B4 paternal_age_recode11, B6 delivery_place_recode). 3 within_era columns (B5 breech_unrevised, delivery_place_unrevised, maternal_race_bridged_detail) where the underlying concepts/categories are fundamentally incompatible across eras and cross-era groupby is unsafe. 1 partial relabel (maternal_age, downgraded full → partial because V2 1989-rev DMAGE is exact single-year while V1 MAGER top/bottom-codes 50+/12-).</p><p><strong>Validation.</strong> 74 checks against published NCHS/NVSR statistics (55 V1 + 19 V2): 68 byte-exact matches plus 6 documented differences in V1 detail-cell tabulations (4 early/late gestational-age cells where NVSR proportionally redistributes records with unknown gestational age; 2 cause-of-death cells where NVSR Table 8 restricts to a 43-state reporting area while the harmonization includes all states). All per-year fetal death counts (29 of 29 years) and all per-year fetal mortality rates (26 of 26 years) match the published figures exactly.</p><p><strong>Companion product.</strong> For demographic-stratified live-birth denominators (race-, age-, or ethnicity-specific) needed to compute fetal mortality rates, see the U.S. Natality Harmonization Project (Zenodo concept DOI <a href=\"https://doi.org/10.5281/zenodo.19363074\">10.5281/zenodo.19363074</a>).</p>",
+  "creators": [
+    {
+      "name": "Plutchok, Yoel",
+      "affiliation": ""
+    }
+  ],
+  "keywords": [
+    "stillbirth",
+    "fetal death",
+    "perinatal epidemiology",
+    "National Vital Statistics System",
+    "NCHS",
+    "data harmonization",
+    "cross-revision",
+    "1989 revision",
+    "2003 revision",
+    "public health",
+    "epidemiology",
+    "United States"
+  ],
+  "license": "CC-BY-4.0",
+  "access_right": "open",
+  "language": "eng",
+  "doi": "10.5281/zenodo.20031571",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.19363074",
+      "relation": "isPartOf",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    },
+    {
+      "identifier": "https://github.com/yoelplutchok/fetal-death-harmonization",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    }
+  ],
+  "communities": []
+}

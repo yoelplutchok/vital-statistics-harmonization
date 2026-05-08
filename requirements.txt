@@ -1,0 +1,18 @@
+# Combined runtime requirements for the U.S. Harmonized Vital Statistics
+# resource. Each subproject also has its own requirements.txt pinned to the
+# exact versions used to produce its current Zenodo deposit:
+#
+#   - natality/requirements.txt    → natality v2.7.0 build
+#   - fetal_death/requirements.txt → fetal-death v2.0.0 build
+#
+# This top-level file is appropriate for cross-product work (joint-use
+# notebooks, the manuscript companion notebook, cross-product validation).
+
+pandas>=2.3.2
+pyarrow>=18.1.0
+numpy>=2.3.1
+matplotlib>=3.10.5
+
+# Notebook runtime
+jupyter>=1.0
+nbformat>=5.9

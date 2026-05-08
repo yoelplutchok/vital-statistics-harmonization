@@ -1,0 +1,46 @@
+# Large or local data (track structure via metadata/file_inventory.csv)
+raw_data/*
+!raw_data/.gitkeep
+raw_docs/*
+!raw_docs/.gitkeep
+output/**/*.parquet
+output/**/*.feather
+!output/**/.gitkeep
+
+# Intermediate build outputs (regeneratable from raw_data/ via scripts/)
+output/yearly_clean/
+output/linked/
+output/harmonized/
+output/convenience/
+
+# output/validation/: ignore everything except the 4 files mirrored to Zenodo + .gitkeep.
+# Anything else (qa_*, key_rates_*, invariants_*, linked_validation_*, row_count_*,
+# harmonized_missingness_report.md, legacy v2/ subdir, per-year-range historical reports)
+# stays untracked.
+output/validation/*
+output/validation/v2/
+!output/validation/.gitkeep
+!output/validation/external_validation_v1_comparison.csv
+!output/validation/external_validation_v1_comparison.md
+!output/validation/external_validation_v3_linked_comparison.csv
+!output/validation/external_validation_v3_linked_comparison.md
+!output/validation/harmonized_missingness_breaks.csv
+!output/validation/harmonized_missingness_by_year.csv
+
+# Third-party PDFs (NCHS User Guides under raw_docs/, etc.)
+*.pdf
+# ...except the publication figures (which we ship as both PDF and PNG)
+!figures/*.pdf
+
+# Claude Code metadata
+.claude/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

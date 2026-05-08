@@ -1,0 +1,256 @@
+state_fips,state_name,year,threshold_type,threshold_weeks,threshold_grams,logic,source_document,notes
+01,Alabama,1997,weeks_only,20,,NA,Kowaleski 1997,
+01,Alabama,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+01,Alabama,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+01,Alabama,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+01,Alabama,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+02,Alaska,1997,weeks_only,20,,NA,Kowaleski 1997,
+02,Alaska,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+02,Alaska,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+02,Alaska,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+02,Alaska,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+04,Arizona,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+04,Arizona,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+04,Arizona,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+04,Arizona,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+04,Arizona,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+05,Arkansas,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception
+05,Arkansas,2006,all_periods,0,,NA,2006FetalUserGuide Table A,State law requires all periods; only 20wk+ sent to NCHS
+05,Arkansas,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,Changed from all_periods to 350g/20wk as of Jan 1 2014
+05,Arkansas,2022,weeks_12,12,,NA,2022FetalUserGuide Table A,State law requires 12wk+
+05,Arkansas,2023,weeks_12,12,,NA,2023FetalUserGuide Table A,State law requires 12wk+
+06,California,1997,weeks_only,20,,NA,Kowaleski 1997,
+06,California,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+06,California,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+06,California,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+06,California,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+08,Colorado,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception
+08,Colorado,2006,all_periods,0,,NA,2006FetalUserGuide Table A,State law requires all periods; only 20wk+ sent to NCHS
+08,Colorado,2014,all_periods,0,,NA,2014FetalUserGuide Table C,State law requires all periods; only 20wk+ sent to NCHS
+08,Colorado,2022,all_periods,0,,NA,2022FetalUserGuide Table A,State law requires all periods; only 20wk+ sent to NCHS
+08,Colorado,2023,all_periods,0,,NA,2023FetalUserGuide Table A,State law requires all periods; only 20wk+ sent to NCHS
+09,Connecticut,1997,weeks_only,20,,NA,Kowaleski 1997,
+09,Connecticut,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+09,Connecticut,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+09,Connecticut,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+09,Connecticut,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+10,Delaware,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+10,Delaware,2006,grams_only,,350,NA,2006FetalUserGuide Table A,If weight unknown then 20 weeks
+10,Delaware,2014,grams_only,,350,NA,2014FetalUserGuide Table C,If weight unknown then 20 weeks
+10,Delaware,2022,grams_only,,350,NA,2022FetalUserGuide Table A,If weight unknown then 20 weeks
+10,Delaware,2023,grams_only,,350,NA,2023FetalUserGuide Table A,If weight unknown then 20 weeks
+11,District of Columbia,1997,weeks_or_grams,20,500,OR,Kowaleski 1997,
+11,District of Columbia,2006,weeks_or_grams,20,500,OR,2006FetalUserGuide Table A,
+11,District of Columbia,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+11,District of Columbia,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+11,District of Columbia,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+12,Florida,1997,weeks_only,20,,NA,Kowaleski 1997,
+12,Florida,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+12,Florida,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+12,Florida,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+12,Florida,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+13,Georgia,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception
+13,Georgia,2006,all_periods,0,,NA,2006FetalUserGuide Table A,State law requires all periods; only 20wk+ sent to NCHS
+13,Georgia,2014,all_periods,0,,NA,2014FetalUserGuide Table C,
+13,Georgia,2022,all_periods,0,,NA,2022FetalUserGuide Table A,
+13,Georgia,2023,all_periods,0,,NA,2023FetalUserGuide Table A,
+15,Hawaii,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception
+15,Hawaii,2006,all_periods,0,,NA,2006FetalUserGuide Table A,
+15,Hawaii,2014,all_periods,0,,NA,2014FetalUserGuide Table C,
+15,Hawaii,2022,all_periods,0,,NA,2022FetalUserGuide Table A,
+15,Hawaii,2023,all_periods,0,,NA,2023FetalUserGuide Table A,
+16,Idaho,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+16,Idaho,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+16,Idaho,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+16,Idaho,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+16,Idaho,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+17,Illinois,1997,weeks_only,20,,NA,Kowaleski 1997,
+17,Illinois,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+17,Illinois,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+17,Illinois,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+17,Illinois,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+18,Indiana,1997,weeks_only,20,,NA,Kowaleski 1997,
+18,Indiana,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+18,Indiana,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+18,Indiana,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+18,Indiana,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+19,Iowa,1997,weeks_only,20,,NA,Kowaleski 1997,
+19,Iowa,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+19,Iowa,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+19,Iowa,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+19,Iowa,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+20,Kansas,1997,grams_only,,350,NA,Kowaleski 1997,Birthweight of 350 grams or more
+20,Kansas,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+20,Kansas,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+20,Kansas,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+20,Kansas,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+21,Kentucky,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+21,Kentucky,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+21,Kentucky,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+21,Kentucky,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+21,Kentucky,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+22,Louisiana,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+22,Louisiana,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+22,Louisiana,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+22,Louisiana,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+22,Louisiana,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+23,Maine,1997,weeks_only,20,,NA,Kowaleski 1997,
+23,Maine,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+23,Maine,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+23,Maine,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+23,Maine,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+24,Maryland,1997,weeks_only,20,,NA,Kowaleski 1997,If gestation unknown and weight 500g+ then file
+24,Maryland,2006,weeks_or_grams,20,500,OR,2006FetalUserGuide Table A,If gestational age unknown weight of 500g or more
+24,Maryland,2014,weeks_or_grams,20,500,OR,2014FetalUserGuide Table C,If gestational age unknown weight of 500g or more
+24,Maryland,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,If gestational age unknown weight of 350g or more
+24,Maryland,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,If gestational age unknown weight of 350g or more
+25,Massachusetts,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+25,Massachusetts,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+25,Massachusetts,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+25,Massachusetts,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+25,Massachusetts,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+26,Michigan,1997,weeks_or_grams,20,400,OR,Kowaleski 1997,
+26,Michigan,2006,weeks_or_grams,20,400,OR,2006FetalUserGuide Table A,
+26,Michigan,2014,weeks_or_grams,20,400,OR,2014FetalUserGuide Table C,
+26,Michigan,2022,weeks_or_grams,20,400,OR,2022FetalUserGuide Table A,
+26,Michigan,2023,weeks_or_grams,20,400,OR,2023FetalUserGuide Table A,
+27,Minnesota,1997,weeks_only,20,,NA,Kowaleski 1997,
+27,Minnesota,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+27,Minnesota,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+27,Minnesota,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+27,Minnesota,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+28,Mississippi,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+28,Mississippi,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+28,Mississippi,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+28,Mississippi,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+28,Mississippi,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+29,Missouri,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+29,Missouri,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+29,Missouri,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+29,Missouri,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+29,Missouri,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+30,Montana,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+30,Montana,2006,grams_only,,350,NA,2006FetalUserGuide Table A,If weight unknown then 20 weeks
+30,Montana,2014,grams_only,,350,NA,2014FetalUserGuide Table C,If weight unknown then 20 weeks
+30,Montana,2022,grams_only,,350,NA,2022FetalUserGuide Table A,If weight unknown then 20 weeks
+30,Montana,2023,grams_only,,350,NA,2023FetalUserGuide Table A,If weight unknown then 20 weeks
+31,Nebraska,1997,weeks_only,20,,NA,Kowaleski 1997,
+31,Nebraska,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+31,Nebraska,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+31,Nebraska,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+31,Nebraska,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+32,Nevada,1997,weeks_only,20,,NA,Kowaleski 1997,
+32,Nevada,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+32,Nevada,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+32,Nevada,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+32,Nevada,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+33,New Hampshire,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+33,New Hampshire,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+33,New Hampshire,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+33,New Hampshire,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+33,New Hampshire,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+34,New Jersey,1997,weeks_only,20,,NA,Kowaleski 1997,
+34,New Jersey,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+34,New Jersey,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+34,New Jersey,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+34,New Jersey,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+35,New Mexico,1997,grams_only,,500,NA,Kowaleski 1997,Birthweight of 500 grams or more
+35,New Mexico,2006,grams_only,,500,NA,2006FetalUserGuide Table A,
+35,New Mexico,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,Changed from 500g to 20wk/350g as of Jan 1 2014
+35,New Mexico,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,If gestational age unknown weight of 350g or more
+35,New Mexico,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,If gestational age unknown weight of 350g or more
+36,New York,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception (state and NYC)
+36,New York,2006,all_periods,0,,NA,2006FetalUserGuide Table A,NYC reported separately
+36,New York,2014,all_periods,0,,NA,2014FetalUserGuide Table C,NYC reported separately
+36,New York,2022,all_periods,0,,NA,2022FetalUserGuide Table A,NYC reported separately
+36,New York,2023,all_periods,0,,NA,2023FetalUserGuide Table A,NYC reported separately
+37,North Carolina,1997,weeks_only,20,,NA,Kowaleski 1997,
+37,North Carolina,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+37,North Carolina,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+37,North Carolina,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+37,North Carolina,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+38,North Dakota,1997,weeks_only,20,,NA,Kowaleski 1997,
+38,North Dakota,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+38,North Dakota,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+38,North Dakota,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+38,North Dakota,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+39,Ohio,1997,weeks_only,20,,NA,Kowaleski 1997,
+39,Ohio,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+39,Ohio,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+39,Ohio,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+39,Ohio,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+40,Oklahoma,1997,weeks_only,20,,NA,Kowaleski 1997,
+40,Oklahoma,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+40,Oklahoma,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+40,Oklahoma,2022,weeks_12,12,,NA,2022FetalUserGuide Table A,State law requires 12wk+; only 20wk+ sent to NCHS
+40,Oklahoma,2023,weeks_12,12,,NA,2023FetalUserGuide Table A,State law requires 12wk+; only 20wk+ sent to NCHS
+41,Oregon,1997,weeks_only,20,,NA,Kowaleski 1997,
+41,Oregon,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+41,Oregon,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+41,Oregon,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+41,Oregon,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+42,Pennsylvania,1997,weeks_16,16,,NA,Kowaleski 1997,Gestation of 16 weeks or more
+42,Pennsylvania,2006,weeks_16,16,,NA,2006FetalUserGuide Table A,
+42,Pennsylvania,2014,weeks_16,16,,NA,2014FetalUserGuide Table C,
+42,Pennsylvania,2022,weeks_16,16,,NA,2022FetalUserGuide Table A,
+42,Pennsylvania,2023,weeks_16,16,,NA,2023FetalUserGuide Table A,
+44,Rhode Island,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception
+44,Rhode Island,2006,all_periods,0,,NA,2006FetalUserGuide Table A,
+44,Rhode Island,2014,all_periods,0,,NA,2014FetalUserGuide Table C,
+44,Rhode Island,2022,all_periods,0,,NA,2022FetalUserGuide Table A,
+44,Rhode Island,2023,all_periods,0,,NA,2023FetalUserGuide Table A,
+45,South Carolina,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+45,South Carolina,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+45,South Carolina,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+45,South Carolina,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+45,South Carolina,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+46,South Dakota,1997,grams_only,,500,NA,Kowaleski 1997,Birthweight of 500 grams or more
+46,South Dakota,2006,grams_only,,500,NA,2006FetalUserGuide Table A,Corrected: actually reports at 20wk+ per user guide errata
+46,South Dakota,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,User guides 2007-2020 listed 500g but actual practice was 20wk+
+46,South Dakota,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+46,South Dakota,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+47,Tennessee,1997,grams_only,,500,NA,Kowaleski 1997,Birthweight 500g+; if no weight then 22 weeks+
+47,Tennessee,2006,grams_only,,500,NA,2006FetalUserGuide Table A,If weight unknown 22 completed weeks
+47,Tennessee,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+47,Tennessee,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+47,Tennessee,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+48,Texas,1997,weeks_only,20,,NA,Kowaleski 1997,
+48,Texas,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+48,Texas,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+48,Texas,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+48,Texas,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+49,Utah,1997,weeks_only,20,,NA,Kowaleski 1997,
+49,Utah,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+49,Utah,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+49,Utah,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+49,Utah,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+50,Vermont,1997,weeks_only,20,,NA,Kowaleski 1997,If gestational age unknown weight 400g or 15oz+
+50,Vermont,2006,weeks_or_grams,20,400,OR,2006FetalUserGuide Table A,If gestational age unknown weight of 400g or more
+50,Vermont,2014,weeks_or_grams,20,400,OR,2014FetalUserGuide Table C,If gestational age unknown weight of 400g or more
+50,Vermont,2022,weeks_or_grams,20,400,OR,2022FetalUserGuide Table A,If gestational age unknown weight of 400g or more
+50,Vermont,2023,weeks_or_grams,20,400,OR,2023FetalUserGuide Table A,If gestational age unknown weight of 400g or more
+51,Virginia,1997,all_periods,0,,NA,Kowaleski 1997,All products of human conception
+51,Virginia,2006,all_periods,0,,NA,2006FetalUserGuide Table A,
+51,Virginia,2014,all_periods,0,,NA,2014FetalUserGuide Table C,
+51,Virginia,2022,all_periods,0,,NA,2022FetalUserGuide Table A,
+51,Virginia,2023,all_periods,0,,NA,2023FetalUserGuide Table A,
+53,Washington,1997,weeks_only,20,,NA,Kowaleski 1997,
+53,Washington,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+53,Washington,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+53,Washington,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+53,Washington,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+54,West Virginia,1997,weeks_only,20,,NA,Kowaleski 1997,
+54,West Virginia,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+54,West Virginia,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+54,West Virginia,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+54,West Virginia,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,
+55,Wisconsin,1997,weeks_or_grams,20,350,OR,Kowaleski 1997,
+55,Wisconsin,2006,weeks_or_grams,20,350,OR,2006FetalUserGuide Table A,
+55,Wisconsin,2014,weeks_or_grams,20,350,OR,2014FetalUserGuide Table C,
+55,Wisconsin,2022,weeks_or_grams,20,350,OR,2022FetalUserGuide Table A,
+55,Wisconsin,2023,weeks_or_grams,20,350,OR,2023FetalUserGuide Table A,
+56,Wyoming,1997,weeks_only,20,,NA,Kowaleski 1997,
+56,Wyoming,2006,weeks_only,20,,NA,2006FetalUserGuide Table A,
+56,Wyoming,2014,weeks_only,20,,NA,2014FetalUserGuide Table C,
+56,Wyoming,2022,weeks_only,20,,NA,2022FetalUserGuide Table A,
+56,Wyoming,2023,weeks_only,20,,NA,2023FetalUserGuide Table A,

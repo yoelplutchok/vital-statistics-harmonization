@@ -1,0 +1,43 @@
+# Large data artifacts live in Zenodo, not git
+*.parquet
+*.zip
+fetal_death_yearly_raw_*.zip
+*.csv.gz
+*.gz
+
+# Raw NCHS source files (downloaded from FTP, not committed)
+**/raw_data/*
+!**/raw_data/.gitkeep
+**/raw_docs/*
+!**/raw_docs/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Secrets & local configs
+.env
+.env.local
+.claude/settings.local.json
