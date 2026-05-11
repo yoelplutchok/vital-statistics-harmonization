@@ -38,6 +38,29 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
+## Current planned sequence (as of 2026-05-11, post-Task-5)
+
+Task 5 (manuscript trim) is complete at `9aaa702`; the §17 readiness checklist has 0 critical-path items remaining. The human has chosen a **data-first sequence** for the remaining work so the manuscript cites the latest coverage and the unified Zenodo DOI from day one (rather than the two old subproject DOIs). The next sessions should execute, in this order:
+
+1. **Task 3 — V2.1 fetal-death** (`NEXT_STEPS.md` §15). Adds 2003 + 2004 transition years; brings fetal-death coverage to 31 consecutive years 1992–2022. **Bundle the H8 schema-doc reconciliation** from `FIX_LOG.md` 2026-05-11 (parquet gets re-derived anyway, so the int-vs-string dtype drift on `tabulation_flag`/`residence_status`/`maternal_age`/`maternal_race_bridged`/`hispanic_origin` can be fixed without an extra schema-version bump). New fetal-death v2.1.0 Zenodo deposit. Estimated 1–2 sessions; risk: 2003 + 2004 record-layout reconstruction from NCHS user guides could surface ambiguities.
+2. **Push monorepo to GitHub** (~15 min, human-driven). Unblocks #3 and #4 and the Companion-paper-sentence URL injection in the manuscript.
+3. **Task 9 — Redirect notices** on the two old GitHub repos (~15–30 min).
+4. **Task 10 — Unified Zenodo deposit** (1 session + upload time). Reserve the unified concept DOI before manuscript submission per §15 Task 10 spec; v1.0 of the unified deposit reflects the post-Task-3 state.
+5. **Manuscript re-pass + submit** (~½ session). Update affected numbers: fetal-death record count ~1.6M → ~1.7M, Table 1 fetal-death rows (currently 3, becomes 4 or 5 to show 2003 + 2004), validation counts 29/29 → 31/31 and 26/26 → 28/28, deferred-2003/2004 caveats removed. Inject the unified concept DOI and GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers. Reformat references to IJE style. Submit.
+
+**Out of pre-submission scope (post-submission or low priority):**
+
+- Task 7 — V3 fetal-death backward extension to 1982. Explicitly post-submission per §17. 2–4 sessions; OCR risk on older user guides.
+- Natality v2.8 column rename. Breaking change for downstream natality-only users (the `multiple-gestation-linked-imr` and `lbw-imr-divergence` projects on the human's Desktop). Aliasing helper in `shared/helpers/canonical_join_keys.py` covers the cross-product case in the meantime. Bundle with V3 or do as a dedicated breaking-change release.
+- Section B 2017 race-stratified NVSR validation. Small future task; requires NVSR-2017 fetal-mortality PDF and L9 cheap-check on table/page citation.
+- `[plan-update]` candidates for §15 Task 4 + Task 5 stale wording (analogous to the `89ddc77` Task 2 breadcrumb pattern).
+
+**When to deviate from this sequence:** if Task 3 hits a multi-session blocker (e.g., 2003-revision layout ambiguity that the NCHS docs don't resolve), halt and ask whether to skip Task 3 and submit at the current v2.0 fetal-death state. Don't silently switch order.
+
+**Source for this sequence:** 2026-05-11 chat at end of Task 5 session; DECISION_LOG entry 2026-05-11T20:50:00Z. STATUS.md's most recent section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
+
+---
+
 ```
 You are working on the U.S. Harmonized Vital Statistics (HVS) project
 as the executing LLM agent.
@@ -64,11 +87,19 @@ BEFORE doing ANY work, read these files in this exact order:
 
 5. LESSONS.md end-to-end (if it has entries).
 
+Also consult the "Current planned sequence" block in KICKOFF.md
+(outside this pasted prompt) — it overrides STATUS.md's "Next planned
+task" field with the human's chosen task ordering for the current
+pre-submission window. If the kickoff sequence and STATUS.md disagree,
+the kickoff sequence wins for task selection; STATUS.md remains
+authoritative for current-state facts.
+
 After reading, tell me in 4-6 sentences:
-  (a) the current task per STATUS.md (or "bootstrap, no STATUS state
-      yet" if uninitialized),
+  (a) the current task per STATUS.md AND the next task per KICKOFF.md's
+      Current planned sequence (note any divergence),
   (b) any open questions for human you found,
-  (c) what you propose to do this session,
+  (c) what you propose to do this session (default to KICKOFF.md
+      sequence's next item unless I have already directed otherwise),
   (d) any halt condition from NEXT_STEPS.md §7 you've already tripped
       from steps 1-5 above.
 

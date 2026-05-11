@@ -1,6 +1,92 @@
-# STATUS — last updated 2026-05-11T20:30:00Z
+# STATUS — last updated 2026-05-11T20:50:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-11T20:50:00Z — Sequencing decision: data-first before manuscript submission (Task 3 → push GitHub → Task 9 → Task 10 → manuscript re-pass + submit)
+
+### Current phase
+
+Phase A continuing. No canonical-state mutation in this session; this section records a sequencing decision made in the same chat that shipped Task 5 (`9aaa702`). The Task 5 entry's "Next planned task: Pre-submission process pass by default" line is **superseded** by the sequence recorded here.
+
+### Current task
+
+**Awaiting Task 3 PRE-FLIGHT.** The human chose a data-first sequence so the manuscript cites the latest fetal-death coverage (1992–2022 with no 2-year gap) and the unified Zenodo concept DOI from day one, rather than submitting at v2.0 fetal-death state with the two old subproject DOIs and re-publishing corrections later.
+
+### Planned sequence (canonical pointer also in `KICKOFF.md`)
+
+1. **Task 3 — V2.1 fetal-death** (`NEXT_STEPS.md` §15). Adds 2003 + 2004 transition years; brings fetal-death coverage to 31 consecutive years 1992–2022. **Bundle the H8 schema-doc reconciliation** from `FIX_LOG.md` 2026-05-11 (parquet gets re-derived anyway, so the int-vs-string dtype drift on `tabulation_flag`/`residence_status`/`maternal_age`/`maternal_race_bridged`/`hispanic_origin` can be fixed without an extra schema-version bump). New fetal-death v2.1.0 Zenodo deposit. Estimated 1–2 sessions; risk: 2003 + 2004 record-layout reconstruction from NCHS user guides could surface ambiguities.
+2. **Push monorepo to GitHub** (~15 min, human-driven).
+3. **Task 9 — Redirect notices** on the two old GitHub repos (~15–30 min).
+4. **Task 10 — Unified Zenodo deposit** (1 session + upload time). Reserve the unified concept DOI before manuscript submission per §15 Task 10 spec.
+5. **Manuscript re-pass + submit** (~½ session). Update affected numbers: fetal-death record count ~1.6M → ~1.7M, Table 1 fetal-death rows (currently 3, becomes 4 or 5 to show 2003 + 2004), validation counts 29/29 → 31/31 and 26/26 → 28/28, deferred-2003/2004 caveats removed. Inject the unified concept DOI and GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers. Reformat references to IJE style. Submit.
+
+Out of pre-submission scope: Task 7 (V3 1982 backward extension; explicit post-submission per §17), natality v2.8 column rename (breaking change for downstream natality-only users; aliasing helper covers cross-product case), Section B 2017 race-stratified NVSR validation (deferred small future task), §15 Task 4 + Task 5 wording `[plan-update]` candidates.
+
+### Last completed step
+
+**Task 5 complete at `9aaa702`** (2026-05-11T20:30:00Z). Manuscript trimmed to 2,501 words; admin sections drafted with `<!-- YP: review -->` markers; paper_companion synthesis bit-identical (no new numeric claims introduced). See the 2026-05-11T20:30:00Z STATUS section below for full Task 5 detail.
+
+### What was done this session (sequencing decision only)
+
+1. After Task 5 receipt + commit, human asked what remained.
+2. LLM enumerated remaining items split into critical-path / nice-to-have / post-submission.
+3. Human asked specifically about data-side additions/changes.
+4. LLM enumerated Task 3 / Task 7 / H8 reconciliation / natality v2.8 rename / Section B NVSR validation.
+5. Human proposed data-first → unified Zenodo → paper sequence.
+6. LLM validated the reasoning and recommended Task 3 + bundled H8 + Task 9 + Task 10 + manuscript re-pass (skipping Task 7 and natality v2.8 rename pre-submission).
+7. Human confirmed and asked for KICKOFF.md update.
+8. Wrote sequence into `KICKOFF.md` (new "Current planned sequence" block + handshake-prompt reference); wrote this STATUS section; wrote DECISION_LOG entry.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+**Task 3 — V2.1 fetal-death.** The next session's PRE-FLIGHT must:
+- Verify 2003 + 2004 fetal-death source zips are on disk or accessible at the NCHS FTP path `ftp.cdc.gov/pub/Health_Statistics/NCHS/`.
+- Verify `fetaldeath0304problems.pdf` is on disk.
+- Reconstruct `fetal_death/record_layout_2003.csv` and `record_layout_2004.csv` from NCHS user guides for those years. Apply L9 cheap-check: verify the named page/section in the user-guide PDF actually documents the field at the claimed byte position.
+- Field-value snapshot per Convention 3: enumerate every existing fetal-death harmonized column whose dtype the H8 reconciliation will change (5 columns); snapshot current dtype + planned post-rebuild dtype.
+- Document the H8 bundling decision (a) in PRE-FLIGHT, (b) in DECISION_LOG.
+- All 6 Task 5 Forward-looking HALTs (see receipt) — most are submission-prep gates that don't apply to Task 3, but HALT 6 (manuscript sha changes → re-run paper_companion builder) means after Task 3 finishes, the manuscript will need a re-pass (sub-step 5 above), AND the paper_companion synthesis CSV WILL change because the fetal-death record count / validation count changes.
+
+### Open questions for human
+
+Carried forward from Task 5 STATUS:
+
+1. ~~Push the monorepo to GitHub now, or as part of the pre-submission process pass?~~ **RESOLVED 2026-05-11**: as part of the data-first sequence, after Task 3.
+2. **Natality v2.8 schema rename** — DEFERRED to post-submission per the current sequence (out-of-scope above).
+3. ~~H8 schema-doc reconciliation: bundle into Task 3 or dedicated?~~ **RESOLVED 2026-05-11**: bundle into Task 3 per the current sequence.
+4. ~~`[plan-update]` candidate for §15 Task 2 wording~~ — already resolved by `89ddc77`.
+5. **Section B 2017 race-stratified NVSR validation** — DEFERRED to post-submission per the current sequence.
+6. **§15 Task 4 wording `[plan-update]` candidate** — DEFERRED per the current sequence (low priority).
+7. **§15 Task 5 wording `[plan-update]` candidate** — DEFERRED per the current sequence (low priority).
+8. **AI-tool disclosure wording in Task 5's admin draft** — HUMAN-GATED via the `<!-- YP: review -->` marker; will be resolved in step 5 (manuscript re-pass + submit).
+
+### Forward-looking HALTs for next session
+
+Per Convention 4. Task 5 receipt's nine HALTs all carry forward. Adding three sequence-specific HALTs:
+
+1. **Task 3 PRE-FLIGHT L9 risk**: the 2003 + 2004 record-layout reconstruction from NCHS user guides is the highest-risk part of the sequence. If the user-guide PDF documents a field at a different byte position than the LLM agent's planning assumption, halt and ask before writing the layout CSV. Multi-session blocker is plausible.
+2. **H8 bundling decision is committed**: Task 3 will re-derive the fetal-death parquet with int dtype on `tabulation_flag` / `residence_status` / `maternal_age` / `maternal_race_bridged` / `hispanic_origin` (matching the schema CSV) rather than the v2.0.0 shipped string dtype. Downstream code that uses string literals (per FIX_LOG 2026-05-11) will need to be updated to int literals. Affected files: `docs/JOINT_USE_GUIDE.md`, `notebooks/joint_use_demo.ipynb`, `notebooks/_build_joint_use_demo.py`, `notebooks/paper_companion.ipynb`, `notebooks/_build_paper_companion.py`. Task 3 VERIFY must re-run both demo notebooks and confirm they still pass after the dtype switch.
+3. **Manuscript sha will change again** in step 5 (manuscript re-pass) — pre-Task-3 sha=`0685fe9c...`. After step 5, the paper_companion synthesis CSV WILL change (currently `7891809c...`; will reflect new C03/C21/C55 record counts, new C41/C42 validation counts, etc.). This is expected and not a regression.
+
+### Build artifacts current
+
+Unchanged from 2026-05-11T20:30:00Z STATUS section. No canonical-state mutation in this session.
+
+### Notes for next session
+
+- This STATUS entry records a **sequencing decision only**; no five-phase task was run.
+- Commit message: ~5-line summary per Convention 5; full sequencing rationale in DECISION_LOG entry 2026-05-11T20:50:00Z.
+- The KICKOFF.md "Current planned sequence" block + the handshake-prompt's new reference to it are the canonical pointer for new-session task selection. Reading STATUS.md (this section) gives the same picture but the kickoff is what the human pastes into a new chat.
 
 ---
 
