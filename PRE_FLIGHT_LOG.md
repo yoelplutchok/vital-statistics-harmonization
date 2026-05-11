@@ -8,6 +8,133 @@
 
 ---
 
+## PRE-FLIGHT for task5_manuscript_trim — 2026-05-11T20:05:00Z
+
+### Inputs
+- [x] All required input files exist
+  - `paper/draft_v2_hmd_styled.md`: present, 161 lines, sha256=`5e86c923d581936ce517740fadb6b247bbac4f6297a1cd517ed36b9f3c3967fb` (matches Task 4 receipt's read-only consumption sha; carries Task 4 Forward-looking HALT 5 condition — change of this sha at next PRE-FLIGHT is EXPECTED for Task 5) ✓
+  - `paper/README.md`: present, sha256=`d87a4a4012b20933e75fea16bbe75db480cdb2c2d739ab3659243dec34d9b226` (matches Task 4 receipt post-edit sha; carries the 5 precision-edit candidates inlined for Task 5 consumption) ✓
+  - `notebooks/paper_companion_results.csv`: present, sha256=`7891809c5040f25d7fcbe3e35ac262f049c4c75be68f0814718ea119757f35ce` (bit-stable Task 4 synthesis; will change after Task 5 manuscript edits — Forward-looking HALT 5) ✓
+  - `notebooks/_build_paper_companion.py`: present, sha256=`055c3aff0b12ec0bef029aa2da761e36e89a8134d9a4fa4918a11283e2517abe` (deterministic builder; will be re-run during VERIFY) ✓
+  - `CITATION.cff`: present, sole author = Yoel Plutchok ✓ (Author contributions admin section will reflect this)
+  - `fetal_death/harmonized_schema.csv`: present, sha256=`72272c5537fdfa5b926a6aded69920bb5357a7bb5daef09742dfb494dadfa1ab` (used for the C47/C48/C49 re-verification below) ✓
+  - `natality/metadata/harmonized_schema.csv`: present, sha256=`2e95488fd910f60cbf5965bd9f0d3503f59111e38180c20e4e51e29af2983577` ✓
+  - `/Users/yoelplutchok/Desktop/fetal-death-harmonization/fetal_death_derived.parquet`: present, sha256=`90af89b9e659ca2b580d8286b5598588cfb2d17e93f26c1dc1ae00d097f0afdd` (used for C47/C48/C49 column null-rate verification; matches Task 4) ✓
+  - `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet`: present, sha256=`9f917a43474eb9e3ed23aa95c714209421c25c29937376651149d22fab934ef0` (used for C04 mean-recompute) ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - bootstrap (2026-05-09): ✓
+  - protocol-sync `[plan-update]` (2026-05-11): ✓
+  - task6 (2026-05-11, `efe775d`): ✓
+  - task1 (2026-05-11, `4d00ef8`): ✓
+  - task2 (2026-05-11, `c068628`): ✓
+  - §15 Task 2/4 breadcrumb-annotation `[plan-update]` (2026-05-11, `89ddc77`): ✓
+  - task4 (2026-05-11, `abd22e0`): ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/task5_*.md`: does not exist ✓
+  - `paper/draft_v2_hmd_styled.md` carries no `[TASK5-DRAFT]` markers from a prior aborted attempt ✓
+- [x] Forward-looking HALTs from prior session (Task 4 receipt) verified at PRE-FLIGHT
+  - **Task 4 HALT #1** (five Task-5 precision-edit candidates inlined in `paper/README.md`): verified — `paper/README.md` line 22 names C04, C29, C33, C47/C48/C49. **However: re-verification finding** — see Field-value snapshot below — discovers that C47/C48/C49 was a Task 4 misdiagnosis (Task 4 checked the natality parquet whose harmonized column names differ from fetal-death; the manuscript line-104 italicized names ARE fetal-death harmonized column names and ARE blank for V1 2007-2013 per the fetal-death parquet). Task 5 will apply C04, C29, C33; will NOT apply C47/C48/C49.
+  - **Task 4 HALT #2** (paper_companion.ipynb sha not bit-stable; use CSV sha): acknowledged. Task 5 will not touch the notebook; will re-run the builder during VERIFY and inspect the new CSV synthesis for changed pass/fail tags. CSV-sha-change is EXPECTED (manuscript sha changes → new claim values).
+  - **Task 4 HALT #3** (§15 Task 4 Section B re-deferral): acknowledged, not in Task 5 scope. The `[plan-update]` candidate for §15 Task 4 wording is open question #6 in current STATUS; not handled in Task 5 to avoid scope creep.
+  - **Task 4 HALT #4** (H8 dtype drift not yet reconciled): Task 5 touches only the manuscript and admin docs; no fetal-death joint-use code modified. HALT remains green by construction.
+  - **Task 4 HALT #5** (touching `paper/draft_v2_hmd_styled.md` → re-run paper_companion builder): this IS Task 5; manuscript sha WILL change from `5e86c923...`. Re-running the builder during VERIFY is mandatory; new CSV synthesis is the post-edit verification artifact.
+  - **Task 4 HALT #6** (Task 1 HALT 6 natality v2.8 rename plan-update): carried forward; not in Task 5 scope.
+
+### Environment
+- [x] Python version: 3.13.9 (≥3.11 required) ✓
+- [x] pandas: 2.3.2 ✓
+- [x] pyarrow: 18.1.0 ✓
+- [x] nbformat / nbclient: present (used by `_build_paper_companion.py`) ✓
+- [x] Working directory clean (`git status` on `main` at `abd22e0`): ✓
+- [x] On expected branch (`main`): ✓
+- [x] L10 check on prior task: Task 4 PRE-FLIGHT (`61090fc`, 2026-05-11T19:15:00Z) precedes Task 4 DO/RECEIPT commit (`abd22e0`, 2026-05-11T19:26:28Z) ✓
+
+### Source documentation
+- [x] No new NVSR PDF transcription. Task 5 is a manuscript trim + admin-section fill + 5 precision-edit candidates from Task 4 + Companion-paper sentence. No new numeric claims introduced.
+- [x] IJE Data Resource Profile word limit: 2,500 words main text (excluding abstract, key features, references, tables). Source: `paper/README.md` line 16. Cannot verify against current IJE author guidelines from offline state; the 2,500 limit is the figure carried by `paper/README.md`.
+
+### Outputs
+- [x] Intended output paths
+  - `paper/draft_v2_hmd_styled.md`: EDIT (overwrite; prior version preserved in git at `abd22e0`) ✓
+  - `paper/README.md`: EDIT — outstanding-work items now CLOSED by Task 5 marked accordingly ✓
+  - `notebooks/paper_companion.ipynb`: EDIT via re-running the builder (per Task 4 HALT 5; binary sha will change per L17 — data-content reproducibility is via CSV) ✓
+  - `notebooks/paper_companion_results.csv`: EDIT (will reflect new claim values; sha will change from `7891809c...`) ✓
+  - `RECEIPTS/task5_manuscript_trim_<ts>.md`: NEW ✓
+  - `NEXT_STEPS.md`: EDIT (§17 item 6 ⏳ → ✅ on success) ✓
+  - `STATUS.md`: EDIT (new section dated 2026-05-11T20:xx:xxZ) ✓
+  - `DECISION_LOG.md`: EDIT (new entry for the C47/C48/C49 re-verification override and any admin-section content decisions; possibly the C04 framing decision) ✓
+  - `PRE_FLIGHT_LOG.md`: this entry ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+Task 5's purpose is to (a) trim the manuscript body to ≤2,500 words, (b) apply Task 4's 5 precision-edit candidates, (c) fill admin sections, (d) add a Companion paper sentence. Convention 3 applied here means **enumerating the current word counts per section + verifying every claim that Task 5 will edit BEFORE the first edit** so that mid-DO surprises (e.g., "I trimmed S&W by 250 words but the body total isn't 2500 yet") are caught at the cheap-check moment.
+
+**Current word count per section (verified 2026-05-11T20:00Z via `re.findall(r"[A-Za-z][A-Za-z0-9'\\-]*")` on body text after stripping table-row pipes, footnote refs, code blocks, and header lines):**
+
+| Section | Current words | IJE category | In 2,500 main-text budget? |
+|---|---|---|---|
+| (Title + abstract preamble, lines 1–4) | 191 | abstract | NO |
+| Data resource basics | 483 | main | YES |
+| Data resource area and coverage | 241 | main (Table 1 already excluded) | YES |
+| Measures | 452 | main | YES |
+| Methods | 487 | main | YES |
+| Data resource use | 465 | main | YES |
+| Strengths and weaknesses | 650 | main | YES |
+| Future developments | 147 | main | YES |
+| Data resource access | 130 | main | YES |
+| HVS in a nutshell | 136 | key features | NO |
+| Ethics approval | 30 | admin | NO |
+| Author contributions | 3 | admin (placeholder) | NO |
+| Use of artificial intelligence (AI) tools | 20 | admin (placeholder) | NO |
+| Conflict of interest | 2 | admin | NO |
+| Funding | 3 | admin (placeholder) | NO |
+| References | 128 | references | NO |
+| **Main-text body total (Basics→Access)** | **3,055** | — | over by **555** |
+
+**Trim target.** 3,055 − 555 = 2,500. Need to cut **at least 555 words** from the main-text body; aim for ~500–550 to leave buffer. Per §15 DO scope, S&W is the primary trim target.
+
+**§15-spec-vs-current-state divergences caught at this PRE-FLIGHT (Convention 3 second bullet):**
+
+| §15 Task 5 spec | Current state (verified at PRE-FLIGHT) | Resolution |
+|---|---|---|
+| "Trim Strengths and Weaknesses (longest section, currently ~1,000 words; aim for 600)" | S&W is **650 words**, not 1,000. Either §15 was based on an older draft (draft_v1?) or S&W has been partly trimmed since the §15 spec was written. | Re-target S&W to **~400 words** (trim ~250). The "aim for 600" is preserved as upper bound; aiming lower frees budget for other sections to keep some narrative density. |
+| "Move the 19-detail-cell breakdown to a supplementary table" | The "13/19 detail cells byte-exact + 6 documented diffs" framing appears in `README.md` (monorepo top-level) and `fetal_death/README.md` but **does NOT appear in `paper/draft_v2_hmd_styled.md`**. The manuscript's line-94 fetal-death validation claim is aggregate-level ("29 per-year counts + 26 per-year fetal mortality rates match exactly"); no detail-cell breakdown to move. | DO item **MOOT** — already absent from the manuscript. Document in receipt. |
+| "Format references to journal style" | Current references (lines 153–161) use a Vancouver-style numbered + journal-italicized format. **Precise IJE reference style requires access to IJE author guidelines** (e.g., abbreviated journal names per Index Medicus, specific punctuation, etc.) which are not on disk and which I do not have a confirmed source for. | Apply minimal cleanup (consistency, punctuation); leave precise journal-style reformatting as a **deferred polish pass** for the human submission preparer. Document in receipt + STATUS open questions. |
+| "Fill Ethics approval, Author contributions, AI-tool disclosure, Conflict of interest, Funding" | Ethics approval (30 words) and Conflict of interest (2 words "None declared") are already filled. Author contributions (3 words), AI-tool disclosure (20 words), Funding (3 words) are placeholders. | Author contributions: draft from CITATION.cff sole-author state. AI-tool disclosure: draft a reasonable disclosure for LLM-coding-agent use in pipeline + manuscript work, with a `[YP: review and edit]` note. Funding: draft "None declared" with same review note. **All three admin drafts are LLM-supplied content for a sole-author manuscript and are explicit candidates for human review** — recorded in DECISION_LOG and Forward-looking HALTs. |
+
+**5 precision-edit candidates from Task 4 — PRE-FLIGHT re-verification:**
+
+| Tag | Line | Task 4 recommendation | PRE-FLIGHT re-verification | Apply? |
+|---|---|---|---|---|
+| C04 | 7 | "approximately 3.5 million" → "approximately 3.5–4 million" or "3.97M average" | Natality 1990–2024 mean = 3,966,276; range 3,605,081–4,324,008 (verified now). Current "3.5 million" is below the actual 1990–2024 mean. Task 4's "3.5–4 million" preserves prose flow with one-character edit. | **YES** — apply "approximately 3.5–4 million" |
+| C29 | 23 | "two within fetal death" boundary count → "three eras with two era-to-era transitions" wording | Table 1 ships 3 fetal-death era rows (1992–2002, 2005–2017, 2018–2022) = 2 boundaries. Current wording "two within fetal death" is correct under boundary-reading but mismatches casual Table-1-row-count reading. Task 4 recommendation is clearer. | **YES** — rephrase to make eras-vs-boundaries explicit |
+| C33 | 60 | "Three fetal-death columns are tagged within_era" is scope-restrictive → "Three of the within_era fetal-death columns carry irreducibly incompatible..." | Schema has 24 within_era columns total (verified now: `comparability_class == 'within_era'` in `fetal_death/harmonized_schema.csv`). The three named (`breech_unrevised`, `delivery_place_unrevised`, `maternal_race_bridged_detail`) are within_era but not the only ones. Task 4 recommendation is more precise. | **YES** — apply "Three of the within_era fetal-death columns..." |
+| C47/C48/C49 | 104 | Italicised `maternal_education` / `paternal_age_combined` / `maternal_education_unrevised` are raw NCHS field names, not harmonized columns; clarify | **MISDIAGNOSIS**: Task 4 PRE-FLIGHT/DO checked the natality parquet (where the harmonized columns are named `maternal_education_cat4`, `father_age`). The manuscript line-104 names ARE fetal-death harmonized columns: `fetal_death/harmonized_schema.csv` line 17 (`maternal_education`, years_available `2005-2006, 2014-2022`), line 18 (`maternal_education_unrevised`, years_available `1992-2002, 2005-2006`), line 21 (`paternal_age_combined`, years_available `1992-2002, 2005-2006, 2014-2022`). Direct null-rate verification on `fetal_death_derived.parquet` shows 100% blank for all three columns in 2007–2013, matching the manuscript's claim byte-exact. The manuscript italicization is consistent with line 60's `breech_unrevised` etc. (italics = harmonized column names). | **NO** — keep manuscript wording as-is. Task 4's L11 was a misdiagnosis. Log to DECISION_LOG; document in receipt self-check. |
+
+**Companion paper sentence design (§15 Task 5 DO item):**
+
+Goal: one sentence pointing to the monorepo (https://github.com/yoelplutchok/vital-statistics-harmonization, not yet pushed per STATUS open question 1) and the cross-product worked-example notebooks (`notebooks/joint_use_demo.ipynb`, `notebooks/paper_companion.ipynb`). Will be placed at the end of the "Data resource access" section.
+
+Draft: "Cross-product worked examples — including a joint-use demonstration reproducing the 2022 maternal-age-stratified fetal mortality cells against *NVSR 73-09* Table 4, and a paper-companion notebook recomputing every numeric claim in this manuscript directly from the parquets — are shipped under `notebooks/` in the monorepo accompanying this resource."
+
+This does NOT include a github URL because the monorepo has not yet been pushed (STATUS open question 1). The user's submission preparer should add the URL once it is pushed.
+
+### Plan assumptions amended at PRE-FLIGHT (Convention 3 second bullet)
+
+1. **C47/C48/C49 NOT applied.** Task 4's L11 recommendation is a misdiagnosis (checked natality parquet; should have checked fetal-death). Manuscript wording at line 104 is byte-exact correct. Record in DECISION_LOG as an override of Task 4's recommendation.
+2. **S&W trim target ~400 words (not 600).** §15 figure of "currently ~1,000 words" is stale; actual is 650.
+3. **"Move 19-detail-cell breakdown" DO item MOOT** — not in the current manuscript.
+4. **References reformatting limited to consistency cleanup**, not full IJE-style reformatting. The latter requires IJE author guidelines I do not have a verified source for. Deferred.
+5. **Admin-section drafts are LLM-supplied for a sole-author manuscript.** Author contributions can be derived from CITATION.cff (sole author = Yoel Plutchok). AI-tool disclosure will be drafted per IJE policy as referenced in the manuscript's own placeholder ("disclose any AI-tool use in pipeline development, documentation drafting, or manuscript preparation"). Funding defaulted to "None declared." All three carry an explicit human-review note in the receipt's Forward-looking HALTs.
+
+### Halt conditions tripped
+None unresolved. Four findings (C47/C48/C49 override; S&W target recalibration; 19-cell-breakdown MOOT; references-reformatting deferral) are resolved at this PRE-FLIGHT moment per Convention 3 second bullet. No prior validated artifact is being mutated — the manuscript edit is expected and authorized; the paper_companion notebook re-run is mandatory per Task 4 HALT 5; all other touches are state-file appends.
+
+### Result
+PROCEED.
+
+---
+
 ## PRE-FLIGHT for task4_paper_companion — 2026-05-11T19:15:00Z
 
 ### Inputs
