@@ -8,6 +8,31 @@
 
 ---
 
+## PRE-FLIGHT addendum for task1_joint_use_denominators — 2026-05-11T17:58:10Z
+
+**Field-value snapshot gap caught at SMOKE Tier 1, resolved pre-DO.** The original PRE-FLIGHT entry (17:50:48Z below) planned to read from `natality_v2_residents_only.parquet`. SMOKE Tier 1 (100 real rows of 2022) failed at parquet-read time:
+
+```
+pyarrow.lib.ArrowInvalid: No match for FieldRef.Name(restatus) in year: int16
+certificate_revision: string maternal_age: int16 ... [82 column schema]
+```
+
+The convenience parquet drops the `restatus` column post-filter — a fact not snapshot in the 17:50:48Z entry's Field-value subsection. Resolution:
+
+1. Switch the build script to read from the full `natality_v2_harmonized_derived.parquet` (2,202,879,406 bytes, locally-computed sha256=`9f917a43474eb9e3ed23aa95c714209421c25c29937376651149d22fab934ef0`). The harmonized parquet carries all 84 columns including `restatus`, and column projection (5 cols out of 84) keeps the read cost roughly equivalent to the residents-only file.
+2. Apply the canonical filter `residence_status != 4` in the build script (after the rename helper). This makes the filter audit-explicit rather than relying on the upstream convenience step.
+3. Note that the harmonized parquet's sha256 is NOT in any shipped PROVENANCE.md (the natality v2.7.0 deposit's PROVENANCE.md only covers the convenience parquets). This is an upstream documentation gap that I am NOT fixing as part of Task 1 — flagged here for downstream attention.
+
+This addendum precedes the first DO mutation (no canonical output written yet); SMOKE Tier 0 was synthetic and produced only `/tmp/smoke0_out.csv`. The `task1-pre-do` tag remains at commit `7b058fc` (the right rollback point — addendum is still pre-DO).
+
+### Halt conditions tripped
+None unresolved. Course correction applied at SMOKE moment per Convention 3.
+
+### Result
+PROCEED with build from `natality_v2_harmonized_derived.parquet`.
+
+---
+
 ## PRE-FLIGHT for task1_joint_use_denominators — 2026-05-11T17:50:48Z
 
 ### Inputs

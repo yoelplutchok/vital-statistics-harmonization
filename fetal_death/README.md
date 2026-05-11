@@ -153,7 +153,8 @@ A regression-protection pytest suite (`tests/`) covers the schema, row-count, an
 | **V2 (current)** | Backward extension to 1992; 1989-revision era; full cross-era validation | 1992-2022 (29 years; 2003-2004 deferred) |
 | V2.1 | Add 2003 and 2004 transition years (distinct layouts) | 1992-2022 (31 years complete) |
 | V3 | Full historical depth | 1982-2022 |
-| V4 | Natality companion product | Joint analysis support |
+
+**Joint-use convenience layer (shipped 2026-05-11):** `stratified_denominators.csv` and the cross-product helper at [`shared/helpers/canonical_join_keys.py`](../shared/helpers/canonical_join_keys.py) provide demographic-stratified live-birth denominators for joint fetal-mortality-rate computation; see the *Companion Project* section above. Replaces the prior roadmap "V4: Natality companion product" entry.
 
 ## Principles
 
@@ -161,7 +162,10 @@ Reproducibility, transparency, limited claims, explicit comparability documentat
 
 ## Companion Project
 
-This project leverages methodology and infrastructure from the **U.S. Natality Harmonization Project** ([GitHub](https://github.com/yoelplutchok/natality-harmonization) · [Zenodo concept DOI 10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074)). For demographic-stratified live-birth denominators (race-, age-, or ethnicity-specific) needed to compute fetal mortality rates, join to the natality release.
+This project leverages methodology and infrastructure from the **U.S. Natality Harmonization Project** ([GitHub](https://github.com/yoelplutchok/natality-harmonization) · [Zenodo concept DOI 10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074)). For demographic-stratified live-birth denominators (race-, age-, or ethnicity-specific) needed to compute fetal mortality rates, two paths:
+
+- **Pre-built convenience file** — `stratified_denominators.csv` ships at the root of this deposit, with one row per (`data_year`, `maternal_age_band`, `maternal_race_bridged`, `hispanic_origin`) cell across the 29 joint-coverage years (1992–2002 + 2005–2022). See [`docs/JOINT_USE_GUIDE.md`](../docs/JOINT_USE_GUIDE.md) in the monorepo for column semantics, the 2018+ bridged-race gap, and worked examples. Built by [`shared/helpers/build_stratified_denominators.py`](../shared/helpers/build_stratified_denominators.py).
+- **Direct join** — load the natality v2.7.0 parquet and join on `data_year` × demographics. The [`shared/helpers/canonical_join_keys.py`](../shared/helpers/canonical_join_keys.py) helper handles the cross-product column-name reconciliation.
 
 ## Citation
 

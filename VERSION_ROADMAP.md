@@ -24,7 +24,7 @@ Both years use distinct, non-uniform transition layouts (1351-byte and 1501-byte
 
 Ship demographically-stratified live-birth denominators inside the fetal-death deposit so users can compute fetal mortality rates without loading the full 138.8M-row natality file. Stratifications: maternal race × age × Hispanic origin × year. Source: aggregated from the natality-harmonization output.
 
-**Status:** scoped. Companion to the manuscript's joint-use claim. See [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md) (stub).
+**Status: ✅ shipped 2026-05-11.** Output: [`fetal_death/stratified_denominators.csv`](fetal_death/stratified_denominators.csv) (4,906 strata × 29 years; per-year sums match natality validation target byte-exact 29/29). Build: [`shared/helpers/build_stratified_denominators.py`](shared/helpers/build_stratified_denominators.py). Cross-product column-name reconciliation: [`shared/helpers/canonical_join_keys.py`](shared/helpers/canonical_join_keys.py). User docs: [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md). Known gap: 4-category bridged race is null 2018–2022 (NCHS source); joint stratified-by-race rates available for 24 of 29 joint-coverage years.
 
 ### Cross-product validation notebook
 

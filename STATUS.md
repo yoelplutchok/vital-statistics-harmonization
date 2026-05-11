@@ -1,6 +1,103 @@
-# STATUS — last updated 2026-05-11T17:30:00Z
+# STATUS — last updated 2026-05-11T18:06:12Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-11T18:06:12Z — Task 1 complete: joint-use stratified denominators shipped
+
+### Current phase
+
+Phase A — joint-use convenience layer shipped. §17 readiness checklist now has 3 ⏳ items remaining for manuscript submission (was 4 at end of Task 6): Task 2 (joint-use demo notebook), Task 4 (paper companion notebook), Task 5 (manuscript trim + admin sections). Tasks 3, 7, 8, 9, 10 also remain but are not on the manuscript-submission critical path or are post-submission.
+
+### Current task
+
+**Awaiting task selection.** Task 1 (joint-use convenience layer) is now ✅ complete. Recommended next picks from `NEXT_STEPS.md` §15 in priority order:
+
+- **Task 2** — `notebooks/joint_use_demo.ipynb` (immediate downstream consumer of Task 1's output; ~half a session).
+- **Task 5** — Manuscript trim and admin sections (no parquet dependency; ~one session).
+- **Task 4** — `notebooks/paper_companion.ipynb` (depends on Task 5 ideally precedes; ~one session).
+
+### Last completed step
+
+**Task 1 — Joint-use convenience layer shipped.** Three new code artifacts (`shared/helpers/__init__.py`, `shared/helpers/canonical_join_keys.py`, `shared/helpers/build_stratified_denominators.py`) and one new data artifact (`fetal_death/stratified_denominators.csv`: 4,906 strata × 29 joint-coverage years, 114,886,832 total live births). All 29 per-year sums match `natality/output/validation/external_validation_v1_comparison.csv resident_births` byte-exact. Receipt at `RECEIPTS/task1_joint_use_denominators_2026-05-11T18-06-12Z.md`. DECISION_LOG entry records the aliasing-helper-vs-source-schema-rename choice and three residual risks. `NEXT_STEPS.md` §17 checklist item 3 marked ✅. Stale-on-contact fetal-death README "V4: Natality companion product" entry replaced with the joint-use-layer-shipped note (per §16). The natality v2.7.0 Zenodo deposit was NOT mutated; this is a purely additive layer over the existing deposits.
+
+Convention 3 (PRE-FLIGHT Field-value snapshot) and Convention 4 (RECEIPT Forward-looking HALTs) both load-bearing this task:
+
+- Convention 3 surfaced two divergences at the cheap-check window. (a) PRE-FLIGHT: all four non-age join keys diverge between the two product schemas; resolved by aliasing helper. (b) SMOKE Tier 1: the `natality_v2_residents_only.parquet` convenience file drops `restatus` post-filter, breaking the planned read path; resolved by a pre-DO addendum to PRE_FLIGHT_LOG.md (timestamp 2026-05-11T17:58:10Z) switching the input to the full harmonized parquet with the canonical filter applied audit-explicit in the build script. Both resolutions were documented BEFORE the first DO mutation.
+- Convention 4: receipt enumerates six Forward-looking HALTs (sha-pin on the convenience CSV; canonical_join_keys dict-content check; filter-on-both-sides reminder for downstream notebooks; bridged-race-null-handling reminder; natality v2.8 rename plan-update candidate; documentation of when Field-value snapshot caught what).
+
+### What was done this session
+
+1. Session start: read STATUS.md, NEXT_STEPS.md, README.md, PROJECT_STRUCTURE.md, DECISION_LOG.md, FIX_LOG.md (no entries), LESSONS.md per §1.
+2. Verified Task 6 Forward-looking HALTs (natality PROVENANCE sha matches local file sha; no V3 re-validation; Convention 3/4 templates applied to this task; mechanism-attribution wording preserved as Task 6 set).
+3. Wrote PRE-FLIGHT entry to `PRE_FLIGHT_LOG.md` with Convention 3 Field-value snapshot enumerating all 5 join-key concepts; surfaced 4 column-name divergences; documented per-year `live_births` mismatch between `external_validation_v1_comparison.csv` (CDC residence series) and `live_births_by_year.csv` (NVSR series).
+4. Committed PRE-FLIGHT (`7b058fc`); tagged `task1-pre-do`.
+5. Wrote `shared/helpers/__init__.py`, `shared/helpers/canonical_join_keys.py`, `shared/helpers/build_stratified_denominators.py`. Build script supports `--tier 0/1/2/full` for SMOKE laddering.
+6. SMOKE Tier 0 (synthetic 8-row fixture): PASS. 6 strata, sum=7, restatus=4 excluded, age=99 → null band, race=NaN preserved.
+7. SMOKE Tier 1 (100 real 2022 rows): FAIL with `pyarrow.lib.ArrowInvalid: No match for FieldRef.Name(restatus)` — `natality_v2_residents_only.parquet` drops the column.
+8. Wrote PRE-FLIGHT addendum at PRE_FLIGHT_LOG.md (timestamp 17:58:10Z) per Convention 3; switched build script to read from the full `natality_v2_harmonized_derived.parquet` (sha=`9f917a43...`, locally computed; no upstream PROVENANCE.md ships it).
+9. Re-ran SMOKE Tier 0 (sha unchanged ✓), Tier 1 (100 rows, 16 strata, all-null race for 2022 per NCHS source change ✓), Tier 2 (full 2022, 3,667,758 total = natality validation target byte-exact ✓).
+10. DO: full build for 1992-2002 + 2005-2022; output sha=`6874d5d65e7b3888acf8a833e4fa98063630765e2eeaf6e1c6cb48ad7b0db5c1`; 4,906 strata; 114,886,832 total.
+11. VERIFY A (per-year sum matches natality target): 29/29 byte-exact ✓.
+12. VERIFY B (bit-identical re-run): ✓ (sha unchanged across two consecutive `--tier full` invocations).
+13. VERIFY C (race × year independent cross-check via direct natality groupby): 18/18 cells ✓ across years {2000, 2010, 2015, 2017}.
+14. Rewrote `docs/JOINT_USE_GUIDE.md` end-to-end; replaced incorrect cross-product column-name claim with actual schema divergence table + helper reference + bridged-race-gap caveat + NCHS-series mismatch table + worked example for 2017 fetal mortality rate.
+15. Updated `fetal_death/README.md` (companion-project section + version-roadmap stale-on-contact V4 entry) and `VERSION_ROADMAP.md` (joint-use section → ✅ shipped).
+16. Marked `NEXT_STEPS.md` §17 item 3 → ✅.
+17. Wrote receipt to `RECEIPTS/task1_joint_use_denominators_2026-05-11T18-06-12Z.md` with five-phase trace, verify results, six-item self-check, six Forward-looking HALTs.
+18. Wrote DECISION_LOG entry recording the aliasing-helper choice and three residual risks.
+19. Updating this STATUS.md section.
+20. Pending: task commit + tag `task1-complete`.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+Task 2 (joint_use_demo.ipynb) by default — immediate downstream consumer of the new convenience CSV. Alternative: Task 5 (manuscript trim) if you prefer to push the manuscript forward before more code work.
+
+### Open questions for human
+
+Carried forward from prior STATUS, with #2 now consumed by completing Task 1:
+
+1. **Push the monorepo to GitHub now**, or wait until Task 2/Task 5 ships? (Unblocks Task 9 redirect notices on the old repos.)
+2. ~~**Task 1 next**, or another priority?~~ **RESOLVED 2026-05-11 (Task 1 complete).**
+3. **Should the future natality v2.8 schema rename** (Forward-looking HALT 5 in the Task 1 receipt) be packaged with Task 3 (V2.1 fetal-death), or as a dedicated session? It requires re-running 183 NVSR targets and a new Zenodo deposit; bundling with Task 3 amortizes the validation re-run.
+4. **Convention 3 second-bullet drill** — task 1 was the first session that triggered an addendum-protocol response (write a new dated PRE-FLIGHT entry rather than back-fill the original). Was the timestamp ordering (`task1-pre-do` tagged BEFORE the addendum) the right call? Self-check item 5 in the receipt documents the trade-off; if a different convention is preferred (e.g., re-tag after addendum), propose a §11 plan-update.
+
+### Forward-looking HALTs for next session
+
+Per Convention 4 (§6 receipt template). These are PRE-FLIGHT assertions the next session must verify; halt and ask the human if any fails. (Full forward-looking HALTs list — six items — is in `RECEIPTS/task1_joint_use_denominators_2026-05-11T18-06-12Z.md`; restated here at session level for cheap-check access at next session start.)
+
+1. **stratified_denominators.csv sha256**: `6874d5d65e7b3888acf8a833e4fa98063630765e2eeaf6e1c6cb48ad7b0db5c1`. If different at next PRE-FLIGHT, the file has been re-derived or edited — halt and verify authorization (could indicate natality v2.8 rename landed, or an unauthorized edit).
+2. **canonical_join_keys.py NATALITY_TO_CANONICAL mapping**: 4 entries `year:data_year, restatus:residence_status, maternal_race_bridged4:maternal_race_bridged, maternal_hispanic_origin:hispanic_origin`. If a future natality v2.8 lands these renames natively, this dict's content must change (become empty) and the receipt's invariants update.
+3. **Joint-use code in Task 2 notebook MUST apply canonical filters on BOTH sides**: numerator `tabulation_flag == 2 AND residence_status != 4`; denominator `residence_status != 4` (already applied in the CSV).
+4. **bridged-race null cells in 2018-2022 must NOT be dropna'd**. JOINT_USE_GUIDE.md caveat 4 documents this; a downstream `.dropna(subset=['maternal_race_bridged'])` would undercount the joint denominator by ~17M records.
+5. **1992-2002 maternal_race_bridged equivalence cross-check** (Self-check residual risk 3): a 5-minute Task 2 PRE-FLIGHT smoke comparing natality's "approximate_pre2003" crosswalk to fetal-death's `harmonize.py` 4-category recode on a 1000-row MRACE sample would close this. Recommend doing it before any 1992-2002 stratified-by-race joint-use computation.
+6. **natality v2.8 rename plan-update**: a future §11 proposal would rename natality's join-key columns to fetal_death-style names natively, making `canonical_join_keys.py` a no-op deprecation. This is a substantive task (re-run 183 NVSR targets, new Zenodo deposit, breaking-change communication); recommend a dedicated session or bundle with Task 3 (V2.1).
+
+### Build artifacts current
+
+- `natality/`: unchanged from prior STATUS (v2.7.0 mirror, parquets in Zenodo + on local Desktop).
+- `fetal_death/`: now ships **`fetal_death/stratified_denominators.csv`** (4,906 rows, sha=`6874d5d6...`). All other artifacts unchanged.
+- `shared/helpers/`: now contains three new files (`__init__.py`, `canonical_join_keys.py`, `build_stratified_denominators.py`). Was empty.
+- `paper/draft_v2_hmd_styled.md`: unchanged.
+- `notebooks/`: stub README unchanged; three planned notebooks (`joint_use_demo`, `paper_companion`, `era_boundary_walkthrough`) still not built. Task 2 (joint_use_demo) is unblocked by this STATUS section.
+- `docs/JOINT_USE_GUIDE.md`: rewritten end-to-end with accurate cross-product naming, NCHS-series caveat, bridged-race-gap caveat, and 2017-vintage worked example.
+- `figures/`: empty.
+
+### Notes for next session
+
+- Task 1 commit ships a ~5-line summary per Convention 5; full narrative in receipt + DECISION_LOG + this STATUS entry.
+- `task1-pre-do` set at `7b058fc`; `task1-complete` to be set after the task commit lands.
+- Field-value snapshot (Convention 3) caught two real divergences this session, both pre-DO. The protocol works; the addendum response pattern (write new dated PRE-FLIGHT entry; don't back-fill) is the L10-safe response when divergence surfaces between PRE-FLIGHT commit and DO mutation.
+- The natality v2.7.0 full harmonized parquet's sha256 (`9f917a43...`) is NOT in any shipped PROVENANCE.md; it lives only in this receipt + PRE-FLIGHT entry. Upstream natality docs gap — flagged but not fixed in this task.
 
 ---
 
