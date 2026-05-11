@@ -1,6 +1,80 @@
-# STATUS — last updated 2026-05-09T00:00:00Z
+# STATUS — last updated 2026-05-11T17:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-11T17:30:00Z — Task 6 complete: V3 linked validation framing reconciled
+
+### Current phase
+
+Phase 0 — Monorepo bootstrap + protocol baseline + Task 6 done. Ready to begin Phase A (joint-use convenience layer + paper-supporting work). Task 6 was a small docs-only task; the first canonical-data mutation has not yet happened.
+
+### Current task
+
+**Awaiting task selection.** Task 6 (linked-file validation framing reconciliation) is now ✅ complete. The next session should pick from `NEXT_STEPS.md` §15 in priority order:
+
+- **Task 1** — Joint-use convenience layer (stratified live-birth denominators). Highest leverage for the manuscript's "designed for joint use" claim.
+- **Task 2** — `notebooks/joint_use_demo.ipynb`. Depends on Task 1 being helpful but not required.
+
+### Last completed step
+
+**Task 6 — V3 linked validation framing reconciled.** Adopted "33/35 byte-exact + 2 cells (2015 `unweighted_infant_deaths` and `postneonatal_deaths`) differ by exactly 1 record from NCHS upstream null-record-weight survivor records; all 35 pass within documented tolerance" as canonical, matching the framing already in the manuscript drafts and monorepo top-level README. Six files updated; manuscript drafts and monorepo top-level README unchanged (already canonical). Receipt at `RECEIPTS/task6_linked_validation_reconcile_2026-05-11T17-30-00Z.md`; DECISION_LOG entry records the canonical-framing choice. `NEXT_STEPS.md` §17 checklist item 5 marked ✅.
+
+This was the first task to exercise Convention 3 (PRE-FLIGHT Field-value snapshot) and Convention 4 (RECEIPT Forward-looking HALTs) under the 2026-05-11 NHANES protocol-sync. Both proved useful: Convention 3 forced enumeration of every target line BEFORE any edit; Convention 4 produced four forward-looking HALTs (see receipt) that explicitly carry forward the prior session's HALT 2 plus three new task-specific halts for Task 1 / Task 2 to verify at PRE-FLIGHT time.
+
+### What was done this session
+
+1. Session start: read STATUS.md, NEXT_STEPS.md, README.md, PROJECT_STRUCTURE.md, DECISION_LOG.md, FIX_LOG.md, LESSONS.md per §1.
+2. Verified prior session's Forward-looking HALTs (commit `596e8ce` touched expected files; no NHANES-specific items leaked into shipping content; working tree clean on `main`).
+3. Wrote PRE-FLIGHT entry to `PRE_FLIGHT_LOG.md` including Convention 3 Field-value snapshot enumerating all 9 target locations (six post-edit + three already-canonical references) with current-text quoted and plan-assumption verified.
+4. Tagged `task6-pre-do` at `596e8ce` before any DO edit.
+5. DO: edited 7 files (6 content + §17 checklist update) to adopt canonical framing.
+6. VERIFY: re-grepped 35/35|33/35 patterns; confirmed canonical framing consistent across the four scoped artifacts (natality README, monorepo README, manuscript drafts, validation MD) plus four additional fix-on-contact docs.
+7. Wrote DECISION_LOG entry recording the canonical-framing choice, alternatives, reasons, residual risks.
+8. Wrote RECEIPT to `RECEIPTS/task6_linked_validation_reconcile_2026-05-11T17-30-00Z.md` with five-phase trace, verify results, self-check, and Forward-looking HALTs (Convention 4).
+9. Updating this STATUS.md section.
+10. Pending: task commit + tag `task6-complete`.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+Task 1 (joint-use convenience layer) by default — highest leverage for the manuscript. Task 2 alternative if Task 1 turns out to be blocked by parquet-download cost.
+
+### Open questions for human
+
+Carried forward from prior STATUS, with #3 now resolved:
+
+1. **Push the monorepo to GitHub now**, or wait until Task 1 ships?
+2. **Task 1 next**, or another priority?
+3. ~~**Linked-file validation framing.**~~ **RESOLVED 2026-05-11 (Task 6).**
+
+### Forward-looking HALTs for next session
+
+Per Convention 4 (§6 receipt template). These are PRE-FLIGHT assertions the next session must verify; halt and ask the human if any fails. (Full forward-looking HALTs list is in `RECEIPTS/task6_linked_validation_reconcile_2026-05-11T17-30-00Z.md`; restated here at session level for cheap-check access at next session start.)
+
+1. **If next session is Task 1**: the natality parquet's PROVENANCE.md sha256 must match the file's current sha256 at PRE-FLIGHT time. If the parquet has been re-derived since v2.7.0, the V3 linked validation count may have shifted from 33/35 byte-exact + 2 differ-by-1, invalidating the canonical framing established in Task 6. Halt and re-validate before stratifying.
+2. **If next session re-runs `compare_external_targets_v3_linked.py`** and the resulting split differs from 33 Diff=0 / 2 Diff=1, then the canonical framing established in Task 6 is stale. All six post-edit shipping docs plus the manuscript drafts and the monorepo top-level README need paired updates. Halt and re-derive.
+3. **Convention 3 / Convention 4 templates are non-optional for the next task that mutates a canonical artifact** (parquet, harmonized_schema.csv, validation-target CSV, doc numeric). Task 6 demonstrated them on a docs-only reconciliation; the next task is the first canonical-data exercise. If the PRE-FLIGHT lacks the Field-value snapshot subsection or the RECEIPT lacks the Forward-looking HALTs subsection, that is an L10-class back-fill risk and a regression on the protocol-sync convention adoption.
+4. **Mechanism-attribution wording across `natality/README.md` line 146 vs `natality/docs/VALIDATION.md` line 219 vs the manuscript drafts** intentionally remains varied after Task 6 (out of scope; preserved as DECISION_LOG residual-risk (a)). If a future task disambiguates them, propose a §11 plan-update that touches all three locations together so the wording converges atomically.
+
+### Build artifacts current
+
+Unchanged from prior STATUS. No parquets, schemas, or validation CSVs were touched in this session — Task 6 was a docs-only reconciliation. Validation MD `external_validation_v3_linked_comparison.md` remains the unmodified authoritative source for the V3 linked target outcomes.
+
+### Notes for next session
+
+- Task 6 commit ships a ~5-line summary per Convention 5 (commit-message brevity); full narrative lives in the receipt and DECISION_LOG entry. Commit pending at this STATUS write.
+- `task6-pre-do` tag set at `596e8ce`; `task6-complete` tag will be set after the task commit lands.
+- §17 readiness checklist now has 4 ⏳ items remaining for manuscript submission (was 5; Task 6 → ✅): Task 1 (joint-use layer), Task 2 (joint-use demo), Task 4 (paper companion), Task 5 (manuscript trim + admin sections). Tasks 3, 7, 8, 9, 10 are post-submission.
+- The new PRE-FLIGHT template's Field-value snapshot subsection (Convention 3) is the first cheap-check that surfaces drift between task-plan-assumed state and actual file state. Worked well here for headline-count enumeration; the next task using it on canonical-data mutation will be a stronger test.
 
 ---
 

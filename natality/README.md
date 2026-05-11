@@ -16,7 +16,7 @@ NCHS publishes annual natality public-use microdata as fixed-width ASCII records
 
 Plus three linked birth-infant death formats (2005–2013 denominator-plus 900 bytes, 2014–2015 denominator-plus 1384 bytes, 2016–2023 period-cohort merged by CO_SEQNUM+CO_YOD).
 
-This project parses all of them, maps the era-specific raw fields to a **single stable schema of 71 harmonized columns + 13 derived indicators** (V2 natality) and 78 + 16 (V3 linked), documents every era boundary and comparability constraint, and validates the output against NCHS "Births: Final Data" NVSR reports (183/183 V2 targets pass, 35/35 V3 linked targets pass).
+This project parses all of them, maps the era-specific raw fields to a **single stable schema of 71 harmonized columns + 13 derived indicators** (V2 natality) and 78 + 16 (V3 linked), documents every era boundary and comparability constraint, and validates the output against NCHS "Births: Final Data" NVSR reports (183/183 V2 targets pass; 33/35 V3 linked targets byte-exact + 2 cells differ by exactly 1 record from NCHS upstream null-record-weight survivor records, both in 2015, passing within documented tolerance).
 
 ## Headline metrics
 
@@ -24,7 +24,7 @@ This project parses all of them, maps the era-specific raw fields to a **single 
 - **Birth records**: 138,819,655 total (natality V2); 74,943,824 (linked V3)
 - **Residents-only subsets**: 138.58M V2; 74.79M V3 linked
 - **Columns**: V2 = 71 harmonized + 13 derived = 84; V3 linked = 78 harmonized + 16 derived = 94 (same 84 as V2 plus 7 death-side harmonized + 3 death-side derived)
-- **Validation**: all 41 internal invariants pass with 0 violations against the V2 natality parquet (V3 linked: 38 pass clean + 1 with 2 documented NCHS-upstream survivor exceptions; 3 V2-only coverage invariants are skipped in V3 mode — see `docs/COMPARABILITY.md` §"V3 linked vs V2 natality: 2009–2010 unrevised-cert field retention"); V2 external targets 183/183 pass (1990–2024); V3 linked external targets 35/35 pass (2005–2023, from NCHS linked user guides)
+- **Validation**: all 41 internal invariants pass with 0 violations against the V2 natality parquet (V3 linked: 38 pass clean + 1 with 2 documented NCHS-upstream survivor exceptions; 3 V2-only coverage invariants are skipped in V3 mode — see `docs/COMPARABILITY.md` §"V3 linked vs V2 natality: 2009–2010 unrevised-cert field retention"); V2 external targets 183/183 pass (1990–2024); V3 linked external targets 33/35 byte-exact + 2 cells (2015 `unweighted_infant_deaths` and `postneonatal_deaths`) differ by exactly 1 record from NCHS upstream null-record-weight survivor records — all 35 pass within documented tolerance (2005–2023, NCHS linked user guides; see `output/validation/external_validation_v3_linked_comparison.md`)
 - **Zenodo DOI** (concept — always resolves to latest): [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074). Latest version: **v2.7.0** ([10.5281/zenodo.19868835](https://doi.org/10.5281/zenodo.19868835))
 
 ## Output files
@@ -143,7 +143,7 @@ End-to-end runtime on a single modern laptop: ~1 hour wall clock for parse, ~15 
 - **Reproducibility**: every output can be regenerated from `raw_data/` + committed scripts + committed `metadata/*.csv`.
 - **Transparency**: the raw-field-to-harmonized-column mapping is in `scripts/01_import/field_specs.py` with inline comments per era, and mirrored in `metadata/harmonized_schema.csv` for machine consumption.
 - **Explicit comparability documentation**: every column that's not fully comparable across 1990–2024 is flagged in the CODEBOOK and has a corresponding entry in COMPARABILITY.md's pitfall tables.
-- **Honest validation**: 183/183 and 35/35 are headline numbers, but individual transcription failures, single-year coverage gaps, and known quirks (e.g., two null-`record_weight` survivor rows in 2014/2015) are documented rather than papered over.
+- **Honest validation**: 183/183 V2 and 33-byte-exact + 2-differ-by-1 V3 linked are the headline numbers, with the 2 V3 linked differences (2015 `unweighted_infant_deaths` and `postneonatal_deaths`, each off by 1 record from NCHS upstream null-record-weight survivor rows) documented at the cell level rather than papered over; individual transcription failures and single-year coverage gaps are similarly documented.
 
 ## Citation
 

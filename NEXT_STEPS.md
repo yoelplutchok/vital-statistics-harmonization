@@ -437,7 +437,7 @@ This resource integrates and disseminates the three NCHS public-use microdata pr
 | Product | Coverage | Records | Columns | NVSR validation |
 |---|---|---|---|---|
 | Natality | 1990–2024 | 138,819,655 | 84 | 183/183 byte-exact |
-| Linked birth–infant death | 2005–2023 | 74,943,824 | 94 | 35/35 (or 33/35 + 2 docs diffs — verify; see Task 6) |
+| Linked birth–infant death | 2005–2023 | 74,943,824 | 94 | 33/35 byte-exact + 2 cells differ by 1 record (within tolerance; resolved Task 6 2026-05-11) |
 | Fetal death | 1992–2022 (excl. 2003–2004) | 1,634,195 | 89 | 29/29 counts + 26/26 rates exact; 13/19 detail-cell + 6 docs diffs |
 
 **Repository state (as of 2026-05-09):**
@@ -787,7 +787,7 @@ The manuscript is ready to submit when:
 2. ✅ Pipelines deterministic and re-runnable end-to-end.
 3. ⏳ Joint-use convenience layer shipped (Task 1).
 4. ⏳ Joint-use demo notebook shipped (Task 2).
-5. ⏳ Linked-file validation framing reconciled (Task 6).
+5. ✅ Linked-file validation framing reconciled (Task 6, 2026-05-11).
 6. ⏳ Manuscript at IJE word limit with admin sections filled (Task 5).
 7. ⏳ Paper-companion notebook reproducing every numeric claim (Task 4).
 8. ⏳ V2.1 fetal-death (2003–2004) ideally shipped (Task 3).

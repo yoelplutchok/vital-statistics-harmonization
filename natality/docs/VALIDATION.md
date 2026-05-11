@@ -203,7 +203,7 @@ Outputs:
 - `output/validation/external_validation_v3_linked_comparison.csv`
 - `output/validation/external_validation_v3_linked_comparison.md`
 
-**Results: 35/35 active targets pass.** An additional 4 targets (2021 neonatal/postneonatal deaths and IMR components) are commented out in `metadata/external_validation_targets_v3_linked.csv` and not counted in the 35; see the note further down ("The 4 excluded 2021 split targets…") for the 131-death discrepancy that remains unresolved.
+**Results: 33/35 active targets byte-exact + 2/35 differ by exactly 1 record (both 2015: `unweighted_infant_deaths` 23326→23327; `postneonatal_deaths` 7772→7773); all 35 pass within documented tolerance.** The two 1-record differences are attributable to NCHS upstream null-record-weight survivor records (LATEREC late-filed edge cases; see the 2015 row of the per-year breakdown below). An additional 4 targets (2021 neonatal/postneonatal deaths and IMR components) are commented out in `metadata/external_validation_targets_v3_linked.csv` and not counted in the 35; see the note further down ("The 4 excluded 2021 split targets…") for the 131-death discrepancy that remains unresolved.
 
 Cross-checked against linked file user guides (`LinkCO05Guide.pdf`, `LinkCO10Guide.pdf`, `LinkCO15Guide.pdf`, `21PE20CO_linkedUG.pdf`, `22PE21CO_linkedUG.pdf`, `23PE22CO_linkedUG.pdf`, `24PE23CO_linkedUG.pdf`):
 
