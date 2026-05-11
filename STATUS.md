@@ -4,6 +4,74 @@
 
 ---
 
+## 2026-05-11T16:32:34Z — `[plan-update]` Protocol sync from upstream NHANES (conventions 1-5 + L13/L14/L17)
+
+### Current phase
+
+Phase 0 — Monorepo bootstrap + protocol baseline. Still ready to begin Phase A (joint-use convenience layer + paper-supporting work). No canonical-data mutation has happened yet; this session was a `[plan-update]` only.
+
+### Current task
+
+**Awaiting task selection.** No data/code task is currently in flight. The next session should pick from `NEXT_STEPS.md` §15 in priority order, applying the new conventions starting from PRE-FLIGHT of whichever task is chosen:
+
+- **Task 1** — Joint-use convenience layer (stratified live-birth denominators).
+- **Task 6** — Reconcile linked-file validation framing (15-30 min).
+- **Task 2** — `notebooks/joint_use_demo.ipynb`.
+
+### Last completed step
+
+**Protocol sync from upstream NHANES.** `KICKOFF.md` and `NEXT_STEPS.md` updated to incorporate five generalizable conventions (SHAPE-not-VALUE smoke; FROZEN-AT-TASK docstring tag; Field-value snapshot in PRE-FLIGHT template; Forward-looking HALTs in RECEIPT template; commit-message brevity) and three new mistake-class matrix rows (L13 inventory file-roles vs columns; L14 exit-code propagation on per-row failures; L17 SMOKE pinning stale annotation values). `LESSONS.md` has the full rationale entry under 2026-05-11T16:32:34Z. NHANES-specific items (cross-family dual-key, `halt_c_reprobe.sh`, schema `$schema_version`, V1.9-folate task block) explicitly NOT ported.
+
+### What was done this session
+
+1. Read NHANES `KICKOFF.md`, `EXECUTION_PROTOCOL.md`, `HARMONIZATION_LESSONS.md` end-to-end and identified five generalizable conventions and three new mistake-class matrix rows since the HVS protocol was forked.
+2. Categorized each as HVS-portable vs NHANES-specific; presented the categorized list to the human; received approval to apply all six generalizable updates as a single `[plan-update]` commit.
+3. Edited `NEXT_STEPS.md` §4.2.1 (SHAPE-not-VALUE + DESIGN docstring tag), §4.5 (commit-message brevity), §5 PRE-FLIGHT template (Field-value snapshot subsection), §6 RECEIPT template (Forward-looking HALTs subsection), §8 mistake-class matrix (L13, L14, L17).
+4. Edited `KICKOFF.md` to add the "Conventions in effect" block summarizing Conventions 1-5; refined audit-session framing to include L17 in the "look for these specifically" list and point findings at `AUDITS/`.
+5. Appended rationale entry to `LESSONS.md` under 2026-05-11T16:32:34Z.
+6. Updating this `STATUS.md` section.
+7. Pending: `[plan-update]` commit of all five edits.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+Same as before: Task 1 (joint-use convenience layer) or Task 6 (linked-validation reconciliation) per user direction.
+
+### Open questions for human
+
+Carried over from the prior STATUS section, unchanged by this `[plan-update]`:
+
+1. **Which task to start first** — Task 1 (~half a session) or Task 6 (~30 min)?
+2. **Should the monorepo be pushed to GitHub now**, or wait until Task 1 ships?
+3. **Linked-file validation framing** (Task 6 input): 35/35 vs 33/35 + 2 docs framing. The authoritative source is `natality/output/validation/external_validation_v3_linked_comparison.md`.
+
+### Forward-looking HALTs for next session
+
+Per the new Convention 4 (and §6 receipt template), this protocol-sync flags the following for the next session's PRE-FLIGHT to verify:
+
+1. **KICKOFF.md, NEXT_STEPS.md §4.2.1 / §4.5 / §5 / §6 / §8, LESSONS.md, STATUS.md sha256s all changed** in the protocol-sync commit. If `git show <commit>` shows fewer files touched than these six, the commit is incomplete. Halt and re-derive.
+2. **NHANES-specific items not leaked.** Grep the HVS tree for `dual_key_match_exception`, `halt_c_reprobe`, `bridges_schema.json`, `$schema_version`, `V1.9-folate` — all should return zero hits. Any hit means an NHANES-specific item was accidentally ported. Halt and remove.
+3. **First post-protocol-sync task** (Task 1 or Task 6 — whichever the human picks next) must use the new PRE-FLIGHT template (with Field-value snapshot subsection) and the new RECEIPT template (with Forward-looking HALTs subsection). If the first post-sync receipt is missing either subsection, that's an L10-class back-fill risk; halt and re-template before continuing.
+
+### Build artifacts current
+
+Unchanged from the prior STATUS section. No data or code touched in this session.
+
+### Notes for next session
+
+- The `[plan-update]` commit message follows new Convention 5 (~5-line summary; full rationale lives in `LESSONS.md` 2026-05-11T16:32:34Z entry).
+- The first task that mutates a canonical artifact (parquet, harmonized_schema.csv, validation-target CSV, doc number) is the first real exercise of the new PRE-FLIGHT and RECEIPT templates. The new subsections are non-optional — see §5 and §6 templates.
+- New `AUDITS/` directory referenced in the updated `KICKOFF.md` audit-session framing does not yet exist; it will be created the first time an audit session writes findings, not pre-emptively.
+
+---
+
 ## 2026-05-09T00:00:00Z — Bootstrap: monorepo migration + operating protocol installed
 
 ### Current phase

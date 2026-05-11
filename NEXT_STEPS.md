@@ -104,6 +104,21 @@ For HVS specifically, the smoke ladder is:
 
 Each tier costs roughly 10× the previous. Catching a bug at Tier 0 saves 10,000× the rework cost vs catching it at Tier 4.
 
+### §4.2.1 SHAPE-not-VALUE convention for new smoke harnesses
+
+Every new smoke harness asserts **structural invariants that survive authorized canonical-state mutation**, not mutable annotation values pinned at the harness's authoring moment. Pinning a value that is expected to evolve under later authorized tasks turns a correct subsequent mutation into a SMOKE FAIL — stale pinning, not a regression. (See §8 row L17.)
+
+**DO** assert: column count, row count, presence-of-key, parse-validity, dtype, monotonic invariants, schema-level enums, row-count conservation across joins, sum-across-strata = unstratified-total.
+
+**DO NOT** pin: specific cell values that may evolve (a row count that will grow when V2.1 adds 2003+2004 fetal-death records; a sha256 that will change when a script is correctly edited; a docs string that will be reworded; a `notes` field whose content evolves).
+
+When a SMOKE must pin a value (e.g., a frozen-at-task assertion that documents the state at a specific historical task), declare its design intent on the **first docstring line** of the harness file:
+
+- `DESIGN: tracks-current-state` — asserts post-DO canonical state for the task that authored it; updated under authorized canonical drift.
+- `DESIGN: frozen-at-<task_id>` — asserts the historical schema state by design; remains FAIL under later renames — that IS the test (e.g., `tests/v1_4_smoke_fixtures/` asserting pre-rename schema state).
+
+If a SMOKE FAILs after an authorized canonical mutation: check the DESIGN tag first. `tracks-current-state` → bundle the minimal Edit into the same commit as the canonical mutation. `frozen-at-<task>` → expected FAIL; do not "fix."
+
 ## §4.3 DO — real-scale operation
 
 Run on real data. Idempotent (re-running produces identical output, byte-for-byte). Resumable (checkpoint at sub-step boundaries). Non-destructive (the previous artifact is preserved or version-bumped, never overwritten).
@@ -121,6 +136,8 @@ If a criterion is met but the result *feels wrong* (distribution looks off, coun
 ## §4.5 RECEIPT — append-only record of what happened
 
 Write to `RECEIPTS/<task_id>_<UTC_timestamp>.md` using the template in §6. Update `STATUS.md` to reflect that the task is complete. Tag the git commit `<task_id>-complete`. The receipt is the ground truth for "did this task happen?" — if a receipt does not exist, the task did not happen.
+
+**Commit-message brevity.** The commit that ships the receipt carries a ~5-line summary (task ID, one-line what-was-done, key inputs/outputs by sha-prefix, link to the receipt path, halt-status). The full narrative lives in the receipt, not the commit. Saves repo bloat across many tasks; receipts remain the canonical record. `[plan-update]` commits (protocol or schema changes) follow the same shape with `[plan-update]` as the leading bracket-tag.
 
 ---
 
@@ -156,6 +173,15 @@ Append to `PRE_FLIGHT_LOG.md` **before** any DO phase begins.
 ### Outputs
 - [ ] Intended output paths do not exist OR are explicitly marked for overwrite
   - <path>: does not exist (good) / exists, no overwrite mark (HALT)
+
+### Field-value snapshot for cells / rows / columns being mutated
+
+For every canonical artifact this task will mutate (a row in `harmonized_schema.csv`, a cell in a validation-target CSV, a derived column in a parquet, a numeric in a doc), snapshot the **current values of the fields being touched** and verify against the task plan's assumed state. Catches surprises like "task plan said `notes` field has existing prose to append to; actual `notes` is empty" at the cheap-check moment rather than mid-DO. Cost: ~1 minute wall-clock per task; saves Tier-2+ rework when a surprise would otherwise surface during DO.
+
+- [ ] Target rows / cells / columns enumerated:
+  - `<file_path> <row_key_or_column_name> <fields_being_mutated>`
+- [ ] Current values match task plan's assumed state ✓ / ✗
+  - If ✗: name the divergence; resolve at this cheap-check moment by amending the task plan OR halting and asking the human. Do not silently proceed under the divergent state.
 
 ### Halt conditions tripped
 (list any ✗ above; if any present, do not proceed; ask human)
@@ -216,6 +242,13 @@ What could I have gotten wrong that VERIFY wouldn't catch?
 1. <residual risk>
 2. <residual risk>
 (See §8.)
+
+### Forward-looking HALTs for next session
+Caller-written PRE-FLIGHT checks the next session must verify. For each assertion, the next session HALTs if the assertion does not hold. Saves the next session from re-deriving "what would trigger a halt." Token cost paid here; benefit at the next task's PRE-FLIGHT.
+
+- Forward-looking HALT 1: "<assertion>" (e.g., "the linked-file validation CSV sha256 must change in the expected direction after Task 6; if unchanged, the reconciliation edit did not take")
+- Forward-looking HALT 2: "<...>"
+- Forward-looking HALT N: "<...>" (or `NONE — explicit` if no caller-known HALT applies)
 
 ### Notes for next session
 <anything the next LLM should know — open follow-ups, soft-flags, deferred items>
@@ -285,6 +318,9 @@ Each row: the failure mode, the symptom, where in the five-phase structure it ge
 | L10 | Back-filled PRE-FLIGHT entry | Multi-sub-step task writes its PRE-FLIGHT mid-task or post-DO | Self-check at receipt drafting | Multi-sub-step tasks require either one upfront PRE-FLIGHT or per-sub-step PRE-FLIGHT; back-fill is forbidden |
 | L11 | Stale roadmap claim | Doc says "V4: Natality" but natality is already shipped | RECEIPT | Cross-check VERSION_ROADMAP.md and each subproject's README for "future" items that are actually done; fix on contact |
 | L12 | LLM trusts its own grep | LLM says "no other references to X" without verification | DO | Use `git ls-files | xargs grep -n` (not just `grep -r .` which can miss .gitignored or symlinked files) |
+| L13 | Inventory CSV records file roles before column-content verification | An inventory / manifest CSV's `role` or `description` field claims a file contains columns A/B/C; downstream PRE-FLIGHT discovers the file actually contains X/Y/Z (different domain entirely); the cheap-check window had closed at the original inventory write | Downstream PRE-FLIGHT (too late for cheap-check at the original PRE-FLIGHT) | At inventory CSV write time, enumerate **columns alongside roles** (open the codebook / SAS layout / column header; record column names so the role label is verifiable). For PDF-only inputs, extract TOC + first 2 pages and verify topical alignment. Any inventory row whose role/description names columns without a sibling column-name list is a soft-flag for downstream consumers to re-verify. |
+| L14 | Validation script's per-row failure flag not propagated to process exit code | A reproduction / validation script's per-row CSV has FAIL / `exceeds_tolerance` / `bridge_applicable=False` rows, but `main()` returns 0 (Python: implicit None; R: missing `q(status=1)`); CI / PRE-FLIGHT reads exit code only and reports PASS. Adversarial mutation tests using OR-of-rows aggregation can mask a single-row pre-mutation if other rows independently flag | DO + adversarial mutation testing | At every validation/reproduction script's last `main()` line: `sys.exit(1 if FAIL_COUNT > 0 else 0)` (Python) / `if (n_fail > 0) q(status=1)` (R). Per-row classifier must return non-empty truthy strings (not `""`) so summary aggregation can count. Mutation-runner detectors use **AND-of-rows** (not OR) for family-level verdicts. Defense-in-depth: add Phase-0 cross-CSV invariant comparing fixture metadata to canonical CSVs per row key. |
+| L17 | SMOKE / test asset hard-codes a mutable annotation value pinned at authoring time; canonical state evolves; pin becomes stale; SMOKE FAILs on a CORRECT subsequent mutation | A SMOKE harness asserts `field == "<value-at-task-N-authoring-moment>"` for a field whose value is expected to evolve under later authorized tasks (e.g., row count grows when V2.1 adds 2003-2004 records; sha256 changes when a script is correctly edited; harmonized_schema column count grows). The SMOKE FAILs and is treated as a regression when it is in fact stale pinning | VERIFY (focused defense-in-depth re-probe at the cheap-check moment) | (a) SHAPE-not-VALUE convention per §4.2.1: SMOKE asserts STRUCTURAL invariants. (b) When a SMOKE must pin a value, declare `DESIGN: tracks-current-state` vs `DESIGN: frozen-at-<task_id>` on the first docstring line. (c) When canonical-state mutation surfaces stale pinning: bundle the minimal Edit into the same commit as the canonical mutation. |
 
 If a new mistake class is encountered: append to `LESSONS.md` with the date, file references, what failed, what worked. Propose a new row for this matrix. Halt for human approval before continuing if the lesson reveals a bug in already-completed work.
 
