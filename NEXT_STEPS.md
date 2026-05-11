@@ -791,7 +791,7 @@ The manuscript is ready to submit when:
 4. ✅ Joint-use demo notebook shipped (Task 2, 2026-05-11).
 5. ✅ Linked-file validation framing reconciled (Task 6, 2026-05-11).
 6. ⏳ Manuscript at IJE word limit with admin sections filled (Task 5).
-7. ⏳ Paper-companion notebook reproducing every numeric claim (Task 4).
+7. ✅ Paper-companion notebook reproducing every numeric claim (Task 4, 2026-05-11).
 8. ⏳ V2.1 fetal-death (2003–2004) ideally shipped (Task 3).
 9. ⏳ Cross-product Figure 1 (Task 8).
 10. ⏳ Old GitHub repos pointed at the monorepo (Task 9).

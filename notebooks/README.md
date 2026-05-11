@@ -15,7 +15,7 @@ The pseudocode template is in [`docs/JOINT_USE_GUIDE.md`](../docs/JOINT_USE_GUID
 
 ### `paper_companion.ipynb` — reproduce every numeric claim in the manuscript
 
-Loads all three parquets, computes every count, rate, and validation metric cited in the Data Resource Profile manuscript directly from the data, and emits a Markdown table mapping each paper claim to its source artifact. Intended to demonstrate the reproducibility claim from outside the manuscript.
+Built by [`_build_paper_companion.py`](_build_paper_companion.py); enumerates the 55 numeric claims in `paper/draft_v2_hmd_styled.md` (cataloged C01–C55), recomputes each from the harmonized parquets, schema CSVs, and validation CSVs, and ships a pass/fail synthesis to `paper_companion_results.csv`. Section coverage: top-line record + column counts; annual averages; Table 1 era boundaries; harmonized vs derived split; `within_era` columns; value-level normalizations; NVSR validation pass counts (183/183 + 33/35-byte-exact-plus-2-by-1 + 29/29 counts + 26/26 rates); byte-level parse verification; cause-of-death missingness 2018+; citation-only and out-of-monorepo claims. Findings drive Task 5 (manuscript trim) precision-edits.
 
 ### `era_boundary_walkthrough.ipynb` — what changes at each NCHS layout boundary
 
@@ -24,5 +24,5 @@ A pedagogical notebook that loads the same demographic stratum across each of th
 ## Status
 
 - `joint_use_demo.ipynb` — **shipped 2026-05-11** (Task 2 in `NEXT_STEPS.md` §15; see receipt under `RECEIPTS/`).
-- `paper_companion.ipynb` — stub.
+- `paper_companion.ipynb` — **shipped 2026-05-11** (Task 4 in `NEXT_STEPS.md` §15; see receipt under `RECEIPTS/`).
 - `era_boundary_walkthrough.ipynb` — stub.

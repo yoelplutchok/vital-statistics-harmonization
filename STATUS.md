@@ -1,6 +1,115 @@
-# STATUS — last updated 2026-05-11T18:51:59Z
+# STATUS — last updated 2026-05-11T19:26:28Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-11T19:26:28Z — Task 4 complete: paper companion notebook shipped (5 precision-edit candidates surfaced for Task 5)
+
+### Current phase
+
+Phase A continuing — paper companion notebook shipped. §17 readiness checklist now has **1 ⏳ item remaining** for manuscript submission (was 2 at end of Task 2): **Task 5** (manuscript trim + admin sections). Tasks 3, 7, 8, 9, 10 also remain but Task 3 is "ideally pre-submission, not blocking"; Tasks 7 is post-submission; 8/9/10 are not on the critical path.
+
+### Current task
+
+**Awaiting task selection.** Task 4 (paper_companion notebook) is now ✅ complete. The only manuscript-submission critical-path item left is:
+
+- **Task 5** — Manuscript trim + admin sections. Now unblocked by Task 4's five precision-edit candidates (inlined in `paper/README.md` and `RECEIPTS/task4_paper_companion_2026-05-11T19-26-28Z.md`). Estimated effort: ~one session.
+
+Alternative pick if not Task 5:
+- **Task 3** — V2.1 fetal-death (2003+2004; ~one to two sessions; "ideally pre-submission, not blocking"). Would naturally bundle the H8 schema-doc reconciliation (FIX_LOG 2026-05-11) since V2.1 re-derives the parquet under corrected dtype.
+
+### Last completed step
+
+**Task 4 — Paper companion notebook shipped.** Three new artifacts (`notebooks/paper_companion.ipynb`, `notebooks/_build_paper_companion.py`, `notebooks/paper_companion_results.csv`); three edits (`notebooks/README.md` status; `paper/README.md` outstanding-work resolution with 5 precision-edit candidates inlined; `NEXT_STEPS.md` §17 item 7). Receipt at `RECEIPTS/task4_paper_companion_2026-05-11T19-26-28Z.md`. New DECISION_LOG entry recording the Section B 2017 race-stratified NVSR re-deferral choice.
+
+The notebook enumerates 55 numeric claims from `paper/draft_v2_hmd_styled.md` (cataloged C01–C55 in the PRE-FLIGHT Field-value snapshot), recomputes each from parquets / schema CSVs / validation CSVs, and emits a pass/fail synthesis CSV. Final counts: **25 PASS, 20 CITE-ONLY** (citations / benchmarks not parquet-derivable), **4 L11** (wording-precision findings: C29 eras-vs-boundaries, C33 line-60 "three within_era" scope-restrictive, C47/C48/C49 line-104 raw-NCHS-field-name italicization), **1 DIFF** (C04 line-7 "approximately 3.5 million live births / year" — actual 1990–2024 mean is 3,966,275).
+
+Five Task-5 precision-edit candidates surfaced and inlined in `paper/README.md` for the Task 5 author:
+- **C04 line 7**: "approximately 3.5 million" → consider "approximately 3.5–4 million" or "3.97M average" (1990–2024 mean is 3,966,275; range 3,605,081–4,324,008).
+- **C29 line 23**: "two within fetal death" boundary count requires reader arithmetic against Table 1's three fetal-death eras; consider "three eras with two era-to-era transitions" wording.
+- **C33 line 60**: "Three fetal-death columns are tagged within_era" is scope-restrictive (schema has 24); consider "Three of the within_era fetal-death columns carry irreducibly incompatible..."
+- **C47/C48/C49 line 104**: italicized `maternal_education`, `paternal_age_combined`, `maternal_education_unrevised` are raw NCHS field names (MEDUC, FAGECOMB, MEDUC_REC), not harmonized columns; clarify the referent.
+
+§15 Task 4's secondary scope ("absorbs Section B NVSR cell-level validation deferred from Task 2") was re-deferred at PRE-FLIGHT per Convention 3: the L9 cheap-check confirmed `fetal_death/external_validation_targets.csv` ships no 2017 race-stratified targets, so the absorption would require fresh PDF transcription with the same L9 risk that motivated Task 2's original deferral. DECISION_LOG entry 2026-05-11T19:26:28Z records the choice; receipt Forward-looking HALT 3 flags it.
+
+Convention 3 (Field-value snapshot) was load-bearing this task on FOUR axes:
+- (a) **PRE-FLIGHT**: §15 Task 4 absorption-of-Section-B vs. no-pre-encoded-targets-in-CSV divergence → re-deferred.
+- (b) **PRE-FLIGHT**: C29 framing decision (eras vs boundaries) made at the cheap-check moment.
+- (c) **PRE-FLIGHT**: C33 framing decision (line-60 scope-restrictive reading) made at the cheap-check moment.
+- (d) **DO**: C44/C45/C47–C49 detection-logic / interpretation bugs discovered and corrected mid-DO; the in-DO corrections were author-side issues in the notebook code that the snapshot helped surface quickly (not manuscript-side errors). One was reinterpreted as a manuscript-side L11 (C47–C49).
+
+### What was done this session
+
+1. Session start: read STATUS.md, NEXT_STEPS.md, README.md, PROJECT_STRUCTURE.md, DECISION_LOG.md (2 entries), FIX_LOG.md (1 entry), LESSONS.md (1 entry) per §1. Confirmed `89ddc77` was a post-Task-2 follow-up resolving STATUS Open Question 4.
+2. Selected Task 4 (vs Task 5 STATUS default) with reasoning: Task 4 has clearer five-phase structure than Task 5, absorbs deferred Section B work (deferred again at PRE-FLIGHT), informs Task 5 by enumerating which numbers are parquet-anchored.
+3. Verified all six Task 2 Forward-looking HALTs pre-DO: parquet shas unchanged; H8 dtype-drift caveat carried (string literals used on fetal-death side); L17 risk acknowledged for Task 4's notebook; §15 Task 2 wording already resolved by `89ddc77`; schema-doc parity test follow-up informational; Task 1 HALT 5 closed.
+4. Wrote PRE-FLIGHT entry to `PRE_FLIGHT_LOG.md` (2026-05-11T19:15:00Z) with Convention 3 Field-value snapshot enumerating all 55 manuscript numeric claims (C01–C55) with source-of-truth artifacts. Three plan amendments resolved at PRE-FLIGHT: (Section B) NVSR-2017 race absorption re-deferred; (C29) eras-vs-boundaries framing; (C33) line-60 scope-restrictive reading.
+5. Committed PRE-FLIGHT (`61090fc`); tagged `task4-pre-do`.
+6. SMOKE Tier 0/1: PASS — 3 record counts (138,819,655 / 74,943,824 / 1,634,195) byte-exact; 3 validation-CSV row counts (183 / 35 / 29) byte-exact.
+7. Wrote `notebooks/_build_paper_companion.py` (~370 lines; `DESIGN: tracks-current-state` per Convention 2). 38 cells (15 markdown, 23 code) across 14 section headers.
+8. Built and executed `notebooks/paper_companion.ipynb` via `nbclient`. Initial run surfaced two author-side detection-logic bugs (C44/C45 used `.isna()` but cause_icd10 is empty-string; C34 regex didn't match B-blocks in markdown table) and one author-side interpretation bug (C47–C49 manuscript names raw NCHS field names not harmonized columns). All three corrected; re-ran builder; final synthesis: 25 PASS / 20 CITE-ONLY / 4 L11 / 1 DIFF.
+9. VERIFY: Criterion A (notebook end-to-end no errors) PASS; Criterion B (every claim has a recompute or CITE-ONLY tag with documented source-of-truth) PASS-with-findings (5 precision-edit candidates for Task 5); Criterion C (Task 2 HALT 1 regression check) PASS via re-running `_build_joint_use_demo.py` — 8/8 NVSR cells still byte-exact. Task 2's notebook reverted post-re-run to preserve canonical artifact unmodified (L17 metadata churn, not a regression signal).
+10. Edits to `notebooks/README.md` (paper_companion description rewritten + status table updated), `paper/README.md` (Companion notebook outstanding-work item marked RESOLVED with 5 precision-edit candidates inlined), `NEXT_STEPS.md` §17 item 7 ⏳ → ✅.
+11. Wrote receipt to `RECEIPTS/task4_paper_companion_2026-05-11T19-26-28Z.md` with five-phase trace, three verify criteria, seven-item self-check, six Forward-looking HALTs.
+12. Wrote DECISION_LOG entry recording the Section B re-deferral choice (3 alternatives considered, 3 residual risks documented).
+13. Updating this STATUS.md section.
+14. Pending: task commit + tag `task4-complete`.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+**Task 5 (manuscript trim + admin sections)** by default — it is the last critical-path item before manuscript submission, and Task 4's findings make it concrete (five enumerated precision-edit candidates to address during the trim). Alternative: Task 3 (V2.1 fetal-death) if the user wants to bundle H8 schema-doc reconciliation before submission.
+
+### Open questions for human
+
+Carried forward from prior STATUS, with open question 4 confirmed-resolved (89ddc77):
+
+1. **Push the monorepo to GitHub now**, or wait until Task 5 ships? (Unblocks Task 9 redirect notices.)
+2. **Natality v2.8 schema rename** (Task 1 Forward-looking HALT 6) — bundle with Task 3 (V2.1 fetal-death), or dedicated session?
+3. **Schema-doc reconciliation for the H8 dtype drift** (FIX_LOG 2026-05-11): bundle into Task 3 (V2.1 = fetal-death rebuild) or do as a dedicated `[plan-update]` + schema-version bump task before Task 3?
+4. ~~**`[plan-update]` candidate for §15 Task 2 wording**~~ **RESOLVED 2026-05-11 by `89ddc77` "§15 Task 2 + Task 4: breadcrumb annotations".**
+5. **Section B 2017 race-stratified NVSR validation** — re-deferred by Task 4 per Convention 3 (no pre-encoded targets; L9 PDF-transcription risk). Should this be packaged as a small future task before manuscript submission (input: NVSR-2017 fetal-mortality PDF), or left as a post-submission enhancement? If the manuscript Task 5 trim does NOT add race-stratified-2017 NVSR claims, the absorption is not on the critical path.
+6. **§15 Task 4 wording `[plan-update]` candidate** — analogous to the Task 2 case: §15 Task 4 description names the Section B absorption as in-scope but Task 4 re-deferred it. A future `[plan-update]` could add a breadcrumb annotation similar to the `89ddc77` pattern. Not done as part of Task 4 itself to avoid scope creep.
+
+### Forward-looking HALTs for next session
+
+Per Convention 4 (§6 receipt template). These are PRE-FLIGHT assertions the next session must verify; halt and ask the human if any fails. (Full list — six items — is in `RECEIPTS/task4_paper_companion_2026-05-11T19-26-28Z.md`; restated here at session level for cheap-check access at next session start.)
+
+1. **Five Task-5 precision-edit candidates inlined in `paper/README.md`** (C04, C29, C33, C47/C48/C49) are the primary Task 4 → Task 5 handoff. If Task 5 runs, consume these as input.
+2. **`notebooks/paper_companion.ipynb` binary sha = `dde922d1...` is NOT bit-stable across re-executions** (L17 / Task 2 HALT 3 carry-over). Use `paper_companion_results.csv` sha=`7891809c5040f25d7fcbe3e35ac262f049c4c75be68f0814718ea119757f35ce` as the bit-stable verification artifact.
+3. **§15 Task 4's Section B absorption re-deferred** per Convention 3 (L9 risk; no pre-encoded targets). DECISION_LOG entry 2026-05-11T19:26:28Z and receipt Forward-looking HALT 3 carry the rationale. If the human disagrees, the absorption is a separate small future task (input: NVSR-2017 fetal-mortality PDF).
+4. **`fetal_death/harmonized_schema.csv` H8 dtype drift remains NOT YET RECONCILED** (Task 2 HALT 2 carry-over). All future fetal-death joint-use code must continue to use string literals on `tabulation_flag`/`residence_status`/`maternal_age`/`maternal_race_bridged`/`hispanic_origin` until the schema-version bump task lands. Task 4's notebook follows this pattern.
+5. **If a future task touches `paper/draft_v2_hmd_styled.md` (e.g., Task 5 trim)**, manuscript sha changes from `5e86c923...` — re-run `python notebooks/_build_paper_companion.py` to confirm whether the edit added/removed numeric claims. If `paper_companion_results.csv` sha changes, inspect the new synthesis for tags that need attention. Task 5 SHOULD touch the manuscript by design; treat the CSV-sha change as expected and use the new synthesis as the post-Task-5 verification.
+6. **Task 1 Forward-looking HALT 6 (natality v2.8 rename plan-update)** remains open. Carried forward.
+
+### Build artifacts current
+
+- `natality/`: unchanged from prior STATUS (v2.7.0 mirror).
+- `fetal_death/`: unchanged from prior STATUS (v2.0.0 mirror + Task 1's stratified_denominators.csv).
+- `shared/helpers/`: unchanged.
+- `paper/draft_v2_hmd_styled.md`: unchanged.
+- `paper/README.md`: edited — Companion notebook outstanding-work item marked RESOLVED with 5 precision-edit candidates inlined. Post-edit sha=`d87a4a40...`.
+- `notebooks/`: now contains **`paper_companion.ipynb`** (new, sha=`dde922d1...`, NOT bit-stable), **`_build_paper_companion.py`** (new, sha=`055c3aff...`, deterministic), **`paper_companion_results.csv`** (new, sha=`7891809c...`, bit-stable). README updated.
+- `docs/JOINT_USE_GUIDE.md`: unchanged from Task 2.
+- `FIX_LOG.md`: unchanged (no new entries this task).
+- `DECISION_LOG.md`: new Task 4 entry recording Section B re-deferral.
+- `figures/`: empty.
+
+### Notes for next session
+
+- Task 4 commit ships a ~5-line summary per Convention 5; full narrative in receipt + DECISION_LOG entry + this STATUS section.
+- `task4-pre-do` set at `61090fc`; `task4-complete` to be set after the task commit lands.
+- Field-value snapshot (Convention 3) caught FOUR divergences this task — two pre-DO (Section B deferral + C29/C33 framing decisions) and two in-DO (C44/C45 detection-logic bug; C47–C49 interpretation reframing). The in-DO findings were author-side bugs surfaced by the notebook's actual execution; documented in the receipt's DO trace.
+- Task 4 is the second-largest task this project so far in terms of source-of-truth coverage — 55 enumerated manuscript claims is the densest mapping between text and shipped artifacts the resource will produce. Future manuscript edits should re-run the builder to refresh the synthesis.
+- The 1 DIFF + 4 L11 findings are all manuscript-precision improvements rather than data-side bugs. Task 5 is well-positioned to absorb them all in a single edit pass.
 
 ---
 
