@@ -8,6 +8,153 @@
 
 ---
 
+## PRE-FLIGHT for task4_paper_companion — 2026-05-11T19:15:00Z
+
+### Inputs
+- [x] All required input files exist
+  - `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet`: present, sha256=`9f917a43474eb9e3ed23aa95c714209421c25c29937376651149d22fab934ef0` (carries Task 1+2 PROVENANCE-gap finding; unchanged) ✓
+  - `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet`: present, sha256=`46c169b59b040028d9830546fad71f30d0c6364f10fbc1676b56ae6ee993eb16` (unchanged) ✓
+  - `/Users/yoelplutchok/Desktop/fetal-death-harmonization/fetal_death_derived.parquet`: present, sha256=`90af89b9e659ca2b580d8286b5598588cfb2d17e93f26c1dc1ae00d097f0afdd` matches `fetal_death/PROVENANCE.md` v2.0.0 ✓
+  - `paper/draft_v2_hmd_styled.md`: present, 161 lines, sha256=`5e86c923d581936ce517740fadb6b247bbac4f6297a1cd517ed36b9f3c3967fb` ✓
+  - `fetal_death/harmonized_schema.csv`: present, 73 rows, sha256=`72272c5537fdfa5b926a6aded69920bb5357a7bb5daef09742dfb494dadfa1ab` ✓
+  - `natality/metadata/harmonized_schema.csv`: present, 94 rows, sha256=`2e95488fd910f60cbf5965bd9f0d3503f59111e38180c20e4e51e29af2983577` ✓
+  - `natality/output/validation/external_validation_v1_comparison.csv`: present, 183 rows, sha256=`c82a412ca16dc0f8b3c8a6a6b842b8a4cac43c19015a388bba1f4608f123e68a` ✓
+  - `natality/output/validation/external_validation_v3_linked_comparison.csv`: present, 35 rows, sha256=`868dc5c99e7c7e7bc3cd7674dee6a2abf7062af15ea01e83b4bd14d23763dcbe` ✓
+  - `fetal_death/validation_results.csv`: present, 29 rows (1992–2002 + 2005–2022), sha256=`8041586dc99f450faf4a3b91505a98652410a31d6caa5da14dfa39c75da7de0e` ✓
+  - `fetal_death/external_validation_targets.csv`: present, 81 data rows, sha256=`0d9c361627e898a39533bca0277f01969a9fc8cd34046000d26b99b21d77576f` ✓
+  - `fetal_death/stratified_denominators.csv` (Task 1 output): sha256=`6874d5d65e7b3888acf8a833e4fa98063630765e2eeaf6e1c6cb48ad7b0db5c1` (matches Task 1 HALT 1 byte-exact) ✓
+  - `shared/helpers/canonical_join_keys.py`: present; `NATALITY_TO_CANONICAL` unchanged (matches Task 1 HALT 2 byte-exact) ✓
+  - `fetal_death/ABOUT_THIS_RELEASE.md`: present; carries the canonical 13/19 detail-cell + 6 docs-diffs narrative referenced by manuscript line 94 ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - bootstrap (2026-05-09): ✓
+  - protocol-sync `[plan-update]` (2026-05-11): ✓
+  - task6 (2026-05-11, `efe775d`): ✓
+  - task1 (2026-05-11, `4d00ef8`): ✓
+  - task2 (2026-05-11, `c068628`): ✓
+  - §15 Task 2/4 breadcrumb-annotation `[plan-update]` (2026-05-11, `89ddc77`): ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/task4_*.md`: does not exist ✓
+  - `notebooks/paper_companion.ipynb`: does not exist (only the planned-stub mention in `notebooks/README.md`) ✓
+  - `notebooks/_build_paper_companion.py`: does not exist ✓
+- [x] Forward-looking HALTs from prior session (Task 2 receipt) verified at PRE-FLIGHT
+  - **Task 2 HALT #1** (joint_use_demo 8-cell NVSR validation): Task 4 does NOT touch the natality v2.7.0 or fetal-death v2.0.0 parquets; HALT #1 remains green by construction. Will re-verify in VERIFY by re-running `python notebooks/_build_joint_use_demo.py` after Task 4's DO to confirm no incidental regression.
+  - **Task 2 HALT #2** (fetal-death H8 dtype drift): this notebook MUST use string literals on `tabulation_flag`/`residence_status`/`maternal_age`/`maternal_race_bridged`/`hispanic_origin`. Committed in the notebook design below.
+  - **Task 2 HALT #3** (L17 .ipynb sha not bit-stable): same applies to Task 4's notebook. Verified-by-data-content rather than by-sha; receipt records this explicitly.
+  - **Task 2 HALT #4** (§15 Task 2 wording plan-update): resolved by `89ddc77` "§15 Task 2 + Task 4: breadcrumb annotations" — verified by reading current `NEXT_STEPS.md` §15 Task 2 line 497, which now ships the PRE-FLIGHT-amended-scope breadcrumb.
+  - **Task 2 HALT #5** (schema-doc parity smoke test): informational only; not gating Task 4. Carried forward.
+  - **Task 2 HALT #6** (Task 1 HALT 5 closed): confirmed.
+
+### Environment
+- [x] Python version: 3.13.9 (≥3.11 required) ✓
+- [x] pandas: 2.3.2 ✓
+- [x] pyarrow: 18.1.0 ✓
+- [x] nbformat: 5.10.4 ✓
+- [x] nbclient: present (verified by Task 2's successful nbclient execution at `c068628`) ✓
+- [x] Working directory clean (`git status` on `main` at `89ddc77`): ✓
+- [x] On expected branch (`main`): ✓
+
+### Source documentation
+- [x] No new NVSR PDF transcription. Task 4 reads only artifacts that have already been PDF-anchored in prior tasks (the validation CSVs and the harmonized parquets); no L9 risk on numeric reproduction.
+- [x] §15 Task 4 "absorbs Section B NVSR cell-level validation deferred from Task 2" — **L9 cheap-check**: `fetal_death/external_validation_targets.csv` contains NO 2017 race-stratified fetal-death targets (verified by metric enumeration: 26 distinct metrics, none race-keyed). Absorbing Section B would require a fresh PDF transcription from the 2017-vintage NVSR fetal-mortality report (NVSR 67-?). The original Task 2 deferral cited exactly this L9 risk. **Resolution**: re-defer the Section B absorption per Convention 3 second bullet — see Field-value snapshot below for the formal divergence and reasoning. Section B race-stratified 2017 NVSR validation becomes a separate small future task (input: NVSR-2017 fetal-mortality PDF; output: 4 new rows in `external_validation_targets.csv`; cost: one short session if the PDF is at hand).
+
+### Outputs
+- [x] Intended output paths do not exist OR are explicitly marked for overwrite
+  - `notebooks/_build_paper_companion.py`: new ✓ (deterministic builder; `DESIGN: tracks-current-state` per Convention 2)
+  - `notebooks/paper_companion.ipynb`: new ✓ (built by the above; executed with nbclient; not bit-sha-stable per L17/HALT 3)
+  - `RECEIPTS/task4_paper_companion_<ts>.md`: new ✓
+  - Edits to existing files explicitly intended: `notebooks/README.md` (paper_companion description), `NEXT_STEPS.md` (§17 item 7 ⏳ → ✅ on success), `paper/README.md` (mark "Companion notebook" outstanding-work item resolved), `STATUS.md`, possibly `DECISION_LOG.md` for any L6/L11 findings that need to be fixed in the manuscript
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+Task 4's purpose is to surface L6/L11 drift between the manuscript text and the underlying artifacts. Convention 3 applied here means **enumerating every numeric claim in the manuscript** before writing the first cell, recording the source-of-truth, the plan-assumed value, and the current actual value. Each row's `current_actual` is computed at this PRE-FLIGHT moment so that mid-DO findings are surprises in the *manuscript*, not in the *artifacts*.
+
+**Notation**: `LB-N` = manuscript line N below. `SoT` = source of truth artifact. `plan_value` = the manuscript's stated number. `current_actual` = computed at this PRE-FLIGHT. `?` = will be computed during notebook build (cheap; computing now would require parquet loads which the SMOKE Tier 1 + DO phases will do anyway). `match` column populated where snapshot is doable from CSVs/schemas without parquet load.
+
+| Tag | LB | Claim (excerpted) | SoT | plan_value | current_actual | match |
+|---|---|---|---|---|---|---|
+| C01 | 3 | 138,819,655 natality records (1990–2024) | natality parquet `len` | 138,819,655 | ? (DO) | DO |
+| C02 | 3 | 74,943,824 linked records (2005–2023) | linked parquet `len` | 74,943,824 | ? (DO) | DO |
+| C03 | 3 | 1,634,195 fetal-death records (1992–2022) | fetal-death parquet `len` | 1,634,195 | ? (DO) | DO |
+| C04 | 7 | ~3.5M live births/year | natality parquet `len / n_years` | ~3.5M | ? (DO) | DO |
+| C05 | 7 | 20,000–30,000 fetal deaths/year | fetal-death parquet groupby year | 20K–30K | ? (DO) | DO |
+| C06 | 7 | 20,000 infant deaths/year | linked parquet death-side filter | ~20K | ? (DO) | DO |
+| C07 | 9 | 2003–2014 phasing natality | NCHS source / docs only (not a parquet number) | 2003–2014 | (cite-only) | n/a |
+| C08 | 9 | 2005–2017 V1 fetal-death window | docs (`fetal_death/COMPARABILITY.md`) | 2005–2017 | matches | ✓ |
+| C09 | 9 | 100% A-version in 2018 | docs | 100% in 2018 | matches | ✓ |
+| C10 | 9 | 2006 natality 1500→775 bytes | record_layout / docs | 1500→775 | matches Table 1 row | ✓ |
+| C11 | 9 | 2009 unrevised-only blanked | docs | 2009 | matches | ✓ |
+| C12 | 9 | 2014 natality 1345-byte layout | record_layout / docs | 1345 | matches Table 1 row | ✓ |
+| C13 | 11 | Salihu 1995–1998 | citation | 1995–1998 | (cite-only) | n/a |
+| C14 | 11 | Willinger 2001–2002 | citation | 2001–2002 | (cite-only) | n/a |
+| C15 | 15 | first release 2026 | repo bootstrap date | 2026 | matches STATUS.md bootstrap | ✓ |
+| C16 | 19 | 138,819,655 (1990–2024) | dup of C01 | 138,819,655 | ? | DO |
+| C17 | 19 | 84 natality columns | natality parquet `n_cols` | 84 | 84 (verified now) | ✓ |
+| C18 | 19 | 74,943,824 (2005–2023) | dup of C02 | 74,943,824 | ? | DO |
+| C19 | 19 | 94 linked columns | linked parquet `n_cols` | 94 | 94 (verified now) | ✓ |
+| C20 | 19 | denom-plus cohort 2005–2015; period-cohort 2016–2023 | docs | per text | matches | ✓ |
+| C21 | 19 | 1,634,195 (1992–2022) | dup of C03 | 1,634,195 | ? | DO |
+| C22 | 19 | 89 fetal-death columns | fetal-death parquet `n_cols` | 89 | 89 (verified now) | ✓ |
+| C23 | 21 | 2003 transition 1351 bytes | NCHS docs / pending V2.1 | 1351 | (no on-disk artifact in HVS — cite-only) | n/a |
+| C24 | 21 | 2004 transition 1501 bytes | same | 1501 | (cite-only) | n/a |
+| C25 | 21 | 50 × 197 × 10 = 98,500 byte-comparisons | `fetal_death/ABOUT_THIS_RELEASE.md` line 4 | 98,500 | matches arithmetic + ABOUT_THIS_RELEASE | ✓ |
+| C26 | 21 | zero mismatches 1993–2002 + 1992 separately | `validation_tracking.csv` | 0 mismatches | matches (validation_tracking notes "matches" for every year) | ✓ |
+| C27 | 23 | 5 natality era boundaries | Table 1 | 5 | Table 1 rows = 5 (1990-2002, 2003, 2004-2005, 2006-2013, 2014-2024) | ✓ |
+| C28 | 23 | 3 linked era boundaries | Table 1 | 3 | Table 1 rows = 3 | ✓ |
+| C29 | 23 | 2 fetal-death era boundaries | Table 1 | 2 | Table 1 rows = 3 (1992-2002, 2005-2017, 2018-2022) — **MISMATCH: text says 2, table shows 3** | ✗ L6 |
+| T1 | 29–39 | Table 1 record lengths and certificate revisions | 11 rows | per table | per-row verification will compute matches against record_layout files for the rows where layout files exist; for transition rows where files don't yet exist (2003, 2004 fetal-death), cite NCHS | DO |
+| C30 | 45 | natality: 71 harmonized + 13 derived = 84 total | natality schema CSV + parquet | 84 total ✓; 71/13 split | natality parquet=84 cols ✓; **natality schema CSV has 94 rows (different ontology — cross-era expansion?); 71+13 split needs derivation_rule classification on schema rows** | partial |
+| C31 | 45 | linked: 7 additional + 3 derived death-side = 94 total | linked schema | 94 ✓; 7/3 split | linked parquet=94 cols ✓; the +7/+3 split needs schema cross-product analysis | partial |
+| C32 | 45 | fetal-death: 73 harmonized + 16 derived = 89 total | fetal-death schema + parquet | 89 ✓; 73/16 split | fetal-death parquet=89 cols ✓; schema CSV=73 rows ✓; 89-73=16 ✓ | ✓ |
+| C33 | 60 | three fetal-death `within_era` columns | fetal-death schema | 3 | **schema has 24 within_era rows; manuscript line 60 specifically names `breech_unrevised`, `delivery_place_unrevised`, `maternal_race_bridged_detail` as the three "incompatible-clinical-concept" ones — these 3 ARE in the schema's 24 within_era rows. The wording "three columns are tagged within_era" is L11-stale (older partition) or scope-restrictive (the three uniquely-incompatible ones).** | ✗ L11 |
+| C34 | 69 | five fetal-death value-level normalizations (`fetal_sex`, `delivery_method_recode`, `maternal_race_bridged`, `paternal_age_recode11`, `delivery_place_recode`) | `fetal_death/ABOUT_THIS_RELEASE.md` (B1-B6 narrative) | 5 | ABOUT_THIS_RELEASE has B1-B6 (six items, not five); manuscript line 69 lists 5. **Possible L6 — verify B1-B6 vs the five named in manuscript** | ? DO |
+| C35 | 75 | fetal-death pipeline ~6 min on 2024-vintage laptop | benchmark — not reproducible without running pipeline | ~6 min | (not parquet-derivable; cite-only) | n/a |
+| C36 | 75 | natality pipeline ~90 min | same | ~90 min | (cite-only) | n/a |
+| C37 | 83 | live_births_by_year sourced from NVSR 57-08 (1995–2002) + NVSR 73-09 (2005–2022) | `fetal_death/live_births_by_year.csv` Source col | per text | will verify against the file at DO | DO |
+| C38 | 85 | Level 1 ~10s, Level 2 ~1m, Level 3 ~1-2h | benchmarks | per text | (cite-only) | n/a |
+| C39 | 94 | natality 183 of 183 V1 targets (1990–2024) | `natality/output/validation/external_validation_v1_comparison.csv` | 183/183 | csv has 183 data rows; `pass==1` count will be computed at DO | DO |
+| C40 | 94 | linked 33 of 35 byte-exact; 2 cells differ by 1 (Task 6 canonical framing) | `natality/output/validation/external_validation_v3_linked_comparison.csv` | 33/35 + 2 by 1 | csv has 35 data rows; Diff=0 count = 33, Diff=1 count = 2 will be computed at DO | DO |
+| C41 | 94 | fetal-death: 29 per-year counts | `fetal_death/validation_results.csv` | 29/29 | csv has 29 data rows, all `Match=✓` (verified now) | ✓ |
+| C42 | 94 | fetal-death: 26 per-year FMR | `fetal_death/external_validation_targets.csv` rate rows | 26/26 | csv has 26 `fetal_mortality_rate` rows (1995–2002 + 2005–2022, verified now); per-year FMR computation against the parquet will be done at DO | partial (csv-row-count ✓; per-row PASS at DO) |
+| C43 | 94 | fetal-death: NVSR 73-09 (2005–2022); NVSR 57-08 Tables A and B (1995–2002); NCHS user guide (1992–1994) | `validation_results.csv` Source col | per text | csv Source col matches text byte-exact (verified now) | ✓ |
+| C44 | 100 | cause-of-death not in public-use file before 2014 | parquet `cause_icd10` null-rate by year | 100% null pre-2014 | ? (DO) | DO |
+| C45 | 100 | ~50% records lack cause data 2018 onward | parquet `cause_icd10` null-rate by year for 2018+ | ~50% | ? (DO) | DO |
+| C46 | 100 | state-level identifiers in fetal-death raw 1992–2002 only | per-year raw parquets (out of monorepo scope; `STATEFET`/`STATERES`/`STOCCFIP` columns) | per text | cite + grep harmonized columns; state cols not in harmonized | partial |
+| C47 | 104 | `maternal_education` blank V1 2007–2013 (even for revised records) | parquet null-rate | 100% null in 2007–2013 V1 | ? (DO) | DO |
+| C48 | 104 | `paternal_age_combined` blank V1 2007–2013 | parquet null-rate | 100% null in 2007–2013 V1 | ? (DO) | DO |
+| C49 | 104 | `maternal_education_unrevised` blank V1 2007 onward | parquet null-rate | 100% null 2007+ V1 | ? (DO) | DO |
+| C50 | 106 | Maryland 1992–1998 no Hispanic | `fetal_death/COMPARABILITY.md` + parquet `hispanic_origin` null-rate by state-year | per text | partial verification via national `hispanic_origin` null-rate by year; full state-year verification requires per-year raw parquets (out of monorepo scope) | partial |
+| C51 | 106 | Massachusetts 1992–1997 no Hispanic | same | per text | same | partial |
+| C52 | 106 | Louisiana 1992–1994 plurality under-reported | same | per text | same | partial |
+| C53 | 125 | 138.8M (1990–2024) | dup of C01 (rounded) | 138.8M | ? | DO |
+| C54 | 125 | 74.9M (2005–2023) | dup of C02 (rounded) | 74.9M | ? | DO |
+| C55 | 125 | 1.6M (1992–2022) | dup of C03 (rounded) | 1.6M | ? | DO |
+
+Pre-DO Field-value snapshot findings (from CSVs / schemas only, no parquet load yet):
+
+1. **C17, C19, C22 confirmed at PRE-FLIGHT**: parquet column counts 84/94/89 match manuscript exactly. No L11 risk on the headline column-count claims.
+2. **C29 L6 candidate**: manuscript line 23 says "two within fetal death" era boundaries; Table 1 ships three fetal-death rows (1992–2002, 2005–2017, 2018–2022). Interpretation: "boundaries" = transitions BETWEEN eras, so 3 eras = 2 boundaries. Either reading is defensible (eras vs boundaries); flag for resolution in DO with explicit framing.
+3. **C33 L11 candidate**: manuscript line 60 says "Three fetal-death columns are tagged within_era," but schema has 24 within_era. The three named in line 60 (`breech_unrevised`, `delivery_place_unrevised`, `maternal_race_bridged_detail`) ARE within_era, but they are not the only ones. The text is scope-restrictive (these three are uniquely "incompatible clinical concepts that cannot be reconciled") rather than exhaustive. The manuscript may benefit from a precision edit — flag for Task 5 (manuscript trim) rather than fix in Task 4.
+4. **C34 verify candidate**: line 69 lists FIVE fetal-death normalizations; `fetal_death/ABOUT_THIS_RELEASE.md` describes the harmonization fixes as B1–B6 (six items). Verify whether the manuscript's five = a subset of ABOUT_THIS_RELEASE's six, or whether one is missing.
+5. **C41 confirmed**: 29/29 per-year counts with `Match=✓` byte-exact (verified now).
+6. **C42 partial-confirmed**: 26 `fetal_mortality_rate` rows in external_validation_targets.csv covering exactly 1995–2002 + 2005–2022; per-row PASS verified at DO.
+7. **C43 confirmed**: source attribution byte-exact.
+
+**Plan assumption amended at PRE-FLIGHT (Convention 3 second bullet)**
+
+1. **Section B 2017 race-stratified NVSR validation deferred from Task 2 is NOT absorbed into Task 4 in this PRE-FLIGHT.** §15 Task 4 description (current state at `89ddc77`) names this absorption; the L9 cheap-check above confirms it requires a fresh PDF transcription with no pre-encoded targets to verify against. Task 4's primary scope (reproduce every manuscript numeric claim) is itself substantial (55+ claims enumerated above) and does not include race-stratified 2017 NVSR claims (manuscript line 94 makes only aggregate-level NVSR validation claims). The Section B absorption becomes a separate small future task — see Forward-looking HALTs in the receipt. This is a Convention 3 second-bullet response: surface the divergence at PRE-FLIGHT, amend the plan with explicit reasoning, do not silently proceed.
+
+2. **C29 framing decision: "boundaries" = transitions, not eras**. The notebook will report 5/3/2 boundary counts under that reading and explicitly note the eras=boundaries+1 relationship for cross-checkers. The manuscript's wording stands.
+
+3. **C33 framing decision: line 60's "three" is scope-restrictive** (the three irreducibly-incompatible-clinical-concept columns), not exhaustive of within_era. The notebook will report both numbers (the 3 named + the full 24 in the schema) and recommend a Task 5 line-60 precision edit to "Three of the within_era fetal-death columns carry irreducibly incompatible clinical concepts across the revision boundary..." Decision logged here; the actual manuscript edit is OUT of Task 4 scope (Task 4 produces the notebook; manuscript edits are Task 5).
+
+### Halt conditions tripped
+None unresolved. Three findings (C29 framing, C33 precision, Section B absorption deferral) are resolved at this PRE-FLIGHT moment per Convention 3 second bullet. No previously-stable downstream output is being mutated by Task 4. No new PDF transcription. Task 2's six Forward-looking HALTs all verified or non-applicable.
+
+### Result
+PROCEED.
+
+---
+
 ## PRE-FLIGHT for task2_joint_use_demo — 2026-05-11T18:27:14Z
 
 ### Inputs
