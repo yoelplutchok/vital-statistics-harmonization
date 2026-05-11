@@ -4,11 +4,14 @@ Worked examples that span more than one of the three products. Each notebook sho
 
 ## Planned
 
-### `joint_use_demo.ipynb` — fetal mortality rate by maternal race, 2022
+### `joint_use_demo.ipynb` — fetal mortality rate, two stratifications
 
-Loads the fetal-death and natality parquets, applies each product's canonical analytic filter, joins on `data_year` and `maternal_race_bridged`, and computes the fetal mortality rate per 1,000 (live births + fetal deaths) by race. Compares each cell against *NVSR 73-09* Table A.
+Built by [`_build_joint_use_demo.py`](_build_joint_use_demo.py); loads all three parquets (natality, linked, fetal-death), applies each product's canonical analytic filter, and computes fetal mortality rates in two demonstrations:
 
-The pseudocode is in [`docs/JOINT_USE_GUIDE.md`](../docs/JOINT_USE_GUIDE.md).
+- **Section A.** 2022 fetal mortality rate by maternal age band (8 NVSR-standard bands `<15 / 15-19 / 20-24 / 25-29 / 30-34 / 35-39 / 40-44 / 45+`), validated byte-exact against *NVSR 73-09* Table 4 (8 cells; all PASS). Aggregate FMR 5.4778 per 1,000 matches the NVSR-published 5.48 within rounding.
+- **Section B.** 2017 fetal mortality rate by maternal race (last year `maternal_race_bridged` is non-null in both products — NCHS dropped MBRACE from 2018+ public-use files). Joint-use machinery demonstration; *NVSR* cell-level validation deferred to the paper companion notebook.
+
+The pseudocode template is in [`docs/JOINT_USE_GUIDE.md`](../docs/JOINT_USE_GUIDE.md). The notebook is regenerable deterministically from the builder script against new parquet versions.
 
 ### `paper_companion.ipynb` — reproduce every numeric claim in the manuscript
 
@@ -20,4 +23,6 @@ A pedagogical notebook that loads the same demographic stratum across each of th
 
 ## Status
 
-All three are stubs as of the initial monorepo migration. The `joint_use_demo.ipynb` is the highest-leverage one for the manuscript's "designed for joint use" claim and should be filled in first.
+- `joint_use_demo.ipynb` — **shipped 2026-05-11** (Task 2 in `NEXT_STEPS.md` §15; see receipt under `RECEIPTS/`).
+- `paper_companion.ipynb` — stub.
+- `era_boundary_walkthrough.ipynb` — stub.

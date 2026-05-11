@@ -1,6 +1,106 @@
-# STATUS — last updated 2026-05-11T18:06:12Z
+# STATUS — last updated 2026-05-11T18:51:59Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-11T18:51:59Z — Task 2 complete: joint-use demo notebook shipped (+ first FIX_LOG entry)
+
+### Current phase
+
+Phase A continuing — joint-use demo notebook shipped. §17 readiness checklist now has **2 ⏳ items remaining** for manuscript submission (was 3 at end of Task 1): Task 4 (paper companion notebook) and Task 5 (manuscript trim + admin sections). Tasks 3, 7, 8, 9, 10 also remain but Tasks 7 is post-submission; Task 3 is "ideally before submission, not blocking"; Tasks 8/9/10 are not on the critical path.
+
+### Current task
+
+**Awaiting task selection.** Task 2 (joint_use_demo notebook) is now ✅ complete. Recommended next picks from `NEXT_STEPS.md` §15 in priority order:
+
+- **Task 5** — Manuscript trim + admin sections (~one session; unblocks Task 4 cleanly because Task 4 wants the manuscript stable).
+- **Task 4** — `notebooks/paper_companion.ipynb` (~one session; depends on Task 5 ideally precedes; would also naturally absorb the Section B NVSR validation deferred from Task 2).
+- **Task 3** — V2.1 fetal-death (2003+2004 transition years; ~one to two sessions; "ideally before submission, not blocking").
+
+### Last completed step
+
+**Task 2 — Joint-use demo notebook shipped.** Two new artifacts (`notebooks/joint_use_demo.ipynb` + companion deterministic builder `notebooks/_build_joint_use_demo.py`); two edits (JOINT_USE_GUIDE.md filter-syntax fix + dtype caveat; notebooks/README.md description update); one §17 ✅; one new FIX_LOG entry (H8 fetal-death dtype drift — first FIX_LOG entry in the repo). Receipt at `RECEIPTS/task2_joint_use_demo_2026-05-11T18-51-59Z.md`.
+
+The notebook ships two integrated demonstrations:
+- **Section A** — 2022 fetal mortality rate by maternal age band, validated byte-exact against *NVSR 73-09* Table 4 (8 cells, all PASS, sum=20,202 matches unstratified target; aggregate FMR 5.4778 matches NVSR-published 5.48 within rounding).
+- **Section B** — 2017 fetal mortality rate by maternal race (last bridged-race-available year), joint-use machinery demonstration with both denominator paths (pre-built CSV vs direct natality recompute) cross-verifying byte-exact. NVSR cell-level validation deferred to Task 4 per PRE-FLIGHT amendment.
+
+Convention 3 (Field-value snapshot) was load-bearing this task on TWO axes:
+- (a) **PRE-FLIGHT-discovered §15-vs-current state divergence**: §15 said "by maternal race, 2022, vs NVSR 73-09 Table A" but (i) 2022 has null `maternal_race_bridged` (NCHS dropped MBRACE post-2017); (ii) Table A is sex/plurality, not race. Plan amended at PRE-FLIGHT (Section A axis swap; Section B year swap; NVSR validation for Section B deferred to Task 4 to avoid L9 PDF-transcription risk).
+- (b) **SMOKE-Tier-1-discovered H8 dtype drift**: `fetal_death/harmonized_schema.csv` documents 5 demographic/filter columns as `int` but the parquet ships them as `object`/string. Filter `(fd["tabulation_flag"] == 2)` silently produces 0 rows. Fixed in scope (JOINT_USE_GUIDE.md + notebook) with FIX_LOG entry; schema-doc reconciliation deferred to a future schema-version-bump task.
+
+Task 1 Forward-looking HALT 5 (1992-2002 maternal_race_bridged crosswalk equivalence) was executed as SMOKE Tier 1 supplementary check: PASS — both products partition 1995 into the same `{1, 2, 3, 4}` bridged-race categories (structural equivalence). HALT 5 is now CLOSED.
+
+### What was done this session
+
+1. Session start: read STATUS.md, NEXT_STEPS.md, README.md, PROJECT_STRUCTURE.md, DECISION_LOG.md (3 entries), FIX_LOG.md (0 entries), LESSONS.md (1 entry) per §1.
+2. Verified all 6 Task 1 Forward-looking HALTs pre-DO: stratified_denominators.csv sha matches; canonical_join_keys.py NATALITY_TO_CANONICAL content matches; filter-on-both-sides policy committed in notebook design; bridged-race-null preservation committed; 1992-2002 crosswalk-equivalence smoke deferred to Task 2 SMOKE Tier 1; Convention 3 second-bullet drill applied.
+3. Wrote PRE-FLIGHT entry to `PRE_FLIGHT_LOG.md` (2026-05-11T18:27:14Z) with Convention 3 Field-value snapshot enumerating §15-spec-vs-current-state divergences on race-availability and NVSR-table mis-cite. Resolution: plan amended at PRE-FLIGHT (Section A 2022 by age + Section B 2017 by race).
+4. Committed PRE-FLIGHT (`da5d407`); tagged `task2-pre-do`.
+5. SMOKE Tier 0 (synthetic 10-row fixture): PASS — combined filter retains expected subset; mutation tests on each filter clause independently; race groupby; age=99 sentinel preserved.
+6. SMOKE Tier 1 attempt 1: FAIL — `tabulation_flag == 2` (int) produces 0 rows. Diagnosed: fetal-death parquet stores `tabulation_flag` and `residence_status` as `object`/string dtype despite schema doc saying `int`. H8 doc-vs-data drift extends to 5 columns total (tabulation_flag, residence_status, maternal_age, maternal_race_bridged, hispanic_origin).
+7. SMOKE Tier 1 retry with string-literal filter: PASS — 2017 NVSR-pop = 22,827 byte-exact against pre-encoded NVSR target. Task 1 HALT 5 crosswalk equivalence: PASS — both products partition 1995 into the same `{1, 2, 3, 4}` bridged-race categories.
+8. SMOKE Tier 4 (full 2022 cross-product): PASS — 8/8 NVSR 73-09 Table 4 age cells byte-exact; aggregate FMR 5.4778 ≈ NVSR-published 5.48; row-count conservation on both numerator (sum-of-bands=20,202) and denominator (sum-of-bands=3,667,758) sides.
+9. Wrote `notebooks/_build_joint_use_demo.py` (deterministic notebook builder; 199 lines; `DESIGN: tracks-current-state` per Convention 2).
+10. Built and executed `notebooks/joint_use_demo.ipynb` via `nbclient`: 19 cells (8 markdown, 11 code), 0 errors, all assertions PASS.
+11. Bundled docs-data drift fixes into Task 2 scope: JOINT_USE_GUIDE.md filter table line 51 + new dtype-caveat paragraph + worked-example code lines 92-95 string-literal fix; notebooks/README.md description rewritten.
+12. Filed FIX_LOG entry for H8 (first FIX_LOG entry in repo) documenting fetal-death dtype drift across 5 columns + recommended schema-doc reconciliation + dtype-parity smoke-test follow-up.
+13. Updated NEXT_STEPS.md §17 item 4 → ✅.
+14. Wrote receipt to `RECEIPTS/task2_joint_use_demo_2026-05-11T18-51-59Z.md` with five-phase trace, three verify criteria, seven-item self-check, six Forward-looking HALTs.
+15. Updating this STATUS.md section.
+16. Pending: task commit + tag `task2-complete`.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+Task 5 (manuscript trim) by default — unblocks Task 4 cleanly and is the highest-leverage item on the §17 critical path after Task 2. Alternative: Task 4 directly (paper companion notebook) if you'd rather do it before manuscript trim; would naturally absorb Section B's NVSR validation deferred from Task 2.
+
+### Open questions for human
+
+Carried forward from prior STATUS:
+
+1. **Push the monorepo to GitHub now**, or wait until Task 4/5 ships? (Unblocks Task 9 redirect notices.)
+2. **Should the future natality v2.8 schema rename** (Task 1 Forward-looking HALT 5/6) be packaged with Task 3 (V2.1 fetal-death), or as a dedicated session?
+3. **Schema-doc reconciliation for the H8 dtype drift** (FIX_LOG 2026-05-11): bundle into Task 3 (V2.1 = fetal-death rebuild) which would naturally re-derive the parquet under the corrected dtype, or do as a dedicated `[plan-update]` + schema-version bump task before Task 3?
+4. **`[plan-update]` candidate for §15 Task 2 wording**: the §15 spec still says "by maternal race, 2022, matches NVSR 73-09 Table A" — both axes stale. The plan was amended at this task's PRE-FLIGHT. Should I write a `[plan-update]` commit to reword §15 to match what shipped?
+
+### Forward-looking HALTs for next session
+
+Per Convention 4 (§6 receipt template). These are PRE-FLIGHT assertions the next session must verify; halt and ask the human if any fails. (Full list — six items — is in `RECEIPTS/task2_joint_use_demo_2026-05-11T18-51-59Z.md`; restated here at session level for cheap-check access at next session start.)
+
+1. **joint_use_demo.ipynb 2022 8-cell NVSR validation must remain all PASS.** If any future change touches natality v2.7.0 or fetal-death v2.0.0 parquets, re-run `python notebooks/_build_joint_use_demo.py` and inspect Section A's pass/fail table. Any DIFF row that wasn't there before is a regression — halt and ask.
+2. **`fetal_death/harmonized_schema.csv` H8 dtype drift NOT YET RECONCILED.** ALL fetal-death joint-use code MUST use string literals on `tabulation_flag`/`residence_status`/`maternal_age`/`maternal_race_bridged`/`hispanic_origin` (or coerce with `pd.to_numeric`). Editing the schema CSV requires a schema-version bump per anti-pattern #6 — see open question #3.
+3. **L17 risk: notebook .ipynb sha=`ff563e10...` is NOT bit-stable across re-executions** (Jupyter execution metadata). Receipt records as snapshot, not contract. Verify data-content reproducibility by re-running the builder and inspecting cell outputs, NOT by hashing the .ipynb file.
+4. **Plan-update candidate for §15 Task 2 wording** (carried from PRE-FLIGHT amendment): reword the §15 Task 2 description to match what shipped (Section A age 2022 + Section B race 2017). Open question #4 for human.
+5. **Schema-doc parity smoke test (FIX_LOG follow-up)**: add `fetal_death/tests/test_schema_dtype_parity.py` to prevent H8 recurrence. Bundle with the schema-version bump task.
+6. **Task 1 Forward-looking HALT 5 (1992-2002 crosswalk equivalence) is CLOSED** by Task 2 SMOKE Tier 1's structural-equivalence check. Future receipt-readers tracing the HALT chain should consider this resolved at the 4-category-code level.
+
+### Build artifacts current
+
+- `natality/`: unchanged from prior STATUS (v2.7.0 mirror).
+- `fetal_death/`: unchanged from prior STATUS (v2.0.0 mirror + stratified_denominators.csv shipped in Task 1).
+- `shared/helpers/`: unchanged (3 files from Task 1).
+- `paper/draft_v2_hmd_styled.md`: unchanged.
+- `notebooks/`: now contains **`joint_use_demo.ipynb`** (new, sha=`ff563e10...`; NOT bit-stable) and **`_build_joint_use_demo.py`** (new, sha=`1f5952d4...`; deterministic). README updated.
+- `docs/JOINT_USE_GUIDE.md`: edited (filter-table syntax fix + dtype-caveat paragraph + worked-example code string-literal fix). New sha=`cd68eba0...`.
+- `FIX_LOG.md`: first entry filed (H8 fetal-death dtype drift, 2026-05-11).
+- `figures/`: empty.
+
+### Notes for next session
+
+- Task 2 commit ships a ~5-line summary per Convention 5; full narrative in receipt + FIX_LOG entry + this STATUS section.
+- `task2-pre-do` set at `da5d407`; `task2-complete` to be set after the task commit lands.
+- Field-value snapshot (Convention 3) caught two real divergences this session — one at PRE-FLIGHT (§15-vs-current state on race availability and NVSR table) and one at SMOKE Tier 1 (H8 dtype drift on 5 fetal-death columns). The addendum-protocol pattern (write a new dated PRE-FLIGHT entry) was not needed because the SMOKE Tier 1 dtype finding was a bug-class addressable within DO scope (fix the filter literal, file FIX_LOG) rather than a plan-amendment-requiring divergence.
+- The notebook's .ipynb file ships executed outputs; users running it via `jupyter nbconvert --execute` or `Run All` in Jupyter will reproduce identical data outputs (deterministic) but a different binary sha (Jupyter metadata).
+- Section B's race-stratified NVSR validation was deferred to Task 4 (paper companion notebook); Task 4 should absorb that scope.
 
 ---
 
