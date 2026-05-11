@@ -494,6 +494,8 @@ Each task is a five-phase unit per §4. The fields below specify the PRE-FLIGHT 
 
 ### Task 2 — `notebooks/joint_use_demo.ipynb`
 
+**Shipped 2026-05-11 with PRE-FLIGHT-amended scope** (Section A 2022 by maternal age vs *NVSR 73-09* Table 4, 8/8 cells byte-exact; Section B 2017 by maternal race, joint-use machinery demo; Section B NVSR cell-level validation absorbed into Task 4). The original-intent text below is preserved for audit; see `RECEIPTS/task2_joint_use_demo_2026-05-11T18-51-59Z.md` for the canonical record of what shipped and why the scope was amended at PRE-FLIGHT.
+
 **Goal.** A runnable Jupyter notebook that loads all three parquets, applies each canonical filter, joins on demographic strata, computes the fetal mortality rate per 1,000 (live births + fetal deaths) by maternal race for 2022, and matches each cell against *NVSR 73-09* Table A.
 
 **Why this matters.** Demonstrates the manuscript's "designed for joint use" claim from outside the manuscript.
@@ -570,7 +572,7 @@ Each task is a five-phase unit per §4. The fields below specify the PRE-FLIGHT 
 
 ### Task 4 — `notebooks/paper_companion.ipynb`
 
-**Goal.** A notebook that reproduces every numeric claim in the manuscript directly from the parquets, with each cell mapped to the paper paragraph it supports.
+**Goal.** A notebook that reproduces every numeric claim in the manuscript directly from the parquets, with each cell mapped to the paper paragraph it supports. **Also absorbs Section B NVSR cell-level validation deferred from Task 2** (2017 fetal mortality rate by maternal race, validated against the appropriate per-year NVSR fetal-mortality table; PDF-source location to be verified at Task 4 PRE-FLIGHT per L9 cheap-check).
 
 **PRE-FLIGHT inputs.** Current preferred manuscript at `paper/draft_v2_hmd_styled.md`. All three parquets.
 
