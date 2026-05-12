@@ -19,6 +19,55 @@
 
 ---
 
+## 2026-05-12T22:30:00Z — C8.1 (followup) — L17-extension — Test-infra basename collision: `pytest fetal_death/tests/ natality/tests/` errors at collection under default import mode because both subprojects ship `test_schema_dtype_parity.py` and neither directory had `__init__.py`
+
+**Symptom:** C8.2 PRE-FLIGHT (2026-05-12T22:30:00Z) verification of STATUS 22:00Z forward-looking HALT #7 ("16 tests across both subprojects") reproduced an `ImportPathMismatchError` / "import file mismatch" collection error:
+
+```
+ERROR collecting natality/tests/test_schema_dtype_parity.py
+import file mismatch:
+imported module 'test_schema_dtype_parity' has this __file__ attribute:
+  .../fetal_death/tests/test_schema_dtype_parity.py
+which is not the same as the test file we want to collect:
+  .../natality/tests/test_schema_dtype_parity.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename
+```
+
+Reproducible after `find . -name __pycache__ -delete`. Each subproject's test directory could be run in isolation (`pytest fetal_death/tests/` → 12 passed, 1 xfailed; `pytest natality/tests/` → 3 passed), but the documented combined run failed at collection. The STATUS 22:00Z claim "VERIFY: full pytest run `pytest fetal_death/tests/ natality/tests/` returns **15 PASSED + 1 XFAIL**" was reproducible **only** with `--import-mode=importlib`, an undocumented flag not part of the recorded command.
+
+**Root cause:** Pytest's default import mode (`prepend`) inserts each test directory at the head of `sys.path` and imports the test module by its bare filename (e.g., `test_schema_dtype_parity`). When two test directories without `__init__.py` files contain modules with the same basename, the second import collides with the first under the same fully-qualified name. C8.1 DO-3 authored `fetal_death/tests/test_schema_dtype_parity.py` and `natality/tests/test_schema_dtype_parity.py` simultaneously without adding the `__init__.py` files that would make them namespace-distinct (`fetal_death.tests.test_…` vs `natality.tests.test_…`). The C8.1 VERIFY step ran `pytest fetal_death/tests/ natality/tests/` in a session where pytest happened to silently succeed (likely via a cached __pycache__ or with a different invocation than what was recorded) but the recorded command does not reproduce that result on a clean run.
+
+This is a class L17 cousin — not a stale-pin per se, but a similar pattern: a test-infrastructure assertion (STATUS's "16 tests across both subprojects") was authored at a moment when it held, then became invalid as soon as the test-discovery environment was reset (clean `__pycache__`).
+
+**Fix:** Added four empty `__init__.py` files to make the test suites proper namespace packages:
+
+- `fetal_death/__init__.py` (NEW; empty)
+- `fetal_death/tests/__init__.py` (NEW; empty)
+- `natality/__init__.py` (NEW; empty)
+- `natality/tests/__init__.py` (NEW; empty)
+
+Under this layout, pytest's prepend mode generates the fully-qualified names `fetal_death.tests.test_schema_dtype_parity` and `natality.tests.test_schema_dtype_parity`, which are distinct.
+
+**Files touched (this fix):**
+- `fetal_death/__init__.py` (NEW)
+- `fetal_death/tests/__init__.py` (NEW)
+- `natality/__init__.py` (NEW)
+- `natality/tests/__init__.py` (NEW)
+
+**Regression scope:**
+- Searched `git ls-files | xargs grep -lE "^(from|import) (fetal_death|natality)\b"` → zero matches. No existing Python code imports either subproject as a top-level package, so the new `__init__.py` files are inert outside of pytest's test-discovery machinery.
+- Dry-imported `fetal_death/scripts/03_harmonize/harmonize.py` via `importlib.util.spec_from_file_location` → loads OK (no breakage from the new `__init__.py`).
+- All four __init__.py files are empty; no module-level side effects.
+
+**Verified by:**
+- `find . -name __pycache__ -path "*tests*" -type d | xargs rm -rf ; pytest fetal_death/tests/ natality/tests/` → `15 passed, 1 xfailed in 38.77s`. Documented STATUS 22:00Z claim now reproducible under default import mode.
+
+**Could the §8 matrix have caught this earlier?** Yes — this is L17-adjacent. The matrix's L17 row names "SMOKE / test asset hard-codes a mutable annotation value pinned at authoring time; canonical state evolves; pin becomes stale; SMOKE FAILs on a CORRECT subsequent mutation." The bug here is the dual: the test infrastructure's *collectability* (not the asserted values) was pinned at a moment when an environmental side-effect (cached `__pycache__`?) hid the basename collision, and the bug surfaced on a clean re-run. Sharpening L17 to cover test-infra-collectability claims, or adding a defense-in-depth invariant ("every documented `pytest <dirs>` command must reproduce its claimed pass count after `find . -name __pycache__ -delete`"), would have caught this at the C8.1 VERIFY moment. Filed as L17-extension; promotion to a §8 row pending C8.6 CI authoring (where automated cache-cleared runs become the durable defense).
+
+**Forward-looking follow-up:** C8.6 (GitHub Actions wiring) runs in clean checkouts where __pycache__ never exists; the cache-cleared discipline becomes free. No additional `pyproject.toml` config needed (the four `__init__.py` are sufficient).
+
+---
+
 ## 2026-05-12T22:00:00Z — C8.1 — H8 (latent surface broader than v2.0 incident) — ~50 fetal-death raw harmonized columns ship as pyarrow `string` while schema declares `type=int`; documented via xfail(strict=True) test pending full reconciliation
 
 **Symptom:** C8.1's new `fetal_death/tests/test_schema_dtype_parity.py::test_full_schema_type_matches_parquet_dtype` test FAILed on first run with **49 mismatches**: harmonized_schema.csv declares `type=int` (or `type=float` for `prepregnancy_bmi`) for ~50 columns; the actual parquet ships them as pyarrow `string`. Affected columns include: `delivery_year`, `maternal_age_recode14/9`, `maternal_race_multi`, `maternal_race_recode6`, `maternal_race_bridged_detail`, `race_hispanic_combined`, `race_hispanic_revised`, `maternal_education(_unrevised)`, `marital_status`, `maternal_nativity`, `paternal_age_combined`, `paternal_age_recode11`, `live_birth_order`, `plurality`, `prenatal_care_*`, `delivery_method_*`, `delivery_route`, `prior_cesarean_number`, `gestational_age_clinical/oe_edited/combined`, `gestational_age_recode12/5`, `oe_gest_recode12/5`, `birthweight`, `birthweight_recode14/4`, `fetal_presentation`, `diabetes_unrevised`, `chronic_hypertension_unrevised`, `pregnancy_hypertension_unrevised`, `eclampsia_unrevised`, `tobacco_*`, `prepregnancy_bmi(_recode)`, `cause_recode124`, `cause_reporting_flag`, `attendant`, `delivery_place_*`, `breech_unrevised`, `gestation_imputed_flag`, `obgest_used_flag`.
