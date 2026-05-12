@@ -8,6 +8,160 @@
 
 ---
 
+## PRE-FLIGHT for task7_v3a — 2026-05-12T14:05:00Z
+
+### Scope summary
+
+Extend fetal-death coverage backward by 3 years from current 1992-2022 (V2.1 state, 31 years) to 1989-2022 (34 years), by parsing 1989-1991 raw zips through the existing 1989-revision parser dispatch (`FETAL_1992_2002_FIELDS` in `fetal_death/scripts/01_import/field_specs.py`) and re-running harmonize + derive against the same B1-B6 normalizations. The 1989-1991 layout is empirically identical to 1992 (same 360-byte record, same first-7-byte DATAYEAR/TABFLAG/RECTYPE/RESTATUS positions, same Data Elements list on user-guide page 5-6). New version: v2.2.0 (additive backward extension; no schema mutation). V3b (1982-1988, 1978-revision, 200-byte records, bitmap-scanned PDFs) is **OUT OF SCOPE** for this task — separate decision pending an OCR feasibility PoC per the Q19 choice this session (V3a now; V3b is its own task once OCR feasibility verified). Per KICKOFF.md "Current planned sequence" step 2; user authorized via Q19/Q20 reply this session (Q19 deferred to LLM judgment, Q20 = KICKOFF as-is).
+
+### Staging decisions (resolved at PRE-FLIGHT)
+
+1. **Build-tree location**: canonical mutation target is the **monorepo** (`/Users/yoelplutchok/Desktop/vital-statistics-harmonization/fetal_death/`), per the Task 3 V2.1 precedent — `harmonize.py` lines 23-31 resolve `_PROJECT = fetal_death/`, `_PROJECT.parent = monorepo root`, and `_YEARLY_DIR = monorepo_root / output / yearly_clean` (a symlink to `~/Desktop/fetal-death-harmonization-build/output/yearly_clean/`). Raw inputs flow through `raw_data/fetal_death/` (symlink to `~/Desktop/fetal-death-harmonization-build/raw_data/fetal_death/`). NOT the standalone `~/Desktop/fetal-death-harmonization/` repo (which is the legacy pre-monorepo v2.0.1 state with uncommitted May 7 edits) and NOT the build-dir's local `scripts/` (which has STALE May-4 v2.0.0-era harmonize.py without V2.1 era logic). The monorepo is canonical; build-dir is data backing-store only.
+
+2. **Input rearrangement (executed at this PRE-FLIGHT)**: 2026-05-12T03:50Z agent downloaded the V3a zips to `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1989,1990,1991}US.zip` (top-level `raw_data/`), but the monorepo's symlink resolves to the sibling `raw_data/fetal_death/` subdir. RESOLUTION at PRE-FLIGHT: `mv` the 3 V3a zips into the `fetal_death/` subdir; V3b zips (Fetal{1982..1988}US.zip) left at top-level since V3b is out-of-scope. Verified post-`mv`: monorepo's `raw_data/fetal_death/Fetal{1989,1990,1991}US.zip` visible via symlink. SHAs preserved (pure file-system move).
+
+3. **1989-1991 user guides downloaded (executed at this PRE-FLIGHT)**: not previously on disk. `curl -s -k` from canonical NCHS FTP path `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/<YYYY>FetalUserGuide.pdf` (same convention as 1992-2022 user guides already on disk, validated against STATUS 2026-05-12T04:30Z HEAD-probe baselines). All 3 downloaded to `~/Desktop/fetal-death-harmonization-build/raw_docs/fetal_death/` (visible to monorepo via symlink). Content-length matches HEAD probe exactly for all 3.
+
+4. **NVSR control source identified for 1989-1991**: per-year user-guide control count from **Machine/File/Data Characteristics → 20 WEEKS AND OVER → By residence** (page 7 of each user guide, same convention as the existing 1992 row in `external_validation_targets.csv` which cites "1992 NCHS Fetal Death User Guide control count"). PyMuPDF text extraction confirmed legible text layer (NCHS's 2009 rescan batch includes an embedded OCR layer; PyMuPDF returns clean strings for the control-count block). NO additional OCR pipeline needed. NVSR 57-08 Table B (which covers 1995+) is not the source for 1989-1991 — user-guide control counts are authoritative for pre-1995.
+
+### Inputs
+
+- [x] All required input files exist (verified by direct check at this PRE-FLIGHT timestamp)
+  - **Raw V3a zips** (now at `raw_data/fetal_death/` via symlink → `~/Desktop/fetal-death-harmonization-build/raw_data/fetal_death/`):
+    - `Fetal1989US.zip` sha256=`1d30d285a6558da697716879b05f3984c4f2bea15246b6deac7271ee9cb372bd` (16-char prefix matches STATUS 2026-05-12T03:50Z record `1d30d285a6558da6…`) ✓
+    - `Fetal1990US.zip` sha256=`bcca5deb5de534d3d42e61abc4274bb39d68efd9f635548fcc0f4d546679987f` (matches `bcca5deb5de534d3…`) ✓
+    - `Fetal1991US.zip` sha256=`aaa3e23250aac121c04c1068a645ff3a13deee94107917c2c30001936e701dd4` (matches `aaa3e23250aac121…`) ✓
+  - **V3a user guides** (newly downloaded to `raw_docs/fetal_death/`):
+    - `1989FetalUserGuide.pdf` 23,236,888 bytes (matches HEAD content-length) sha256=`54c55a40bffea18244bd14acc60a5fa094346e87c4557cb94633c7b52599e9d1` ✓
+    - `1990FetalUserGuide.pdf` 22,897,888 bytes (matches) sha256=`91573bf8d93ee511405a6a38a96a97474dc55c80f0d421d9807bd9606e7a0578` ✓
+    - `1991FetalUserGuide.pdf` 22,270,751 bytes (matches) sha256=`311fc21c98eab728f01796c4c903de44b177ac7549a00b61fcdaee425a12dd2d` ✓
+  - **Existing canonical reference files** (1989-revision layout source, used as-is):
+    - `fetal_death/record_layout_1992.csv` sha256=`45ca1273762db92f992b9255390846a43bc0e90f11b3fa32ebbe6f46f07a5a79` (the canonical 1989-revision layout CSV; valid for 1989-2002 per user guide cross-checks below) ✓
+    - `fetal_death/scripts/01_import/field_specs.py` sha256=`35e788f3dd97eb156f572435be17a9097732958c3b1ef97491d3720fa61dbcf8` (current `FETAL_1992_2002_FIELDS` will be re-used; `RECORD_LEN_1992 = 360` matches 1989-1991 empirically) ✓
+    - `fetal_death/scripts/03_harmonize/harmonize.py` sha256=`1b80fe73f2dbfc3e57f44f548fb2766df5c01c791482d4f4c32a99a99deae8c3` (`_era_tag()` line 86-96 needs 1-condition extension to cover 1989-1991 → era="1992"; cheapest DO edit) ✓
+    - `fetal_death/harmonized_schema.csv` sha256=`72272c5537fdfa5b926a6aded69920bb5357a7bb5daef09742dfb494dadfa1ab` (`years_available` strings for V2-era columns need 3-year backward extension; documented in DO scope below) ✓
+    - `fetal_death/external_validation_targets.csv` sha256=`0d9c361627e898a39533bca0277f01969a9fc8cd34046000d26b99b21d77576f` (3 new rows for 1989-1991 control counts) ✓
+    - `fetal_death/file_inventory.csv` sha256=`817124dbbce70b1181f580ea8517350e1a059770486448ad80c8d0eb8e2efab7` (3 new rows for 1989-1991 zips + user guides) ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - `task3_v21_fetal_death` (V2.1, 2003+2004 transition): COMPLETE 2026-05-12 at monorepo `8ca5bf9` (`task3-complete` tag); V2.1 derived parquet at sha=`55d3d310cf5e1cbd8719325e3122505472d69dc4316af32f17c67d78c6c8c447` ✓
+  - `natality_v28_rename`: COMPLETE 2026-05-12T13:35Z at monorepo `fc396fc` (`natality_v28_rename-complete` tag on both monorepo + build-dir); 4 v2.8 natality parquet SHAs verified stable at session start ✓
+  - V1-era baseline parquets present (`fetal_death_harmonized.V1_baseline.parquet` sha=`cbcc91d24f2982d74bef0ba87a64495fb5cbd27928f720ee63d4006581bea2c0`; `fetal_death_derived.V1_baseline.parquet` sha=`2795f099380461581a59908b7653f536bb5f1cdbfd78f101097f0495c0232a8d`) — provide pre-V3a byte-clean comparison baseline for VERIFY phase ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - No `task7_v3a_*` tags in monorepo (verified: `git tag --list 'task7_*'` empty) ✓
+  - No partial V3a edits in canonical work tree — monorepo tree CLEAN at `fc396fc` ✓
+  - Tier-0 byte-length probe confirms zips parse: `unzip -p Fetal{1989,1990,1991}US.zip | head -1 | wc -c` = 361 (360 data + 1 newline) for all 3 years, matching `RECORD_LEN_1992 = 360` ✓
+  - First-4-byte spot-check (DATAYEAR field): 1989 record begins `1989...`, 1990 begins `1990...`, 1991 begins `1991...` — DATAYEAR @ bytes 1-4 confirmed for 1989-revision layout ✓
+
+### Environment
+
+- [x] Python version: 3.13.9 (required ≥3.11) ✓
+- [x] pandas version: 2.3.2 (required ≥2.3) ✓
+- [x] pyarrow version: 18.1.0 (required ≥18.0) ✓
+- [x] PyMuPDF (fitz) version 1.27.2.2: available for any further user-guide control-count extraction (no Tesseract install needed for V3a since text layer is embedded in NCHS's 2009-rescan-batch PDFs)
+- [x] Working directory clean (`git status` in monorepo): CLEAN at `fc396fc` ✓
+- [x] On expected branch: monorepo `main` ✓
+- [x] Build-dir `~/Desktop/fetal-death-harmonization-build/` is **not a git repository** (verified). It is a data-backing-store directory only; canonical version control is the monorepo. Documented here so future sessions don't expect tags/log on the build-dir.
+
+### Source documentation
+
+- [x] `1989FetalUserGuide.pdf` page 7 (control block) text-extracts cleanly via PyMuPDF; control values:
+  - Total record count = 61,295 (matches what the parsed parquet should produce per-year)
+  - All fetal deaths By residence = 61,236 / To foreign residents = 59
+  - **20 WEEKS AND OVER → By residence = 30,469** (the V3a validation target for 1989)
+- [x] `1990FetalUserGuide.pdf` page 7: Record count = 64,349; **20 WEEKS AND OVER → By residence = 31,386** (validation target for 1990)
+- [x] `1991FetalUserGuide.pdf` page 7: Record count = 63,265; **20 WEEKS AND OVER → By residence = 30,160** (validation target for 1991)
+- [x] L9 cheap-check on layout reusability: page 5-6 Data Elements list in 1989/1990/1991 user guides matches the 1992 user guide field-by-field for the first 60 fields (Data year 1-4; Tabulation flag 5; Record type 6; Resident status 7; NCHS State 17-18; FIPS State 22-23; NCHS state of residence 33-34; Population size - city 41; ... ; Mother age 69-76 + 87-88; Mother race 79-81; Mother education 82-84; ...; Father age 105-107; ...; Method of delivery 220-226; Medical risk factors 228-244; Congenital anomalies 279-300; NCHS SMSA 357-359). No byte-position drift observed. NCHS terminology changed cosmetically from "SMSA" (1989) to "MSA" (1990+) at the same byte position 55-58 — semantically identical (Metropolitan Statistical Area; MSA designation re-numbering in mid-1990s is post-V3a era and irrelevant for raw read).
+- [x] **L13-extension discipline** applied: byte-position match (above) AND first-record data values are plausible (DATAYEAR=year matches the file name; TABFLAG ∈ {1,2}; RECTYPE ∈ {1,2}; RESTATUS ∈ {1,2,3,4}). Value-distribution sanity check on harmonized parquet is a Tier-2 SMOKE deliverable (per row L13-extension catch: "compute the parsed value distribution and verify it matches the user guide's documented value range / sentinel codes").
+
+### Outputs
+
+- [x] Intended output paths to be **overwritten** (explicit overwrite mark; these are the V2.1 v2.1.0 parquets that V3a appends 3 more years to):
+  - `output/harmonized/fetal_death_harmonized.parquet` (V2.1 sha=`333e1e66…d9e0` → new V3a/v2.2.0 sha TBD)
+  - `output/harmonized/fetal_death_derived.parquet` (V2.1 sha=`55d3d310…c447` → new V3a/v2.2.0 sha TBD)
+  - `output/yearly_clean/fetal_death_1989_raw.parquet` (new file)
+  - `output/yearly_clean/fetal_death_1990_raw.parquet` (new file)
+  - `output/yearly_clean/fetal_death_1991_raw.parquet` (new file)
+- [x] **No `.V1_baseline.parquet` overwrite** — those are V1-era snapshots preserved for byte-clean comparison. They predate Task 3 V2.1 and are not touched by V3a.
+- [x] New metadata rows (additive, not overwrite):
+  - `external_validation_targets.csv`: +3 rows (1989, 1990, 1991 fetal_deaths_gte20wk_resident with values 30469, 31386, 30160; source "<YYYY> NCHS Fetal Death User Guide control count")
+  - `file_inventory.csv`: +3 rows (Fetal1989US.zip, Fetal1990US.zip, Fetal1991US.zip with `record_length=360, doc_filename=<YYYY>FetalUserGuide.pdf, notes="1989-revision uniform; V3a backward extension"`)
+
+### Field-value snapshot for cells / rows / columns being mutated
+
+| Artifact | Current state | Target state (post-V3a) | Verified at this PRE-FLIGHT |
+|---|---|---|---|
+| `fetal_death/scripts/03_harmonize/harmonize.py` line 94 `if 1992 <= year <= 2002:` | year-range 1992-2002 → era="1992" | **1989-2002 → era="1992"** (1-condition extension) | ✓ direct read |
+| `fetal_death/scripts/03_harmonize/harmonize.py` line 96 `raise ValueError(f"Year {year} outside supported range (1992-2022)")` | error msg says "1992-2022" | **"1989-2022"** | ✓ direct read |
+| `fetal_death/scripts/01_import/field_specs.py` line 8 docstring `1992-2002: V2.0 — single uniform 1989-revision layout (360 data bytes)` | docstring says 1992-2002 | **1989-2002** | ✓ direct read |
+| `fetal_death/scripts/01_import/field_specs.py` line 20 constant `RECORD_LEN_1992 = 360` | scoped to 1992 era tag | Keep constant unchanged; `layout_for_year` mapping extended to dispatch 1989-1991 → same `FETAL_1992_2002_FIELDS` + `RECORD_LEN_1992`. Alternatively rename constant to `RECORD_LEN_1989 = 360`. **Decision: keep name + extend mapping (lower edit surface, semantically identical)** | ✓ direct read |
+| `fetal_death/harmonized_schema.csv` `years_available` column | strings like "1992-2002, 2003-2004, ..." for V2-era columns | **extend leading 1992 → 1989** where applicable (the harmonized columns sourced from FETAL_1992_2002_FIELDS get a 3-year backward extension; column rows whose years_available starts at 2005 (V1-only fields) are unchanged) | partial — full per-row enumeration deferred to DO step 2 |
+| `fetal_death/external_validation_targets.csv` | last entries 2022; no 1989-1991 rows | **+3 rows** for 1989/1990/1991 `fetal_deaths_gte20wk_resident` = 30469 / 31386 / 30160; source "<YYYY> NCHS Fetal Death User Guide control count" | ✓ values confirmed from user-guide page 7 extraction |
+| `fetal_death/file_inventory.csv` | first row year=1992; no 1989-1991 rows | **+3 rows** for 1989/1990/1991 raw zips + user guides; `record_length=360`, `notes="1989-revision uniform; V3a backward extension"` | ✓ raw zip + user-guide SHAs above |
+| `fetal_death/.zenodo.json` version | "v2.1.0" (current) | **"v2.2.0"** (additive backward extension) | not yet read — DO step 8 |
+| `fetal_death/CITATION.cff` version | "2.1.0" | **"2.2.0"** | not yet read — DO step 8 |
+| `fetal_death/ABOUT_THIS_RELEASE.md` | V2.1 release notes | **+V3a section** documenting 1989-1991 extension | DO step 9 |
+| `fetal_death/README.md` Years coverage | "1992-2022" | **"1989-2022"** | DO step 9 |
+| New layout-decisions doc | (none) | **`fetal_death/V3a_1989_1991_LAYOUT_DECISIONS.md`** (new file documenting 1989-revision reusability + the L13-extension verification path) | DO step 9 |
+
+**No mutable annotation values pinned at this PRE-FLIGHT moment** (per Convention 1 SHAPE-not-VALUE) — all numeric values listed above are either:
+- Source-document derived (the 3 control counts from user-guide page 7 — authoritative values that won't drift)
+- SHA-256 baselines from immutable artifacts (raw zips, user guides — content-locked)
+- Schema-level edits (extending era boundary, not pinning a record count that V2.x evolves)
+
+### Halt conditions tripped
+
+(none — all checks pass)
+
+The following potential halt risks were considered and resolved:
+
+1. **§7 condition 1 (PRE-FLIGHT check fails)** — every input present + verified. PASS.
+2. **§7 condition 11 (Source PDF SHA changed upstream)** — N/A; PDFs newly downloaded this session. Future verification of NCHS-side SHA stability deferred to forward-looking HALT.
+3. **§7 condition 12 (Conflicting documentation)** — L9 cheap-check confirms 1989-1991 page 5-6 Data Elements lists match the 1992 user guide field-by-field. PASS.
+4. **§7 condition 17 (Scope creep)** — V3b (1982-1988) explicitly excluded; V3a's `_era_tag` extension and `_layout_for_year` mapping update touch ONLY the 1989-1991 path. Build dir's V3b zips (Fetal1982-1988US.zip) remain at the build-dir top-level `raw_data/` — NOT visible through the monorepo symlink — and are out of any V3a code path.
+5. **L13-extension (byte-position vs field-semantics)** — verified at multiple anchor fields. Full value-distribution check is a Tier-2 SMOKE deliverable.
+6. **Anti-pattern #8 (compress two tasks into one)** — V3a is a strict subset task. V3b will get its own PRE-FLIGHT + DO + RECEIPT if/when authorized.
+
+### Result
+
+**PROCEED.** PRE-FLIGHT complete; no §7 halt conditions tripped. DO phase authorized to begin per the 10-step plan documented below. Estimated DO budget: 30-60 minutes wall-clock for re-derive + validation; total task budget ~1 session per STATUS 2026-05-12T03:50Z estimate.
+
+### Proposed DO plan (10 steps)
+
+1. **Tag `task7_v3a-pre-do`** on monorepo at the post-PRE-FLIGHT commit (the commit that lands this PRE_FLIGHT_LOG entry).
+2. **Edit `fetal_death/scripts/03_harmonize/harmonize.py`**: `_era_tag()` line 94 → `if 1989 <= year <= 2002:`; line 96 error msg → `"1989-2022"`.
+3. **Edit `fetal_death/scripts/01_import/field_specs.py`**: extend `layout_for_year(year)` to map 1989-1991 → `(RECORD_LEN_1992, FETAL_1992_2002_FIELDS)`. Update docstring lines 8-9 to read "1989-2002: V2.0 — single uniform 1989-revision layout (360 data bytes)". Update line 30 section comment "1992-2002" → "1989-2002".
+4. **Parse 1989, 1990, 1991 raw zips** via `python3 fetal_death/scripts/01_import/parse_fetal_year.py --year {Y} --zip raw_data/fetal_death/Fetal{Y}US.zip --out output/yearly_clean/fetal_death_{Y}_raw.parquet`. Verify per-year record count matches user-guide page 7 (61,295 / 64,349 / 63,265).
+5. **Re-run full harmonize**: `python3 fetal_death/scripts/03_harmonize/harmonize.py --years 1989 1990 1991 1992 1993 ... 2022 --out output/harmonized/fetal_death_harmonized.parquet`. Validate row count = sum of per-year record counts (V2.1 baseline 1,634,195 + 1989-1991 ~189k = ~1.82M).
+6. **Re-run derive**: `python3 fetal_death/scripts/04_derive/derive.py` (or equivalent). Produces v2.2.0 `fetal_death_derived.parquet`.
+7. **Append 3 rows to `external_validation_targets.csv`** (1989/1990/1991 fetal_deaths_gte20wk_resident = 30469 / 31386 / 30160).
+8. **Run `validate_external_v2.py`**: gate 26/26 PASS (was 23/23; +3 new V3a rows). Halt on any FAIL.
+9. **Run `validate_external.py`**: V1 era 55/55 PASS unchanged (byte-clean regression check — V3a additive backward extension MUST NOT touch V1-era values; SHA of post-V3a derived's 2005-2022 slice should equal pre-V3a V2.1 derived's 2005-2022 slice + rows-from-2003-2004 unchanged. Compare via PyArrow per-year groupby).
+10. **Append `file_inventory.csv` rows + V3a-extension doc + version bumps** (`.zenodo.json`, `CITATION.cff` → 2.2.0; `README.md` Years 1989-2022; `ABOUT_THIS_RELEASE.md` V3a section; new `V3a_1989_1991_LAYOUT_DECISIONS.md`).
+
+### Forward-looking HALTs for the DO phase
+
+1. **Per-year record count gate (Tier-2)** — parsed yearly_clean parquets must have row counts matching user-guide page 7 exactly (61,295 / 64,349 / 63,265). Any divergence → halt; suggests record-length mismatch or zip-internal corruption.
+2. **DATAYEAR plausibility gate (Tier-1)** — every record in `fetal_death_{Y}_raw.parquet` must have `data_year == Y` (read from bytes 1-4). Any null/wrong-year → halt; suggests field_specs offset bug.
+3. **V1-era byte-clean gate (Tier-3)** — for each derived column, the 2005-2022 slice's column-vector SHA-256 must equal the V2.1 baseline's same slice. Any drift → halt; suggests harmonize.py logic incorrectly conditioning on year < 1992 affected V1-era output.
+4. **V2.1 byte-clean gate (Tier-3)** — same for 2003-2004 slice. Same halt rule.
+5. **Tier-2 NVSR validation** — 26/26 PASS byte-exact (was 23/23 V2.1; +3 V3a). The 3 new rows (1989/1990/1991) must each return byte-exact against their user-guide-derived target.
+6. **L13-extension value-distribution check** — for each of the 5 H8 demographic/filter columns post-V3a:
+   - `maternal_age` (Int16): 1989-1991 distribution within plausible range (10-50, with sentinel 99 allowed); mean ~25-28
+   - `maternal_race_bridged` (Int8): {1,2,3,4} only
+   - `hispanic_origin` (Int8): {0,1,2,3,4,5,6,7,8,9} with 0-5 dominant
+   - `tabulation_flag` (Int8): {1,2}
+   - `residence_status` (Int8): {1,2,3,4}
+   If any column shows out-of-range or wildly different distribution from 1992-1994 → halt; suggests field_specs byte-offset shift between 1988 and 1989 not previously documented.
+
+### Notes
+
+- Convention 2 DESIGN tag is not applicable to this PRE-FLIGHT — no new SMOKE harness is being authored here (existing `validate_external.py` and `validate_external_v2.py` already implement the canonical SMOKE pattern for fetal-death; V3a re-uses them and extends their year set, not the harness logic).
+- Convention 3 Field-value snapshot complete above.
+- Convention 4 Forward-looking HALTs for next session emitted in the RECEIPT at task close.
+- V3b PoC decision deferred to a separate session/task; KICKOFF as-is sequence per Q20.
+
+---
+
 ## PRE-FLIGHT for natality_v28_rename — 2026-05-12T05:30:00Z
 
 ### Scope summary
