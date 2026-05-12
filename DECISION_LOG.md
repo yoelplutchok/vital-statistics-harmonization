@@ -23,6 +23,70 @@
 
 ---
 
+## 2026-05-12T20:30:00Z — phase_b_exploration — Phase B exploration session COMPLETE; `EXPLORATION_REPORT.md` drafted; plan-update proposal status PENDING USER REVIEW; recommended prefix Tier 1+2 ~29-35 sessions
+
+**Choice (proposal pending user confirmation):** Phase B's deliverable is `EXPLORATION_REPORT.md` at monorepo root (new file; 6-dimension candidate enumeration ~42 candidates across §A–§F + cumulative effort estimate + suggested execution order in §G.4 + plan-update proposal in §K + open questions Q35–Q42 in §H). The plan-update proposal (KICKOFF.md Phase C replacement + NEXT_STEPS.md §15 task entries C8.1–C8.23) is NOT yet applied; it requires explicit user authorization via Q35.
+
+**Recommended user choice for Q35**: Tier 1 + Tier 2 (~29-35 sessions of Phase C work) as the "robust and useful" middle ground that maximizes pre-submission polish without the multi-month timeline extension that Tier 5 (backward extensions A.2 natality 1968-1989 + A.3 linked 1983-2004) would impose.
+
+**Alternatives considered (per Q35):**
+
+1. **Tier 1 only (~13–15 sessions)** — Pre-Phase-D must-haves only: smoke retag, dtype parity, invariant tests, latest-year refresh, lockfile/Dockerfile, CI, end-to-end smoke, CHANGELOG + PRIOR_ART update. Ships a substantially more robust HVS than today; submit manuscript with current envelope. Pro: shortest path to submission (~2-3 weeks). Con: leaves R quickstart, DuckDB views, worked-example notebooks, migration guides on the table.
+
+2. **Tier 1 + Tier 2 (~29–35 sessions, chosen as recommendation)** — Tier 1 + state-stratified denominators + R quickstart + DuckDB views + 3 worked-example notebooks + migration guides + cross-product COMPARABILITY + mutation tests + L13/L14 audits + GitHub release artifacts. Pro: maximally polished v1.0; manuscript ships at v1.0 with all infrastructure complete. Con: ~4-6 weeks to submission.
+
+3. **Tier 1 + Tier 2 + Tier 5 (~45–62 sessions)** — adds natality 1968-1989 backward extension (6-10) + linked 1983-2004 (8-14) + perinatal-record pre-joined parquet (2-3). Pro: manuscript launches with maximum-extent coverage (natality 57 yrs, linked 41 yrs with documented 1992-1994 gap). Con: ~3-4 months to submission; re-paragraphs Coverage section twice; methodology-paper territory for the perinatal-record join.
+
+4. **Phase B-2 (defer execution; further investigate before authorizing prefix)** — if any §H open question (Q35-Q42) cannot be answered today. Pro: zero commit risk. Con: another session of latency.
+
+**Reason:** Phase B's mandate was to enumerate the frontier honestly without narrowing prematurely, then present the user with one decision point with full trade-off picture. The Tier-prefix structure in §G.4 lets the user authorize a specific prefix without committing to "everything possible" sight unseen. Each prefix delivers a coherent shipping checkpoint:
+
+- Tier 1 → ships ~2-3 weeks; manuscript at current 1990-2024 / 1982-2024 / 2005-2024 (post-refresh) envelope.
+- Tier 1 + Tier 2 → ships ~4-6 weeks; same envelope + maximum polish.
+- Tier 1+2+5 → ships ~3-4 months; backward-extended envelope + maximum polish.
+
+Three protocol justifications: (i) §11 plan-update process accommodates this kind of mid-project amendment; (ii) §2 principle 1 "cheap-before-expensive" — Phase B's read-only research was cheap relative to Phase C execution and prevented committing to "everything" sight unseen; (iii) §10 self-check — the structured per-candidate writeup (effort/risk/manuscript-impact) is the planning-level analog of "what could I have gotten wrong that VERIFY wouldn't catch."
+
+**Source:**
+- `EXPLORATION_REPORT.md` at monorepo root (drafted this session; ~1400 lines).
+- Agent `aea960a496472bb6b` external-research transcript (50 tool uses, ~5min wall): NCHS FTP directory listings for natality, fetal-death, linked, period-cohort-linked, matched-multiples, mortality; CDC NCHS data-access landing page; NBER, ICPSR, IPUMS scope confirmation. Full URL list in EXPLORATION_REPORT.md §A.9.
+- Agent `a3e650be058a65976` literature-gap re-verification transcript (50 tool uses, ~4min wall): WebSearch + WebFetch on academic, GitHub, IPUMS, NBER, ICPSR. Gap claim defensible as of 2026-05; three small PRIOR_ART.md updates suggested.
+- Internal repo introspection by orchestrating LLM (in parallel with agents): tests inventory (1 test file, stale L17 case post-V3b), CI inventory (none), reproducibility tooling inventory (none), docs inventory (CHANGELOG missing, manuscript stale, PROVENANCE.md 4 versions stale).
+- User directive 2026-05-12 chat post-`task7_v3b-complete`: *"i would like do do everything possible with this project in terms of extending the actual project and adding diferent things to the project to make it as robust and useful as possible before we do the paper or the zenodo so i want to do an ivetigative session and exploration of what we can do and then add it to the plan to do it in subsequent sessions."*
+
+**Verifiable by:**
+
+- `EXPLORATION_REPORT.md` at monorepo root exists; sha256 recorded at commit time.
+- This DECISION_LOG entry timestamp 2026-05-12T20:30:00Z supersedes 19:15:00Z's Phase-B-mandate status (from MANDATED to COMPLETE-PENDING-AUTHORIZATION).
+- Forward-looking HALTs in STATUS 2026-05-12T20:30Z items 1-3 are the next session's pre-flight check: report file present, DECISION_LOG entry status unchanged, no C8.X tags yet.
+- Next-session Phase C kickoff: if `git tag --list 'C8.*'` returns any tag, the user must have authorized; otherwise Phase B halt is still in force.
+
+**Reversible:** yes — Phase B is read-only. If the user finds the report's scope inadequate or the prefix structure too coarse, the next session can be a Phase B-2 (further investigation) or a Phase B amendment (re-scoring candidates) without any state to roll back. The plan-update proposal in §K is NOT yet applied to KICKOFF.md or NEXT_STEPS.md; those edits land only on Q35 authorization.
+
+**Residual risks:**
+
+- (a) **Effort estimates may be systematically biased.** Calibration anchor is V3b's empirical 2-3 sessions; the Tier-1 robustness items (test scaffolding, CI) are well-understood; the Tier-2 worked-example notebooks have higher variance (depends on user-validation feedback per notebook); the Tier-5 backward extensions are the highest-variance (cohort/period design decision in A.3 alone could absorb a session). Per the KICKOFF brief: estimates are honest ranges, not pinned values; the user reviews the total and trims if needed.
+
+- (b) **Phase B did not deep-research several candidates' validation grids.** For natality 1968-1989, the *Vital Statistics of the United States* paper volumes are partially online and partially not — building a complete validation grid for A.2 may surface OCR friction not anticipated. For linked 1983-2004, the cohort/period publishing-design decision is mentioned but not adjudicated. Both are documented in §A as risks; Phase C PRE-FLIGHT for those tasks will do the L9 cheap-check on the actual NVSR / Linked-File documentation.
+
+- (c) **The user may want to add a candidate not in this report.** Phase B's §G.4 enumerates ~42 candidates from the KICKOFF brief's six-dimension grid; if the user's response to Q35 surfaces a 43rd ("can we also add X?"), the right protocol is a §11 plan-update at that point (per Q42 default), not a silent in-Phase-C scope creep.
+
+- (d) **Phase B may have under-narrowed.** Tier 3 (matched-multiples ancillary, CODEBOOK extensions, Stata/SAS quickstarts, pre-computed cross-tab CSVs, CLI tool) is listed as defer-to-post-v1 in §G.4 — but a user who wants "everything" maximally might pull some of these into Tier 2. Q41 surfaces this explicitly.
+
+- (e) **Manuscript framing may need adjustment per Q40.** If Tier 5 is in scope, the question of single-submission vs. dual-submission-with-v1.1-update is a real editorial decision (some journals support post-publication data-update notes; some don't). The default in §G.5 — single submission after Tier 2, Tier 5 as v1.1 update — is the lowest-risk path but the user may prefer otherwise.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- This entry asserts Phase B's deliverable is complete. The verification is the existence of `EXPLORATION_REPORT.md` at monorepo root + its §0-§K structure + the §H open questions being answerable from the report's content. A subtle risk: Phase B may have systematically over-prioritized testing/robustness items (B.1-B.12) because those are the easiest to score with the protocol's existing mistake-class matrix (§8), while harder-to-score items like research-extensions (C.8 perinatal-record join) and methodology-paper territory (A.3 cohort/period design) may be under-prioritized. Mitigation: the §G.4 tiering is explicit about which category each candidate falls into; the user can override the Tier-3/Tier-5 framing in Q41 / Q40.
+
+- The two external-research agents were instructed to verify URLs + literature gap; the orchestrating LLM did not separately re-verify their findings (per "trust but verify" in the harness instructions). Mitigation: agent transcripts are at the disk locations cited in STATUS Notes; the user can spot-check any URL or citation by hand. The HTTP-200 / HTTP-404 results are deterministic facts about the CDC FTP server state on 2026-05-12 and can be re-verified at any time.
+
+- This entry's "Recommended Tier 1+2" framing is a soft recommendation. The user has full discretion via Q35; this entry is not authorization for any specific prefix.
+
+**Backport scope (per §11.4):** None. Phase B is read-only and no prior receipts are invalidated. Phase C work that lands after authorization may surface backports (e.g., the B.7 L13 audit may find an existing inventory CSV with stale claims), at which point §11.4 fires per-task.
+
+---
+
 ## 2026-05-12T19:15:00Z — [plan-update] sequencing — Pre-submission scope expanded a 5th time: Phase B (READ-ONLY exploration session) + Phase C (execute proposed additions) inserted between Phase A (data-first; complete) and Phase D (paper + Zenodo + public-repo sync); manuscript submission paused
 
 **Choice:** Add a mandatory **Phase B exploration session** (read-only) and a **Phase C execute-additions phase** to the pre-submission sequence in KICKOFF.md. The next LLM session is Phase B: research the full frontier of additions across 6 dimensions (data extensions, robustness/testing, usability/convenience, cross-product/joint-use, documentation, performance/distribution), produce per-candidate writeups with effort/risk/manuscript-impact estimates, propose a §11 plan-update for KICKOFF.md + NEXT_STEPS.md §15, halt for user authorization. Phase C subsequent sessions execute the user-authorized expanded plan. Phase D (Task 9 redirect notices + Task 10 unified Zenodo + public-repo sync + manuscript submit) runs only after Phase C completes.

@@ -1,6 +1,115 @@
-# STATUS — last updated 2026-05-12T19:15:00Z
+# STATUS — last updated 2026-05-12T20:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T20:30:00Z — Phase B exploration session COMPLETE; `EXPLORATION_REPORT.md` drafted (~42 candidates across 6 dimensions); plan-update proposal PENDING USER REVIEW; HALT before Phase C DO work
+
+### Current phase
+
+**Phase B → Phase C transition (PENDING USER AUTHORIZATION).** Phase B was the mandated read-only exploration session per KICKOFF.md "Current planned sequence" (commit `306370e` `[plan-update]`, 2026-05-12T19:15Z). This session executed Phase B exactly as briefed: enumerated ~42 candidates across the six dimensions (data extensions, robustness/testing, usability/convenience, cross-product/joint-use, documentation, performance/distribution), scored each with honest effort/risk/manuscript-impact, drafted a plan-update proposal, and **halted at the user-authorization gate**. No canonical-state mutation beyond `EXPLORATION_REPORT.md` (new file), this STATUS section, and the accompanying DECISION_LOG entry.
+
+### What was done this session
+
+1. **Read-through per KICKOFF (a)–(d) handshake** — STATUS 19:15Z, NEXT_STEPS §1–§16, README, PROJECT_STRUCTURE, last 10 DECISION_LOG entries, last 5 FIX_LOG entries, all of LESSONS, PRE_FLIGHT_LOG most-recent entry.
+2. **Launched 2 parallel read-only external-research agents**:
+   - **B.a data-extension URL verification** (agent `aea960a496472bb6b`, 50 tool uses, ~5min wall): probed CDC FTP for natality 1968–1989, linked 1983–2004, latest-year refresh (fetal 2023+2024 + linked 2024), pre-1982 fetal death (404 confirmed), matched-multiples, M-D/MCD/abortion (out-of-scope), IPUMS / NBER / ICPSR (no harmonization competition).
+   - **Literature-gap re-verification** (agent `a3e650be058a65976`, 50 tool uses, ~4min wall): WebSearch + WebFetch on academic, GitHub, IPUMS, NBER, ICPSR, recent 2024–2026 lit. **Gap claim defensible**; three small PRIOR_ART.md updates suggested.
+3. **Internal repo introspection** (in parallel with agents): test infrastructure (1 test file in monorepo, currently stale post-V3b — L17 case), CI infrastructure (none), reproducibility tooling (no Dockerfile / lockfile / pyproject), docs state (CHANGELOG missing; manuscript stale; PROVENANCE.md 4 versions stale), notebook state (2 cross-product, 5 named in KICKOFF but not built), joint-use surface (race/age/Hispanic only, no state stratification).
+4. **Composed `EXPLORATION_REPORT.md`** at monorepo root (NEW file):
+   - §0 executive summary
+   - §A–§F per-dimension candidate writeups (40+ candidates, each with name, why, effort, source/deps, risks, manuscript impact, priority, dependency)
+   - §G cumulative effort + suggested execution order (Tier 1 must-have ~13–15 sessions; Tier 1+2 ~29–35; Tier 5 backward extensions +16–27)
+   - §H open questions Q35–Q42 for user authorization
+   - §I Phase B forbidden-actions audit
+   - §J receipts pointer
+   - §K plan-update proposal sketch (KICKOFF.md Phase C population + NEXT_STEPS.md §15 task-entry template, with worked example for C8.2 Latest-year refresh)
+5. **Wrote DECISION_LOG entry** 2026-05-12T20:30Z documenting the Phase B halt + plan-update proposal status PENDING USER REVIEW.
+6. **Wrote this STATUS section** appending the Phase B close.
+
+### Last completed step
+
+EXPLORATION_REPORT.md + STATUS + DECISION_LOG triple. Phase B mandate executed in full per KICKOFF's 6-dimension brief.
+
+### In-progress
+
+(none — clean checkpoint at the Phase B → Phase C user-authorization boundary)
+
+### Next planned task
+
+**Phase C — execute user-authorized Phase C prefix.** The next session's first action is to receive the user's answers to Q35–Q42 in `EXPLORATION_REPORT.md` §H. Q35 in particular selects a tier prefix (a/b/c/d) which determines which `C8.X` tasks land in NEXT_STEPS.md §15 and KICKOFF.md Phase C. After authorization, the next session applies the plan-update diff (§K), tags `phase-c-start`, and begins **C8.2 (latest-year refresh)** as the recommended first execution per Q37.
+
+If the user redirects to a non-Tier-prefix path (e.g., "skip Tier 1, start Tier 5", or "trim Tier 2 to just C8.9 + C8.10"), the next session adapts the plan-update diff accordingly and proceeds.
+
+If the user declines all Phase C work and wants to resume the original Phase D sequence directly (Task 9 + Task 10 + public-repo v1.x sync + manuscript), that is also a valid override; the existing Phase D plan is intact and ready.
+
+### Blocked
+
+**BLOCKED ON USER AUTHORIZATION.** Phase C DO work cannot start without an answer to Q35. The Phase B mandate explicitly requires this halt; the next session must not advance to canonical-state mutation without explicit yes.
+
+### Open questions for human
+
+Carried Q32, Q33, Q34 from STATUS 19:15Z. NEW Q35–Q42 in `EXPLORATION_REPORT.md` §H — restated here in shortened form:
+
+- **Q35 (tier prefix)**: (a) Tier 1 only ~13–15 sess; (b) Tier 1+2 ~29–35 sess **[recommended]**; (c) Tier 1+2+5 ~45–62 sess; (d) custom.
+- **Q36 (Tier-5 ordering)**: A.2 first then A.3 [recommended default].
+- **Q37 (Phase C kickoff item)**: C8.2 latest-year refresh first [recommended].
+- **Q38 (R quickstart only vs full Stata/SAS)**: R full + Stata/SAS pointer-files [default].
+- **Q39 (CLI tool vs DuckDB views)**: DuckDB views ship; CLI deferred [default].
+- **Q40 (manuscript cadence)**: single submission after Tier 2; Tier 5 ships as v1.1 [default].
+- **Q41 (Tier-3 items)**: defer all [default].
+- **Q42 (Phase B-2 trigger)**: §11 plan-update for any >1-session candidate not in this report [default].
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`EXPLORATION_REPORT.md` present at monorepo root** with the §0–§K structure intact. SHA at this commit: <SHA-recorded-at-commit-time>. If a future session edits or deletes the file without preserving its append-only structure, halt — Phase B's deliverable was overridden silently.
+2. **DECISION_LOG entry 2026-05-12T20:30:00Z** present and marked PENDING USER REVIEW. If the entry is silently flipped to "AUTHORIZED" without an accompanying user-confirmation message in conversation context, halt.
+3. **No `C8.X` tags** present yet — `git tag --list 'C8.*'` should be empty. The first `phase-c-start` or `C8.2-pre-do` tag appears only after user authorization.
+4. **KICKOFF.md unchanged** since `306370e` — the Phase C placeholder block has NOT been replaced yet. Replacement is a future commit conditional on Q35.
+5. **NEXT_STEPS.md §15 unchanged** — no `C8.X` task entries added yet. Same conditional.
+6. **`task7_v3b-complete` tag at `b0c8b4a` unchanged.**
+7. **`fetal_death/scripts/03_harmonize/harmonize.py` SHA `c4060ad2bc54a489…` unchanged.**
+8. **`fetal_death_harmonized.parquet` SHA `e3d6c64abcb7762d…`** and **`fetal_death_derived.parquet` SHA `4d1b37cc3a214eea…`** unchanged.
+9. **`.V3a_baseline.parquet` files preserved** (V3a forward-stability anchors at SHAs `23c56a9d6a0948b4…` and `0dd3aec0e47785f1…`).
+10. **The existing fetal-death smoke test (`fetal_death/tests/test_release_smoke.py`) is stale post-V3b** — pinned at V2.0 row counts. **This is a known L17 case documented in EXPLORATION_REPORT §B.1 / item B.13.** Do not "fix" it before Phase C authorization (item C8.1 in §G.4); attempting to fix it is itself a §7 halt condition (canonical-state mutation during Phase B-equivalent halt window).
+
+### Build artifacts current
+
+(unchanged from STATUS 2026-05-12T18:45:00Z + 19:15Z; Phase B was read-only)
+
+- 41-yr fetal-death parquet at `output/harmonized/fetal_death_{harmonized,derived}.parquet` (V3b SHAs)
+- V3a baseline parquets preserved
+- Natality v2.8.0 state unchanged
+- Linked file unchanged
+
+NEW this session:
+- `EXPLORATION_REPORT.md` at monorepo root (new file)
+- `STATUS.md` this section (append)
+- `DECISION_LOG.md` 2026-05-12T20:30Z entry (append)
+
+### Notes for next session
+
+- **Read `EXPLORATION_REPORT.md` end-to-end** before any work. The §G.4 task-ID list (C8.1–C8.23) and §H open questions are the load-bearing contents; the §A–§F per-candidate writeups are the evidence backing those.
+- **Q35 is the gate.** Do not advance past PRE-FLIGHT on any candidate until Q35 is answered (or the user explicitly directs an override path).
+- **If the user authorizes Tier 1+2 (Q35 b, default-recommended)**:
+  1. Apply the plan-update diff per §K.1 + §K.2: replace KICKOFF.md Phase C placeholder with the Tier-1+Tier-2 task list; append C8.1–C8.15 entries to NEXT_STEPS.md §15. Tag `[plan-update]` commit `phase-c-authorized`.
+  2. Begin C8.2 (latest-year refresh, per Q37 recommendation). PRE-FLIGHT entry uses §5 template + Convention 3 field-value snapshot.
+  3. C8.1 (smoke retag) is a cheaper independent task — could land in the same session as C8.2 since both touch fetal-death state.
+- **If Tier 1 only (Q35 a)**: trim §K.1 to drop Tier-2 block; C8.1–C8.8 only (~13–15 sessions). Phase D ships sooner.
+- **If Tier 1+2+5 (Q35 c)**: extend §K.1 with Tier-5 block; C8.21–C8.23 land at the end of Phase C. Manuscript timing per Q40 (single submission after Tier 2 vs. hold until Tier 5).
+- **Manuscript stale-numerics inventory** (for Phase D KICKOFF step 6 when it eventually fires): 4 lines in `paper/draft_v2_hmd_styled.md` cite 1,634,195 records / 29 years / 1.6M / V3 deferred. Update to 2,352,011 / 41 years / 1.99M NVSR-comparable / V3a+V3b shipped after Tier 1+2.
+- **No new mistake classes surfaced.** No FIX_LOG or LESSONS entries needed this session. The pattern of "Phase B itself surfaces a new lesson" was a residual risk anticipated in DECISION_LOG 19:15Z (d); did not fire.
+
+### Session summary
+
+Phase B closed in one session, comfortably within the KICKOFF-estimated 60–120 min agent budget. Two parallel research agents covered the external-verification surface (NCHS data availability + literature gap re-check); the orchestrating LLM covered the internal-repo introspection in parallel; the synthesis into EXPLORATION_REPORT.md was the closing operation.
+
+**Headline finding**: the user's directive "everything possible … before paper or zenodo" maps to a 32–58 session Phase C if maximalist. The honest recommended middle ground (Tier 1 + Tier 2 in §G.4 = ~29–35 sessions) ships a substantially more polished v1.0 HVS without the multi-month timeline extension that Tier 5 (backward extensions) would impose. The user picks any prefix in Q35; default recommendation surfaced clearly for ease of authorization.
+
+**Manuscript timing implication**: at one session per ~half-day of focused work, Tier 1+2 + Phase D (Task 9, 10, sync, manuscript) implies ~4–6 weeks to submission. Tier 1 only + Phase D implies ~2–3 weeks. Tier 5 included implies ~3–4 months.
+
+Next session = the Phase C kickoff, conditional on Q35.
 
 ---
 
