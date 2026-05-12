@@ -38,50 +38,165 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-12, post-Task-3-V2.1 + post-v1.0-push)
+## Current planned sequence (as of 2026-05-12, post-V3b-complete + scope-expansion mandate)
 
-Task 3 V2.1 fetal-death (2003+2004 + H8 + data_year + monorepo-path-drift bundle) shipped 2026-05-12 (`task3-complete` at commit `8ca5bf9`). Public v1.0 GitHub repo pushed to https://github.com/yoelplutchok/vital-statistics-harmonization (commit `a18ca3a`). User has **expanded pre-submission scope** to include Task 7 (fetal-death V3 backward extension) AND natality v2.8 rename — both formerly post-submission, now pulled in (DECISION_LOG 2026-05-12T03:30:00Z). Integrity principle reaffirmed: **100% correct or skip; no reverse-engineering that compromises integrity.**
+Phase A (data-first pre-submission scope) is **COMPLETE**. The user (chat 2026-05-12, post-commit `b0c8b4a` `task7_v3b-complete`) has issued a **§11 plan-update directive** expanding pre-submission scope further: *"i would like do do everything possible with this project in terms of extending the actual project and adding diferent things to the project to make it as robust and useful as possible before we do the paper or the zenodo."* Manuscript submission, Zenodo deposits, and the public-repo v1.1 sync are all paused until Phases B + C complete.
 
-The next sessions should execute, in this order:
+### Phase A — data-first pre-submission scope (COMPLETE)
 
-0. **STEP 0 — V3b documentation acquisition retry (time-boxed: at most 45 min of agent time).** The prior session (2026-05-12) probed for 1982-1988 fetal-death 1978-revision codebook documentation and failed: NBER's `fetaldeath1982.dct` returned 403 (per-file ACL on data.nber.org from the sandbox); NCHS standard FTP paths returned 404; no obvious alternate URL surfaced. **Try with tools the prior agent did not use:** `WebSearch` for academic papers / GitHub repos / IPUMS pages that may have published the byte layout; `WebFetch` against archive.org Wayback Machine for older NCHS pages; ICPSR study-finder for NCHS fetal mortality 1982-1988. Specific targets to probe:
-    - https://web.archive.org/web/*/ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/
-    - https://www.icpsr.umich.edu/web/ICPSR/search/studies?q=fetal+death+NCHS+1982-1988
-    - https://usa.ipums.org/ — IPUMS sometimes has 1978-revision documentation
-    - https://www.nber.org/research/data — NBER's general data catalog may link to 1978-revision PDF directly
-    - Google Scholar search: "fetal death" + "1982" + "byte layout" / "data dictionary" / "record layout"
-    - GitHub search: `fetaldeath1982` or `1978 fetal death` layout repos
-   - If V3b authoritative docs found → expand Task 7 scope to 1982-2022 (41 years total) and proceed with V3a + V3b.
-   - If NOT found within the time budget → proceed with V3a-only scope (1989-2022, 34 years). Document the search trail in `STATUS.md`. Do NOT reverse-engineer V3b layouts per integrity principle.
+- ✅ Task 1 (joint-use stratified denominators, 2026-05-11)
+- ✅ Task 2 (joint-use demo notebook, 2026-05-11)
+- ✅ Task 3 V2.1 (fetal-death 2003-2004 + H8 + data_year + monorepo path-drift bundle, 2026-05-12 `task3-complete` @ `8ca5bf9`)
+- ✅ Task 4 (paper companion notebook, 2026-05-11)
+- ✅ Task 5 (manuscript trim, 2026-05-11)
+- ✅ Task 6 (linked-validation framing reconcile, 2026-05-11)
+- ✅ Natality v2.8.0 column rename (2026-05-12)
+- ✅ Task 7 V3a (fetal-death 1989-1991 backward extension, 2026-05-12 `task7_v3a-complete`)
+- ✅ Task 7 V3b (fetal-death 1982-1988 backward extension, 2026-05-12 `task7_v3b-complete` @ `b0c8b4a`)
+- ✅ Public v1.0 GitHub repo push 2026-05-12 (commit `a18ca3a` at https://github.com/yoelplutchok/vital-statistics-harmonization; will be superseded by v1.x at Phase D)
 
-1. **Natality v2.8 column rename** (next task; was deferred post-submission until 2026-05-12 override). 4 column renames per the aliasing helper at `shared/helpers/canonical_join_keys.py`: `year → data_year`, `restatus → residence_status`, `maternal_race_bridged4 → maternal_race_bridged`, `maternal_hispanic_origin → hispanic_origin`. PRE-FLIGHT done 2026-05-12T03:25:00Z (see DECISION_LOG); 61-string-literal rename surface across 18 files; ~2 sessions for DO + receipt. Aliasing helper becomes a no-op after rename. New natality v2.8.0 Zenodo deposit (breaking change; v2.7.0 stays at its DOI for backward compat).
+Current data envelope: 41-yr fetal death (1982-2022, 2.35M records, 88/88 NVSR validation byte-exact) + 35-yr natality (1990-2024, 138.8M records, 183/183 byte-exact) + 19-yr linked birth-infant death (2005-2023, 74.9M records, 33/35 + 2 docs).
 
-2. **Task 7 — V3a fetal-death (1989-1991, +3 yrs)**. Re-uses 1989-revision layout identical to 1992 (existing `record_layout_1992.csv` + `1992FetalUserGuide.pdf` are the authoritative reference). All 10 raw zips already downloaded by agent 2026-05-12 to `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1991}US.zip` (SHAs in STATUS.md 2026-05-12T03:50:00Z). Extend parser dispatch + harmonize.py year set; re-derive; validate against NVSR (any pre-NVSR-57-08 sources for 1989-1991 control counts). ~1 session. **If STEP 0 succeeded, expand to include V3b (1982-1988, 1978-revision); ~3 additional sessions.**
+### Phase B — EXPLORATION SESSION (NEXT SESSION'S WORK; READ-ONLY)
 
-3. **Task 9 — Redirect notices** on the two old GitHub repos (`yoelplutchok/natality-harmonization`, `yoelplutchok/fetal-death-harmonization`). ~15-30 min, human-driven.
+**MANDATORY: the next LLM session is a READ-ONLY investigative / exploration session.** Per the 2026-05-12 user directive (logged in DECISION_LOG at commit time of this `[plan-update]`), Phase B EXPANDS pre-submission scope by investigating what additional work would make the project maximally robust and useful BEFORE Phase D (paper + Zenodo + public repo). The exploration session is mandated to:
 
-4. **Task 10 — Unified Zenodo deposit + v2.1.0 patch to old fetal-death deposit + v2.8.0 patch to natality deposit** (1 session + upload time). User chose 2026-05-12: (i) new unified deposit (concept DOI for HVS), (ii) upload v2.1.0 (+ V3a if shipped) to existing fetal-death concept DOI 10.5281/zenodo.20031571, (iii) upload v2.8.0 to existing natality concept DOI 10.5281/zenodo.19363074, (iv) description-only redirect notes on both old deposits pointing to the unified one.
+1. **Brainstorm + research the full frontier of pre-submission additions** across the six dimensions below. Open-ended exploration; do not narrow prematurely. The user wants "everything possible" — the session's job is to enumerate everything plausible, score it, and propose an executable order.
 
-5. **Sync to public staging dir + push v1.1 to GitHub.** Re-rsync the monorepo to `~/Desktop/vital-statistics-harmonization-public/`, re-scrub (same exclude list + 4 LLM-mention scrub edits as 2026-05-12), commit + push to overwrite v1.0 with v1.1 in the existing repo at https://github.com/yoelplutchok/vital-statistics-harmonization. Excludes: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `RECEIPTS/`, `.claude/`, `paper/`, `notebooks/_build_*.py`.
+2. **Six exploration dimensions** (each becomes a section in the exploration report):
 
-6. **Manuscript re-pass + submit** (~½ session). Update affected numbers: fetal-death record count from 1.74M to whatever V3a (+V3b if found) brings it to; coverage `1992-2022 (excl 2003-2004)` → `1989-2022 (34 yrs)` or `1982-2022 (41 yrs)` if V3b ships; validation counts 31/31→34/34 (or 41/41); deferred-2003/2004 caveats removed. Inject the unified concept DOI and the public GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers (Author contributions, AI-tool disclosure, Funding) — these stay in the published manuscript per journal AI-disclosure requirements but were excluded from the public repo. Reformat references to IJE style. Submit.
+   **B.a. Data extensions (additional years / additional NCHS files)**
+   - **Natality 1968-1989 backward extension** — symmetric sibling of the V3b fetal-death work just shipped. NCHS public-use natality files exist 1968+; 1968-revision (1968-1971 50% sample + 1972-1977 100%) and 1978-revision (1978-1988 100%) covered. Probe URLs at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/` and `Dataset_Documentation/DVS/natality/`. Verify per-year layout availability + user-guide existence via sibling-derived URL probing (per LESSONS L1-extension 2026-05-12T04:30:00Z).
+   - **Linked birth-infant death pre-2005 backward extension** — NCHS cohort-linked files exist back to 1983; period-linked starts 1995 (with the well-known 1995-1998 gap that ended NCHS's prior series). Verify which years are public-use and which layouts apply. Probe `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/linked/`.
+   - **Latest-year refreshes**: 2023+ fetal death, 2025+ natality, 2024+ linked. Verify NCHS public-use release status via WebFetch on `https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm`.
+   - **Pre-1982 fetal death** — almost certainly RDC-only (NCHS public-use FD canonical series begins 1982); confirm by WebFetch + sibling-URL probing.
+   - **Other NCHS public-use vital-events files** worth considering: marriage/divorce series, multiple-cause-of-death (all-age mortality — out of HVS scope unless user redirects), abortion surveillance summaries.
+   - **IPUMS-International + IPUMS-USA**: are there pre-harmonized versions worth cross-referencing for validation?
+   - For each candidate: NCHS URL probe result; raw-zip estimated size + record count; user-guide availability; era-layout count; estimated harmonization effort.
 
-**Out of pre-submission scope (clean post-submission backlog):**
+   **B.b. Robustness / testing / validation infrastructure**
+   - `tests/test_schema_dtype_parity.py` (durable H8 defense; recommended in FIX_LOG 2026-05-11T18:50:00Z) — asserts every harmonized_schema.csv `type` matches the parquet's pyarrow dtype.
+   - `tests/test_canonical_filter_invariants.py` — sum-across-strata = unstratified-total for every canonical filter, every product, every year.
+   - `tests/test_row_count_conservation.py` — input = output + documented_drops at every parse/harmonize/derive boundary.
+   - `tests/test_cross_product_join_parity.py` — natality joined to fetal-death + linked has the expected demographic-stratum row counts (per JOINT_USE_GUIDE).
+   - **Mutation-test scaffolding** for every validator (L3 defense in §8): inject a known violation; assert the validator catches it.
+   - **L13 file-inventory completeness audit** — for every CSV in `metadata/`, verify role/description names columns that actually exist with claimed dtypes.
+   - **L14 exit-code-vs-per-row aggregation defense** — every validator's `main()` must exit non-zero on any per-row FAIL.
+   - **CI integration** — GitHub Actions workflow running smoke + invariant tests on every push (currently no automated test runs).
+   - **`scripts/run_pipeline.py` end-to-end smoke from monorepo root** — confirms no latent path-drift bugs (per FIX_LOG 2026-05-12T01:30Z forward-looking follow-up).
+   - **PROVENANCE.md refresh + sha-stability test** — automated check that every shipped artifact's documented SHA matches its on-disk SHA.
+   - **Snapshot regression test** — every release tags a per-column SHA manifest; subsequent release CI fails if any "stable" column drifts.
 
-- Task 7 V3b (1982-1988) — if STEP 0 above couldn't find authoritative documentation. Defer until 1978-revision codebook obtainable from NCHS direct request, ICPSR, or academic source.
-- Section B 2017 race-stratified NVSR validation. Small future task; requires NVSR-2017 fetal-mortality PDF and L9 cheap-check on table/page citation.
-- `tests/test_schema_dtype_parity.py` (durable defense against H8-class drift; recommended in FIX_LOG 2026-05-11T18:50Z).
-- `record_layout_2003/2004.csv` rebuild from user guides (current CSVs are inherited-from-2006 with documentation imprecisions; harmonized parquet is correct, only the CSV is doc-imprecise; LESSONS L13-extension 2026-05-12T01:40:00Z).
-- Monorepo path-drift sweep on `parse_fetal_year.py`, `derive.py`, `run_pipeline.py`, `tests/conftest.py` (3 scripts fixed in Task 3 V2.1; others not inspected).
-- File-inventory + external_validation_targets + live_births_by_year metadata appends for 2003+2004 (bundle with Task 10 Zenodo prep).
+   **B.c. Usability / convenience layers / multi-language quickstarts**
+   - **Additional pre-computed denominator tables**: state-stratified live births × year; race × age × Hispanic × state; period vs cohort linked-file denominators.
+   - **R quickstart**: `quickstart.R` mirroring `quickstart.py`; verifies `arrow::read_parquet()` round-trip; documents R package dependencies.
+   - **Stata + SAS quickstarts**: `quickstart.do` + `quickstart.sas`; document `import delimited` or `use` syntax for Stata; PROC IMPORT for SAS. Even a pointer file telling these users "load via pyarrow then export to CSV" would be a usability win.
+   - **DuckDB views / pre-built SQL queries**: a `views.sql` file with the canonical filter + common joins as DuckDB-compatible views over the parquets.
+   - **Pre-computed cross-tab CSVs** for users who don't want to load the parquet: per-year × per-state × per-race counts for the top 10 most-cited NVSR-equivalent tabulations.
+   - **Worked-example notebooks beyond the current 2**:
+     - `maternal_age_stratified_imr.ipynb` (using linked file)
+     - `preterm_outcomes_time_series.ipynb` (fetal+natality+linked)
+     - `cross_race_fetal_mortality.ipynb` (V3a/V3b race-stratified analysis demo, with V3b's code-7+9 null caveat documented)
+     - `education_gradient.ipynb` (within-era only, with the 1989/2003 boundary explicit)
+     - `state_reporting_quirks.ipynb` (Oklahoma Hispanic, Maryland/Massachusetts 1992-1998, Louisiana plurality)
+   - **CLI tool**: `hvs` command-line tool wrapping `quickstart.py` use cases (e.g., `hvs count fetal_deaths --year 2020 --race AIAN`).
+   - **Validated "perinatal record" pre-joined parquet**: one row per linked-file infant with fetal-death sibling records flagged (where infant + sibling fetal death share maternal identifiers — limited by suppressed identifiers, but partial joins are possible).
 
-**When to deviate from this sequence:**
+   **B.d. Cross-product / joint-use enhancements**
+   - **Three-product perinatal mortality joint computation**: rate = (fetal deaths 28+wk + infant deaths <7d) / (live births + fetal deaths 28+wk) × 1000, computed by year × race using all three products. Currently only fetal mortality (single product) is demoed.
+   - **Section B 2017 race-stratified NVSR validation** (the deferred Task 4 fragment).
+   - **Task 8 — cross-product timeline figure** (from NEXT_STEPS.md §15; not yet shipped). Era-boundary visualization, all 3 products on one timeline with revision-boundary bands.
+   - **Cross-product reproducibility figure** — fetal-mortality rate + IMR + preterm rate + LBW rate on one panel, with documented sources for each.
 
-- If STEP 0 finds V3b documentation: ADD V3b to step 2's scope (don't change the sequence order).
-- If natality v2.8 surfaces an unexpected blocker (e.g., NVSR 183 validation drift after rename): halt and ask. Do NOT silently work around — the v2.8 rename is supposed to be value-preserving.
-- If V3a layout reconstruction surfaces a 1989-1991 vs 1992 difference (we don't expect any; both are 1989-revision): halt and ask, similar to 2026-05-11/12's MAGER vs MAGER41 episode.
+   **B.e. Documentation / discoverability**
+   - **CHANGELOG.md** at the monorepo root with one section per version (v1.0 → v1.1 → … delta).
+   - **Migration guides**:
+     - v2.7.0 → v2.8.0 natality (column renames; sample sed/awk recipes for legacy code).
+     - v2.0.0 → v2.3.0 fetal death (V2.1 transition years added, V3a/V3b backward extension; sample query updates).
+   - **Worked-example FAQ** ("how do I compute the perinatal mortality rate?" "how do I get state-level data?" "what's the right canonical filter for my analysis?").
+   - **Cross-product COMPARABILITY.md** at monorepo root — synthesizes the within_era/cross_era caveats from both subprojects' COMPARABILITY docs.
+   - **PROJECT_STRUCTURE.md upgrade** — add notebook deps + build-order DAG + which-file-to-read-first-by-use-case.
+   - **CODEBOOK extensions** — per-variable historical-value-distribution panels, sentinel-code disambiguation tables, era-by-era coding scheme diff.
+   - **PRIOR_ART.md update** — does the literature gap argument still hold given recent harmonization efforts (e.g., NBER's IPUMS-Health Surveys, RWJF's 500 Cities)?
+   - **NCHS-source-data SHA manifest at sub-project level** — confirms a downstream user replicating from scratch gets bit-identical inputs.
 
-**Source for this sequence:** 2026-05-11 + 2026-05-12 chat sessions; DECISION_LOG entries 2026-05-11T20:50Z, 2026-05-12T01:35Z, 2026-05-12T03:30Z. STATUS.md's 2026-05-12T04:00:00Z section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
+   **B.f. Performance / distribution / reproducibility tooling**
+   - **Parquet column dictionary tuning** — set `use_dictionary=True` per low-cardinality column (e.g., race, sex, version_flag); measure size reduction.
+   - **Smaller derived parquet** — drop redundant intermediates if any (e.g., string sibling of a numeric column).
+   - **Reproducibility container** — `Dockerfile` pinning python+pandas+pyarrow versions; one `docker run` rebuilds every parquet end-to-end.
+   - **`uv` / `poetry` lockfile** for deterministic Python environment.
+   - **GitHub release artifacts** — attach the parquets to a GitHub Release alongside the Zenodo deposit.
+   - **`scripts/run_pipeline.py` from-scratch smoke** — verify clean rebuild from raw zips in <30 min on a standard laptop.
+   - **Mirror parquet on a CDN** (CloudFront / S3 / GitHub LFS) for users behind Zenodo-blocking firewalls.
+
+3. **For each candidate, produce a structured writeup** with:
+   - **Name** + 1-line description
+   - **Why this matters** (use case, who benefits)
+   - **Effort estimate** (sessions, with per-session breakdown)
+   - **Source / data dependencies** (NCHS user-guide URLs verified via WebFetch + sibling probing; SHA recordable; OCR-needed flag)
+   - **Risks / blockers** (RDC-only? requires direct NCHS contact? schema-version-bump-triggering? cross-era incompatible?)
+   - **Manuscript impact** (changes a published number? adds a new validation cell? requires re-paragraph?)
+   - **Priority recommendation**: must-have / nice-to-have / defer
+   - **Execution dependency** (does X need to happen before Y?)
+
+4. **Produce a §11 plan-update proposal** at the end of the session:
+   - Diff for `NEXT_STEPS.md` §15 (new task entries with full PRE-FLIGHT/SMOKE/DO/VERIFY/RECEIPT framing per §4)
+   - Diff for `KICKOFF.md` (replace this Phase B/C/D placeholder with a concrete ordered task list)
+   - **Total effort estimate** (cumulative sessions; surface the trade-off explicitly so the user can decide whether to trim before authorizing)
+   - **Suggested execution order** within Phase C (group tasks by data-product-touched; minimize parquet rebuilds; place high-risk early)
+
+5. **HALT and write findings to**:
+   - `EXPLORATION_REPORT.md` at monorepo root (NEW file, append-only thereafter)
+   - New STATUS.md section appending the proposal pointer + "Open questions for human"
+   - DECISION_LOG entry recording the plan-update proposal (status: PENDING USER REVIEW)
+   - Do **NOT** execute any of the investigated items. Do **NOT** advance to Phase C without explicit user authorization.
+
+**Investigation methods allowed in Phase B**:
+- `WebFetch` on NCHS canonical URLs (`https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm` + sibling-derived `ftp.cdc.gov` paths).
+- `WebSearch` for academic / IPUMS / NBER / ICPSR / GitHub references.
+- `WebFetch` on `https://web.archive.org/web/*/` for older NCHS pages.
+- `Read` on existing repo files (any path).
+- `Bash` for read-only repo inspection: `git log`, `git diff`, `grep`, `find`, `ls`, `wc`. **Forbidden**: any tool invocation that mutates state (no `git commit`, no `mv`, no `cp` of canonical files, no script execution that writes to canonical paths).
+
+**Forbidden in Phase B**:
+- Any canonical-state mutation (scripts, parquets, schema, metadata CSVs, RECEIPTS/, manuscript drafts).
+- Any DO-phase work on any candidate.
+- Skipping the halt-and-ask step at session end.
+- Hallucinating data sources without sibling-derivation evidence (per LESSONS L1-extension).
+- Asserting "PDF X needs OCR" without an explicit `page.get_text()` probe (per LESSONS L12-extension 2026-05-12T15:00Z).
+- Inflating effort estimates to discourage user expansion, or deflating them to encourage it. Report honestly.
+
+**Time budget**: 1 session (estimated 60-120 min of agent time). If the exploration is incomplete at session end, deliver a partial proposal + flag the unfinished dimensions; do NOT defer the halt.
+
+### Phase C — EXECUTE PHASE B-PROPOSED ADDITIONS (subsequent sessions)
+
+To be populated by Phase B's plan-update proposal. Estimated 5-20 sessions depending on Phase B-recommended scope.
+
+Strict NEXT_STEPS.md §4 five-phase discipline per added task (PRE-FLIGHT, SMOKE, DO, VERIFY, RECEIPT). Each shipped task tagged `<task_id>-pre-do` + `<task_id>-complete`. Each authoring decision logged in DECISION_LOG. Each new mistake class (if any) logged in LESSONS.md per §11.
+
+### Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (after Phase C completes)
+
+Phase D was the original Tasks 9/10/sync/manuscript sequence. Sequence preserved; timing pushed to after Phases B + C ship.
+
+- **D.1. Task 9** — redirect notices on the two old GitHub repos (`yoelplutchok/natality-harmonization`, `yoelplutchok/fetal-death-harmonization`). Notice text proposed in STATUS 2026-05-12T18:45Z Q30. ~15-30 min, human-driven.
+- **D.2. Task 10** — Unified Zenodo deposit + version patches: (i) new unified HVS concept DOI; (ii) v2.3.0 (or whatever Phase B/C bumps it to) patch to fetal-death concept DOI 10.5281/zenodo.20031571; (iii) v2.8.0 (or later) patch to natality concept DOI 10.5281/zenodo.19363074; (iv) description-only redirect notes on both old deposits pointing to (i). Includes PROVENANCE.md refresh + schema-CSV `years_available` retroactive V3a/V2.1 gap fix. 1 session + Zenodo upload time.
+- **D.3. KICKOFF step 5** — Sync monorepo to public staging dir + push v1.x to GitHub. Re-rsync `~/Desktop/vital-statistics-harmonization-public/`, re-scrub (same exclude list + LLM-mention scrub edits as 2026-05-12 v1.0 push). Excludes: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `RECEIPTS/`, `.claude/`, `paper/`, `notebooks/_build_*.py`, `EXPLORATION_REPORT.md`. Commit + push to overwrite v1.0.
+- **D.4. KICKOFF step 6 — Manuscript re-pass + submit** (~½ session). Update all numerics affected by Phase B/C work (record counts, coverage windows, validation counts). Inject unified HVS concept DOI + public GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers (Author contributions, AI-tool disclosure, Funding) — these stay in the published manuscript per journal AI-disclosure requirements but were excluded from the public repo at v1.0 push. Reformat references to IJE style. Submit.
+
+**Always-on guardrails for Phase C / D execution**:
+
+- §7 halt conditions are binding. Every task PRE-FLIGHT runs the Field-value snapshot (Convention 3) + every RECEIPT writes Forward-looking HALTs (Convention 4) + every new SMOKE harness asserts SHAPE-not-VALUE (Convention 1) + carries a `DESIGN:` docstring tag (Convention 2).
+- L9 cheap-checks on every cited external document; L13 column-content verification on every inventory CSV; L17 SMOKE stale-pinning awareness.
+- Halt-and-ask on any §7 condition. Do not silently work around. Do not patch downstream artifacts to match buggy upstream.
+- §2 four-core-principle: cheap-before-expensive, fail-closed, state-on-disk-never-only-in-memory, re-running-must-be-free.
+
+**When Phase B / C / D may legitimately deviate**:
+
+- If Phase B reveals that a candidate has a RDC-only blocker (or any other immovable obstacle): defer it to post-submission, document the deferral with the specific blocker.
+- If Phase C reveals a cumulative effort exceeding what the user is willing to absorb: halt at the next clean checkpoint and re-ask.
+- If a Phase B/C/D task surfaces a new mistake class (per §11): log to LESSONS.md, propose §8 matrix row, halt for human approval before continuing.
+
+**Source for this sequence:** 2026-05-12 chat sessions — DECISION_LOG entries 2026-05-11T20:50Z, 2026-05-12T01:35Z, 2026-05-12T03:30Z, 2026-05-12T18:30:00Z (B3 1-digit recode + DATAYEAR Option A for V3b), and the 2026-05-12 post-V3b-complete chat directive *"i would like do do everything possible with this project … before we do the paper or the zenodo"* (logged in this `[plan-update]` commit's accompanying DECISION_LOG entry). STATUS.md's 2026-05-12T18:45:00Z section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
 
 ---
 

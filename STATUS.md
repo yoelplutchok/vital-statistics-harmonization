@@ -1,6 +1,103 @@
-# STATUS — last updated 2026-05-12T18:45:00Z
+# STATUS — last updated 2026-05-12T19:15:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T19:15:00Z — `[plan-update]` Pre-submission scope expanded for the 5th time: Phase B exploration session mandated NEXT SESSION; Phase D (Task 9 + Task 10 + public-repo sync + manuscript) paused until Phases B+C complete
+
+### Current phase
+
+**Phase A → Phase B transition.** Phase A (data-first pre-submission scope: Tasks 1-7 + natality v2.8 + V2.1/V3a/V3b + v1.0 GitHub push) is **complete**. User directive 2026-05-12 chat (post-`task7_v3b-complete` @ `b0c8b4a`) inserts a mandatory **Phase B read-only exploration session** before any further execution. Phase D (Task 9 redirect notices + Task 10 unified Zenodo deposit + public-repo v1.x sync + manuscript submit) is paused. No canonical-state mutation in this `[plan-update]` commit besides KICKOFF.md (the sequencing pointer), DECISION_LOG.md, and this STATUS section.
+
+### What was done this session (Phase A close + Phase B mandate)
+
+1. **Task 7 V3b complete** earlier in the same session (STATUS section 2026-05-12T18:45:00Z below; tag `task7_v3b-complete` at `b0c8b4a`).
+2. **User asked**: "did we do all possible data things in this project or is there more we can add?" LLM enumerated the unutilized data frontier (natality 1968-1989 backward extension as the symmetric sibling of V3b; pre-2005 linked-file backward extension; latest-year refreshes; smaller-wins-in-current-coverage list including `test_schema_dtype_parity.py`, record_layout_2003/2004 rebuild, etc.) and recommended LOCKING the current envelope to ship at v1.1.
+3. **User overrode the recommendation** with the maximalist directive: *"i would like do do everything possible with this project in terms of extending the actual project and adding diferent things to the project to make it as robust and useful as possible before we do the paper or the zenodo so i want to do an ivetigative session and exploration of what we can do and then add it to the plan to do it in subsequent sessions"* — and directed that KICKOFF.md be updated so the next session's paste triggers this.
+4. **KICKOFF.md "Current planned sequence" section rewritten** (this commit) to:
+   - Mark Phase A complete (concrete receipt-tag list)
+   - Insert a mandatory Phase B exploration session with 6-dimension brief + per-candidate writeup spec + halt-for-authorization gate
+   - Insert a Phase C placeholder ("execute Phase B-proposed additions")
+   - Move former Tasks 9/10/sync/manuscript to Phase D (after Phase C completes)
+5. **DECISION_LOG entry** 2026-05-12T19:15:00Z `[plan-update]` recording the rationale, alternatives, residual risks, and §11 backport scope (none).
+6. This STATUS section appending the Phase B mandate.
+
+### Last completed step
+
+KICKOFF.md `[plan-update]` written. Phase A closed. Phase B awaiting next session to execute.
+
+### In-progress
+
+(none — clean checkpoint at the Phase A → Phase B boundary)
+
+### Next planned task
+
+**Phase B — Exploration session** (next session; READ-ONLY mandate). Six dimensions enumerated in KICKOFF.md:
+
+- **B.a. Data extensions**: natality 1968-1989 backward extension (1968-rev + 1978-rev); linked birth-infant death pre-2005 backward; 2023+ FD / 2025+ natality / 2024+ linked latest-year refreshes; pre-1982 FD verification (likely RDC-only).
+- **B.b. Robustness / testing**: `test_schema_dtype_parity.py`; canonical-filter invariants; row-count conservation; mutation-test scaffolding for validators; CI integration; PROVENANCE.md sha-stability test.
+- **B.c. Usability / convenience layers**: state-stratified denominators; R / Stata / SAS quickstarts; DuckDB views; pre-computed cross-tab CSVs; additional worked-example notebooks (preterm outcomes, IMR by maternal age, education gradient, state reporting quirks, cross-race FD).
+- **B.d. Cross-product / joint-use**: three-product perinatal mortality joint computation; Section B 2017 race-stratified NVSR validation (deferred Task 4 fragment); Task 8 cross-product timeline figure; pre-joined "perinatal record" parquet.
+- **B.e. Documentation / discoverability**: CHANGELOG.md; v2.7→v2.8 natality + v2.0→v2.3 fetal-death migration guides; worked-example FAQ; cross-product COMPARABILITY.md; PROJECT_STRUCTURE.md upgrade; CODEBOOK extensions.
+- **B.f. Performance / distribution**: parquet column dictionary tuning; Dockerfile + reproducibility container; uv/poetry lockfile; GitHub release artifacts; from-scratch end-to-end smoke timing.
+
+**Deliverable**: `EXPLORATION_REPORT.md` at monorepo root (NEW) + KICKOFF.md Phase C population diff + NEXT_STEPS.md §15 task-entry diffs + cumulative effort estimate + suggested execution order. HALT for user authorization before any Phase C DO work.
+
+**Forbidden in Phase B**: canonical-state mutation; DO-phase work; skipping the halt-and-ask step; hallucinating data sources without sibling-derivation evidence.
+
+### Blocked
+
+(none — Phase B mandate is the directive, not a block)
+
+### Open questions for human
+
+Carried + new:
+
+32. **Phase B scope inclusivity** — the 6-dimension list in KICKOFF is comprehensive but exploratory. If the LLM surfaces a 7th dimension (e.g., legal/licensing review, multilingual documentation, an analyst-friendly web viewer), it should add it to the proposal rather than narrow. Confirmation appreciated.
+
+33. **Phase C effort ceiling** — Phase B will produce a cumulative effort estimate. Is there an implicit cap (e.g., "willing to absorb ≤ 15 more sessions" or "no cap; sequence whatever you find worth doing")? Default: no cap, surface the trade-off honestly so the user can trim post-Phase-B.
+
+34. **In-scope vs out-of-HVS-mission boundary** — HVS is currently "vital events around birth" (natality + fetal death + linked-infant-death). Adjacent NCHS public-use files exist (all-cause mortality 1968-2023; marriage/divorce vestigial series; abortion surveillance). Default: NOT in HVS scope; Phase B may LIST them with "out of mission unless user redirects" framing for user decision.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **KICKOFF.md "Phase B" block** must be present and authoritative. If a future session edits KICKOFF without preserving the Phase B mandate, halt — the user directive was overridden silently.
+2. **`task7_v3b-complete` tag** at commit `b0c8b4a` unchanged.
+3. **DECISION_LOG entry 2026-05-12T19:15:00Z `[plan-update]`** present and unmodified.
+4. **Phase B's read-only mandate**: the next session's first commits (if any) MUST be additions of `EXPLORATION_REPORT.md` + STATUS section + DECISION_LOG entry only. Canonical-state mutation (script/parquet/schema/metadata edits) in the next session is a §7 halt condition.
+5. **`fetal_death/scripts/03_harmonize/harmonize.py` SHA `c4060ad2bc54a489…`** unchanged.
+6. **`fetal_death_harmonized.parquet` SHA `e3d6c64abcb7762d…`** and **`fetal_death_derived.parquet` SHA `4d1b37cc3a214eea…`** unchanged.
+7. **`.V3a_baseline.parquet`** files preserved (V3a forward-stability anchors at SHAs `23c56a9d6a0948b4…` and `0dd3aec0e47785f1…`).
+
+### Build artifacts current
+
+(unchanged from STATUS 2026-05-12T18:45:00Z; this is a plan-update, no data mutation)
+
+- 41-yr fetal-death parquet at `output/harmonized/fetal_death_{harmonized,derived}.parquet` (SHAs above)
+- V3a baseline parquets preserved at `output/harmonized/fetal_death_{harmonized,derived}.V3a_baseline.parquet`
+- Natality v2.8.0 state unchanged
+- Linked file unchanged
+
+### Notes for next session
+
+- **The pasted-prompt block in KICKOFF.md is unchanged**. The (a)-(d) handshake's "default to KICKOFF.md sequence's next item" clause will naturally point to Phase B — no prompt edit needed.
+- **Read KICKOFF.md's new Phase B block CAREFULLY** before starting. The 6 exploration dimensions + per-candidate writeup spec + forbidden actions list + halt-and-ask gate are all binding.
+- **Investigation method discipline**:
+  - WebFetch on NCHS canonical URLs first (`https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm` + sibling-derived `ftp.cdc.gov` paths) before reporting data availability.
+  - For pre-1989 NCHS files: try sibling-derived URLs (e.g., `Natality19xx.zip` patterns) per L1-extension before declaring unavailability.
+  - For PDF-only documentation: run `page.get_text()` probe (per L12-extension) BEFORE declaring OCR-needed.
+  - For every candidate, verify on-disk vs upstream NCHS state — don't trust prior-session memos.
+- **Estimated Phase B duration**: 1 session (60-120 min agent time). If incomplete, deliver partial proposal + flag unfinished dimensions; do NOT defer the halt.
+- **Phase C will be authored by Phase B**. The current KICKOFF.md Phase C section is a placeholder; Phase B's plan-update populates it.
+
+### Session summary
+
+Two distinct works in one session:
+1. **Task 7 V3b shipped** earlier (commit `b0c8b4a`, tag `task7_v3b-complete`): fetal-death coverage 41 yrs, 88/88 validation byte-exact, V3a baseline 0/162 column drift preserved.
+2. **`[plan-update]` Phase B/C/D restructure** (this section): pre-submission scope expanded for the 5th time per user maximalist directive; next session is read-only exploration; manuscript timeline pushed to after Phase C ships.
+
+This is the largest in-session sequencing change recorded so far. Phase B's output will determine Phase C scope; Phase C scope determines manuscript timing.
 
 ---
 

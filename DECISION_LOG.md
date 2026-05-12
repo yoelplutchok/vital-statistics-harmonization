@@ -23,6 +23,49 @@
 
 ---
 
+## 2026-05-12T19:15:00Z — [plan-update] sequencing — Pre-submission scope expanded a 5th time: Phase B (READ-ONLY exploration session) + Phase C (execute proposed additions) inserted between Phase A (data-first; complete) and Phase D (paper + Zenodo + public-repo sync); manuscript submission paused
+
+**Choice:** Add a mandatory **Phase B exploration session** (read-only) and a **Phase C execute-additions phase** to the pre-submission sequence in KICKOFF.md. The next LLM session is Phase B: research the full frontier of additions across 6 dimensions (data extensions, robustness/testing, usability/convenience, cross-product/joint-use, documentation, performance/distribution), produce per-candidate writeups with effort/risk/manuscript-impact estimates, propose a §11 plan-update for KICKOFF.md + NEXT_STEPS.md §15, halt for user authorization. Phase C subsequent sessions execute the user-authorized expanded plan. Phase D (Task 9 redirect notices + Task 10 unified Zenodo + public-repo sync + manuscript submit) runs only after Phase C completes.
+
+**Alternatives considered:**
+
+1. **Lock current 1982-2022/1990-2024/2005-2023 envelope and ship at v1.1** (the LLM's recommendation from chat 2026-05-12, post-V3b-complete). Pro: shortest path to submission; current coverage is already a defensible "Data Resource Profile" extent (41 yr FD + 35 yr natality + 19 yr linked). Con: leaves several plausible high-value additions (natality 1968-1989 backward extension; pre-2005 linked extension; latest-year refreshes; testing/usability infrastructure) on the table for a v2.0 release. User explicitly rejected this option in favor of maximum-extent pre-submission.
+
+2. **Pull a SPECIFIC next addition (e.g., natality 1968-1989) into pre-submission without an exploration session.** Pro: faster than B+C. Con: chooses one expansion without comparing alternatives; loses the value of the systematic frontier sweep; would likely require subsequent ad-hoc expansions when the next idea surfaces. **Rejected** — exploration is a one-time investment that informs all subsequent expansion decisions.
+
+3. **Insert exploration session + execute (chosen).** Pro: enumerates the full candidate set; gives the user one decision point with a concrete trade-off picture; subsequent execution sessions are well-scoped. Con: adds 1 session (Phase B) before any execution starts; total pre-submission timeline grows by Phase B (1 session) + Phase C (5-20 sessions TBD by Phase B output). **Selected**.
+
+**Reason:** This is the 5th expansion of pre-submission scope (after Task 3 V2.1 → V3a → V3b → natality v2.8 → this one). The user's stated objective — *"i would like do do everything possible with this project in terms of extending the actual project and adding diferent things to the project to make it as robust and useful as possible before we do the paper or the zenodo"* — is maximalist; an exploration session is the right tool because individual pull-this-in decisions don't compare alternatives. Phase B's deliverable (a structured per-candidate writeup with effort/risk/impact) lets the user authorize a specific subset rather than committing to "everything" sight unseen.
+
+Three protocol justifications: (i) §11 plan-update process explicitly accommodates this kind of mid-project amendment; (ii) §2 principle 1 "cheap-before-expensive" — Phase B's read-only research is cheap relative to Phase C execution; (iii) §10 self-check — surfacing the full candidate set forces the question "what could I have gotten wrong that VERIFY wouldn't catch" at the planning level, not just the per-task level.
+
+**Source:**
+- Chat 2026-05-12 between commits `b0c8b4a` (task7_v3b-complete) and this `[plan-update]` commit. User explicit directive quoted verbatim above.
+- KICKOFF.md "Current planned sequence" section, rewritten in this commit, runs ~150 lines and is the canonical sequencing pointer for Phase B/C/D.
+- Phase A complete summary in the new KICKOFF section reflects the closed receipts in `RECEIPTS/`.
+
+**Verifiable by:**
+- Next session's first action: pasting KICKOFF.md and outputting the (a)-(d) handshake. Expected (c): "Phase B exploration session per KICKOFF.md." If the LLM proposes any DO-phase work instead, halt — the KICKOFF directive was misread.
+- Phase B deliverable: `EXPLORATION_REPORT.md` at monorepo root + STATUS.md section + new DECISION_LOG entry. None present today; their existence post-Phase-B is the verification.
+- Phase C tasks: tagged `<task_id>-pre-do` + `<task_id>-complete` per added task; receipts in `RECEIPTS/`.
+
+**Reversible:** yes — at any point during Phase B or Phase C, the user can re-issue the "lock current envelope, ship" decision; the existing Phase D plan (Task 9 / Task 10 / public-repo sync / manuscript) is intact and ready to execute. No canonical-state mutation is being committed by this plan-update itself — only the sequencing-pointer file (KICKOFF.md) and this DECISION_LOG entry.
+
+**Residual risks:**
+- (a) **Phase B inflates cumulative effort** — if Phase B proposes 15+ sessions of Phase C work, the manuscript submission delays significantly. Mitigation: Phase B's brief explicitly mandates honest effort estimates and a halt-for-authorization step; the user reviews the total before authorizing.
+- (b) **Phase B over-narrows or under-narrows** — too narrow misses additions worth doing; too broad balloons Phase C. Mitigation: the six exploration dimensions are explicit in KICKOFF; the LLM must cover all six even if the proposal column for some dimensions ends up "no high-priority items found."
+- (c) **Phase B hallucinates a candidate**. Mitigation: the brief mandates `WebFetch` + sibling-derived URL probing for every external data source (per LESSONS L1-extension 2026-05-12T04:30:00Z); any data candidate without verified URL+SHA is flagged as "needs further verification" rather than slotted for execution.
+- (d) **Phase C surfaces a new mistake class mid-execution** that retroactively invalidates Phase A receipts. Mitigation: §11 backport process is unchanged; any new LESSONS row triggers a re-verification of affected prior tasks before continuing.
+- (e) **Submission target slips past whatever timing the user has implicit**. Mitigation: surfaced honestly in Phase B's report; user decides.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- This plan-update is itself the kind of decision that the §10 self-check asks about: "what could I have gotten wrong that VERIFY wouldn't catch?" The biggest risk is that the user's intent — "everything possible" — is interpreted maximally when they actually meant "some specific high-value subset." The Phase B halt-for-authorization step is the mitigation: the user sees the proposed Phase C list and trims as desired before any execution. The §11 plan-update process puts the user back in the loop before any code or data is touched.
+- The other class of risk: Phase B might surface a candidate the user already implicitly rejected (e.g., scope-creep into all-cause mortality, which is out-of-HVS-mission). Mitigation: the KICKOFF directive notes which extensions are clearly in-scope (vital events around birth: natality, fetal death, linked-infant-death) and lists candidate scope-creeps (e.g., multiple-cause-of-death) with "out of HVS scope unless user redirects" framing.
+
+**Backport scope (per §11.4):** None. No prior receipts are invalidated by this plan-update; it's a forward-looking sequencing change only.
+
+---
+
 ## 2026-05-12T18:30:00Z — task7_v3b — B3 maternal_race_bridged extension: 1978-rev 1-digit MRACE 0-9 → 4-cat bridged; code 7 (Other nonwhite) → null + code 9 (Not stated) → null
 
 **Choice:** Extend the B3 `_checked_remap` in `fetal_death/scripts/03_harmonize/harmonize.py` with a new `era=='1985'` branch containing a 1-digit MRACE → bridged-race recode covering the 1978-revision V3b coding scheme:
