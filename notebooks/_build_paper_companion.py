@@ -145,8 +145,8 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "# C04: ~3.5M live births/year\n"
-            "nat_yrs = pd.read_parquet(NAT_PARQUET, columns=['year'])\n"
-            "by_yr = nat_yrs.groupby('year').size()\n"
+            "nat_yrs = pd.read_parquet(NAT_PARQUET, columns=['data_year'])\n"
+            "by_yr = nat_yrs.groupby('data_year').size()\n"
             "annual_mean = int(by_yr.mean())\n"
             "annual_min, annual_max = int(by_yr.min()), int(by_yr.max())\n"
             "match = abs(annual_mean - 3_500_000) < 200_000  # within ~5% of 3.5M\n"
@@ -376,7 +376,7 @@ def build() -> nbformat.NotebookNode:
             "record('C40', '94', '33/35 byte-exact + 2 differ by 1', '33 byte-exact + 2 by 1 = 35 total', f'{v3_byte_exact} byte-exact + {v3_diff_1} by 1 = {v3_total_pass} total', status)\n"
             "# Show the two diff-by-1 rows\n"
             "print('\\nThe two diff-by-1 rows (Task 6 canonical framing):')\n"
-            "print(v3[v3['diff'].abs() == 1][['metric_id', 'year', 'actual_value', 'expected_value', 'diff']].to_string(index=False))"
+            "print(v3[v3['diff'].abs() == 1][['metric_id', 'data_year', 'actual_value', 'expected_value', 'diff']].to_string(index=False))"
         ),
         code(
             "# C41: 29/29 per-year fetal-death counts\n"

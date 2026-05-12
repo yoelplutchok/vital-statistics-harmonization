@@ -3,7 +3,7 @@
 Build `notebooks/joint_use_demo.ipynb` deterministically from this source.
 
 Constructs the notebook cells (markdown + code), executes them against
-the locally-available v2.7.0 natality + v2.0.0 fetal-death + v3.0.0 linked
+the locally-available v2.8.0 natality + v2.1.0 fetal-death + v3.0.0 linked
 parquets via nbclient, and writes the executed notebook with output cells.
 
 Run from the repo root:
@@ -107,20 +107,20 @@ def build() -> nbformat.NotebookNode:
             "canonical filter is applied at load time."
         ),
         code(
-            "# --- Natality (v2.7.0 harmonized + derived) ---\n"
+            "# --- Natality (v2.8.0 harmonized + derived; canonical column names native) ---\n"
             f"NAT_PARQUET = '{NAT_PARQUET}'\n"
-            "nat = pd.read_parquet(NAT_PARQUET, columns=['year', 'restatus', 'maternal_age', 'maternal_race_bridged4'])\n"
-            "nat = to_canonical_natality(nat)  # restatus -> residence_status, year -> data_year, etc.\n"
+            "nat = pd.read_parquet(NAT_PARQUET, columns=['data_year', 'residence_status', 'maternal_age', 'maternal_race_bridged'])\n"
+            "nat = to_canonical_natality(nat)  # no-op for v2.8 input (rename map empty when columns already canonical); preserves v2.7.0 backward-compat\n"
             "nat_resident = nat[nat['residence_status'] != 4]  # int filter — natality side\n"
-            "print(f'Natality total: {len(nat):,}; resident: {len(nat_resident):,} (after restatus != 4)')\n"
+            "print(f'Natality total: {len(nat):,}; resident: {len(nat_resident):,} (after residence_status != 4)')\n"
             "del nat  # release memory"
         ),
         code(
             "# --- Linked birth–infant death (v3 derived) ---\n"
             f"LINKED_PARQUET = '{LINKED_PARQUET}'\n"
-            "linked = pd.read_parquet(LINKED_PARQUET, columns=['year', 'restatus'])\n"
-            "linked_resident = linked[linked['restatus'] != 4]\n"
-            "print(f'Linked total: {len(linked):,}; resident: {len(linked_resident):,} (after restatus != 4)')\n"
+            "linked = pd.read_parquet(LINKED_PARQUET, columns=['data_year', 'residence_status'])\n"
+            "linked_resident = linked[linked['residence_status'] != 4]\n"
+            "print(f'Linked total: {len(linked):,}; resident: {len(linked_resident):,} (after residence_status != 4)')\n"
             "del linked, linked_resident  # not used downstream in this notebook — just demonstrating load"
         ),
         code(
@@ -165,8 +165,8 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "# --- Denominator: 2022 live births by NVSR age band (from natality) ---\n"
-            "nat_2022 = pd.read_parquet(NAT_PARQUET, columns=['year', 'restatus', 'maternal_age'])\n"
-            "nat_2022 = nat_2022[(nat_2022['year'] == 2022) & (nat_2022['restatus'] != 4)]\n"
+            "nat_2022 = pd.read_parquet(NAT_PARQUET, columns=['data_year', 'residence_status', 'maternal_age'])\n"
+            "nat_2022 = nat_2022[(nat_2022['data_year'] == 2022) & (nat_2022['residence_status'] != 4)]\n"
             "assert len(nat_2022) == 3667758, f'Unexpected 2022 resident-natality count: {len(nat_2022)}'\n"
             "lb_by_band = {name: int(pred(nat_2022['maternal_age']).sum()) for name, pred in NVSR_BANDS}\n"
             "pd.Series(lb_by_band, name='live_births_2022')"
@@ -256,7 +256,7 @@ def build() -> nbformat.NotebookNode:
         code(
             "# --- Denominator path (b): direct natality recompute (cross-check Task 1's CSV) ---\n"
             "nat_2017 = pd.read_parquet(\n"
-            "    NAT_PARQUET, columns=['year', 'restatus', 'maternal_race_bridged4'],\n"
+            "    NAT_PARQUET, columns=['data_year', 'residence_status', 'maternal_race_bridged'],\n"
             ")\n"
             "nat_2017 = to_canonical_natality(nat_2017)\n"
             "nat_2017 = nat_2017[(nat_2017['data_year'] == 2017) & (nat_2017['residence_status'] != 4)]\n"
