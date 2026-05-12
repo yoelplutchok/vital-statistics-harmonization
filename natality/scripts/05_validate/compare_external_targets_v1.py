@@ -104,7 +104,7 @@ def load_targets(path: Path) -> list[Target]:
         for row in r:
             metric_id = (row.get("metric_id") or "").strip()
             universe = (row.get("universe") or "").strip()
-            year_s = (row.get("year") or "").strip()
+            year_s = (row.get("data_year") or "").strip()
 
             if not metric_id or not universe or not year_s:
                 continue
@@ -149,7 +149,7 @@ def main() -> None:
     pf = pq.ParquetFile(args.in_path)
     cols = set(pf.schema_arrow.names)
     required = {
-        "year",
+        "data_year",
         "is_foreign_resident",
         "certificate_revision",
         "low_birthweight",
@@ -200,7 +200,7 @@ def main() -> None:
     revised_s = pa.scalar("revised_2003", type=pa.string())
 
     batch_columns = [
-        "year",
+        "data_year",
         "is_foreign_resident",
         "certificate_revision",
         "low_birthweight",
@@ -214,7 +214,7 @@ def main() -> None:
         batch_size=args.batch_rows,
         columns=batch_columns,
     ):
-        year = batch.column("year")
+        year = batch.column("data_year")
         foreign = batch.column("is_foreign_resident")
         cert_rev = batch.column("certificate_revision")
         lbw = batch.column("low_birthweight")
@@ -418,7 +418,7 @@ def main() -> None:
         rows_out.append(
             {
                 "metric_id": t.metric_id,
-                "year": str(t.year),
+                "data_year": str(t.year),
                 "universe": t.universe,
                 "actual_value": actual_s,
                 "expected_value": expected_s,
@@ -436,7 +436,7 @@ def main() -> None:
             f,
             fieldnames=[
                 "metric_id",
-                "year",
+                "data_year",
                 "universe",
                 "actual_value",
                 "expected_value",

@@ -15,7 +15,7 @@
 
 - For **birth outcome research** (LBW, preterm, demographic trends): use `output/convenience/natality_v2_residents_only.parquet` (pre-filtered to residents, 82 columns)
 - For **infant mortality research** (IMR, cause-specific mortality, neonatal vs postneonatal): use `output/convenience/natality_v3_linked_residents_only.parquet` (pre-filtered to residents, 92 columns)
-- For analyses that need **foreign residents** or the `restatus` column: use the full `natality_v2_harmonized_derived.parquet` (84 columns) or `natality_v3_linked_harmonized_derived.parquet` (94 columns)
+- For analyses that need **foreign residents** or the `residence_status` column: use the full `natality_v2_harmonized_derived.parquet` (84 columns) or `natality_v3_linked_harmonized_derived.parquet` (94 columns)
 - For **auditing or debugging**: use the yearly `output/yearly_clean/` or `output/linked/` files
 
 ## Are these data nationally representative?
@@ -40,7 +40,7 @@ This matches the residence-based tabulations used in all NCHS publications and i
 
 See `docs/COMPARABILITY.md` for the full list. Variables with **full** comparability (trend-safe 1990-2024):
 
-- `year`, `restatus`, `is_foreign_resident`, `certificate_revision`
+- `data_year`, `residence_status`, `is_foreign_resident`, `certificate_revision`
 - `live_birth_order_recode`, `total_birth_order_recode`
 - `plurality_recode`, `infant_sex`, `birthweight_grams`, `apgar5`
 - Derived: `birthweight_grams_clean`, `apgar5_clean`, `low_birthweight`, `very_low_birthweight`, `singleton`, `maternal_age_cat`
@@ -127,12 +127,12 @@ Naïvely computing `delivery_method_recode == 2` over the full range will underc
 ```python
 import pyarrow.compute as pc
 is_ces = pc.if_else(
-    pc.less_equal(df["year"], 2004),
+    pc.less_equal(df["data_year"], 2004),
     pc.is_in(df["delivery_method_recode"], value_set=pa.array([3, 4], pa.int8())),
     pc.equal(df["delivery_method_recode"], pa.scalar(2, pa.int8())),
 )
 known = pc.if_else(
-    pc.less_equal(df["year"], 2004),
+    pc.less_equal(df["data_year"], 2004),
     pc.less_equal(df["delivery_method_recode"], pa.scalar(4, pa.int8())),
     pc.less_equal(df["delivery_method_recode"], pa.scalar(2, pa.int8())),
 )

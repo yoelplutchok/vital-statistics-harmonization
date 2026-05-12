@@ -64,7 +64,7 @@ def main() -> None:
     counts: dict[tuple[int, str], list[int]] = {}
 
     for batch in pf.iter_batches(batch_size=args.batch_rows):
-        year_arr = batch.column(batch.schema.get_field_index("year"))
+        year_arr = batch.column(batch.schema.get_field_index("data_year"))
         unique_years = pc.unique(year_arr).to_pylist()
 
         for y in unique_years:
@@ -89,7 +89,7 @@ def main() -> None:
     for (y, var), (n_total, n_null) in sorted(counts.items(), key=lambda x: (x[0][1], x[0][0])):
         null_pct = round(n_null / n_total * 100.0, 4) if n_total else 0.0
         rows.append({
-            "year": y,
+            "data_year": y,
             "variable": var,
             "n_total": n_total,
             "n_null": n_null,
@@ -99,7 +99,7 @@ def main() -> None:
     # Write full missingness CSV
     out_csv = args.out_dir / "harmonized_missingness_by_year.csv"
     with out_csv.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["year", "variable", "n_total", "n_null", "null_pct"])
+        w = csv.DictWriter(f, fieldnames=["data_year", "variable", "n_total", "n_null", "null_pct"])
         w.writeheader()
         for r in rows:
             w.writerow(r)
@@ -109,7 +109,7 @@ def main() -> None:
     # Build lookup: {variable: {year: null_pct}}
     var_year_pct: dict[str, dict[int, float]] = {}
     for r in rows:
-        var_year_pct.setdefault(r["variable"], {})[r["year"]] = r["null_pct"]
+        var_year_pct.setdefault(r["variable"], {})[r["data_year"]] = r["null_pct"]
 
     breaks = []
     for var, year_pct in sorted(var_year_pct.items()):

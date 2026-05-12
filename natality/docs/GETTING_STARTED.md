@@ -57,7 +57,7 @@ linked_res = pd.read_parquet("output/convenience/natality_v3_linked_residents_on
 
 ```python
 res = df[df["is_foreign_resident"] == False]
-lbw = res.groupby("year").apply(
+lbw = res.groupby("data_year").apply(
     lambda g: (g["low_birthweight"].sum() / g["low_birthweight"].notna().sum()) * 100
 )
 print(lbw)  # LBW% from ~7.0% (1990) to ~8.2% (2020)
@@ -67,7 +67,7 @@ print(lbw)  # LBW% from ~7.0% (1990) to ~8.2% (2020)
 
 ```python
 res = linked[linked["is_foreign_resident"] == False]
-imr = res.groupby("year").apply(
+imr = res.groupby("data_year").apply(
     lambda g: g["infant_death"].sum() / len(g) * 1000
 )
 print(imr)  # IMR from 6.74 (2005) to 5.49 (2023)
@@ -78,14 +78,14 @@ print(imr)  # IMR from 6.74 (2005) to 5.49 (2023)
 ```python
 deaths = linked_res[linked_res["infant_death"] == True]
 # Top 5 underlying causes of death (ICD-10) in 2020
-deaths_2020 = deaths[deaths["year"] == 2020]
+deaths_2020 = deaths[deaths["data_year"] == 2020]
 deaths_2020["underlying_cause_icd10"].value_counts().head(10)
 ```
 
 ### Neonatal vs postneonatal mortality trend
 
 ```python
-trend = linked_res.groupby("year").agg(
+trend = linked_res.groupby("data_year").agg(
     births=("infant_death", "count"),
     neonatal=("neonatal_death", "sum"),
     postneonatal=("postneonatal_death", "sum"),
@@ -137,7 +137,7 @@ python scripts/06_convenience/write_residents_only.py
 
 ### For all analyses
 
-1. **Residents-only is the default analytic universe** — use `is_foreign_resident == false` (or `restatus != 4`) to match NCHS residence-based tabulations.
+1. **Residents-only is the default analytic universe** — use `is_foreign_resident == false` (or `residence_status != 4`) to match NCHS residence-based tabulations.
 
 2. **Three gestation measurement eras** — preterm rates shift at each boundary:
    - 1990-2002: LMP-based (`gestational_age_weeks_source == 'lmp'`)
@@ -175,7 +175,7 @@ python scripts/06_convenience/write_residents_only.py
 
 15. **Age-at-death comparability note** — starting 2019, NCHS revised how `age_at_death_days` is calculated (using birth certificate time-of-birth instead of death certificate). This produces more accurate sub-24-hour age categorization but means the <1 day and 1-day age-at-death categories are not perfectly comparable with 2005-2018. Total neonatal/postneonatal splits are minimally affected.
 
-16. **Bridged race dropped 2020-2023** — NCHS no longer provides bridged race in linked files from 2020+. `maternal_race_bridged4` is null for these years, but `maternal_race_ethnicity_5` is reconstructed from MRACE6 detail codes (see caveat 5 above).
+16. **Bridged race dropped 2020-2023** — NCHS no longer provides bridged race in linked files from 2020+. `maternal_race_bridged` is null for these years, but `maternal_race_ethnicity_5` is reconstructed from MRACE6 detail codes (see caveat 5 above).
 
 17. **V3 linked schema mirrors V2** — all 71 V2 harmonized birth-side columns plus all 13 V2 derived indicators appear in V3 as well; V3 adds 7 death-side harmonized columns (`infant_death`, `age_at_death_days`, `age_at_death_recode5`, `underlying_cause_icd10`, `cause_recode_130`, `manner_of_death`, `record_weight`) and 3 death-side derived (`neonatal_death`, `postneonatal_death`, `cause_group`). Net: 78 + 16 = 94.
 

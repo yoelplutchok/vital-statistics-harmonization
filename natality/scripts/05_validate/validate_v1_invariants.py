@@ -112,12 +112,12 @@ def main() -> None:
     cols = set(pf.schema_arrow.names)
 
     required = {
-        "year",
+        "data_year",
         "is_foreign_resident",
         "certificate_revision",
-        "maternal_hispanic_origin",
+        "hispanic_origin",
         "maternal_hispanic",
-        "maternal_race_bridged4",
+        "maternal_race_bridged",
         "maternal_race_ethnicity_5",
         "maternal_education_cat4",
         "prenatal_care_start_month",
@@ -284,12 +284,12 @@ def main() -> None:
     )
 
     batch_cols = [
-        "year",
+        "data_year",
         "is_foreign_resident",
         "certificate_revision",
-        "maternal_hispanic_origin",
+        "hispanic_origin",
         "maternal_hispanic",
-        "maternal_race_bridged4",
+        "maternal_race_bridged",
         "maternal_race_ethnicity_5",
         "maternal_race_detail",
         "maternal_education_cat4",
@@ -683,7 +683,7 @@ def main() -> None:
     # ===== Null-rate discontinuity detection =====
     # Second pass: compute per-variable, per-year null rates and flag >5 ppt year-over-year jumps.
     null_rate_cols = [
-        "marital_status", "maternal_hispanic", "maternal_race_bridged4",
+        "marital_status", "maternal_hispanic", "maternal_race_bridged",
         "maternal_race_ethnicity_5", "maternal_education_cat4",
         "prenatal_care_start_month", "smoking_any_during_pregnancy",
         "smoking_intensity_max_recode6", "diabetes_any", "hypertension_chronic",
@@ -698,7 +698,7 @@ def main() -> None:
     # {(year, col): [n_total, n_null]}
     null_counts: dict[tuple[int, str], list[int]] = {}
 
-    for batch in pf.iter_batches(batch_size=args.batch_rows, columns=["year"] + null_rate_cols):
+    for batch in pf.iter_batches(batch_size=args.batch_rows, columns=["data_year"] + null_rate_cols):
         year_col = batch.column(0)
         for y in years:
             mask = pc.equal(year_col, y)
@@ -756,7 +756,7 @@ def main() -> None:
         w = csv.DictWriter(
             f,
             fieldnames=[
-                "year",
+                "data_year",
                 "rows_total",
                 "rows_resident",
                 "cert_revised",
@@ -773,7 +773,7 @@ def main() -> None:
             s = ys[y]
             w.writerow(
                 {
-                    "year": y,
+                    "data_year": y,
                     "rows_total": s.rows_total,
                     "rows_resident": s.rows_resident,
                     "cert_revised": s.cert_revised,

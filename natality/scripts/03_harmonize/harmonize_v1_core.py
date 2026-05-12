@@ -460,8 +460,8 @@ def main() -> None:
 
     out_schema = pa.schema(
         [
-            ("year", pa.int16()),
-            ("restatus", pa.int8()),
+            ("data_year", pa.int16()),
+            ("residence_status", pa.int8()),
             ("is_foreign_resident", pa.bool_()),
             ("certificate_revision", pa.string()),
             ("maternal_age", pa.int16()),
@@ -469,9 +469,9 @@ def main() -> None:
             ("total_birth_order_recode", pa.int8()),
             ("marital_status", pa.int8()),
             ("marital_reporting_flag", pa.bool_()),
-            ("maternal_hispanic_origin", pa.int8()),
+            ("hispanic_origin", pa.int8()),
             ("maternal_hispanic", pa.bool_()),
-            ("maternal_race_bridged4", pa.int8()),
+            ("maternal_race_bridged", pa.int8()),
             ("maternal_race_ethnicity_5", pa.string()),
             ("maternal_race_detail", pa.string()),
             ("maternal_race_detail_15cat", pa.string()),

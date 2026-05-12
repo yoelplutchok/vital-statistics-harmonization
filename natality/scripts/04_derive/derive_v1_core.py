@@ -84,7 +84,7 @@ def main() -> None:
     in_schema = pf.schema_arrow
 
     required = [
-        "year",
+        "data_year",
         "is_foreign_resident",
         "maternal_age",
         "father_age",

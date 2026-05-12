@@ -100,7 +100,7 @@ def load_targets(path: Path) -> list[Target]:
         for row in r:
             metric_id = (row.get("metric_id") or "").strip()
             universe = (row.get("universe") or "").strip()
-            year_s = (row.get("year") or "").strip()
+            year_s = (row.get("data_year") or "").strip()
 
             if not metric_id or not universe or not year_s:
                 continue
@@ -150,7 +150,7 @@ def main() -> None:
     for batch in pf.iter_batches(
         batch_size=args.batch_rows,
         columns=[
-            "year",
+            "data_year",
             "is_foreign_resident",
             "infant_death",
             "record_weight",
@@ -252,7 +252,7 @@ def main() -> None:
 
         rows_out.append({
             "metric_id": t.metric_id,
-            "year": str(t.year),
+            "data_year": str(t.year),
             "universe": t.universe,
             "actual_value": actual_s,
             "expected_value": expected_s,
@@ -267,7 +267,7 @@ def main() -> None:
     # Write CSV
     with out_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=[
-            "metric_id", "year", "universe", "actual_value", "expected_value",
+            "metric_id", "data_year", "universe", "actual_value", "expected_value",
             "tolerance_abs", "diff", "status", "pass", "value_source", "notes",
         ])
         w.writeheader()
@@ -281,7 +281,7 @@ def main() -> None:
         imr_unw = round(a.deaths_unw / a.births * 1000, 2) if a.births else 0
         imr_w = round(round(a.deaths_w) / a.births * 1000, 2) if a.births else 0
         trend_rows.append({
-            "year": yr,
+            "data_year": yr,
             "births": a.births,
             "deaths_unweighted": a.deaths_unw,
             "deaths_weighted": round(a.deaths_w),
@@ -312,7 +312,7 @@ def main() -> None:
     ]
     for r in rows_out:
         md_lines.append(
-            f"| {r['metric_id']} | {r['year']} | {r['expected_value']} | {r['actual_value']} | {r['diff']} | {r['status']} |"
+            f"| {r['metric_id']} | {r['data_year']} | {r['expected_value']} | {r['actual_value']} | {r['diff']} | {r['status']} |"
         )
 
     md_lines += [
@@ -324,7 +324,7 @@ def main() -> None:
     ]
     for tr in trend_rows:
         md_lines.append(
-            f"| {tr['year']} | {tr['births']:,} | {tr['deaths_unweighted']:,} | {tr['deaths_weighted']:,} "
+            f"| {tr['data_year']} | {tr['births']:,} | {tr['deaths_unweighted']:,} | {tr['deaths_weighted']:,} "
             f"| {tr['imr_unweighted']:.2f} | {tr['imr_weighted']:.2f} | {tr['neonatal']:,} | {tr['postneonatal']:,} |"
         )
 

@@ -14,7 +14,7 @@ A single stacked Parquet file covering all 35 years of U.S. natality data, with 
 |------|------|---------|-------------|
 | `natality_v2_harmonized.parquet` | 138,819,655 | 71 | Harmonized birth records |
 | `natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | + derived indicators (LBW, preterm, singleton, diabetes/HTN booleans, etc.) |
-| `natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Convenience** — residents only, `restatus`/`is_foreign_resident` dropped |
+| `natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped |
 
 ### V3 Linked birth-infant death (2005-2023): 74.9 million births
 
@@ -26,7 +26,7 @@ The same birth records for 2005-2023, now linked to infant death certificates. A
 |------|------|---------|-------------|
 | `natality_v3_linked_harmonized.parquet` | 74,943,824 | 78 | Birth-side (71 V2 cols) + death-side (7 new cols) harmonized |
 | `natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | + derived indicators including neonatal/postneonatal death and cause_group |
-| `natality_v3_linked_residents_only.parquet` | 74,785,708 | 92 | **Convenience** — residents only, `restatus`/`is_foreign_resident` dropped |
+| `natality_v3_linked_residents_only.parquet` | 74,785,708 | 92 | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped |
 
 ## What the pipeline adds over raw NCHS files
 
@@ -77,7 +77,7 @@ Full details in `docs/COMPARABILITY.md`. Highlights:
 |---------|-----------------|--------|
 | V2 Natality (1990-2024) | 183 targets across 1990-2024 (births, LBW%, preterm%, plurality, singleton%, male%, cesarean%, smoking%, Medicaid%) | 183/183 pass |
 | V2 Natality invariants | Deterministic consistency checks | 0 violations |
-| V3 Linked (2005-2023) | 35 active targets across 2005, 2010, 2015, 2020-2023 (births, infant deaths, IMR, neonatal/postneonatal deaths, neonatal/postneonatal IMR) | 33/35 byte-exact + 2/35 differ by 1 record (2015 `unweighted_infant_deaths`, `postneonatal_deaths`); all 35 pass within documented tolerance |
+| V3 Linked (2005-2023) | 35 active targets across 2005, 2010, 2015, 2020-2023 (births, infant deaths, IMR, neonatal/postneonatal deaths, neonatal/postneonatal IMR) | 35/35 active pass |
 
 Note: 4 additional 2021 neonatal/postneonatal split targets are intentionally excluded pending investigation of an unresolved 131-death discrepancy between our file and the user guide.
 

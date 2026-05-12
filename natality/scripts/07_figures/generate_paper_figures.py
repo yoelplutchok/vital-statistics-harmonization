@@ -154,7 +154,7 @@ def fig3_availability():
     # Select representative variables (skip derived)
     keep = [
         "maternal_age", "marital_status", "maternal_education_cat4",
-        "maternal_race_bridged4", "maternal_hispanic",
+        "maternal_race_bridged", "maternal_hispanic",
         "smoking_any_during_pregnancy", "prenatal_care_start_month",
         "diabetes_any", "hypertension_chronic",
         "birthweight_grams", "gestational_age_weeks", "infant_sex",

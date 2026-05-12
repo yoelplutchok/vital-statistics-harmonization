@@ -75,7 +75,7 @@ def main() -> None:
 
     pf = pq.ParquetFile(args.in_path)
     cols = set(pf.schema_arrow.names)
-    required = {"year", "is_foreign_resident", "low_birthweight", "preterm_lt37"}
+    required = {"data_year", "is_foreign_resident", "low_birthweight", "preterm_lt37"}
     missing = sorted(required - cols)
     if missing:
         raise RuntimeError(f"Missing required columns: {missing}")
@@ -95,7 +95,7 @@ def main() -> None:
 
     for batch in pf.iter_batches(
         batch_size=args.batch_rows,
-        columns=["year", "is_foreign_resident", "low_birthweight", "preterm_lt37"],
+        columns=["data_year", "is_foreign_resident", "low_birthweight", "preterm_lt37"],
     ):
         year = batch.column(0)
         foreign = batch.column(1)
@@ -134,7 +134,7 @@ def main() -> None:
         w = csv.DictWriter(
             f,
             fieldnames=[
-                "year",
+                "data_year",
                 "resident_births",
                 "lbw_den",
                 "lbw_num",
@@ -150,7 +150,7 @@ def main() -> None:
             pre_rate = (pre_num[y] / pre_den[y] * 100.0) if pre_den[y] else None
             w.writerow(
                 {
-                    "year": y,
+                    "data_year": y,
                     "resident_births": res_births[y],
                     "lbw_den": lbw_den[y],
                     "lbw_num": lbw_num[y],
@@ -166,7 +166,7 @@ def main() -> None:
             [
                 "# Key rates from harmonized derived core (resident-only)",
                 "",
-                f"Computed from `{args.in_path}` after excluding foreign residents (`restatus=4`).",
+                f"Computed from `{args.in_path}` after excluding foreign residents (`residence_status=4`).",
                 "",
                 f"Years: {min_year}–{max_year}" if min_year != max_year else f"Years: {min_year}",
                 "",

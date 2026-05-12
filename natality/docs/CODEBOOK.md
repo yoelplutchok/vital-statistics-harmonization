@@ -23,18 +23,18 @@ For full per-variable provenance, see `metadata/harmonized_schema.csv`.
 
 | harmonized_name | label | type | years | comparability | notes |
 |---|---|---|---|---|---|
-| `year` | Birth year | int16 | 1990–2024 | full | |
-| `restatus` | Resident status (NCHS) | int8 | 1990–2024 | full | Exclude `restatus=4` to match NCHS residence-based totals |
-| `is_foreign_resident` | Foreign-resident indicator | bool | 1990–2024 | full | `restatus == 4` |
+| `data_year` | Birth year | int16 | 1990–2024 | full | |
+| `residence_status` | Resident status (NCHS) | int8 | 1990–2024 | full | Exclude `residence_status=4` to match NCHS residence-based totals |
+| `is_foreign_resident` | Foreign-resident indicator | bool | 1990–2024 | full | `residence_status == 4` |
 | `certificate_revision` | Certificate revision (1989 vs 2003) | string | 1990–2024 | full | `unrevised_1989` (1990–2013), `revised_2003` (2003–2024), `unknown` (2007–2013 when indeterminate) |
 | `maternal_age` | Mother's age (single years) | int16 | 1990–2024 | partial | 1990–2002: `DMAGE`; 2003: approximate from `MAGER41` recode; 2004+: `MAGER` |
 | `live_birth_order_recode` | Live birth order recode | int8 | 1990–2024 | full | 1990–2002: `LIVORD9`; 2003+: `LBO_REC` |
 | `total_birth_order_recode` | Total birth order recode | int8 | 1990–2024 | full | 1990–2002: `TOTORD9`; 2003+: `TBO_REC` |
 | `marital_status` | Marital status | int8 | 1990–2024 | partial | `DMAR` (1990–2002) vs `MAR` (2003–2013) vs `DMAR` (2014+). **California stopped reporting in 2017: ~11–12% null from 2017+.** Use `marital_reporting_flag` (2014+) to filter to reporting states. |
 | `marital_reporting_flag` | Marital status reporting flag | bool | 2014–2024 | partial | Derived from `F_MAR_P`. True = state reports marital status; False = non-reporting state (California from 2017+). Null for all pre-2014 years. |
-| `maternal_hispanic_origin` | Mother's Hispanic origin recode | int8 | 1990–2024 | partial | 1990–2002: `ORMOTH`; 2003–2013: `UMHISP`; 2014+: `MHISP_R` |
-| `maternal_hispanic` | Maternal Hispanic indicator | bool | 1990–2024 | partial | Derived from `maternal_hispanic_origin` |
-| `maternal_race_bridged4` | Mother's bridged race (4 categories) | int8 | 1990–2019 | partial | 1990–2002: **approximate** bridge from `MRACE` detail codes; 2003–2019: official `MRACEREC`/`MBRACE`. **100% null for 2020–2024** — NCHS discontinued the bridged-race recode in the public-use file. Use `maternal_race_ethnicity_5` for 2020+ (reconstructed from MRACE6 detail codes). |
+| `hispanic_origin` | Mother's Hispanic origin recode | int8 | 1990–2024 | partial | 1990–2002: `ORMOTH`; 2003–2013: `UMHISP`; 2014+: `MHISP_R` |
+| `maternal_hispanic` | Maternal Hispanic indicator | bool | 1990–2024 | partial | Derived from `hispanic_origin` |
+| `maternal_race_bridged` | Mother's bridged race (4 categories) | int8 | 1990–2019 | partial | 1990–2002: **approximate** bridge from `MRACE` detail codes; 2003–2019: official `MRACEREC`/`MBRACE`. **100% null for 2020–2024** — NCHS discontinued the bridged-race recode in the public-use file. Use `maternal_race_ethnicity_5` for 2020+ (reconstructed from MRACE6 detail codes). |
 | `maternal_race_ethnicity_5` | Maternal race/ethnicity (NH race + Hispanic) | string | 1990–2024 | partial | Derived from Hispanic + bridged race (2003–2019) or MRACE6 detail (2020+). Multiracial (MRACE6=06, ~3%) → null for 2020+. |
 | `maternal_race_detail` | Mother's race (detail code as reported) | string | 1990–2024 | within-era | 1990–2002: `MRACE` (1–78); 2003–2013: `MRACE` (primary field for both revisions; historical multiracial births in revised-cert states are rolled into code 78 / "not stated" in public-use); 2014+: `MRACE6` (1–6). Code frame differs across eras. |
 | `maternal_race_detail_15cat` | Mother's race (15-category detail) | string | 2014–2024 | within-era | `MRACE15@108–109`. Values `01`–`15` (15=multiracial); NCHS `99` "unknown" sentinel is normalized to null by the harmonizer so the output frame is `{01..15} ∪ null`. The 15-category recode is only in the 2014+ public-use layout. Null for 1990–2013 (the bytes at positions 108–109 in pre-2014 files carry other data — the 2-letter alpha content at those positions in 2003/2004 raw records is NOT MRACE15 and was removed from the parse spec in the 2026-04-22 fix). |

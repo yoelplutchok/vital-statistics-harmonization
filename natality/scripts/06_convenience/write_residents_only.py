@@ -52,8 +52,8 @@ def filter_residents(in_path: Path, out_path: Path, batch_size: int = 500_000) -
     in_schema = pf.schema_arrow
     print(f"Reading {in_path.name} ({pf.metadata.num_rows:,} rows, {len(in_schema.names)} cols)")
 
-    # Drop is_foreign_resident and restatus from output (redundant for residents-only)
-    drop_cols = {"is_foreign_resident", "restatus"}
+    # Drop is_foreign_resident and residence_status from output (redundant for residents-only)
+    drop_cols = {"is_foreign_resident", "residence_status"}
     out_fields = [f for f in in_schema if f.name not in drop_cols]
     out_schema = pa.schema(out_fields)
 
@@ -88,7 +88,7 @@ def filter_residents(in_path: Path, out_path: Path, batch_size: int = 500_000) -
             if null_count:
                 raise RuntimeError(
                     f"is_foreign_resident has {null_count} null rows in input batch — "
-                    f"refusing to silently drop. Investigate upstream restatus parsing."
+                    f"refusing to silently drop. Investigate upstream residence_status parsing."
                 )
             filtered = batch.filter(keep)
 

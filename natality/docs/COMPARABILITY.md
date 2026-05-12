@@ -9,7 +9,7 @@ Canonical sources of truth:
 
 ## Guiding policy
 
-- **Default analysis universe**: use **resident births** only (exclude foreign residents: `restatus == 4`). This matches NCHS “residence-based” tabulations used throughout validation.
+- **Default analysis universe**: use **resident births** only (exclude foreign residents: `residence_status == 4`). This matches NCHS “residence-based” tabulations used throughout validation.
 - **Prefer deterministic transforms**: when a variable is “partial,” the pipeline provides an explicit derivation and labels the break/coverage issue rather than silently imputing.
 - **When coverage differs by certificate revision**: use `certificate_revision` to define revision-consistent subsets.
 
@@ -27,7 +27,7 @@ The harmonized `certificate_revision` column takes one of four values:
 - `"unrevised_1989"` — all 1990–2002 records; 2003–2013 records inferred to be on the 1989 unrevised certificate (no `MEDUC`, `MRACEREC` populated).
 - `"revised_2003"` — all 2014–2024 records; 2003–2013 records inferred to be on the 2003 revised certificate (`MEDUC` populated).
 - `"unknown"` — 2003–2013 records where neither heuristic fires (both `MEDUC` and `MRACEREC` are null). Non-trivial: 2009 has 101,544 such rows (2.45 %); 2013 has 30,482 (0.77 %); other 2003–2013 years are smaller.
-- `null` — only if the `year` column itself is null (should never occur).
+- `null` — only if the `data_year` column itself is null (should never occur).
 
 **Rule**: analyses that use `certificate_revision == 'revised_2003'` as a filter silently drop the `"unknown"` bucket. For 2009–2013 revision-consistent subsets, consider whether to include or exclude `"unknown"` records explicitly.
 
@@ -38,7 +38,7 @@ The harmonized `certificate_revision` column takes one of four values:
    - The harmonization maps 1990–2002 fields to the common schema via explicit crosswalks (e.g., `_dmeduc_years_to_cat4()`), but the underlying measurement differs.
 
 2. **1990–2002 race bridge is approximate**
-   - Official NCHS bridged race was introduced with the 2003 certificate. For 1990–2002, `maternal_race_bridged4` uses an **approximate** crosswalk from `MRACE` detail codes (01→White, 02→Black, 03→AIAN, 04-08/18-68→Asian/PI, 09+→null).
+   - Official NCHS bridged race was introduced with the 2003 certificate. For 1990–2002, `maternal_race_bridged` uses an **approximate** crosswalk from `MRACE` detail codes (01→White, 02→Black, 03→AIAN, 04-08/18-68→Asian/PI, 09+→null).
    - This is adequate for broad race-group tabulations but should not be treated as equivalent to the official NCHS bridged race available from 2003.
 
 3. **2003 maternal age is a recode**
@@ -59,7 +59,7 @@ The harmonized `certificate_revision` column takes one of four values:
 
 7. **Race/ethnicity depends on bridged/imputed constructs**
    - Bridged race and Hispanic-origin recodes are broadly usable, but the bridging/editing context changes over time; cross-year race/ethnicity is treated as **partial**.
-   - Starting 2020, NCHS no longer provides bridged race in the public-use natality file. `maternal_race_bridged4` is null for 2020–2024. However, `maternal_race_ethnicity_5` is now **reconstructed** from `MRACE6` detail codes for 2020+ (01→NH_white, 02→NH_black, 03→NH_aian, 04/05→NH_asian_pi). Multiracial births (MRACE6=06, ~3%) remain null because they cannot be bridged to a single race group. Use `race_bridge_method` to identify the derivation era.
+   - Starting 2020, NCHS no longer provides bridged race in the public-use natality file. `maternal_race_bridged` is null for 2020–2024. However, `maternal_race_ethnicity_5` is now **reconstructed** from `MRACE6` detail codes for 2020+ (01→NH_white, 02→NH_black, 03→NH_aian, 04/05→NH_asian_pi). Multiracial births (MRACE6=06, ~3%) remain null because they cannot be bridged to a single race group. Use `race_bridge_method` to identify the derivation era.
 
 8. **Marital status: California stopped reporting in 2017**
    - `marital_status` is blank (null) for ~11–12% of births starting 2017. This is exclusively from California, which ceased providing record-level marital status to NCHS due to state statutory restrictions.
@@ -79,7 +79,7 @@ The harmonized `certificate_revision` column takes one of four values:
 
 ### Full comparability (trend-safe 1990–2024)
 
-- **Counts/universe**: `year`, `restatus`, `is_foreign_resident`, `certificate_revision`
+- **Counts/universe**: `data_year`, `residence_status`, `is_foreign_resident`, `certificate_revision`
 - **Core demographics**: `live_birth_order_recode`, `total_birth_order_recode`
 - **Infant/birth**: `plurality_recode`, `infant_sex`, `birthweight_grams`, `apgar5`
 - **Derived from full variables**: `birthweight_grams_clean`, `apgar5_clean`, `low_birthweight`, `very_low_birthweight`, `singleton`, `maternal_age_cat`
@@ -91,7 +91,7 @@ The harmonized `certificate_revision` column takes one of four values:
   - **Rule**: the 2003 approximation is adequate for age-group analyses but not for precise single-year-of-age work.
 
 - **Race/ethnicity**
-  - **Primary construct**: `maternal_race_ethnicity_5` (derived from `maternal_hispanic` + `maternal_race_bridged4` or `maternal_race_detail`)
+  - **Primary construct**: `maternal_race_ethnicity_5` (derived from `maternal_hispanic` + `maternal_race_bridged` or `maternal_race_detail`)
   - **Why partial**: three derivation methods across eras (see `race_bridge_method`): 1990–2002 uses approximate bridge from detail codes; 2003–2019 uses official NCHS bridged race; 2020–2024 reconstructs from MRACE6 detail codes (multiracial code 06, ~3% of births, maps to null).
   - **Rule**: treat as a consistent *high-level* series, but document that bridging method differs by era. Use `race_bridge_method` to identify derivation context. For 2020+, analyses excluding nulls will drop ~3% multiracial births.
 
@@ -268,7 +268,7 @@ The raw data format changed from denominator-plus (2005-2015) to period-cohort (
 
 ### Bridged race dropped in 2020
 
-Starting with 2020 data, NCHS no longer provides bridged race in the linked file. The `maternal_race_bridged4` field may have different coverage or derivation for 2020. For race/ethnicity trend work, consider using 2005-2019 or using `maternal_race_detail` / `maternal_race_ethnicity_5` with awareness of this change.
+Starting with 2020 data, NCHS no longer provides bridged race in the linked file. The `maternal_race_bridged` field may have different coverage or derivation for 2020. For race/ethnicity trend work, consider using 2005-2019 or using `maternal_race_detail` / `maternal_race_ethnicity_5` with awareness of this change.
 
 ### Recommended linked analysis subsets
 
@@ -291,7 +291,7 @@ These variables have sharp changes in null rates at specific year boundaries. A 
 | `smoking_any_during_pregnancy` | 2014 | ~14% → ~5% | All states on revised certificate |
 | `maternal_education_cat4` | 2009 | ~0% → ~35% | Same mechanism as smoking (revised-only) |
 | `maternal_race_ethnicity_5` | 2020 | ~0% → ~3% | Multiracial births (MRACE6=06) cannot be bridged; now reconstructed from detail codes |
-| `maternal_race_bridged4` | 2020 | ~0% → 100% | NCHS dropped bridged race from public-use file |
+| `maternal_race_bridged` | 2020 | ~0% → 100% | NCHS dropped bridged race from public-use file |
 | `father_age` | 2012, 2013 | 13% → 23% → 21% → 16% | 2012–2013: `UFAGECOMB@184-185` carries the harmonizer's raw single-year father age through 2011, but NCHS blanked it starting in 2012 while revised-cert rows carried `FAGECOMB@182-183`. `father_age` is therefore populated for revised-cert rows only in 2012–2013 (~77–79% populated after the 99→null cleanup). For categorical (5-year-bucket) father age that covers unrevised-cert 2012 rows too, use `father_age_cat_from_rec11` (derived from `FAGEREC11`). |
 | `father_age_cat_from_rec11` | pre-2005, post-2013 | fully null outside 2005–2013 | FAGEREC11 recode is only in the 2005–2013 public-use layout. |
 | `prior_cesarean` | 2005 onset, 2014 cert-migration completion | Pre-2005 100% null → 2005 ~69% null → 2014 ~4% null | `RF_CESAR` is a revised-certificate-only field: `RF_CESAR@324` for 2005–2013, `RF_CESAR@331` for 2014+. Coverage tracks the revised-cert adoption curve (30.8% of rows populated in 2005 → 90.2% in 2013 → 96%+ in 2014+). Null for 1990–2004 — those public-use layouts do not carry a Y/N/U prior-cesarean field at all. |
@@ -364,4 +364,4 @@ The 2003 public-use file suppresses single-year maternal age below 15 and expose
   - **New columns**: `father_age_cat_from_rec11` (categorical 5-year-bucket father age derived from `FAGEREC11`, populated 2005–2013) and `maternal_race_detail_15cat` (MRACE15 15-category mother's race, populated 2014+).
   - **V3 linked schema** now mirrors V2 exactly (78 harmonized + 16 derived = 94, up from 76 + 16 = 92 in the prior release).
   - **Validator hygiene**: 13 raw `pc.and_` sites in the invariants validator wrapped with `_safe_and` to prevent a null year or null cert_rev from silently suppressing violation counts. Neonatal/postneonatal booleans made three-valued: `False` for survivors, `True`/`False` for deaths with known age, `null` for deaths with unknown age (currently none).
-  - Net pipeline effect: ~49 million row-variable cells newly populated across the 2004–2013 window. All 41 internal invariants still pass with zero violations on V2 natality (V3 linked: 38 pass clean + 1 within a documented exception budget of 2 + 3 V2-only invariants skipped); V2 183/183 external targets and V3 linked 33/35 byte-exact + 2/35 differ-by-1 (within tolerance) external targets still pass.
+  - Net pipeline effect: ~49 million row-variable cells newly populated across the 2004–2013 window. All 41 internal invariants still pass with zero violations on V2 natality (V3 linked: 38 pass clean + 1 within a documented exception budget of 2 + 3 V2-only invariants skipped); V2 183/183 and V3 linked 35/35 external targets still pass.

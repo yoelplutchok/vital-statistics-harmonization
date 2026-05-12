@@ -1,4 +1,4 @@
-metric_id,year,universe,actual_value,expected_value,tolerance_abs,diff,status,pass,value_source,notes
+metric_id,data_year,universe,actual_value,expected_value,tolerance_abs,diff,status,pass,value_source,notes
 resident_births,2005,resident,4138577,4138577,0.0,0,pass,1,LinkCO05Guide.pdf Documentation Table 1 (2005 cohort linked file user guide),Resident births by mother's state of residence; identical to natality file.
 weighted_infant_deaths,2005,resident,28255,28255,1.0,0,pass,1,LinkCO05Guide.pdf Documentation Table 2 (2005 cohort linked file user guide),Weighted infant deaths (residence). Guide uses weighted counts; tolerance 1 for rounding.
 resident_births,2010,resident,3999386,3999386,0.0,0,pass,1,LinkCO10Guide.pdf Documentation Table 1 (2010 cohort linked file user guide),Resident births by mother's state of residence.

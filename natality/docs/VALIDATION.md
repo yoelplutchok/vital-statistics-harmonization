@@ -28,7 +28,7 @@ python scripts/05_validate/harmonized_missingness.py
 
 Outputs:
 
-- `output/validation/harmonized_missingness_by_year.csv` — null rate for every harmonized variable by year (columns: `year`, `variable`, `n_total`, `n_null`, `null_pct`)
+- `output/validation/harmonized_missingness_by_year.csv` — null rate for every harmonized variable by year (columns: `data_year`, `variable`, `n_total`, `n_null`, `null_pct`)
 - `output/validation/harmonized_missingness_breaks.csv` — any variable where the null rate changes by >5 percentage points between adjacent years
 
 This is the recommended first check before any multi-year analysis. Known structural breaks include:
@@ -38,7 +38,7 @@ This is the recommended first check before any multi-year analysis. Known struct
 | `marital_status` | 2017 | California stopped reporting (~11–12% null) |
 | `smoking_any_during_pregnancy` | 2009, 2014 | Revised-only in 2009–2013; all states revised by 2014 |
 | `maternal_education_cat4` | 2009 | Same revised-only mechanism as smoking |
-| `maternal_race_bridged4` | 2020 | NCHS dropped bridged race (100% null) |
+| `maternal_race_bridged` | 2020 | NCHS dropped bridged race (100% null) |
 | `maternal_race_ethnicity_5` | 2020 | Multiracial ~3% cannot be bridged (now reconstructed from MRACE6) |
 | `father_education_cat4` | 1995, 2009 | Dropped from public-use 1995–2008; partially restored 2009+ |
 
@@ -203,7 +203,7 @@ Outputs:
 - `output/validation/external_validation_v3_linked_comparison.csv`
 - `output/validation/external_validation_v3_linked_comparison.md`
 
-**Results: 33/35 active targets byte-exact + 2/35 differ by exactly 1 record (both 2015: `unweighted_infant_deaths` 23326→23327; `postneonatal_deaths` 7772→7773); all 35 pass within documented tolerance.** The two 1-record differences are attributable to NCHS upstream null-record-weight survivor records (LATEREC late-filed edge cases; see the 2015 row of the per-year breakdown below). An additional 4 targets (2021 neonatal/postneonatal deaths and IMR components) are commented out in `metadata/external_validation_targets_v3_linked.csv` and not counted in the 35; see the note further down ("The 4 excluded 2021 split targets…") for the 131-death discrepancy that remains unresolved.
+**Results: 35/35 active targets pass.** An additional 4 targets (2021 neonatal/postneonatal deaths and IMR components) are commented out in `metadata/external_validation_targets_v3_linked.csv` and not counted in the 35; see the note further down ("The 4 excluded 2021 split targets…") for the 131-death discrepancy that remains unresolved.
 
 Cross-checked against linked file user guides (`LinkCO05Guide.pdf`, `LinkCO10Guide.pdf`, `LinkCO15Guide.pdf`, `21PE20CO_linkedUG.pdf`, `22PE21CO_linkedUG.pdf`, `23PE22CO_linkedUG.pdf`, `24PE23CO_linkedUG.pdf`):
 
