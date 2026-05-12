@@ -2,13 +2,22 @@
 
 natality (`natality/metadata/harmonized_schema.csv`) and fetal_death
 (`fetal_death/harmonized_schema.csv`) ship four shared concepts under
-divergent column names. This module renames natality columns to the
-fetal_death-style names so joint-use code reads from one canonical
-namespace. The shipped natality and fetal_death parquets are NOT
-mutated; this is a read-time alias. A future natality v2.8 may adopt
-these names natively (proposed plan-update; see DECISION_LOG).
+divergent column names in the v2.7.0 natality / v2.0.x fetal_death pairing.
+This module renames natality columns to the fetal_death-style names so
+joint-use code reads from one canonical namespace.
 
-Canonical name space (matches fetal_death/harmonized_schema.csv):
+**As of natality v2.8.0 (2026-05-12)**, the natality parquets adopt these
+canonical names natively. `to_canonical_natality()` is therefore a no-op for
+v2.8.0+ input (the rename map produces an empty dict when no old names are
+present). The helper is retained — and `NATALITY_TO_CANONICAL` is kept
+populated — for backward compatibility with the v2.7.0 Zenodo deposit
+(10.5281/zenodo.19868835), which is immutable and still ships the old
+column names. Joint-use code that should work against EITHER v2.7.0 or
+v2.8.0+ input should continue to call `to_canonical_natality()` after
+read.
+
+Canonical name space (matches fetal_death/harmonized_schema.csv and
+natality v2.8.0+ harmonized_schema.csv):
     data_year, maternal_age, maternal_race_bridged,
     hispanic_origin, residence_status
 """
