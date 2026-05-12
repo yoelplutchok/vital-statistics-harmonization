@@ -1,6 +1,124 @@
-# STATUS — last updated 2026-05-12T23:30:00Z
+# STATUS — last updated 2026-05-13T00:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T00:30:00Z — C8.3 COMPLETE: cross-product timeline figure + joint_use_demo extended to 4 sections (Section A 2022-by-age PASS retained; Section B NEW 2022 race × Hispanic 7/7 cells PASS vs NVSR 73-09 Table A; Section B-legacy 2017 bridged-race machinery demo preserved; Section C NEW 2022 perinatal joint computation with sub-component validations); zero canonical-data mutation
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.3 COMPLETE.** Third Tier-1 task closed in ~1 session of wall-clock work (well under the 2-session estimate). Re-scoped at PRE-FLIGHT halt-and-ask per option `(a) 2022 race + perinatal demo` (DECISION_LOG 2026-05-12T23:50:00Z) after L9 cheap-check discovered the original §15 entry's two NVSR-source assumptions were incorrect (NVSR 73-09 is fetal-only not perinatal; no NVSR titled *Fetal Mortality 2017* exists). Tag `C8.3-complete` lands on the commit shipping this STATUS section + receipt.
+
+Four canonical-state changes this session (zero parquet mutation):
+
+1. **Timeline figure shipped** at `figures/fig1_coverage_timeline.{pdf,png}` rendering all three products' coverage with era-band coloring + revision-boundary verticals (1989/2003/2014/2018/2020). Helper at `shared/helpers/build_timeline_figure.py` with `verify_band_coverage()` SHAPE check that bands tile each product's coverage gap-free.
+2. **`notebooks/joint_use_demo.ipynb` extended 2 → 4 sections** (32 cells total): Section A 2022-by-age preserved (8/8 NVSR 73-09 Table 4 PASS); Section B NEW (2022 race × Hispanic, 7/7 cells PASS vs NVSR 73-09 Table A within ±0.01 rounding); Section B-legacy preserved (2017 bridged-race machinery demo, no NVSR cell since no NCHS *Fetal Mortality 2017* report exists); Section C NEW (2022 perinatal joint computation with documented sub-component drifts).
+3. **`docs/JOINT_USE_GUIDE.md` extended** with a perinatal-mortality worked example + cross-product timeline-figure pointer.
+4. **NVSR 73-05 fetched** (Ely & Driscoll 2024, *Infant Mortality 2022 Period Linked file*) to `<natality build-dir>/raw_docs/nvsr/nvsr73-05.pdf`, sha=`dccdc895022c3c9d…`. Symlink at monorepo `raw_docs/natality` → build-dir (.gitignored sibling of fetal_death raw_docs symlink).
+
+### What was done this session (C8.3 PRE-FLIGHT + DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized C8.3 PRE-FLIGHT start.
+2. **C8.3 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-12T22:30:00Z): L9 cheap-check on NVSR 73-09 PDF + ~30-min probe of NVSR 65-72 series found two §15 source-location errors; result **HALT** + AskUserQuestion.
+3. **User option (a) authorized 22:30Z**: re-scope Section B to 2022 single-race + Hispanic + reframe perinatal as JOINT-USE DEMO with sub-component validations.
+4. **§11 plan-update commit `3a124aa` (`[plan-update] C8.3 PRE-FLIGHT…`)**: NEXT_STEPS §15 C8.3 rewritten + KICKOFF line 179 updated + DECISION_LOG 2026-05-12T23:50:00Z entry + PRE_FLIGHT_LOG addendum 2026-05-12T23:50:00Z (PROCEED) + tag `C8.3-pre-do`.
+5. **DO step 1**: fetched NVSR 73-05 to natality build-dir raw_docs/nvsr; SHA-verified `dccdc895…` matches PRE-FLIGHT-recorded value byte-exact. Created `raw_docs/natality` symlink at monorepo root (.gitignored).
+6. **DO step 2**: authored `shared/helpers/build_timeline_figure.py` + rendered `figures/fig1_coverage_timeline.{pdf,png}`. Refined linked-product palette after first render (separate colors from fetal-death V2.1/V1+ to avoid legend ambiguity).
+7. **DO step 3**: refactored `notebooks/_build_joint_use_demo.py` (2 sections → 4 sections); executed via nbclient; minor edit to make Section C drift narrative compute drift figures dynamically; re-executed clean.
+8. **DO step 4**: updated `docs/JOINT_USE_GUIDE.md` with perinatal worked example + timeline-figure pointer.
+9. **VERIFY**:
+   - Timeline `verify_band_coverage()` PASS ✓
+   - Section A 8/8 NVSR 73-09 Table 4 byte-exact ✓
+   - Section B 7/7 NVSR 73-09 Table A within ±0.01 ✓
+   - Section B-legacy cross-check (CSV vs direct) ✓
+   - Section C cohort-linked sub-components match cohort user-guide byte-exact ✓
+   - Section C live births match both NVSRs byte-exact ✓
+   - Section C 28+wk FD vs NVSR 73-09 Table 1: documented +4.6% drift (post-redistribution methodology) ✓
+   - Section C ENN cohort vs period: documented −2.1% drift (cohort vs period linkage) ✓
+   - Section C computed PMR vs NVSR-derivative: 5.5723 vs 5.5089, within 0.20 tolerance ✓
+   - `pytest fetal_death/tests/ natality/tests/` cache-cleared default mode: 15 passed + 1 xfailed in 41s ✓
+   - Parquet SHAs unchanged from C8.2-COMPLETE state ✓
+10. **RECEIPT** written at `RECEIPTS/C8.3_2026-05-13T00-30-00Z.md` with full §6 template incl. Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+
+### Last completed step
+
+Single commit ships: 3 modified files (`docs/JOINT_USE_GUIDE.md`, `notebooks/_build_joint_use_demo.py`, `notebooks/joint_use_demo.ipynb`) + 3 new files (`shared/helpers/build_timeline_figure.py`, `figures/fig1_coverage_timeline.pdf`, `figures/fig1_coverage_timeline.png`) + 1 new receipt + this STATUS section. Tag `C8.3-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.3 → C8.4 boundary)
+
+### Next planned task
+
+**C8.4 — Invariant tests: canonical-filter + row-count conservation + cross-product join parity (B.3 + B.4 + B.5).** Per KICKOFF.md Phase C Tier-1 sequencing (line 180) + NEXT_STEPS.md §15.C C8.4 entry. Three new invariant test harnesses. Estimated 3 sessions. Depends on C8.1 (test infra) + C8.2 (refreshed parquets) — both present.
+
+C8.3 surfaced two candidate invariant targets for C8.4:
+- 28+ wk fetal-death proportional-redistribution drift (~4.6%) — opt-in redistribution helper or `tracks-current-state` smoke documenting the gap envelope.
+- Linked-file cohort-vs-period 2% systematic gap — per-year envelope check.
+
+### Blocked
+
+(none.)
+
+### Open questions for human
+
+None for C8.4 scope.
+
+**Open soft-flag (carried forward from C8.2):** NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, estimated 2027-Q1) trigger a §11 plan-update for a linked-file refresh task.
+
+**New open soft-flag (C8.3):** Manuscript line 99 ("Cross-product worked examples — a joint-use demonstration reproducing the 2022 maternal-age-stratified fetal mortality cells against NVSR 73-09 Table 4") understates the notebook's content as of C8.3 (now also has Sections B + B-legacy + C). Phase D step 6 re-paragraph should update the manuscript text + add the timeline figure as Figure 1.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.3-complete` tag** present on this commit. Verify: `git tag --list 'C8.3*'` shows `C8.3-pre-do` (`3a124aa`) + `C8.3-complete` (this commit).
+2. **`figures/fig1_coverage_timeline.{pdf,png}` + `shared/helpers/build_timeline_figure.py` present.** SHAs: PDF=`dd8b3203ca64e318…`, PNG=`f32ad1015fe42cea…`, helper=`e3e742649467e893…`. Re-runs may drift across matplotlib versions; `verify_band_coverage()` remains the durable shape gate.
+3. **NVSR 73-05 PDF sha256=`dccdc895022c3c9d3fbc07ffce18dc3238af797197f3cc6f0b35e463676c95cc`** at the natality build-dir's `raw_docs/nvsr/nvsr73-05.pdf`. NCHS re-release with a different SHA → §7.11 halt.
+4. **All four parquet SHAs unchanged post-C8.3:** fd_harm=`38e2cecb03ff4947…`, fd_der=`185c071ec76ab8aa…`, nat_der=`e16ad5323d68e28d…`, linked_der=`9b828a4de4e59b17…`.
+5. **`pytest fetal_death/tests/ natality/tests/` default-mode cache-cleared** returns 15 passed + 1 xfailed (Convention 4 durable). 4× `__init__.py` files still present.
+6. **`notebooks/joint_use_demo.ipynb` has 32 cells in 4 sections** (A + B + B-legacy + C). Section A regression-gate-protected (8/8 NVSR 73-09 Table 4 cells byte-exact); Section B 7/7 ±0.01; Section C documented drifts.
+7. **`docs/JOINT_USE_GUIDE.md`** sha256=`4569b0b4ed9de07a3…`. Contains 2 worked examples (FMR-by-race-2017 + perinatal-2022) + timeline-figure pointer.
+8. **C8.4 invariant-tests territory candidates:** the redistribution-drift (FD 28+wk) and cohort-vs-period (ENN, neonatal totals) are documented in C8.3 narrative and become candidate invariants for the new `tests/` harnesses C8.4 will author.
+9. **`PROVENANCE.md` does NOT yet list `nvsr73-05.pdf`.** Future PROVENANCE refresh (C8.13 / Phase D step 6) should include it. The receipt's Outputs section is the authoritative interim record.
+10. **The §15-vs-PDF NVSR-source mismatch pattern (caught in C8.3 PRE-FLIGHT)** could surface in C8.4 / C8.10 (worked-example notebooks 1-3) PRE-FLIGHTs if those plans also cite specific NVSR tables. Future PRE-FLIGHTs that consume NVSR PDFs should always run an L9 PyMuPDF text-extraction cheap-check on the cited table BEFORE starting DO, even if the §15 entry confidently names the source.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb03ff4947…` / `185c071ec76ab8aa…` (unchanged from C8.2).
+- V3b baseline parquets preserved at `*.V3b_baseline.parquet` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d68e28d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4de4e59b17…` (unchanged).
+- 4× `__init__.py` files still present at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/`.
+
+NEW this session:
+- `shared/helpers/build_timeline_figure.py` (sha=`e3e742649467e893…`)
+- `figures/fig1_coverage_timeline.pdf` (sha=`dd8b3203ca64e318…`)
+- `figures/fig1_coverage_timeline.png` (sha=`f32ad1015fe42cea…`)
+- `RECEIPTS/C8.3_2026-05-13T00-30-00Z.md`
+- NVSR 73-05 PDF at natality build-dir raw_docs/nvsr/ (sha=`dccdc895022c3c9d…`; .gitignored)
+- `raw_docs/natality` symlink (monorepo; .gitignored)
+
+MODIFIED this session:
+- `notebooks/joint_use_demo.ipynb` (sha=`e0094812e8a60e03…`; was `39d2fb3c70494327…`)
+- `notebooks/_build_joint_use_demo.py` (sha=`e2f383be8b020f23…`; was `7bab184c88dff6f9…`)
+- `docs/JOINT_USE_GUIDE.md` (sha=`4569b0b4ed9de07a…`; was `09266eae572bddf7…`)
+- `STATUS.md` (this section, append)
+
+### Notes for next session
+
+- **C8.4 is the next task.** Estimated 3 sessions. PRE-FLIGHT should consider redistributing-fetal-death-gestational-age helper + cohort-vs-period gap envelope as candidate invariants flowing from C8.3 documented drifts.
+- **Tier 1 progress: 3 of 8 tasks complete** (C8.1 ✓, C8.2 ✓, C8.3 ✓). Remaining: C8.4 / C8.5 / C8.6 / C8.7 / C8.8.
+- **Cumulative Phase C effort: ~4 sessions of 29-35 budget** (C8.1 ~1 + C8.2 ~1 + C8.3 ~1 + PRE-FLIGHT overhead ~1). Comfortably within +20% drift cap (42 sessions).
+- **C8.3 effort overshoot vs estimate**: 2 sessions estimated, ~1 session actual — the PRE-FLIGHT-discovered scope simplification (drop the 2017 bridged-race NVSR validation that doesn't exist; consolidate Section B + Section C around 2022) saved time. The §11 plan-update overhead was offset by the simpler DO scope.
+- **C8.4 invariant tests** are likely to surface or formalize patterns documented in C8.3 narrative as auto-tested invariants. Recommended order within C8.4: (B.4 row-count conservation first, B.3 canonical-filter parity second, B.5 cross-product join parity last). The C8.3-surfaced drifts (FD 28+wk redistribution, ENN cohort-vs-period) are candidates for B.3 and/or new invariants.
+- **Linked-file infant-death drift vs NVSR period file** — documented in C8.3 but not auto-tested. This is the *third* surface where cohort vs period publishing-format choices affect downstream numerics (after natality-vs-linked 7ppm gap; cohort-2024-linked-file 2027-Q1 wait). Future plan-update may consolidate into a single cohort-vs-period appendix in docs/JOINT_USE_GUIDE.md.
+- **No new mistake class** surfaced; the §15-vs-PDF NVSR-source ambiguity caught at PRE-FLIGHT is an L9 instance that the existing matrix anticipates. A possible L9-extension ("L9 should fire at plan-write time, not just at PRE-FLIGHT") is a candidate for future LESSONS authoring — but the existing process (§11 plan-update at PRE-FLIGHT halt-and-ask) caught it cleanly.
+
+### Session summary
+
+C8.3 closed in one session (PRE-FLIGHT + DO + VERIFY + RECEIPT). One §7 halt condition (§7.12 conflicting documentation: §15 NVSR sources vs PDF reality) surfaced at PRE-FLIGHT and resolved via user-authorized §11 plan-update; the plan-update simplified the task scope by replacing a non-existent 2017-by-race NVSR validation with a clean 2022-by-race validation against an on-disk NVSR table. Three artifacts shipped: timeline figure (manuscript Figure 1 candidate); joint_use_demo.ipynb extended to 4 sections with all NVSR cells PASS; JOINT_USE_GUIDE.md extended with perinatal worked example. Two methodological drifts surfaced and documented (28+wk redistribution; cohort-vs-period linkage) for C8.4 invariant-test scope. Zero canonical-data mutation; the C8.2 envelope is unchanged.
+
+Next session = C8.4 invariant tests (3 sessions estimated).
 
 ---
 

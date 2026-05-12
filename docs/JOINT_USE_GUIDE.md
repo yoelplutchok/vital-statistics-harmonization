@@ -83,6 +83,10 @@ The stratified denominator is derived from the natality v2.7.0 microdata under `
 | 2005 | 4,138,349 | 4,138,573 | +224 |
 | 2006 | 4,265,555 | 4,265,593 | +38 |
 
+## Cross-product coverage timeline
+
+Each product covers a different range of years, with three certificate-revision / NCHS-reformat boundaries (1989, 2003, 2014, 2018). The cross-product timeline figure shipped at [`figures/fig1_coverage_timeline.pdf`](../figures/fig1_coverage_timeline.pdf) (regenerable via [`shared/helpers/build_timeline_figure.py`](../shared/helpers/build_timeline_figure.py)) visualizes each product's era-banded coverage. Joint analyses spanning a revision boundary must respect the era-comparability classifications in each subproject's `COMPARABILITY.md`.
+
 ## Worked example: fetal mortality rate by maternal race, 2017
 
 ```python
@@ -119,7 +123,53 @@ fmr = 1000 * fd_by_race / (births_by_race + fd_by_race)
 print(fmr)
 ```
 
-The cross-product validation notebook will compare these cell-by-cell against *NVSR 73-09* Table A.
+For 2018-onward the bridged-race column is null in fetal-death (and 2020-onward in natality). Race-stratified joint analyses on 2018+ should use single-race + Hispanic origin (`race_hispanic_revised` in fetal-death, `maternal_race_ethnicity_5` + `maternal_race_detail` in natality) — see Section B of `notebooks/joint_use_demo.ipynb` for a 2022 worked example validated against *NVSR 73-09* Table A (7/7 rate cells PASS within rounding).
+
+## Worked example: perinatal mortality rate, 2022 (three-product joint)
+
+The perinatal mortality rate is the headline cross-product computation that requires all three HVS products simultaneously:
+
+$$\text{PMR} = \frac{\text{FD}_{\geq 28\,\text{wk}} + \text{ENN}_{<7\,\text{d}}}{\text{LB} + \text{FD}_{\geq 28\,\text{wk}}} \times 1000$$
+
+```python
+import pandas as pd
+
+# Numerator part 1: fetal deaths at 28+ wk gestation, 2022 (resident, NVSR-comparable)
+fd = pd.read_parquet("fetal_death/fetal_death_derived.parquet")
+fd_2022 = fd[
+    (fd["data_year"] == 2022)
+    & (fd["tabulation_flag"] == 2)
+    & (fd["residence_status"] != 4)
+].copy()
+fd_2022["ga"] = pd.to_numeric(fd_2022["gestational_age_combined"], errors="coerce")
+fd_2022["ga"] = fd_2022["ga"].where((fd_2022["ga"] >= 20) & (fd_2022["ga"] <= 46), pd.NA)
+fd_28plus = int((fd_2022["ga"] >= 28).sum())          # observed 28+ wk
+
+# Numerator part 2: early-neonatal deaths (<7 days) from cohort linked-file, 2022
+linked = pd.read_parquet("natality/natality_v3_linked_harmonized_derived.parquet")
+linked_2022 = linked[(linked["data_year"] == 2022) & (linked["residence_status"] != 4)]
+n_enn = int(((linked_2022["infant_death"] == True) & (linked_2022["age_at_death_days"] < 7)).sum())
+
+# Denominator: live births, 2022 (resident)
+nat = pd.read_parquet("natality/natality_v2_harmonized_derived.parquet", columns=["data_year", "residence_status"])
+n_lb = int(((nat["data_year"] == 2022) & (nat["residence_status"] != 4)).sum())
+
+pmr = 1000 * (fd_28plus + n_enn) / (n_lb + fd_28plus)
+print(f"2022 perinatal mortality rate: {pmr:.2f} per 1,000")
+```
+
+**Caveats and validations** (see `notebooks/joint_use_demo.ipynb` Section C for the cell-by-cell version):
+
+- **No single NVSR cell publishes the 2022 perinatal mortality rate.** NCHS's combined *Fetal and Perinatal Mortality* series ended after 2013 data; for 2022, fetal mortality (*NVSR 73-09*) and infant mortality (*NVSR 73-05*) are published separately. The perinatal rate is *constructed* by joint use of all three HVS products.
+- **28+ wk fetal-death sub-component** matches *NVSR 73-09* Table 1 (2022 = 9,956 published) only after proportional redistribution of records with unknown gestational age. Our parquet stores observed gestational age; the observed 28+ wk count is approximately 5% higher than the redistributed cell. Either is valid; document which methodology your analysis uses.
+- **Early-neonatal (<7 days) sub-component** uses our *cohort*-linked file. *NVSR 73-05* uses the *period*-linked file; the two differ by ~2% by design (the period file includes deaths from prior-year births; the cohort file includes deaths in the year after birth). Our cohort counts match the cohort linked-file user-guide byte-exact (validated in `natality/metadata/external_validation_targets_v3_linked.csv`).
+- **Live births** match both *NVSR 73-09* and *NVSR 73-05* byte-exact at the resident-filter (3,667,758 for 2022).
+
+The cross-product validation notebook reproduces:
+- **Section A**: 8/8 cells of *NVSR 73-09* Table 4 (2022 age-band fetal mortality) byte-exact.
+- **Section B**: 7/7 cells of *NVSR 73-09* Table A (2022 single-race + Hispanic fetal mortality) within rounding.
+- **Section B-legacy**: 2017 bridged-race joint-use machinery (no NVSR cell — no NCHS *Fetal Mortality 2017* report exists).
+- **Section C**: 2022 perinatal mortality rate joint computation, sub-components validated individually.
 
 ## Caveats
 
