@@ -6,8 +6,17 @@ Reads yearly raw Parquet files (from 01_import), maps era-specific field names
 and positions to the common harmonized schema defined in harmonized_schema.csv,
 and writes a unified output.
 
+Supported years 1982-2022:
+  1982-1988 (V3b, 1978-revision, 200-byte records, 1-digit MRACE 0-9; no
+    Hispanic origin field)
+  1989-2002 (V2.0 + V3a backward extension, 1989-revision uniform, 360-byte
+    records)
+  2003-2004 (V2.1 transition, 1351/1501-byte records, mixed A+S; B7 TABFLG
+    correction per fetaldeath0304problems.pdf)
+  2005-2022 (V1, 2003-revision mixed era; cause-of-death codes 2014+ only)
+
 Usage:
-  python harmonize.py --years 2006 2014 2022 --out ../../output/harmonized/fetal_death_harmonized.parquet
+  python harmonize.py --years 1985 2006 2022 --out ../../output/harmonized/fetal_death_harmonized.parquet
 """
 
 from __future__ import annotations
@@ -39,7 +48,9 @@ def _build_field_map() -> dict[str, dict[str, str]]:
     """
     Build a mapping: harmonized_name -> {era_tag -> raw_field_name}.
 
-    era_tag is one of '1992', '2003', '2006', '2014', '2022':
+    era_tag is one of '1985', '1992', '2003', '2006', '2014', '2022':
+      '1985' = 1982-1988 (1978-revision uniform era, V3b backward extension;
+               200-byte records, 1-digit MRACE 0-9, no Hispanic origin field)
       '1992' = 1989-2002 (1989-revision uniform era, V2.0 + V3a backward extension)
       '2003' = 2003-2004 (V2.1 transition: mixed A+S at 1351/1501-byte records;
                parser dispatches to FETAL_2005_2006_FIELDS so the raw column set
@@ -56,6 +67,7 @@ def _build_field_map() -> dict[str, dict[str, str]]:
         hname = row["candidate_harmonized_name"]
         era_map: dict[str, str] = {}
         for col, era in [
+            ("field_1985", "1985"),
             ("field_1992", "1992"),
             ("field_2006", "2006"),
             ("field_2014", "2014"),
@@ -93,7 +105,9 @@ def _era_tag(year: int) -> str:
         return "2003"  # V2.1 transition era
     if 1989 <= year <= 2002:
         return "1992"  # 1989-revision uniform era (V2.0 + V3a backward extension)
-    raise ValueError(f"Year {year} outside supported range (1989-2022)")
+    if 1982 <= year <= 1988:
+        return "1985"  # 1978-revision uniform era (V3b backward extension)
+    raise ValueError(f"Year {year} outside supported range (1982-2022)")
 
 
 # ---------------------------------------------------------------------------
@@ -345,6 +359,110 @@ def harmonize_year(year: int, field_map: dict[str, dict[str, str]]) -> pd.DataFr
         # consistently across eras. Fill-only-if-blank form (AUDIT-HARMONIZE-2 R3)
         # protects against a future crosswalk edit that adds a real field_1992 for
         # this column.
+        if "version_flag" in df.columns:
+            df["version_flag"] = df["version_flag"].where(df["version_flag"] != "", "S")
+
+    if era == "1985":
+        # V3b 1978-revision normalizations (1982-1988).
+        # The 1978-rev public-use files predate Hispanic-origin collection (1989+)
+        # and the cause-of-death revisions; this block harmonizes the subset of
+        # fields that have a comparable 1989-rev counterpart.
+
+        # DATAYEAR expansion: V3b raw DATAYEAR is 2-digit ("82".."88"); V2/V3a
+        # DATAYEAR is 4-digit. The crosswalk routes delivery_year to DATAYEAR for
+        # era='1985'; expand here so the harmonized delivery_year column is the
+        # 4-digit string the schema documents (V2 sources DELYR which is already
+        # 4-digit; no era-1992 conversion needed).
+        if "delivery_year" in df.columns:
+            s = df["delivery_year"].astype(str).str.strip()
+            if not s.str.fullmatch(r"\d{2}").all():
+                bad = s[~s.str.fullmatch(r"\d{2}")].unique()[:5]
+                raise ValueError(
+                    f"Year {year}: V3b delivery_year (DATAYEAR) expected 2-digit; "
+                    f"observed non-conforming values {list(bad)}"
+                )
+            df["delivery_year"] = ("19" + s).astype(str)
+
+        # B1 — fetal_sex: 1/2/9 numeric → M/F/U alphabetic. Same coding as V2
+        # 1989-rev (FSEX field; identical 1/2/9 scheme per user-guide p17).
+        if "fetal_sex" in df.columns:
+            df["fetal_sex"] = _checked_remap(
+                df["fetal_sex"],
+                {"1": "M", "2": "F", "9": "U", "": ""},
+                recode_label="B1 fetal_sex (1985 era)",
+                year=year,
+            )
+
+        # B3 — maternal_race_bridged: V3b 1978-rev MRACE is a 1-DIGIT code (0-9)
+        # vs V2/V3a 1989-rev MRACE which is 2-digit (01-99). Per 1985 user guide
+        # p18 (MRACE item, mother's race):
+        #   0=Other API; 1=White; 2=Black; 3=AmIndian/Aleut/Eskimo;
+        #   4=Chinese; 5=Japanese; 6=Hawaiian; 7=Other nonwhite (residual);
+        #   8=Filipino; 9=Not stated.
+        # Mapping to bridged-race 4-cat (1=White; 2=Black; 3=AIAN; 4=API):
+        #   1 → 1; 2 → 2; 3 → 3
+        #   0, 4, 5, 6, 8 → 4 (all API subgroups)
+        #   7 → "" (residual "Other nonwhite"; parallels V3a's 09 → null choice
+        #     per DECISION_LOG 2026-05-12T14:30Z — null preserves integrity rather
+        #     than false-categorizing a residual catch-all)
+        #   9 → "" (Not stated; same convention as V2 99 → null)
+        # Affects ~89 records across 1982-1988 for code 7; ~18.7K records for
+        # code 9. Documented in V3b_1982_1988_LAYOUT_DECISIONS.md.
+        if "maternal_race_bridged" in df.columns:
+            df["maternal_race_bridged"] = _checked_remap(
+                df["maternal_race_bridged"],
+                {
+                    "0": "4",  # Other API → API
+                    "1": "1",  # White
+                    "2": "2",  # Black
+                    "3": "3",  # AIAN
+                    "4": "4",  # Chinese → API
+                    "5": "4",  # Japanese → API
+                    "6": "4",  # Hawaiian → API
+                    "7": "",   # Other nonwhite residual → null
+                    "8": "4",  # Filipino → API
+                    "9": "",   # Not stated → null
+                    "": "",
+                },
+                recode_label="B3 maternal_race_bridged (1985 era, 1-digit MRACE)",
+                year=year,
+            )
+
+        # B4 — paternal_age_recode11: V3b FAGE12 is 12-cat with the same bin
+        # definitions as V2 FAGE11 (which is also 12-cat despite the legacy
+        # name): 01=<15; 02=15-19; ...; 09=50-54; 10=55-59; 11=60-98; 12=NS.
+        # Collapse to V1 11-cat identical to the V2 mapping above:
+        #   10/11 → 10 (55+ open-ended); 12 → 11 (Unknown).
+        if "paternal_age_recode11" in df.columns:
+            df["paternal_age_recode11"] = _checked_remap(
+                df["paternal_age_recode11"],
+                {
+                    "01": "01", "02": "02", "03": "03", "04": "04",
+                    "05": "05", "06": "06", "07": "07", "08": "08",
+                    "09": "09",
+                    "10": "10", "11": "10",  # collapse 55-59 + 60-98 → V1 55+
+                    "12": "11",  # Not stated → V1 Unknown
+                    "": "",
+                },
+                recode_label="B4 paternal_age_recode11 (1985 era, FAGE12)",
+                year=year,
+            )
+
+        # B6 — delivery_place_recode: V3b PLDEL is 1-byte with the same coding
+        # as V2 1989-rev PLDEL (1=Hospital; 2=Doctor/home/public; 3=En route;
+        # 9=Not classifiable). Re-derive into the V1 3-bucket recode.
+        if "delivery_place_recode" in df.columns and "PLDEL" in raw.columns:
+            df["delivery_place_recode"] = _checked_remap(
+                raw["PLDEL"],
+                {"1": "1", "3": "1", "2": "2", "9": "3", "": ""},
+                recode_label="B6 delivery_place_recode (1985 era, from PLDEL)",
+                year=year,
+            ).values
+
+        # version_flag synthesis: 1978-rev predates the 1989/2003 revision split
+        # that VERSION (A/S) discriminates. Synthesize "S" so downstream
+        # version_flag=='S' filters cover 1982-1988 alongside 1989-2002. The
+        # 1978-vs-1989 distinction is preserved upstream via data_year ranges.
         if "version_flag" in df.columns:
             df["version_flag"] = df["version_flag"].where(df["version_flag"] != "", "S")
 

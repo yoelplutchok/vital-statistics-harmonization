@@ -23,6 +23,88 @@
 
 ---
 
+## 2026-05-12T18:30:00Z — task7_v3b — B3 maternal_race_bridged extension: 1978-rev 1-digit MRACE 0-9 → 4-cat bridged; code 7 (Other nonwhite) → null + code 9 (Not stated) → null
+
+**Choice:** Extend the B3 `_checked_remap` in `fetal_death/scripts/03_harmonize/harmonize.py` with a new `era=='1985'` branch containing a 1-digit MRACE → bridged-race recode covering the 1978-revision V3b coding scheme:
+
+| 1978-rev MRACE | Bridged | Records affected (1982-1988 total) |
+|---|---|---|
+| 0 (Other Asian or Pacific Islander) | 4 (API) | ~few hundred |
+| 1 (White) | 1 (White) | ~290K |
+| 2 (Black) | 2 (Black) | ~91K |
+| 3 (American Indian/Aleut/Eskimo) | 3 (AIAN) | ~2K |
+| 4 (Chinese), 5 (Japanese), 6 (Hawaiian), 8 (Filipino) | 4 (API) | ~12K combined |
+| **7 (Other nonwhite)** | **"" (null)** | **~89 records** |
+| **9 (Not stated)** | **"" (null)** | **~18,700 records (~3-5%/yr)** |
+
+**Alternatives considered:**
+
+1. **Map 7 → 4 (API).** Pro: keeps all V3b records in a bridged category. Con: incorrect — 1985 user guide page 18 explicitly names code 7 as "Other nonwhite", a residual catch-all for records not fitting any of the 8 specific named categories. Mapping to API would over-count bridged-API by ~89 records across 1982-1988. **Rejected** as semantically inaccurate.
+2. **Map 7 → 3 (AIAN).** Pro: AIAN is a "minority other than Black/Asian" historical convention. Con: explicit conflation of unrelated racial groups. **Rejected**.
+3. **Map 7 → null (chosen).** Direct parallel to V3a's 09 → null decision (DECISION_LOG 2026-05-12T14:30:00Z). The 4-cat bridged scheme does not have a residual bucket; null preserves integrity rather than false-categorizing. ~89 records exit race-stratified analyses; all V3b records remain in unbridged analyses (year totals, GA distributions, etc.). **Selected.**
+4. **Add a new bridged category 5 = "Other (1978-rev residual)".** Pro: explicit. Con: schema mutation (`allowed_values=1|2|3|4|5`) for a category that exists only for V3b records — cross-era race comparability breaks. **Rejected** as scope-creep.
+
+For code 9 (Not stated), null is the unambiguous choice — parallels V2 99 → null, V3a 09 → null. No alternatives considered.
+
+**Reason:** The 1985 NCHS Fetal Death User Guide page 18 (item 79-81 MRACE field for the 1978-revision) explicitly defines MRACE codes 0-9 for 1978-revision records. Codes 4/5/6/8 cover specific Asian/Pacific-Islander subgroups; code 0 is the residual "Other API"; code 7 is the residual "Other nonwhite" (distinct from the API subgroups). The bridged-race 4-category recode (the NCHS standard since the 1997 OMB directives) has no residual bucket — White/Black/AIAN/API only. Mapping a residual catch-all into one of the 4 specific buckets would be a false categorization; null preserves integrity per the §2 fail-closed principle.
+
+The 1978-revision residual structure differs from the 1989-revision: 1989-rev's residual catch-all is code 09 ("All other Races", catches everything not in 01-08); 1978-rev's residual is code 7 ("Other nonwhite", which sits alongside specific API subgroups 4-6/8 and the general API code 0). Both are residual; both map to null.
+
+**Source:**
+- `1985FetalUserGuide.pdf` page 18 (item 79-81 MRACE; PyMuPDF-extracted via text-layer, no OCR needed; SHA recorded in `raw_docs/fetal_death/` and verified at PRE-FLIGHT 2026-05-12T16:00Z).
+- Per-year MRACE distributions in `output/yearly_clean/fetal_death_{1982..1988}_raw.parquet` confirming the 1-digit 0-9 scheme (no 99 sentinel; no 18-78 codes; codes 0-9 all observed).
+- Existing B3 recode at `fetal_death/scripts/03_harmonize/harmonize.py` lines 271-300 (V2/V3a era; the entries `"99": ""` and `"09": ""` are the precedent for the null mapping).
+- Documented in `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` ("Harmonization decision 2: B3 maternal_race_bridged 1-digit recode" section).
+
+**Verifiable by:**
+- `validate_external_v2.py` post-V3b: **33/33 PASS** byte-exact (counts 1982-2004 + rates 1995-2004). Per-year fetal-death counts (which use TABFLG/RESTATUS, not race) byte-exact against user-guide controls — confirming the 7→null + 9→null choices don't bias the canonical-filter aggregate (it can't, since the canonical filter doesn't use race).
+- `python -c "import pandas as pd; df = pd.read_parquet('output/harmonized/fetal_death_derived.parquet'); v3b = df[(df.data_year >= 1982) & (df.data_year <= 1988)]; print('V3b null bridged-race:', v3b.maternal_race_bridged.isna().sum())"` returns ~18,789 (the ~89 code-7 + ~18,700 code-9 records).
+- Re-running the harmonize.py B3 recode map inspection: the era=='1985' branch contains exactly 11 entries (codes 0/1/2/3/4/5/6/7/8/9 + blank); `_checked_remap` would raise on any unmapped code.
+
+**Reversible:** yes — if a future analysis surfaces an NCHS-documented convention for 1978-revision code 7 (e.g., a peer-reviewed paper or an NCHS internal mapping that specifies 7 → bridged-X), the B3 map can be edited and the 1982-1988 yearly_clean parquets re-harmonized; V1+V2.1+V3a era unaffected.
+
+**Residual risks:**
+- (a) **NCHS may have a documented bridged-race convention for 1978-revision code 7 that I missed.** The 1985 user guide page 18 doesn't specify a 4-category bridged recode for code 7. RACEF3 (item 66-67 in the layout — the 3-category fetus race recode: 1=White, 2=Other than White or Black, 3=Black) would put code 7 records into RACEF3=2 — but that 3-cat collapse is incompatible with the harmonized schema's 4-category bridged scheme. Mitigation: same as V3a (DECISION_LOG 2026-05-12T14:30Z residual risk a); searching NVSR Series 21 reports for 1982-1988 race-stratified fetal death tables is post-submission scope.
+- (b) **The ~89 record impact is small but non-zero on V3b race-stratified analyses.** A researcher using `maternal_race_bridged` to stratify 1982-1988 fetal deaths will see totals not exactly add up (89 records with null bridged-race from code 7; plus ~18.7K from code 9). The ~18.7K Not-stated fraction is ~3-5% per year — larger than V3a's 0.087% — because 1978-revision public-use files have a less-imputed race field than 1989+. Documented in V3b_LAYOUT_DECISIONS.md.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- Same as V3a — this entry asserts the 4-category bridged-race convention is "the NCHS standard since the 1997 OMB directives," paraphrasing common practice. A strict OMB-directive reading is post-submission scope.
+- The ~89 code-7 records are a tiny fraction of V3b's 421K total, but in race-stratified time-series the V3b → V3a transition (1988 → 1989) will show a small step-change in API counts because 1978-rev code 7 (residual nonwhite) maps to null while 1989-rev's nearest analog (code 09 "All other Races") also maps to null — so no false transition is introduced. Verified: V3a's 09 = null and V3b's 7 = null are consistent treatments.
+
+---
+
+## 2026-05-12T18:30:00Z — task7_v3b — DATAYEAR 2-digit→4-digit expansion in harmonize.py era=='1985' branch (Option A)
+
+**Choice:** In `harmonize.py` era=='1985' branch (1982-1988), expand the raw 2-digit DATAYEAR value ("82".."88") to the 4-digit `delivery_year` ("1982".."1988") via `df["delivery_year"] = ("19" + s).astype(str)` where `s` is the stripped raw DATAYEAR string. Defensive `ValueError` raised if any raw value is non-2-digit.
+
+**Alternatives considered:**
+
+1. **Option A — harmonize.py era=='1985' branch (chosen).** Pro: harmonization is the right layer for cross-era schema uniformity; preserves raw-byte fidelity in the yearly_clean parquet (1978-rev "82" stays as "82" there); pattern matches the era=='2003' B7 TABFLG correction structure. Con: adds one short block to harmonize.py.
+2. **Option B — pre-process in `parse_fetal_year.py`.** Pro: simpler harmonize.py. Con: parser should preserve raw bytes (the documented `01_import/` convention); year-conversion is a harmonization concern, not a parse concern. **Rejected.**
+
+**Reason:** The harmonized `delivery_year` column is documented as a 4-digit string across all eras for schema uniformity. V2/V2.1/V1 raw fields (DELYR @ 190-193, DOD_YY @ 15-18 / 11-14) are already 4-digit; only V3b needs an expansion. The era=='1985' branch is the natural home — it parallels the era=='2003' B7 TABFLG correction pattern (a runtime field-level fix applied per-era). Putting it in the parser would violate the raw-byte-preservation principle and introduce era awareness into the parse layer.
+
+**Source:**
+- `record_layout_1982_1988.csv` row 1 (DATAYEAR at bytes 1-2; description "Last Two Digits of Current Data Year (1978-rev)"; values "82=1982 through 88=1988").
+- `harmonize.py` era=='1985' branch (lines newly added at Task 7 V3b DO step 4).
+- `harmonize.py` era=='2003' branch precedent (B7 TABFLG correction at lines 358-375) — established the runtime-per-era field-correction pattern.
+
+**Verifiable by:**
+- `python -c "import pandas as pd; df = pd.read_parquet('output/harmonized/fetal_death_harmonized.parquet'); print(sorted(df.query('1982 <= data_year <= 1988').delivery_year.unique()))"` returns `['1982', '1983', '1984', '1985', '1986', '1987', '1988']` (all 4-digit strings, no leakage of "82".."88").
+- The defensive halt would fire if any raw DATAYEAR was non-2-digit; it didn't fire across all 7 V3b years (421,125 records), confirming clean 2-digit raw input.
+- `validate_external_v2.py` post-V3b: 33/33 PASS byte-exact, including all 7 V3b counts that depend on `data_year == year` matching — `data_year` is int32 from harmonize.py's dict init (separately from `delivery_year`), so this verifies both the int32 conversion AND the string expansion produce consistent year values.
+
+**Reversible:** yes — the expansion is a 4-line block at one location in `harmonize.py`. If a future analysis needs the 2-digit raw form, the yearly_clean parquet preserves it.
+
+**Residual risks:**
+- (a) **The "19" prefix is hard-coded.** If a future V4 extension covered 2000+ years using the 1978-revision layout (which it won't — 1978-rev was superseded by 1989-rev effective 1989 data), the prefix would be wrong. Mitigation: V3b's coverage is bounded to 1982-1988 by `_era_tag()`; no risk in practice.
+- (b) **`delivery_year` is string-typed; `data_year` is int32.** Cross-era consistency: `delivery_year` always string everywhere (V2/V3a/V3b "1985"-format; V1 "2005"-format). `data_year` always int32. Smoke verified at DO step 4.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- The defensive halt only fires on non-2-digit raw values. If a raw DATAYEAR was "82" but the BYTE positions were wrong (e.g., parser misaligned by 1 byte), the expansion would silently produce "1982" anyway from whatever 2-character substring landed there. Mitigation: the canonical-filter cross-check at DO step 8 (byte-exact NVSR-equivalent statistics for all 7 V3b years) catches byte-misalignment elsewhere; DATAYEAR-specific misalignment would surface as wrong year counts.
+
+---
+
 ## 2026-05-12T14:30:00Z — task7_v3a — B3 maternal_race_bridged extension: 1989-rev MRACE 08→4 API, 09→null (consistent with 99 Unknown convention)
 
 **Choice:** Extend the B3 maternal_race_bridged recode map in `fetal_death/scripts/03_harmonize/harmonize.py` with two entries to handle 1989-revision MRACE codes that the V2 (1992+) map doesn't cover:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-V2.0 external validation: compare harmonized 1992-2002 fetal death counts and
-rates against published NCHS sources.
+V2.0 + V2.1 + V3a + V3b external validation: compare harmonized 1982-2004
+fetal death counts and rates against published NCHS sources.
 
 Sources:
   - NVSR 57-08 (MacDorman, Kirmeyer, Stat-Wilson, 2009): "Fetal and Perinatal
@@ -101,13 +101,24 @@ NVSR57_LIVE_BIRTHS = {
     2004: 4_112_055,
 }
 
-# 1989-1994 reference counts. Source: each year's NCHS Fetal Death User Guide,
+# 1982-1994 reference counts. Source: each year's NCHS Fetal Death User Guide,
 # page 7, "20 WEEKS AND OVER: By residence" figure. These guides were not stale
-# for 1989-1994 (the three known stale-guide years are 1996, 2001, 2002, and
+# for 1982-1994 (the three known stale-guide years are 1996, 2001, 2002, and
 # those three are cross-checked against NVSR 57-08).
 # V3a extension (2026-05-12): 1989-1991 reference counts added from NCHS user
 # guides at canonical FTP path (downloaded + SHA-recorded in file_inventory.csv).
+# V3b extension (2026-05-12): 1982-1988 reference counts added from 1978-rev
+# NCHS Fetal Death User Guides (canonical FTP path). 1985 OCR digit-1
+# disambiguation `29,66I` → `29,661` confirmed empirically via canonical-filter
+# cross-check at Task 7 V3b DO step 8.
 GUIDE_FETAL_DEATHS_GTE20 = {
+    1982: 32_694,
+    1983: 30_752,
+    1984: 30_099,
+    1985: 29_661,
+    1986: 28_972,
+    1987: 29_349,
+    1988: 29_442,
     1989: 30_469,
     1990: 31_386,
     1991: 30_160,
@@ -130,17 +141,21 @@ def _v2_gte20_resident_count(harm: pd.DataFrame, year: int) -> int:
         & (harm["tabulation_flag"] == 2)
         & (harm["residence_status"] != 4)
     )
-    if 1989 <= year <= 2002:
+    if 1982 <= year <= 2002:
+        # V3b 1982-1988 synthesizes version_flag='S' too (1978-rev predates the
+        # 1989/2003 revision split; harmonize.py era=='1985' branch sets it).
         mask = mask & (harm["version_flag"] == "S")
     return int(mask.sum())
 
 
 def validate_counts(harm: pd.DataFrame) -> list[dict]:
-    """Count validation across 1992-2002."""
+    """Count validation across 1982-2004."""
     results = []
 
-    # 1989-1994: guide-based reference (V3a extension brings 1989-1991 into this loop)
-    for year in (1989, 1990, 1991, 1992, 1993, 1994):
+    # 1982-1994: guide-based reference
+    # (V3a extension 2026-05-12 brought 1989-1991 into this loop;
+    #  V3b extension 2026-05-12 brought 1982-1988 into this loop)
+    for year in tuple(range(1982, 1995)):
         our = _v2_gte20_resident_count(harm, year)
         expected = GUIDE_FETAL_DEATHS_GTE20[year]
         results.append({
@@ -211,7 +226,7 @@ def validate_rates(harm: pd.DataFrame) -> list[dict]:
 
 def format_report(count_results: list[dict], rate_results: list[dict]) -> str:
     lines = []
-    lines.append("# AUDIT-EXTERNAL-2 Report: V2.0 External Validation (1992-2002)")
+    lines.append("# AUDIT-EXTERNAL-2 Report: Pre-V1 External Validation (1982-2004)")
     lines.append("")
     lines.append("**Auditor:** `scripts/05_validate/validate_external_v2.py` (automated)")
     lines.append("**Date:** 2026-04-22")
@@ -269,9 +284,13 @@ def format_report(count_results: list[dict], rate_results: list[dict]) -> str:
     lines.append("")
     lines.append("| Year | Stale guide figure | NVSR 57-08 | Our parse | NVSR vs parse |")
     lines.append("|---:|---:|---:|---:|---|")
-    lines.append(f"| 1996 | 27,323 (= 1995 figure) | 27,069 | {count_results[4]['our_value']:,} | {'MATCH' if count_results[4]['our_value'] == 27069 else 'MISMATCH'} |")
-    lines.append(f"| 2001 | 27,046 (= 2000 figure) | 26,373 | {count_results[9]['our_value']:,} | {'MATCH' if count_results[9]['our_value'] == 26373 else 'MISMATCH'} |")
-    lines.append(f"| 2002 | 27,046 (= 2000 figure) | 25,943 | {count_results[10]['our_value']:,} | {'MATCH' if count_results[10]['our_value'] == 25943 else 'MISMATCH'} |")
+    # Indices: 1982-1994 = [0..12]; 1995-2002 = [13..20]; 2003-2004 = [21..22]
+    # 1996 is at index 14; 2001 at index 19; 2002 at index 20.
+    _idx_for_year = {r["year"]: i for i, r in enumerate(count_results)}
+    i1996, i2001, i2002 = _idx_for_year[1996], _idx_for_year[2001], _idx_for_year[2002]
+    lines.append(f"| 1996 | 27,323 (= 1995 figure) | 27,069 | {count_results[i1996]['our_value']:,} | {'MATCH' if count_results[i1996]['our_value'] == 27069 else 'MISMATCH'} |")
+    lines.append(f"| 2001 | 27,046 (= 2000 figure) | 26,373 | {count_results[i2001]['our_value']:,} | {'MATCH' if count_results[i2001]['our_value'] == 26373 else 'MISMATCH'} |")
+    lines.append(f"| 2002 | 27,046 (= 2000 figure) | 25,943 | {count_results[i2002]['our_value']:,} | {'MATCH' if count_results[i2002]['our_value'] == 25943 else 'MISMATCH'} |")
     lines.append("")
     lines.append("The NVSR 57-08 figures resolve the stale-guide ambiguity: our parsed counts are")
     lines.append("consistent with the authoritative published source, confirming the 1996/2001/2002")

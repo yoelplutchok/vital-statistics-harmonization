@@ -1,6 +1,167 @@
-# STATUS — last updated 2026-05-12T17:30:00Z
+# STATUS — last updated 2026-05-12T18:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T18:45:00Z — Task 7 V3b COMPLETE: fetal-death coverage extended to 1982-2022 (41 yrs, +7 V3b yrs); 88/88 NVSR validation byte-exact; V3a/V2/V2.1/V1 baseline byte-clean preserved 0/162 columns drifted; tag `task7_v3b-complete`
+
+### Current phase
+
+Phase A complete. **Task 7 V3b shipped.** 12-step DO plan executed cleanly across two sessions: prior session ran steps 1-3 + 7-8 (zips moved + layout CSV + field_specs + 7 yearly_clean parquets + Tier-2 value-distribution PASS); this session ran steps 4-6 + 9-12 (harmonize.py + crosswalk + harmonized_schema edits + full 1982-2022 harmonize + derive + validate + RECEIPT). KICKOFF Task 7 (V3a + V3b expansion per STEP 0 doc-hunt success 2026-05-12T04:30:00Z) now complete. Pre-submission scope remaining: Task 9 (redirect notices) → Task 10 (Zenodo deposits) → KICKOFF step 5 (public-repo sync) → KICKOFF step 6 (manuscript re-pass + submit).
+
+### What was done this session (DO steps 4, 5, 6, 9, 10, 11, 12)
+
+**DO step 4 — `harmonize.py` edits**:
+- Module docstring extended to mention 1982-2022 supported range (1985 era added).
+- `_build_field_map()`: added `("field_1985", "1985")` to the era-loop iterator (handles the new crosswalk columns).
+- `_era_tag()`: added `if 1982 <= year <= 1988: return "1985"` branch; updated error message year range "1989-2022" → "1982-2022".
+- New `if era == "1985":` block (~80 lines) in `harmonize_year()`:
+  - DATAYEAR 2-digit→4-digit expansion: `df["delivery_year"] = ("19" + s).astype(str)` with defensive `ValueError` on non-2-digit raw values.
+  - B1 fetal_sex 1/2/9 → M/F/U (same as V2).
+  - B3 maternal_race_bridged 1-digit recode (codes 0/4/5/6/8 → 4 API; 1→1; 2→2; 3→3; 7→null; 9→null). DECISION_LOG 2026-05-12T18:30:00Z documents 7+9=null rationale.
+  - B4 paternal_age_recode11 (V3b FAGE12 → V1 11-cat collapse; identical map to V2's FAGE11 collapse).
+  - B6 delivery_place_recode (PLDEL → 3-bucket; same as V2).
+  - version_flag synthesis to "S" (same as V2; "1978-rev predates 2003-rev split").
+- New `harmonize.py` SHA: `c4060ad2bc54a489629e9b7eba07bd2e2752de58e28a1935fe729d86def1af3f`.
+
+**DO step 5 — `variable_crosswalk_working.csv` extension**:
+- 2 new columns inserted before `field_1992`: `field_1985,pos_1985`.
+- 23 V3b mappings populated: tabulation_flag/delivery_year/data_year/residence_status/maternal_age/maternal_race_bridged/maternal_race_bridged_detail/maternal_education_unrevised/marital_status/paternal_age_combined/paternal_age_recode11/live_birth_order/plurality/prenatal_care_month_unrevised/fetal_sex/gestational_age_clinical/gestational_age_combined/gestational_age_recode12/gestational_age_recode5/birthweight/birthweight_recode14/delivery_place_unrevised/delivery_place_recode (22 raw + 1 derived data_year).
+- 50 remaining harmonized columns marked field_1985=N/A (V3b doesn't have the corresponding 1978-rev field: e.g., hispanic_origin, all cause-of-death fields, 2003+ revised risk-factor items, 2014+ COD items).
+- New crosswalk SHA: `dd9d700d4acd33725a2904a8959f3e1e83eb235b499ad137e9964648a3faff89`.
+
+**DO step 6 — `harmonized_schema.csv` extension**:
+- 24 rows received `1982-1988, ` prepend in `years_available` (23 V3b raw + version_flag manual fix).
+- Same 23 raw-field rows received `1985:RAWFIELD(POS)+suffix; ` prepend in `raw_source_by_year` (suffixes document the harmonize.py recodes: `+1-digit recode`, `+FAGE12 collapse`, `+harmonize.py recode (from PLDEL)`, `+expansion (int(raw)+1900)`, `+1/2/9->M/F/U recode`).
+- V3a-deferred + V2.1-deferred `years_available` gaps (1989-1991 and 2003-2004 not always listed) NOT cleaned up this task — same conservative deferral as V3a per V3a RECEIPT 2026-05-12T14:30:00Z item 8.
+- New schema SHA: `69f92bf775251f1e9a16690b791b75ed109c994a72e8c81953e4b8a629a722be`.
+
+**DO step 9 — full harmonize 1982-2022 (41 years)**:
+- Command: `python3 fetal_death/scripts/03_harmonize/harmonize.py --years 1982 1983 ... 2022 --out output/harmonized/fetal_death_harmonized.parquet`.
+- Output: **2,352,011 total records** across 41 years, 73 columns. Wall-clock ~80s.
+- Per-year counts: V3b 421,125 (= 62,352 + 60,584 + 59,863 + 59,690 + 59,343 + 59,358 + 59,935) — byte-exact to user-guide controls and to STATUS 16:45Z projection.
+- V3a years (1989-1991): 61,295 / 64,349 / 63,265 — byte-exact to V3a baseline.
+- V2/V2.1/V1 years: all byte-exact to baselines (B7 TABFLG correction fired for 2003 → 699 records, 2004 → 690 records, matching V2.1 baseline).
+- New harmonized parquet SHA: `e3d6c64abcb7762df54762b9dbb1e5b0f105a0511eb4b19004d11ca1f5bc111e`.
+
+**DO step 10 — derive**:
+- `derive.py` on the new harmonized parquet produces fetal_death_derived.parquet (2,352,011 records × 89 columns).
+- New derived parquet SHA: `4d1b37cc3a214eea3ec502f08ecc0d53c65c6195de19de3e4383a3573fcdc729`.
+
+**DO step 11 — validate**:
+- `validate_external_v2.py` extended: GUIDE_FETAL_DEATHS_GTE20 dict +7 entries (1982-1988); version_flag year-range filter broadened from `1989<=y<=2002` to `1982<=y<=2002`; count-validation loop range broadened to 1982-1994; report titles updated.
+- `validate_external_v2.py` result: **33/33 PASS** (23 counts 1982-2004 + 10 rates 1995-2004).
+- `validate_external.py` result (V1 era, unchanged): **55/55 PASS**.
+- **Total: 88/88 external validation byte-exact.**
+- **V3a baseline byte-clean regression**: 0 of 162 columns (73 harmonized + 89 derived) drifted on the 1989-2022 data slice when comparing pre-V3b `.V3a_baseline.parquet` files against the new V3b parquet's data_year>=1989 slice. Row count parity exact (1,930,886 = 1,930,886).
+- V3a baseline parquets preserved at `output/harmonized/fetal_death_{harmonized,derived}.V3a_baseline.parquet` for forward-stability anchoring.
+
+**DO step 12 — RECEIPT + version bumps + V3b_LAYOUT_DECISIONS + DECISION_LOG + this STATUS section**:
+- `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` written (SHA `acb01966ae052fd4210bb26febfd37c6cb4c1500ace71d2920f17e85dfa9da84`): empirical layout reusability evidence, B3 1-digit recode design, DATAYEAR expansion decision, fields-without-V3b-counterpart list, manuscript implications.
+- `fetal_death/.zenodo.json` bumped v2.0.0 → v2.3.0; title "1992-2022" → "1982-2022"; scope "29 years / 1.63M" → "41 years / 2.35M"; validation "74 checks" → "88 checks"; "1978 revision" keyword added; SHA `9e0c318851693312ad278247c24fe686376afe3a89ea3d9e07118f6079b6466c`.
+- `fetal_death/CITATION.cff` bumped 2.0.0 → 2.3.0; abstract + title + keywords aligned; SHA `10ddf1dc17d7c0cbf278118ea31a6350d63abceae8f30174196c52c96942f406`.
+- DECISION_LOG entries 2026-05-12T18:30:00Z (B3 1-digit recode + DATAYEAR Option A).
+- `RECEIPTS/task7_v3b_2026-05-12T18-45-00Z.md` written.
+- Tag `task7_v3b-complete` to be set on the commit that lands this STATUS section.
+
+### Last completed step
+
+DO step 12 — RECEIPT. Task 7 V3b complete.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**Task 9 — Redirect notices on old GitHub repos** (~15-30 min, human-driven). Add notice block to top of `yoelplutchok/natality-harmonization` README and `yoelplutchok/fetal-death-harmonization` README pointing to https://github.com/yoelplutchok/vital-statistics-harmonization. Optionally archive (only after explicit user approval per NEXT_STEPS §15 Task 9).
+
+Then Task 10 (unified Zenodo deposit + v2.3.0 fetal-death deposit patch + v2.8.0 natality deposit patch), KICKOFF step 5 (public-repo sync v1.1), KICKOFF step 6 (manuscript re-pass + submit).
+
+### Blocked
+
+(none)
+
+### Open questions for human
+
+All Q26-Q29 resolved this session by user mandate ("Resume Task 7 V3b at DO step 4"). New questions:
+
+30. **Task 9 redirect notice content** — proposed text for both repos:
+    ```
+    > **This repository is archived. Active development has moved to
+    > https://github.com/yoelplutchok/vital-statistics-harmonization which
+    > unifies the natality, linked birth-infant death, and fetal death
+    > harmonizations under a single Zenodo deposit (see CITATION.cff).
+    > This repo's existing Zenodo deposits remain live for backward citation
+    > compatibility.**
+    ```
+    Default = use the above; ask for review before pushing.
+
+31. **Task 10 sequencing** — three Zenodo uploads + 2 redirect-note updates. Order:
+    (i) v2.3.0 patch to fetal-death deposit 10.5281/zenodo.20031571,
+    (ii) v2.8.0 patch to natality deposit 10.5281/zenodo.19363074,
+    (iii) NEW unified HVS deposit with own concept DOI,
+    (iv) description-only redirect notes on both old deposits pointing to (iii).
+    Default sequence assumes Zenodo deposits are user-driven (browser UI); LLM prepares the artifacts + metadata JSON.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`task7_v3b-complete` tag** must exist on the commit that lands this STATUS section. Verify: `git tag --list 'task7*'` shows `task7_v3a-pre-do`, `task7_v3a-complete`, `task7_v3b-pre-do` (at `39652b5`), `task7_v3b-complete` (at this commit).
+2. **`harmonize.py` SHA `c4060ad2bc54a489…`** unchanged. Drift = unauthorized edit.
+3. **`fetal_death_harmonized.parquet` SHA `e3d6c64abcb7762d…`** and **`fetal_death_derived.parquet` SHA `4d1b37cc3a214eea…`** unchanged unless an authorized re-derive is in flight.
+4. **`.V3a_baseline.parquet` files** preserved at SHAs `23c56a9d6a0948b4…` and `0dd3aec0e47785f1…` — these are forward-stability anchors.
+5. **`validate_external_v2.py` SHA `f0e904c210a5c1c3…`** unchanged. The 7 V3b user-guide control entries in `GUIDE_FETAL_DEATHS_GTE20` are LIVE; removing them would re-trigger KeyError on harmonize+validate spanning V3b years.
+6. **`.zenodo.json` v2.3.0 + `CITATION.cff` 2.3.0** are the current canonical version markers. At Task 10 they upload to a new Zenodo version DOI (concept DOI stays at 10.5281/zenodo.20031571).
+7. **PROVENANCE.md still stale** at v2.0.0 SHAs (V3a's deferred refresh + V3b's new artifacts). Task 10 PRE-FLIGHT must refresh it.
+8. **Schema CSV `years_available` retroactive V3a/V2.1 gap fixes** still deferred. Task 10 polish.
+9. **Joint-use notebooks** not re-run this session. KICKOFF step 5 / Task 10 should rebuild them against the new V3b parquet (they use V1-era data only so should still PASS 8/8 + 34/34, but verify).
+
+### Build artifacts current
+
+- 7 V3b raw zips at `raw_data/fetal_death/Fetal{1982..1988}US.zip` — SHAs unchanged from STATUS 03:50Z baselines.
+- 7 V3b user guides at `raw_docs/fetal_death/198{2..8}FetalUserGuide.pdf` — SHAs unchanged.
+- `fetal_death/record_layout_1982_1988.csv` — SHA `431fd7ac72135afc…` unchanged (DO step 2 artifact, prior session).
+- `fetal_death/scripts/01_import/field_specs.py` — SHA `f67e5924ea7fc73a…` unchanged (DO step 3 artifact, prior session).
+- `fetal_death/scripts/03_harmonize/harmonize.py` — NEW SHA `c4060ad2bc54a489…` (was `7a99641984eb5e83…` at V3a-complete).
+- `fetal_death/variable_crosswalk_working.csv` — NEW SHA `dd9d700d4acd3372…`.
+- `fetal_death/harmonized_schema.csv` — NEW SHA `69f92bf775251f1e…`.
+- `fetal_death/scripts/05_validate/validate_external_v2.py` — NEW SHA `f0e904c210a5c1c3…`.
+- `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` — NEW SHA `acb01966ae052fd4…`.
+- `fetal_death/.zenodo.json` — NEW SHA `9e0c318851693312…` (v2.3.0).
+- `fetal_death/CITATION.cff` — NEW SHA `10ddf1dc17d7c0cb…` (2.3.0).
+- 7 V3b yearly_clean parquets at `output/yearly_clean/fetal_death_{1982..1988}_raw.parquet` — SHAs unchanged from STATUS 17:30Z.
+- V3a state (1989-2022 slice within the new parquet): byte-clean preserved.
+- v2.8.0 natality state: unchanged.
+
+### Notes for next session
+
+- **Task 9 is short and human-driven**: LLM prepares text; human pushes to the two old GitHub repos. Tag `task9-complete` if the human wants the tracking; the canonical proof is the existence of the notice block on the old repos' READMEs.
+- **Task 10 has a non-trivial preparation surface**: PROVENANCE.md refresh (V3a + V3b SHAs); manifest CSV refresh; .zenodo.json schema validation pre-upload; reserve the new unified HVS DOI in advance. The Zenodo upload itself is browser-driven user time.
+- **KICKOFF step 5 (public-repo sync)**: re-rsync monorepo to `~/Desktop/vital-statistics-harmonization-public/`; re-scrub (same exclude list + same 4 LLM-mention scrub edits as 2026-05-12 v1.0 push); commit + push to overwrite v1.0 with v1.1. Excludes: STATUS.md, DECISION_LOG.md, FIX_LOG.md, LESSONS.md, NEXT_STEPS.md, KICKOFF.md, PRE_FLIGHT_LOG.md, RECEIPTS/, .claude/, paper/, notebooks/_build_*.py.
+- **KICKOFF step 6 (manuscript re-pass)**: update record count from 1.74M to ~2.35M (or 1.99M NVSR-comparable); update coverage strings 1992-2022 → 1982-2022; update validation count 81/81 → 88/88; remove deferred-2003/2004 + deferred-V3 caveats; inject unified HVS DOI; resolve the three `<!-- YP: review -->` admin-section markers (Author contributions, AI-tool disclosure, Funding); reformat references to IJE style; submit.
+- **Cumulative pre-submission progress so far**:
+  - ✅ Task 1 (joint-use denominators, 2026-05-11)
+  - ✅ Task 2 (joint-use demo notebook, 2026-05-11)
+  - ✅ Task 3 V2.1 (fetal-death 2003-2004 + H8 + data_year + path drift, 2026-05-12)
+  - ✅ Task 4 (paper companion notebook, 2026-05-11)
+  - ✅ Task 5 (manuscript trim, 2026-05-11)
+  - ✅ Task 6 (linked-validation framing reconcile, 2026-05-11)
+  - ✅ Task 7 V3a (fetal-death 1989-1991, 2026-05-12)
+  - ✅ Task 7 V3b (fetal-death 1982-1988, 2026-05-12) — THIS RECEIPT
+  - ✅ Natality v2.8 rename (2026-05-12)
+  - ✅ Public v1.0 GitHub repo push (2026-05-12)
+  - ⏳ Task 9 (redirect notices)
+  - ⏳ Task 10 (unified Zenodo deposit + version patches)
+  - ⏳ KICKOFF step 5 (public-repo v1.1 sync)
+  - ⏳ KICKOFF step 6 (manuscript re-pass + submit)
+- **No new mistake classes** surfaced; no FIX_LOG or LESSONS entries this session. Prior-session L1-extension + L12-extension + L13-extension entries remain the load-bearing protocol additions for this work.
+
+### Session summary
+
+This session closed Task 7 V3b in 7 DO steps (4-6, 9-12) without halt or rework. The 12-step plan from PRE-FLIGHT 16:00Z executed exactly as designed; no surprises surfaced at any step. The V3b NVSR-equivalent canonical-filter cross-check (210,969 records across 7 years, byte-exact) and the V3a baseline byte-clean regression (0/162 column drift) are both independent strong-evidence checks that the layout reconstruction is correct.
+
+**Pre-submission timeline**: V3b complete brings the fetal-death series to maximum-extent coverage 1982-2022 (41 years, 2.35M records, 88/88 validation). The remaining pre-submission scope is mechanical: 2 short tasks (Task 9 + Task 10) + 2 cosmetic syncs (KICKOFF steps 5 + 6) before manuscript submission.
 
 ---
 
