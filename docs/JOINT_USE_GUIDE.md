@@ -48,11 +48,11 @@ Each product has one filter that reproduces the population on which NCHS compute
 |---|---|---|
 | Natality | `restatus != 4` (int8 in parquet; renamed to `residence_status` by the helper) | U.S. residents only |
 | Linked birth–infant death | `restatus != 4` (int8 in parquet; renamed to `residence_status` by the helper) | U.S. residents only |
-| Fetal death | `tabulation_flag == "2" AND residence_status != "4"` (both stored as `object`/string in v2.0.0 parquet, see dtype note below) | NVSR-comparable subset: gestational age and birth-weight criteria meet NCHS's tabulation rule |
+| Fetal death | `tabulation_flag == 2 AND residence_status != 4` (both Int8 in v2.1.0 parquet) | NVSR-comparable subset: gestational age and birth-weight criteria meet NCHS's tabulation rule |
 
 Applying the filter is the difference between reproducing NCHS's published per-year rates exactly and producing systematically biased counts.
 
-**Dtype caveat (fetal-death v2.0.0).** The shipped `fetal_death_derived.parquet` stores `tabulation_flag`, `residence_status`, `maternal_age`, `maternal_race_bridged`, and `hispanic_origin` as `object` (string) dtype, although `fetal_death/harmonized_schema.csv` documents them as `int`. Joint-use code must compare against string literals on the fetal-death side (`tabulation_flag == "2"`, `residence_status != "4"`), or coerce the column with `pd.to_numeric(...)` before integer comparisons. A future schema-version bump will reconcile the docs to match shipped state — see `FIX_LOG.md` 2026-05-11 entry. Natality v2.7.0 columns are int (`year` int16, `restatus` int8, `maternal_age` int16, `maternal_race_bridged4` int8) and accept int literals directly.
+**Dtype reconciliation (fetal-death v2.1.0).** The v2.1.0 `fetal_death_derived.parquet` stores `tabulation_flag` (Int8), `residence_status` (Int8), `maternal_age` (Int16), `maternal_race_bridged` (Int8), and `hispanic_origin` (Int8) as nullable integer dtypes, matching `fetal_death/harmonized_schema.csv` declarations and aligning with the natality v2.7.0 dtype convention. Use int literals on both sides (`tabulation_flag == 2`, `residence_status != 4`). For 2003–2004 transition records, `maternal_age` is null (the public-use file ships only the 41/14/9-category recodes); use `maternal_age_recode14` for age-stratified analyses spanning those two years.
 
 ## Convenience denominators: pick the right file
 
@@ -90,12 +90,12 @@ import pandas as pd
 from shared.helpers.canonical_join_keys import to_canonical_natality
 
 # Numerator: NVSR-comparable fetal deaths, 2017, by maternal race
-# (fetal-death v2.0.0 stores tabulation_flag and residence_status as object/string; see dtype caveat above)
+# (fetal-death v2.1.0 stores tabulation_flag and residence_status as Int8; see dtype note above)
 fd = pd.read_parquet("fetal_death/fetal_death_derived.parquet")
 fd_2017 = fd[
     (fd["data_year"] == 2017)
-    & (fd["tabulation_flag"] == "2")
-    & (fd["residence_status"] != "4")
+    & (fd["tabulation_flag"] == 2)
+    & (fd["residence_status"] != 4)
 ]
 fd_by_race = fd_2017.groupby("maternal_race_bridged", dropna=False).size()
 

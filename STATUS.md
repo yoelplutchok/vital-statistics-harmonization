@@ -1,6 +1,136 @@
-# STATUS — last updated 2026-05-11T22:30:00Z
+# STATUS — last updated 2026-05-12T02:45:32Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T02:45:32Z — Task 3 COMPLETE: V2.1 fetal-death (2003+2004 transition years) shipped; 78/78 external validation pass; H8 + data_year + monorepo-path-drift bundled
+
+### Current phase
+
+Phase A continuing. **Task 3 (V2.1 fetal-death) is COMPLETE** — shipped one re-derived parquet pair via four bundled fixes (B7 NCHS-errata TABFLG correction + H8 schema-vs-data dtype reconciliation + latent data_year bug fix + pre-existing monorepo path drift). Per KICKOFF.md data-first sequence: next is **push monorepo to GitHub** (step 2 of 5), then Task 9 (redirect notices), Task 10 (unified Zenodo), manuscript re-pass + submit.
+
+`task3-complete` tag set on the commit shipping this session's work.
+
+### What was done this session
+
+**Resumption gate (Convention 4 cheap-checks per STATUS 2026-05-11T22:30Z Forward-looking HALTs 1-7):**
+- Tree clean at `37c2e9e` (post-checkpoint, after `f596c24` per HALT 1 spec); task3-pre-do tag present; task3-complete absent.
+- Symlinks intact (raw_data/fetal_death, raw_docs/fetal_death, output/yearly_clean, output/harmonized, output/validation).
+- Layout CSV SHAs unchanged (a88e1fa3… / f4ad74ca…).
+- yearly_clean parquets present at expected SHAs (826df4f6… / b2cf5634…); bit-stability inferred by git-diff f596c24..37c2e9e showing only STATUS.md changed.
+- B7 43-state list count verified: **43 codes** (not 42); cross-checked against problems-PDF Tables 2/3 per-state corrections (every Corrected>Reported state is in the 43-list; every state NOT in the list shows Corrected==Reported).
+
+**Mid-DO §7 halt resolved (LESSONS L13-extension):**
+
+While running SMOKE Tier 1 on 2003-only harmonize output, discovered `maternal_age` distribution had min=1, max=41, median=16 — implausible for maternal age. Investigation against 2003 User Guide page 17 surfaced that bytes 89-90 in the 2003 file hold **MAGER41 (41-category age recode), not MAGER (single-year age)**. Systematic check of all 56 harmonizer-read fields against the 2003 User Guide showed 42 OK + 11 R-prefix risk-factor fields blank-OK (read all-blank from documented BLANK byte ranges) + 3 mismatches (MAGER↔MAGER41 fixable via harmonize-time exclusion; URF_ECLAMP↔URF_ECLAM same field naming typo; ESTGEST↔OBGEST same semantics naming change). Updated `_build_field_map()` in harmonize.py with `_OMIT_FROM_2003 = {"maternal_age"}` — for 2003+2004 records, `maternal_age` is null; users should use `maternal_age_recode14` for age-stratified analyses spanning those years.
+
+The previous session's DO step 1 record_layout_2003/2004.csv reconstruction is documentation-imprecise (inherited from 2006 with byte-position spot-checks but no value-semantic verification). The shipped layout CSVs are usable for parsing (because byte positions ARE correct for fields the harmonizer reads) but warrant a post-submission audit rebuild against the user guides directly. The harmonized parquet is correct.
+
+**Four fixes landed in one parquet rebuild:**
+
+1. **B7 — TABFLG correction for 2003/2004.** `harmonize.py` extended with a new `era == "2003"` block that applies `COMBGEST=='99' AND OSTATE in 43-state list → TABFLG='2'`. Source: `raw_docs/fetal_death/fetaldeath0304problems.pdf` page 1 SAS code. Used `OSTATE` @ bytes 30-31 (in parser) rather than `XOSTATE` @ 32-33 (in errata SAS code) because OSTATE ≡ XOSTATE for this comparator (43-state list contains neither 'NY' nor 'YC'). 2003: 351 records re-flagged TABFLG=1→2. 2004: 349 records re-flagged. Post-canonical-filter byte-exact: 26,004 (2003) + 26,001 (2004) against NCHS-errata Table 1.
+
+2. **H8 — schema-vs-data dtype reconciliation.** `_apply_h8_int_cast()` added; casts `tabulation_flag` Int8, `residence_status` Int8, `maternal_age` Int16, `maternal_race_bridged` Int8, `hispanic_origin` Int8. Closes FIX_LOG 2026-05-11T18:50:00Z.
+
+3. **data_year derived-column fix.** Latent bug: harmonize_year() initialized data_year as int32, then overwritten with object empty-string by field-map loop's else-branch when iterating the crosswalk's `data_year` row (field_2006="derived"). Fix: `if raw_field == "derived": continue`. Surfaced when validate_external_v2.py returned 0/23 PASS post-H8.
+
+4. **Monorepo path drift.** Pre-existing from `7fd9cdf` (2026-05-09); harmonize.py + validate_external*.py assumed `fetal_death/metadata/` subdir but monorepo flattened the layout. Re-pointed path constants to actual locations.
+
+**Validation results (78/78 PASS):**
+- `validate_external_v2.py`: 23/23 (1992-2004 counts + 1995-2004 rates).
+- `validate_external.py`: 55/55 (V1 era unchanged).
+- joint_use_demo.ipynb: 9 PASS (incl. 8/8 NVSR 73-09 Table-4 age-band byte-exact for 2022).
+- paper_companion.ipynb: 34 PASS / 0 FAIL.
+
+**Downstream code updated for int literals (H8 propagation):**
+- `docs/JOINT_USE_GUIDE.md` line 51 filter table + line 55 dtype reconciliation note + worked example.
+- `notebooks/_build_joint_use_demo.py` line 76 intro + line 78-79 dtype note + line 135 filter code.
+- `notebooks/_build_paper_companion.py` line 163 filter code.
+- `fetal_death/quickstart.py` line 31 filter.
+- `fetal_death/scripts/05_validate/validate_external.py` 5 filter occurrences.
+- `fetal_death/scripts/05_validate/validate_external_v2.py` 1 filter occurrence.
+
+### Last completed step
+
+**Task 3 DO step 7 (validate) + step 8 (downstream joint-use code) + step 9 partial (V2_1_DECISIONS doc) + step 11 (FIX_LOG + DECISION_LOG entries) + step 12 (RECEIPT + STATUS + commit + task3-complete tag).**
+
+### In-progress
+
+(none)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+Per KICKOFF.md sequence step 2: **Push monorepo to GitHub.** Human-driven; ~15 min.
+
+After that: Task 9 (redirect notices on the two old GitHub repos, ~15-30 min) → Task 10 (unified Zenodo deposit, 1 session + upload time) → manuscript re-pass + submit (~½ session). Update affected numbers in manuscript: fetal-death record count 1,634,195 → 1,741,977; Table 1 fetal-death rows; validation counts 29/29→31/31 and 26/26→28/28; deferred-2003/2004 caveats removed.
+
+### Open questions for human
+
+Carried forward from 2026-05-11T22:30:00Z:
+
+1. ~~Push monorepo to GitHub~~ — UP NEXT per KICKOFF.md sequence.
+2. **Natality v2.8 schema rename** — DEFERRED post-submission.
+3. ~~H8 bundling into Task 3~~ — RESOLVED (bundled and shipped this session).
+4. **Section B 2017 race-stratified NVSR validation** — DEFERRED post-submission.
+5. **§15 Task 4 + Task 5 wording `[plan-update]` candidates** — DEFERRED.
+6. **AI-tool disclosure wording in Task 5's admin draft** — human-gated; resolved at manuscript re-pass.
+7. **MRACE_LEGACY_S semantics (bytes 833-836 in S-revision 2003/2004 records)** — DEFERRED post-submission L13 audit pass.
+8. **record_layout_2006.csv completeness (bytes 802-3351 BLANK declaration)** — DEFERRED post-submission L13 audit pass.
+
+NEW carried-forward from this session:
+
+9. **V1-era column-level byte-clean (84 non-H8 columns)** — functional validation 55/55 passes but column-level SHA comparison vs v2.0.0 baseline (`90af89b9…` preserved at `/Users/yoelplutchok/Desktop/fetal-death-harmonization/`) not done this session. Deferred; receipt Self-check 1 + Forward-looking HALT 1.
+10. **2003 + 2004 metadata appends (file_inventory.csv + external_validation_targets.csv + live_births_by_year.csv rows)** — bundle with pre-Zenodo polish.
+11. **Version-string bumps pending** — CITATION.cff, README.md, ABOUT_THIS_RELEASE.md, PROVENANCE.md SHA refresh, FAQ.md, COMPARABILITY.md. Bundle with Task 10 (Zenodo) prep.
+12. **record_layout_2003/2004.csv rebuild** — current CSVs are documentation-imprecise (inherited from 2006 with anchor-field spot-checks); harmonized parquet is correct. Post-submission audit pass.
+13. **Monorepo path drift in other scripts** (parse_fetal_year.py, derive.py, run_pipeline.py, tests/conftest.py) — not inspected this session; recommended: run_pipeline.py end-to-end smoke from monorepo root and fix on contact.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+See RECEIPTS/task3_v21_fetal_death_2026-05-12T02-45-32Z.md "Forward-looking HALTs" section for the 8 detailed items. Summary:
+1. V1-era column-level byte-clean.
+2. 2003+2004 metadata appends.
+3. Version-string bumps.
+4. record_layout_2003/2004.csv rebuild.
+5. Monorepo path drift sweep.
+6. test_schema_dtype_parity.py implementation.
+7. NVSR 20-27wk + 28+wk breakout validation for 2003+2004.
+8. B7 reapplication discipline (next re-parse).
+
+### Build artifacts current
+
+- `output/harmonized/fetal_death_harmonized.parquet`: **NEW** sha=`333e1e666815979e55f965702ad0004d031aeabe00b4d9fdf791159370e1d9e0`, rows=1,741,977, cols=74
+- `output/harmonized/fetal_death_derived.parquet`: **NEW** sha=`55d3d310cf5e1cbd8719325e3122505472d69dc4316af32f17c67d78c6c8c447`, rows=1,741,977, cols=89
+- v2.0.0 baseline parquet preserved at `/Users/yoelplutchok/Desktop/fetal-death-harmonization/fetal_death_derived.parquet` (sha `90af89b9e659ca2b580d8286b5598588cfb2d17e93f26c1dc1ae00d097f0afdd`) for downstream byte-clean column-level comparison.
+- `output/validation/AUDIT_EXTERNAL_REPORT.md` **regenerated** (55/55 V1 era PASS)
+- `output/validation/AUDIT_EXTERNAL_REPORT_V2.md` **regenerated** (23/23 V2 + 2003+2004 PASS)
+- `fetal_death/scripts/03_harmonize/harmonize.py` **EDITED** (B7 + H8 + 2003 era dispatch + data_year fix + path fixes)
+- `fetal_death/scripts/05_validate/validate_external.py` **EDITED** (int literals + path fix)
+- `fetal_death/scripts/05_validate/validate_external_v2.py` **EDITED** (int literals + 2003+2004 NVSR targets + path fix)
+- `fetal_death/quickstart.py` **EDITED** (int literal filter)
+- `fetal_death/V2_1_2003_2004_LAYOUT_DECISIONS.md` **NEW** (transparency doc analogous to V2_1992_LAYOUT_DECISIONS.md)
+- `docs/JOINT_USE_GUIDE.md` **EDITED** (int literals + v2.1.0 dtype note)
+- `notebooks/_build_joint_use_demo.py` **EDITED** (int literals + dtype note + FD_PARQUET path → v2.1.0)
+- `notebooks/_build_paper_companion.py` **EDITED** (int literals + FD_PARQUET path → v2.1.0)
+- `notebooks/joint_use_demo.ipynb` **REBUILT** (9 PASS)
+- `notebooks/paper_companion.ipynb` **REBUILT** (34 PASS / 0 FAIL)
+- `FIX_LOG.md` **EDITED** (3 new entries: H8 closure, data_year, monorepo path drift)
+- `DECISION_LOG.md` **EDITED** (1 new entry: 4-fix bundle rationale)
+- `LESSONS.md` **EDITED** (1 new entry: L13-extension on byte-position-vs-semantics)
+- `RECEIPTS/task3_v21_fetal_death_2026-05-12T02-45-32Z.md` **NEW**
+- `STATUS.md` **EDITED** (this section)
+- v2.0.0 banner files (`fetal_death/CITATION.cff`, `README.md`, `ABOUT_THIS_RELEASE.md`, `PROVENANCE.md`, `FAQ.md`, `COMPARABILITY.md`): **UNCHANGED** — bundled with Task 10 (Zenodo deposit prep) per Open Question 11.
+
+### Notes for next session
+
+- Per KICKOFF.md sequence step 2, the human will push the monorepo to GitHub (~15 min, human-driven).
+- v2.0.0 → v2.1.0 cosmetic polish (CITATION.cff version string, README citation snippet, ABOUT_THIS_RELEASE v2.1.0 section, PROVENANCE.md SHA refresh, FAQ + COMPARABILITY 2003+2004 mentions, file_inventory/external_validation_targets/live_births_by_year 2003+2004 rows) is the next coherent unit of work — bundle it with Task 10 (Zenodo deposit) preparation. ~½ session.
+- The v2.1.0 parquet's harmonized record count (1,741,977) and validation pass count (31/31 + 28/28) are the NEW numbers the manuscript re-pass (sequence step 5) will inject. The paper_companion synthesis CSV will change (currently bit-stable at `7891809c…`); expected, not a regression.
 
 ---
 

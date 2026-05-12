@@ -17,6 +17,32 @@
 
 ---
 
+## 2026-05-12T01:40:00Z — task3_v21_fetal_death — L13-extension — Layout CSV "anchor-field spot-check" round verifies byte POSITIONS but not field SEMANTICS; semantic mismatch (MAGER vs MAGER41) at identical byte position 89-90 went undetected until value-distribution inspection of harmonized output
+
+**What was discovered:** Task 3 DO step 1 (record_layout_2003.csv + record_layout_2004.csv reconstruction at commit `bb01eaa`, 2026-05-11) inherited bytes 1-797 from `record_layout_2006.csv` and verified anchor fields via "byte-position spot-checks against 2003 user guide pp 13-22 — VERSION, TABFLG, DOD_YY, OSTATE, MAGER, MRACEREC, F_HYSTERu all aligned." The "all aligned" claim verified that the field NAMES present in record_layout_2006.csv appeared at the same byte positions in the 2003 user guide. It did NOT verify that the field SEMANTICS at those positions match. The 2003 file at bytes 89-90 has `MAGER41` (41-category age recode); record_layout_2006.csv at bytes 89-90 has `MAGER` (single-year age). The byte position is identical; the field semantics differ. Because the anchor-spot-check matched on the string prefix `MAGER` (or didn't notice the `41` suffix), the mismatch persisted.
+
+This is **one notch beyond L13** (L13 covers "inventory CSV records file roles before column-content verification"). The semantic-vs-position distinction is the new wrinkle: a layout CSV can be byte-position-aligned with a similar layout AND still be semantically wrong at every position where the underlying field has a different definition.
+
+**Why the existing matrix didn't catch it:** L13 is the closest class. L13 names "inventory CSV's role/description names columns without a sibling column-name list is a soft-flag for downstream consumers to re-verify." The extension: an inventory CSV that names the SAME field-name as a sibling layout but at a position where the source PDF documents a DIFFERENT field-name — even one with a similar prefix — needs to be value-verified, not just position-verified. The value verification means: compute distributions on the parsed yearly_clean parquet and compare them to the user guide's documented value range / sentinel codes for that field name.
+
+**What worked (within the same Task 3 session):** Running harmonize.py on 2003 data and inspecting the `maternal_age` column's distribution. The min=1, max=41, median=16 distribution was obviously wrong for maternal age (mothers under 10 years of age impossible; max=41 too low for the V1 boundary-coded MAGER range 12-50). The cheap-check moved from "look at byte positions in the user guide" to "look at the value distribution in the parsed parquet" — only the latter would have caught the MAGER vs MAGER41 semantic shift.
+
+**Proposed new matrix row (L13-extension):**
+
+> **L13-extension** — Layout-CSV anchor-field check verifies byte position but not field semantics; same field-name appearing at the same byte position in two siblings layouts can hide a semantic re-purposing.
+>
+> **Caught at:** PRE-FLIGHT (value-distribution check on parsed yearly_clean parquet, not user-guide cross-reference of byte positions). Or downstream: harmonized-output value-distribution sanity check.
+>
+> **Specific catch:** When inheriting a layout CSV from a sibling year, do not stop at byte-position verification. For each field that is non-trivial (i.e., not BLANK/FILLER), compute the parsed value distribution and verify it matches the user guide's documented value range / sentinel codes. If the distribution is implausible (e.g., maternal age max=41 instead of expected 12-50 range), the field's byte position holds different semantics than the inherited label suggests. Mutation-test: pick one field per layout-inheritance act and verify its distribution against the user guide's documented coding before claiming "all aligned."
+
+**Backport scope:** Within Task 3: 56 harmonizer-read fields cross-checked against 2003 user guide via systematic byte-position match (42 OK, 14 missing-in-2003-guide). Of the 14 missing-in-guide: 11 are blank-OK (R-prefix risk-factor fields don't exist in 2003 layout at those positions; parser reads blank bytes correctly), 3 are real semantic-mismatch (MAGER vs MAGER41 at 89-90 — fixed via harmonize-time omission; URF_ECLAMP vs URF_ECLAM at 337 — same field, naming typo; ESTGEST vs OBGEST at 446-447 — same semantics, naming change). Only MAGER needed harmonize.py intervention; the other two are documentation-only.
+
+Post-submission, the broader backport scope is: rebuild `record_layout_2003.csv` and `record_layout_2004.csv` from the user guides directly (not by inheritance), and similarly value-distribution-verify the `record_layout_2006.csv` claims for V1 era to confirm none of those fields have a similar semantic re-purposing not caught by byte-position checking.
+
+**Upstream lesson?** Possibly. The upstream NHANES protocol's L13 row could be re-worded to add the byte-position-vs-semantics distinction: inventory CSV verification at layout-reconstruction time should always include a value-distribution sanity check, not just byte-position cross-reference.
+
+---
+
 ## 2026-05-11T21:50:00Z — task3_v21_fetal_death — L13 — `record_layout_2006.csv` likely incomplete: declares bytes 802-3351 as a single "BLANK" filler block, but 2003/2004 user guides document race fields at bytes 833-847 and 1088-1111 within that range
 
 **What was discovered (not a failure within Task 3 — surfaced as adjacent risk):** Task 3 DO step 1 (record_layout_2003/2004 reconstruction) read the 2003 user guide pages 48-49 and found:

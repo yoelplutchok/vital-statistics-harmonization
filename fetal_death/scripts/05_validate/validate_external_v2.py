@@ -31,8 +31,9 @@ import pandas as pd
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT = _SCRIPT_DIR.parents[1]
-_HARM_PATH = _PROJECT / "output" / "harmonized" / "fetal_death_harmonized.parquet"
-_OUT_PATH = _PROJECT / "output" / "validation" / "AUDIT_EXTERNAL_REPORT_V2.md"
+# Monorepo output/ is at the repo root (symlinked to the build dir); not under fetal_death/.
+_HARM_PATH = _PROJECT.parent / "output" / "harmonized" / "fetal_death_harmonized.parquet"
+_OUT_PATH = _PROJECT.parent / "output" / "validation" / "AUDIT_EXTERNAL_REPORT_V2.md"
 
 
 # Published counts of fetal deaths at 20+ weeks of gestation, U.S. residents.
@@ -62,10 +63,16 @@ NVSR57_FETAL_DEATHS_GTE20 = {
     2000: 27_003,
     2001: 26_373,
     2002: 25_943,
+    # 2003 + 2004 added in V2.1. Corrected per fetaldeath0304problems.pdf
+    # Tables 1-3 (NCHS, 2009). NVSR 57-08 originally published 25,653 / 25,655;
+    # the B7 TABFLG correction in harmonize.py raises these to the corrected
+    # 26,004 / 26,001 figures published in the errata.
+    2003: 26_004,
+    2004: 26_001,
 }
 
 # Published fetal mortality rates (per 1,000 live births + fetal deaths).
-# Source: NVSR 57-08 Table A, "Total" column.
+# Source: NVSR 57-08 Table A, "Total" column; 2003+2004 from problems-PDF Table 1.
 NVSR57_RATES = {
     1995: 6.95,
     1996: 6.91,
@@ -75,11 +82,12 @@ NVSR57_RATES = {
     2000: 6.61,
     2001: 6.51,
     2002: 6.41,
+    2003: 6.32,
+    2004: 6.28,
 }
 
-# Live birth denominators. Source: NVSR 57-08 Table B, "Live births" column.
-# Used to verify our parse's rate computation matches the NVSR published rate
-# to within rounding tolerance.
+# Live birth denominators. Source: NVSR 57-08 Table B, "Live births" column;
+# 2003+2004 from problems-PDF Tables 2/3 "Births" column (resident births).
 NVSR57_LIVE_BIRTHS = {
     1995: 3_899_589,
     1996: 3_891_494,
@@ -89,6 +97,8 @@ NVSR57_LIVE_BIRTHS = {
     2000: 4_058_882,
     2001: 4_026_036,
     2002: 4_021_825,
+    2003: 4_090_007,
+    2004: 4_112_055,
 }
 
 # 1992-1994 reference counts. Source: each year's NCHS Fetal Death User Guide,
@@ -104,15 +114,19 @@ GUIDE_FETAL_DEATHS_GTE20 = {
 
 def _v2_gte20_resident_count(harm: pd.DataFrame, year: int) -> int:
     """Count of 20+wk fetal deaths to U.S. residents in the harmonized V2 slice
-    for `year`. Uses the same filter as V1: tabulation_flag=='2' AND
-    residence_status!='4'. Additionally requires version_flag=='S' (V2 era is
-    1989-revision, synthesized to 'S')."""
+    for `year`. Uses the canonical filter tabulation_flag==2 AND
+    residence_status!=4. For 1992-2002 (V2 uniform era) the additional
+    version_flag=='S' filter is a no-op (all records are S) but documents the
+    era. For 2003-2004 (V2.1 transition) we skip the version filter because
+    the NVSR 57-08 corrected totals 26,004 / 26,001 include both A and S
+    records (NCHS errata Table 1)."""
     mask = (
         (harm["data_year"] == year)
-        & (harm["tabulation_flag"] == "2")
-        & (harm["residence_status"] != "4")
-        & (harm["version_flag"] == "S")
+        & (harm["tabulation_flag"] == 2)
+        & (harm["residence_status"] != 4)
     )
+    if 1992 <= year <= 2002:
+        mask = mask & (harm["version_flag"] == "S")
     return int(mask.sum())
 
 
@@ -148,18 +162,36 @@ def validate_counts(harm: pd.DataFrame) -> list[dict]:
             "source": "NVSR 57-08 Table B",
         })
 
+    # 2003-2004: V2.1 transition years, corrected per fetaldeath0304problems.pdf
+    for year in (2003, 2004):
+        our = _v2_gte20_resident_count(harm, year)
+        expected = NVSR57_FETAL_DEATHS_GTE20[year]
+        results.append({
+            "year": year,
+            "metric": "fetal_deaths_gte20wk_resident",
+            "our_value": our,
+            "expected": expected,
+            "diff": our - expected,
+            "pass": our == expected,
+            "source": "fetaldeath0304problems.pdf Table 1 (NCHS errata)",
+        })
+
     return results
 
 
 def validate_rates(harm: pd.DataFrame) -> list[dict]:
-    """Rate validation across 1995-2002 (NVSR 57-08 Table A)."""
+    """Rate validation across 1995-2004 (NVSR 57-08 Table A + 2003/2004 errata)."""
     results = []
-    for year in range(1995, 2003):
+    for year in list(range(1995, 2003)) + [2003, 2004]:
         our_count = _v2_gte20_resident_count(harm, year)
         lb = NVSR57_LIVE_BIRTHS[year]
         our_rate = round(our_count / (lb + our_count) * 1000, 2)
         expected_rate = NVSR57_RATES[year]
         diff = round(our_rate - expected_rate, 2)
+        source = (
+            "fetaldeath0304problems.pdf Table 1 (NCHS errata)"
+            if year in (2003, 2004) else "NVSR 57-08 Table A"
+        )
         results.append({
             "year": year,
             "metric": "fetal_mortality_rate",
@@ -167,7 +199,7 @@ def validate_rates(harm: pd.DataFrame) -> list[dict]:
             "expected": expected_rate,
             "diff": diff,
             "pass": abs(diff) < 0.02,
-            "source": "NVSR 57-08 Table A",
+            "source": source,
         })
     return results
 

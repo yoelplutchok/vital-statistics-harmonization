@@ -38,7 +38,7 @@ OUTPUT = REPO_ROOT / "notebooks" / "joint_use_demo.ipynb"
 
 NAT_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet"
 LINKED_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet"
-FD_PARQUET = "/Users/yoelplutchok/Desktop/fetal-death-harmonization/fetal_death_derived.parquet"
+FD_PARQUET = "/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet"  # v2.1.0
 STRAT_CSV = REPO_ROOT / "fetal_death" / "stratified_denominators.csv"
 
 
@@ -73,15 +73,14 @@ def build() -> nbformat.NotebookNode:
             "|---|---|\n"
             "| Natality | `restatus != 4` (int) — U.S. residents |\n"
             "| Linked birth–infant death | `restatus != 4` (int) — U.S. residents |\n"
-            "| Fetal death | `tabulation_flag == '2' AND residence_status != '4'` (string, see dtype note below) — NVSR-comparable >=20wk resident |\n"
+            "| Fetal death | `tabulation_flag == 2 AND residence_status != 4` (Int8) — NVSR-comparable >=20wk resident |\n"
             "\n"
-            "**Dtype note.** The fetal-death v2.0.0 parquet stores `tabulation_flag`,\n"
-            "`residence_status`, `maternal_age`, `maternal_race_bridged`, and `hispanic_origin`\n"
-            "as `object` (string), whereas `fetal_death/harmonized_schema.csv` documents them\n"
-            "as `int`. This notebook uses string literals on the fetal-death side and integer\n"
-            "literals on the natality side. The schema-vs-data drift is logged in FIX_LOG.md\n"
-            "and a future task will reconcile the schema docs (a schema-version bump per the\n"
-            "operating protocol's §9 anti-pattern 6)."
+            "**Dtype note (v2.1.0).** The fetal-death v2.1.0 parquet stores `tabulation_flag`\n"
+            "(Int8), `residence_status` (Int8), `maternal_age` (Int16),\n"
+            "`maternal_race_bridged` (Int8), and `hispanic_origin` (Int8) as nullable Int dtypes,\n"
+            "matching `fetal_death/harmonized_schema.csv` declarations and aligning with the\n"
+            "natality v2.7.0 dtype convention. Use int literals on both sides. The v2.0.0 → v2.1.0\n"
+            "H8 reconciliation closed the schema-vs-data drift logged in FIX_LOG.md 2026-05-11."
         ),
         code(
             "import pandas as pd\n"
@@ -125,14 +124,14 @@ def build() -> nbformat.NotebookNode:
             "del linked, linked_resident  # not used downstream in this notebook — just demonstrating load"
         ),
         code(
-            "# --- Fetal death (v2.0.0 derived) ---\n"
+            "# --- Fetal death (v2.1.0 derived; H8 reconciled to nullable Int) ---\n"
             f"FD_PARQUET = '{FD_PARQUET}'\n"
             "fd = pd.read_parquet(\n"
             "    FD_PARQUET,\n"
             "    columns=['data_year', 'tabulation_flag', 'residence_status', 'maternal_age', 'maternal_race_bridged', 'hispanic_origin'],\n"
             ")\n"
-            "# String filter on fetal-death side (parquet stores as object dtype, see notebook intro)\n"
-            "fd_nvsr = fd[(fd['tabulation_flag'] == '2') & (fd['residence_status'] != '4')]\n"
+            "# Int filter on fetal-death side (v2.1.0 Int8 dtype matches the schema CSV)\n"
+            "fd_nvsr = fd[(fd['tabulation_flag'] == 2) & (fd['residence_status'] != 4)]\n"
             "print(f'Fetal-death total: {len(fd):,}; NVSR-pop (tab_flag==2 AND res!=4): {len(fd_nvsr):,}')"
         ),
         md(

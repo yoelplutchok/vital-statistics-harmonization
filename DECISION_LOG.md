@@ -23,6 +23,44 @@
 
 ---
 
+## 2026-05-12T01:35:00Z — task3_v21_fetal_death — Bundle 4 fixes into Task 3 V2.1 build (B7 + H8 + data_year + monorepo path drift)
+
+**Choice:** Land the following four orthogonal fixes inside a single Task 3 V2.1 build, producing one new shipped artifact pair (`fetal_death_harmonized.parquet` sha=`333e1e66…d9e0`, `fetal_death_derived.parquet` sha=`55d3d310…c447`) and one set of canonical-state log entries:
+
+1. **B7 TABFLG normalization** for 2003/2004 — NCHS-errata correction per `fetaldeath0304problems.pdf` (records with COMBGEST=99 and OSTATE in 43-state list set TABFLG=2; raises per-year resident totals from 25,653/25,655 originally-reported to 26,004/26,001 corrected, byte-exact against the errata's Table 1).
+2. **H8 schema-vs-data dtype reconciliation** — five demographic/filter columns cast from `object` to nullable Int (`tabulation_flag` Int8, `residence_status` Int8, `maternal_age` Int16, `maternal_race_bridged` Int8, `hispanic_origin` Int8), matching the schema CSV and the natality v2.7.0 dtype convention; closes FIX_LOG 2026-05-11T18:50:00Z.
+3. **`data_year` derived-column fix** — surfaced when the V2 validator returned 0/23 after H8: the harmonize loop's field-map iteration was overwriting the int32 `data_year` initialization with empty-string `object` because the crosswalk row for `data_year` has `field_2006="derived"` which falls through to the loop's else-branch. Added `if raw_field == "derived": continue` to skip derived-marker rows.
+4. **Monorepo path drift in `harmonize.py` + `validate_external*.py`** — pre-existing from monorepo migration `7fd9cdf`; scripts assumed `fetal_death/metadata/` subdir but the monorepo flattened the layout. Re-pointed `_CROSSWALK_CSV`/`_SCHEMA_CSV`/`_HARM_PATH`/etc. to the actual paths.
+
+**Alternatives considered:**
+
+1. **Land each fix as a separate task** (B7 → task3a, H8 → task3b, data_year → task3c, paths → task3d). Cleaner per-task scope; one parquet rebuild per fix. Cost: 4 parquet rebuilds, 4 separate receipts, 4 separate Zenodo deposit considerations. Rejected — H8/data_year/paths are LATENT bugs surfaced as a consequence of running Task 3's re-derive; treating them as separate tasks is artificial, and re-deriving the parquet four times burns reproducibility-budget for no extra information.
+2. **Land B7 only; defer H8/data_year/paths to post-submission** (chosen-not). Pro: keeps Task 3 scope tight. Con: V2.1 ships with a known H8 dtype defect AND a latent data_year bug that would re-surface when downstream code starts using the int-comparison path; manuscript references the v2.1.0 parquet with two known issues that would need a v2.1.1 correction. Rejected.
+3. **Land all four fixes bundled into one V2.1 build (chosen).** Pro: one parquet, one receipt, one deposit-version, transparent V2.1 release notes covering everything that changed. Con: receipt is denser; Task 3 effort exceeded the 1–2 session estimate. The receipt names all four orthogonally; downstream readers can trace each.
+
+**Reason:** All four fixes converge on the same parquet rebuild. B7 requires harmonize.py edit and re-derive. H8 requires harmonize.py edit and re-derive. data_year bug surfaces during H8 re-derive (the validator failure exposes it). Path drift blocks all of the above from running at all. Bundling is the natural unit. Convention 1 (SHAPE-not-VALUE) is preserved — no SMOKE harnesses pin v2.0.0-specific values that V2.1 changes.
+
+**Source:**
+- `FIX_LOG.md` entries 2026-05-12T01:30:00Z (three new entries: H8 closure, data_year, monorepo path drift).
+- `fetal_death/V2_1_2003_2004_LAYOUT_DECISIONS.md` (new).
+- `raw_docs/fetal_death/fetaldeath0304problems.pdf` page 1 + Tables 2–3 (for B7).
+- `raw_docs/fetal_death/2003FetalUserGuide.pdf` pages 17–19 (for the MAGER41-vs-MAGER discovery).
+
+**Verifiable by:**
+- `validate_external.py` 55/55 + `validate_external_v2.py` 23/23 = 78/78 byte-exact pass.
+- joint_use_demo: 8/8 NVSR Table-4 age-band cells byte-exact for 2022.
+- paper_companion: 34/34 PASS, 0 FAIL.
+
+**Reversible:** yes — `git reset --hard task3-pre-do` reverts; v2.0.0 parquet preserved at `/Users/yoelplutchok/Desktop/fetal-death-harmonization/fetal_death_derived.parquet` (sha `90af89b9…`) for byte-clean baseline comparison.
+
+**Residual risks (Self-check feed):**
+- (a) **`record_layout_2003/2004.csv` documentation imprecisions** (inherited from 2006 with anchor-field spot-checks; surfaced semantic mismatch at MAGER vs MAGER41 plus several BLANK-vs-actual-field documentation errors). The harmonized parquet is correct (because parser-read positions for fields the harmonizer reads ARE correct, or read-all-blank which is correct behavior); only the layout CSVs need a post-submission audit-rebuild. Documented in `V2_1_2003_2004_LAYOUT_DECISIONS.md`.
+- (b) **V1-era byte-clean column-level regression not exhaustively verified.** The V1 validator passed 55/55 (functional verification), but a column-by-column SHA comparison of the 2005–2022 slice of the new derived parquet vs v2.0.0's `90af89b9…` derived parquet was NOT performed this session. The 5 H8 columns are expected to change (string→int); all other 84 columns should be byte-identical. Forward-looking HALT in receipt.
+- (c) **maternal_age=null for 2003+2004 may surprise downstream users** unaware that the 2003+2004 public-use files don't ship single-year-of-age. Documented in V2_1_DECISIONS doc and in the JOINT_USE_GUIDE dtype note.
+- (d) **Other monorepo scripts may have latent path drift** (parse_fetal_year.py, derive.py, run_pipeline.py, tests/conftest.py). Not touched this session; flagged in FIX_LOG 2026-05-12T01:30:00Z forward-looking follow-up.
+
+---
+
 ## 2026-05-11T20:50:00Z — sequencing — Data-first before manuscript submission (Task 3 → push GitHub → Task 9 → Task 10 → manuscript re-pass + submit)
 
 **Choice:** Run the remaining data-side work (Task 3 V2.1 fetal-death with bundled H8 reconciliation) and the cross-product publication tasks (push GitHub, Task 9 redirect notices, Task 10 unified Zenodo) BEFORE manuscript submission, so the manuscript cites the latest fetal-death coverage and the unified Zenodo concept DOI from the first submitted version rather than the two old subproject DOIs.

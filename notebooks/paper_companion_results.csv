@@ -1,7 +1,6 @@
 tag,line,claim,manuscript,computed,status,note
 C01/C16/C53,"3, 19, 125",Natality 1990-2024,"138,819,655","138,819,655",PASS,
 C02/C18/C54,"3, 19, 125",Linked B-ID 2005-2023,"74,943,824","74,943,824",PASS,
-C03/C21/C55,"3, 19, 125",Fetal death 1992-2022,"1,634,195","1,634,195",PASS,
 C05,7,fetal deaths 20-30K/year,"20,000-30,000","20,202-30,256",PASS,
 C06,7,infant deaths ~20K/year,"~20,000","19,346-23,327 (mean 20,529)",PASS,
 C17,19,Natality columns,84,84,PASS,
@@ -49,3 +48,4 @@ C46,100,state IDs in fetal-death raw 1992-2002 only,fetal_death/PROVENANCE / raw
 C50,106,Maryland 1992-1998 no Hispanic,fetal_death/COMPARABILITY.md,(cite-only or out-of-monorepo),CITE-ONLY,
 C51,106,Massachusetts 1992-1997 no Hispanic,fetal_death/COMPARABILITY.md,(cite-only or out-of-monorepo),CITE-ONLY,
 C52,106,Louisiana 1992-1994 plurality under-reported,fetal_death/COMPARABILITY.md,(cite-only or out-of-monorepo),CITE-ONLY,
+C03/C21/C55,"3, 19, 125",Fetal death 1992-2022,"1,634,195","1,741,977",DIFF+107782,

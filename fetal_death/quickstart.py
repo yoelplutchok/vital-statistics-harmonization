@@ -28,7 +28,7 @@ print()
 # Filter to >=20 weeks gestation, U.S. residents only.
 # This subset matches NVSR 57-08 (1995-2002), NVSR 73-09 (2005-2022),
 # and the 1992-1994 user guide control counts exactly.
-gte20 = df[(df["tabulation_flag"] == "2") & (df["residence_status"] != "4")]
+gte20 = df[(df["tabulation_flag"] == 2) & (df["residence_status"] != 4)]
 print(f">=20 week, U.S. resident subset: {len(gte20):,} records")
 print()
 

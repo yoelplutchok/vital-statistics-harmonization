@@ -21,10 +21,11 @@ import numpy as np
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT = _SCRIPT_DIR.parents[1]
-_HARM_PATH = _PROJECT / "output" / "harmonized" / "fetal_death_harmonized.parquet"
-_DERIVED_PATH = _PROJECT / "output" / "harmonized" / "fetal_death_derived.parquet"
-_TARGETS_PATH = _PROJECT / "metadata" / "external_validation_targets.csv"
-_OUT_PATH = _PROJECT / "output" / "validation" / "AUDIT_EXTERNAL_REPORT.md"
+# Monorepo paths: output/ is at the top level (symlinked), metadata is flat in fetal_death/.
+_HARM_PATH = _PROJECT.parent / "output" / "harmonized" / "fetal_death_harmonized.parquet"
+_DERIVED_PATH = _PROJECT.parent / "output" / "harmonized" / "fetal_death_derived.parquet"
+_TARGETS_PATH = _PROJECT / "external_validation_targets.csv"
+_OUT_PATH = _PROJECT.parent / "output" / "validation" / "AUDIT_EXTERNAL_REPORT.md"
 
 # Published live birth counts from NVSR 73-09 Table 1
 LIVE_BIRTHS = {
@@ -68,7 +69,7 @@ def validate_gte20wk_counts(harm: pd.DataFrame) -> list[dict]:
         subset = harm[harm["data_year"] == year]
         # Filter: tabulation_flag == '2' (>=20 weeks) AND residence_status != '4' (exclude foreign)
         gte20_resident = subset[
-            (subset["tabulation_flag"] == "2") & (subset["residence_status"] != "4")
+            (subset["tabulation_flag"] == 2) & (subset["residence_status"] != 4)
         ]
         our_count = len(gte20_resident)
         expected = NVSR_FETAL_DEATHS[year]
@@ -94,7 +95,7 @@ def validate_mortality_rates(harm: pd.DataFrame) -> list[dict]:
     for year in range(2005, 2023):
         subset = harm[harm["data_year"] == year]
         gte20_resident = subset[
-            (subset["tabulation_flag"] == "2") & (subset["residence_status"] != "4")
+            (subset["tabulation_flag"] == 2) & (subset["residence_status"] != 4)
         ]
         fd_count = len(gte20_resident)
         lb_count = LIVE_BIRTHS[year]
@@ -117,7 +118,7 @@ def validate_mortality_rates(harm: pd.DataFrame) -> list[dict]:
 def validate_2022_detail(harm: pd.DataFrame) -> list[dict]:
     """Validate 2022 detailed breakdowns against NVSR 73-09 Tables A, 4, 8."""
     results = []
-    y22 = harm[(harm["data_year"] == 2022) & (harm["tabulation_flag"] == "2") & (harm["residence_status"] != "4")]
+    y22 = harm[(harm["data_year"] == 2022) & (harm["tabulation_flag"] == 2) & (harm["residence_status"] != 4)]
 
     # Sex distribution (Table A)
     male = (y22["fetal_sex"] == "M").sum()
@@ -235,7 +236,7 @@ def validate_2022_cod(harm: pd.DataFrame) -> list[dict]:
 def validate_2014_early_late(harm: pd.DataFrame) -> list[dict]:
     """Validate 2014 early/late fetal deaths from NVSR Table 1."""
     results = []
-    y14 = harm[(harm["data_year"] == 2014) & (harm["tabulation_flag"] == "2") & (harm["residence_status"] != "4")]
+    y14 = harm[(harm["data_year"] == 2014) & (harm["tabulation_flag"] == 2) & (harm["residence_status"] != 4)]
     ga = pd.to_numeric(y14["gestational_age_combined"], errors="coerce")
     ga = ga.where(ga != 99)  # 99 = unknown; exclude from early/late tally
     early = ((ga >= 20) & (ga <= 27)).sum()

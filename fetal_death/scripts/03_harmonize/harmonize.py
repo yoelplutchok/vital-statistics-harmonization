@@ -22,9 +22,13 @@ import pyarrow.parquet as pq
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT = _SCRIPT_DIR.parents[1]
-_YEARLY_DIR = _PROJECT / "output" / "yearly_clean"
-_SCHEMA_CSV = _PROJECT / "metadata" / "harmonized_schema.csv"
-_CROSSWALK_CSV = _PROJECT / "metadata" / "variable_crosswalk_working.csv"
+# Monorepo lays output/ at the top level (symlinked to the sibling build dir per
+# STATUS 2026-05-11T22:30Z); fetal_death/metadata/ was flattened to fetal_death/
+# at monorepo migration 7fd9cdf (see PROJECT_STRUCTURE.md). Both paths resolve
+# relative to the monorepo root, not the fetal_death subproject root.
+_YEARLY_DIR = _PROJECT.parent / "output" / "yearly_clean"
+_SCHEMA_CSV = _PROJECT / "harmonized_schema.csv"
+_CROSSWALK_CSV = _PROJECT / "variable_crosswalk_working.csv"
 
 
 # ---------------------------------------------------------------------------
@@ -35,14 +39,15 @@ def _build_field_map() -> dict[str, dict[str, str]]:
     """
     Build a mapping: harmonized_name -> {era_tag -> raw_field_name}.
 
-    era_tag is one of '1992', '2006', '2014', '2022':
+    era_tag is one of '1992', '2003', '2006', '2014', '2022':
       '1992' = 1992-2002 (1989-revision uniform era, V2.0)
+      '2003' = 2003-2004 (V2.1 transition: mixed A+S at 1351/1501-byte records;
+               parser dispatches to FETAL_2005_2006_FIELDS so the raw column set
+               is identical to '2006'; era tag exists so the B7 TABFLG correction
+               can dispatch only on these two years)
       '2006' = 2005-2013 (mixed revision layout, V1)
       '2014' = 2014-2017 (COD era, V1)
       '2022' = 2018-2022 (COD-only era, V1)
-
-    Years 2003 and 2004 have distinct transition layouts and are deferred
-    to V2.1; they intentionally fall through _era_tag() with a clear error.
     """
     cw = pd.read_csv(_CROSSWALK_CSV)
     mapping: dict[str, dict[str, str]] = {}
@@ -59,6 +64,18 @@ def _build_field_map() -> dict[str, dict[str, str]]:
             val = row.get(col)
             if pd.notna(val) and val != "N/A":
                 era_map[era] = val
+        # 2003+2004 share most byte positions with the 2006 layout (parser dispatch);
+        # mirror field_2006 into era='2003' EXCEPT for harmonized columns whose
+        # 2003-layout byte position holds semantically different data:
+        #   - maternal_age: bytes 89-90 in 2003/2004 hold MAGER41 (41-category
+        #     age recode), NOT MAGER (single-year of age). Confirmed via the
+        #     2003 + 2004 Fetal User Guides p17. The 2003+2004 public-use files
+        #     ship no single-year age field; only the 41/14/9-category recodes.
+        #     Leave maternal_age null for these years; downstream consumers should
+        #     use maternal_age_recode14 or _recode9 for age-stratified analysis.
+        _OMIT_FROM_2003 = {"maternal_age"}
+        if "2006" in era_map and hname not in _OMIT_FROM_2003:
+            era_map["2003"] = era_map["2006"]
         mapping[hname] = era_map
 
     return mapping
@@ -72,19 +89,49 @@ def _era_tag(year: int) -> str:
         return "2014"
     if 2005 <= year <= 2013:
         return "2006"
+    if year in (2003, 2004):
+        return "2003"  # V2.1 transition era
     if 1992 <= year <= 2002:
         return "1992"
-    if year in (2003, 2004):
-        raise ValueError(
-            f"Year {year} has a transition-specific layout and is deferred "
-            "to V2.1 (see project_v2_scope memory)."
-        )
-    raise ValueError(f"Year {year} outside supported range (1992-2002, 2005-2022)")
+    raise ValueError(f"Year {year} outside supported range (1992-2022)")
 
 
 # ---------------------------------------------------------------------------
 # Sentinel value handling
 # ---------------------------------------------------------------------------
+
+# B7 — TABFLG correction set for 2003+2004 transition years.
+# NCHS shipped a programming-error TABFLG@position-9 in the 2003 and 2004
+# fetal-death public-use files: COMBGEST=99 (not-stated gestation) records
+# in 43 specific states were assigned TABFLG='1' (<20wk) when the corrected
+# imputation places them in TABFLG='2' (20+wk).
+# Source: raw_docs/fetal_death/fetaldeath0304problems.pdf page 1 SAS code.
+# The PDF SAS code names XOSTATE @ bytes 32-33; we use raw['OSTATE'] @ 30-31
+# because OSTATE ≡ XOSTATE for this comparator (the only OSTATE/XOSTATE
+# divergence is NY-state vs YC=NYC, and the 43-state list contains neither
+# 'NY' nor 'YC'). Verified: post-B7 + RESTATUS!=4 yields 26,004 (2003) /
+# 26,001 (2004) byte-exact against the corrected NVSR totals.
+_B7_STATES: frozenset[str] = frozenset({
+    "AL", "AK", "AZ", "CA", "CT", "DE", "DC", "FL", "ID", "IL", "IN", "IA",
+    "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE",
+    "NV", "NH", "NJ", "NM", "NC", "ND", "OH", "OK", "OR", "SC", "SD", "TN",
+    "TX", "UT", "VT", "WA", "WI", "WV", "WY",
+})
+assert len(_B7_STATES) == 43, "B7 state list expected to have 43 codes"
+
+
+# H8 — five demographic/filter columns declared int in harmonized_schema.csv
+# but shipped as object/string in v2.0.0 parquet (FIX_LOG 2026-05-11T18:50Z).
+# v2.1.0 re-derivation casts them to nullable Int, matching the schema and
+# the natality v2.7.0 dtype convention (year int16, restatus int8, etc.).
+_H8_INT_DTYPES: dict[str, str] = {
+    "tabulation_flag":        "Int8",
+    "residence_status":       "Int8",
+    "maternal_age":           "Int16",
+    "maternal_race_bridged":  "Int8",
+    "hispanic_origin":        "Int8",
+}
+
 
 _SENTINEL_MAP: dict[str, list[str]] = {
     # Fields where specific values mean "unknown/not stated"
@@ -109,6 +156,22 @@ def _apply_sentinels(df: pd.DataFrame) -> pd.DataFrame:
     for field, sentinels in _SENTINEL_MAP.items():
         if field in df.columns:
             df[field] = df[field].where(~df[field].isin(sentinels), "")
+    return df
+
+
+def _apply_h8_int_cast(df: pd.DataFrame) -> pd.DataFrame:
+    """Cast five demographic/filter columns from string to nullable Int.
+
+    Closes FIX_LOG 2026-05-11T18:50Z (H8). Empty strings become pd.NA;
+    sentinel ints like maternal_age=99 are preserved as Int 99 (sentinel
+    masking remains a separate downstream concern via --sentinels mode).
+    pd.to_numeric(errors='raise') fail-loud catches any non-numeric drift.
+    """
+    for col, dtype in _H8_INT_DTYPES.items():
+        if col not in df.columns:
+            continue
+        s = df[col].astype(str).str.strip().replace("", pd.NA)
+        df[col] = pd.to_numeric(s, errors="raise").astype(dtype)
     return df
 
 
@@ -156,6 +219,13 @@ def harmonize_year(year: int, field_map: dict[str, dict[str, str]]) -> pd.DataFr
 
     for hname, era_map in field_map.items():
         raw_field = era_map.get(era)
+        # Skip 'derived' placeholder rows — these are harmonized columns built
+        # outside the field-map copy (e.g., data_year is synthesized in the dict
+        # init above; derived indicators are added by 04_derive/derive.py).
+        # Overwriting them here with empty strings was a latent bug surfaced
+        # when V2.1 + H8 dtype reconciliation made the validator dtype-strict.
+        if raw_field == "derived":
+            continue
         if raw_field and raw_field in raw.columns:
             harmonized[hname] = raw[raw_field].values
         else:
@@ -264,6 +334,26 @@ def harmonize_year(year: int, field_map: dict[str, dict[str, str]]) -> pd.DataFr
         if "version_flag" in df.columns:
             df["version_flag"] = df["version_flag"].where(df["version_flag"] != "", "S")
 
+    if era == "2003":
+        # B7 — TABFLG correction for 2003/2004 transition years. See _B7_STATES
+        # block above for the source-of-truth citation and the OSTATE/XOSTATE
+        # equivalence argument.
+        if (
+            "tabulation_flag" in df.columns
+            and "COMBGEST" in raw.columns
+            and "OSTATE" in raw.columns
+        ):
+            combgest = raw["COMBGEST"].astype(str).str.strip().values
+            ostate = raw["OSTATE"].astype(str).str.strip().values
+            mask = (combgest == "99") & pd.Series(ostate).isin(_B7_STATES).values
+            n_b7 = int(mask.sum())
+            df.loc[mask, "tabulation_flag"] = "2"
+            print(
+                f"    B7 TABFLG correction (year {year}): "
+                f"{n_b7:,} records re-flagged to TABFLG=2",
+                file=sys.stderr,
+            )
+
     print(f"  Year {year}: {len(df):,} records harmonized ({era} era)", file=sys.stderr)
     return df
 
@@ -281,6 +371,8 @@ def harmonize_all(years: list[int], out: Path, *, apply_sentinels: bool = False)
 
     if apply_sentinels:
         combined = _apply_sentinels(combined)
+
+    combined = _apply_h8_int_cast(combined)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     combined.to_parquet(out, index=False)

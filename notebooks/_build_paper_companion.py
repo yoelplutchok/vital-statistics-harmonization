@@ -35,7 +35,7 @@ OUTPUT = REPO_ROOT / "notebooks" / "paper_companion.ipynb"
 
 NAT_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet"
 LINKED_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet"
-FD_PARQUET = "/Users/yoelplutchok/Desktop/fetal-death-harmonization/fetal_death_derived.parquet"
+FD_PARQUET = "/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet"  # v2.1.0
 
 
 def md(text: str) -> nbformat.NotebookNode:
@@ -160,7 +160,7 @@ def build() -> nbformat.NotebookNode:
             "# C05: 20,000-30,000 fetal deaths/year (using NVSR-tabulable subset is the \"fetal deaths\" framing\n"
             "# NCHS uses in its annual ~3.5M-births context)\n"
             "fd_yrs = pd.read_parquet(FD_PARQUET, columns=['data_year', 'tabulation_flag', 'residence_status'])\n"
-            "fd_nvsr = fd_yrs[(fd_yrs['tabulation_flag'] == '2') & (fd_yrs['residence_status'] != '4')]\n"
+            "fd_nvsr = fd_yrs[(fd_yrs['tabulation_flag'] == 2) & (fd_yrs['residence_status'] != 4)]\n"
             "by_yr = fd_nvsr.groupby('data_year').size()\n"
             "fd_min, fd_max = int(by_yr.min()), int(by_yr.max())\n"
             "fd_mean = int(by_yr.mean())\n"
