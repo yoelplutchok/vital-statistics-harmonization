@@ -5,6 +5,7 @@ Each spec is a list of (field_name, start_pos, end_pos) tuples where
 positions are 1-based inclusive (matching NCHS documentation).
 
 Eras:
+  - 1982-1988: V3b — 1978-revision uniform layout (200 data bytes)
   - 1989-2002: V2.0 + V3a — single uniform 1989-revision layout (360 data bytes)
   - 2003: V2.1 transition — 1350 data bytes; A/S per-record revision overlay
   - 2004: V2.1 transition — 1500 data bytes (= 2003 layout + 150-byte trailing pad)
@@ -17,6 +18,7 @@ Sources: NCHS fetal death user guide PDFs for each year.
 
 # --- Record lengths (bytes per line excluding newline) ---
 
+RECORD_LEN_1978 = 200    # 1982-1988 V3b uniform 1978-revision layout
 RECORD_LEN_1992 = 360    # 1989-2002 uniform 1989-revision layout (V3a extended 1989-1991)
 RECORD_LEN_2003 = 1350   # 2003 transition (V2.1; 801 useful data + 549 trailing pad)
 RECORD_LEN_2004 = 1500   # 2004 transition (V2.1; = 2003 + 150 trailing pad)
@@ -25,6 +27,196 @@ RECORD_LEN_2014 = 3050   # 2014-2017 COD variant
 RECORD_LEN_2006 = 3350   # 2005-2006 (non-COD, dual revision layout, 801 data + 2549 filler)
 RECORD_LEN_2007 = 801    # 2007 (non-COD, no trailing filler)
 RECORD_LEN_2008 = 3338   # 2008-2013 (non-COD, 801 data + 2537 filler)
+
+
+# --- 1982-1988 uniform layout (1978 revision, 200 data bytes per record) ---
+# Raw files are 202 bytes/line (200 data + CR+LF) empirically verified
+# 2026-05-12 across 1982/1983/1985/1988 first-record probes. Field positions
+# are 1-based inclusive, relative to the 200-byte record.
+#
+# This is a STRUCTURALLY DIFFERENT layout from the 1989-revision (V2/V3a):
+# different field names (e.g., AGE/RACE instead of MAGER/MRACE), different
+# byte positions (e.g., DMAGE @ 81-82 here vs DMAGE @ 71-72 in V2; MRACE @ 86
+# single-byte here vs MRACE @ 79-80 two-byte in V2), and different recodes
+# (e.g., 1-digit MRACE 0-9 here vs 2-digit MRACE 01-99 in V2). Canonical
+# layout CSV is metadata/record_layout_1982_1988.csv (87 rows, all 200
+# bytes covered, no gaps/overlaps; verified at task7_v3b DO step 2).
+#
+# Page-4/5/6 cross-year diff across all 7 V3b years 2026-05-12 (PRE-FLIGHT
+# 15:45Z): byte-identical field byte-positions in the "List of Data Elements"
+# overview. Empirical anchor-field spot-check (1982/1983/1985/1988 raw zips
+# 2026-05-12 DO step 2): DATAYEAR bytes 1-2 match filename year; TABFLAG/
+# RECTYPE/RESTATUS in {1,2}; STATEOCC=01 (Alabama, alphabetical first).
+#
+# B3 maternal_race_bridged: V3b 1978-rev uses 1-digit MRACE codes 0-9
+# (vs V2/V3a 2-digit). The harmonize.py B3 map extension required for V3b
+# is documented in V3b_1982_1988_LAYOUT_DECISIONS.md at DO step 10.
+#
+# Source: 1985FetalUserGuide.pdf pages 8-26 (detail record layout),
+# cross-checked against 1982 + 1988 user guides for byte-position uniformity.
+
+FETAL_1982_1988_FIELDS: list[tuple[str, int, int]] = [
+    # ========================
+    # Record identification
+    # ========================
+    ("DATAYEAR",               1,    2),   # Last 2 digits of year (1978-rev); harmonize.py expands int(raw)+1900
+    ("REPAREA",                3,    3),   # Reporting Area (NYC boroughs + Chicago; PUF caveat: do not use)
+    # 4-9: CERTNUM (blank in PUF per user-guide p8)
+    ("TABFLAG",               10,   10),   # Tabulation flag: 1=<20wk; 2=20wk+ (same coding as V2/V3a)
+    ("RECTYPE",               11,   11),   # Record type: 1=Resident; 2=Nonresident
+    ("RESTATUS",              12,   12),   # Residence status: 1/2/3/4 (4=Foreign)
+
+    # ========================
+    # Occurrence geography (FOCCUR umbrella 13-22 in 1978-rev)
+    # ========================
+    ("STATEOCC",              13,   14),   # NCHS State of occurrence (01-51)
+    ("CNTYOCC",               15,   17),   # NCHS County of occurrence
+    ("REGNOCC",               18,   18),   # Region of occurrence (1=NE; 2=NC; 3=S; 4=W)
+    ("DIVOCC",                19,   19),   # Division of occurrence (1-9)
+    ("STSDBOCC",              20,   20),   # State subcode of occurrence (1-9 within Division)
+    ("STFETEXP",              21,   22),   # Expanded NCHS state of occurrence (NYC=34 split from NY=33)
+
+    # ========================
+    # Residence geography (FRESID umbrella 23-40)
+    # ========================
+    ("STATERES",              23,   24),   # NCHS State of residence (01-51 + foreign 52-59)
+    ("CNTYRES",               25,   27),   # NCHS County of residence (222=Foreign)
+    ("CITYRES",               28,   30),   # NCHS City of residence
+    ("CITRSPOP",              31,   31),   # Population size of city of residence
+    ("METRORES",              32,   32),   # Metro/Nonmetro county of residence
+    ("REGNRES",               33,   33),   # Region of residence
+    ("DIVRES",                34,   34),   # Division of residence
+    ("STSUBRES",              35,   35),   # State subcode of residence
+    ("STRESEXP",              36,   37),   # Expanded NCHS state of residence
+    ("SMSARES",               38,   40),   # NCHS SMSA (000=Nonmetro; 001-305=SMSAs)
+
+    # 41-46: FILLER (reserved)
+
+    # ========================
+    # LMP dates
+    # ========================
+    ("LMPMON",                47,   48),   # Month of LMP (01-12; 99=Not stated)
+    ("LMPDAY",                49,   50),   # Day of LMP (01-31; 99=Not stated)
+    ("LMPYR",                 51,   51),   # Year of LMP (1=current; 2=previous; 3=Not stated) — RELATIVE
+
+    # ========================
+    # Delivery date / place
+    # ========================
+    ("DELMON",                52,   53),   # Month of delivery
+    ("DELDAY",                54,   55),   # Day of delivery (99=Not stated)
+    ("PLDEL",                 56,   56),   # Place of delivery (1=Hospital; 2=Nonhospital; 3=Enroute; 9=NC)
+
+    # 57: FILLER (reserved)
+
+    # ========================
+    # Prenatal care
+    # ========================
+    ("MONPRE",                58,   59),   # Month prenatal care began (00=None; 01-09; 99=NS)
+    ("MPRE6",                 60,   60),   # MPCB recode 6
+    ("NPREVIST",              61,   62),   # Total prenatal visits (00=None; 01-49; 99=NS)
+    ("NPREV9",                63,   63),   # PNC visits recode 9 (V3b-specific 9-cat)
+
+    # ========================
+    # Fetus (sex/race/plurality)
+    # ========================
+    ("FSEX",                  64,   64),   # Sex (1=Male; 2=Female; 9=NS)
+    ("RACEF",                 65,   65),   # Detail Race of fetus (1-digit 0-8 1978-rev scheme)
+    ("RACEF3",                66,   66),   # Race recode 3 (fetus)
+    ("RACEF2",                67,   67),   # Race recode 2 (fetus, V3b-specific)
+    ("NUMDEL",                68,   68),   # Number at delivery (1=Single; 2=Twin; 3=Triplet+)
+
+    # ========================
+    # Birthweight
+    # ========================
+    ("DBIRWT",                69,   72),   # Detail in grams (0227-8165; 9999=NS)
+    ("BIRWT14",               73,   74),   # Birthweight recode 14
+    ("BIRWT3",                75,   75),   # Birthweight recode 3 (V3b-specific 3-cat)
+
+    # ========================
+    # Gestation (combined)
+    # ========================
+    ("DGESTAT",               76,   77),   # Detail gestation in weeks (combined; 01-52; 99=NS)
+    ("GESTAT12",              78,   79),   # Gestation recode 12
+    ("GESTAT5",               80,   80),   # Gestation recode 5
+
+    # ========================
+    # Mother (age/race/marital/education, 81-90 umbrella)
+    # ========================
+    ("DMAGE",                 81,   82),   # Detail age of mother (10-49 single year)
+    ("MAGE12",                83,   84),   # Age of mother recode 12
+    ("MAGE8",                 85,   85),   # Age of mother recode 8
+    ("MRACE",                 86,   86),   # Detail race of mother (1-digit 0-9 1978-rev scheme)
+    ("DMAR",                  87,   87),   # Marital status (1=Married; 2=Unmarried; 9=NS)
+    ("DMEDUC",                88,   89),   # Detail education of mother (00; 01-08; 09-17; 99=NS)
+    ("MEDUC6",                90,   90),   # Mother's education recode 6
+
+    # ========================
+    # Pregnancy history (91-106 umbrella)
+    # ========================
+    ("NLBNL",                 91,   92),   # Born alive, now living (00-50; 99=Unknown)
+    ("NLBND",                 93,   94),   # Born alive, now dead
+    ("NBD",                   95,   96),   # Born dead (fetal deaths) — V3b-specific
+    ("NOTBEF20",              97,   98),   # Other terminations <20wk (00-50; 88=NA; 99=Unknown)
+    ("NOTAFT20",              99,  100),   # Other terminations 20+wk
+    ("DTOTORD",              101,  102),   # Detail total birth order (01-50; 99=Unknown)
+    ("TOTORD9",              103,  103),   # Total birth order recode 9
+    ("DLIVORD",              104,  105),   # Detail live birth order (00-50; 99=Unknown)
+    ("LIVORD10",             106,  106),   # Live birth order recode 10 (V3b-specific 10-cat including 0=None)
+
+    # ========================
+    # Father (107-114 umbrella)
+    # ========================
+    ("DFAGE",                107,  108),   # Detail age of father (10-98; 99=NS)
+    ("FAGE12",               109,  110),   # Age of father recode 12 (V3b 12-cat; V2 uses 11-cat FAGE11)
+    ("FRACE",                111,  111),   # Detail race of father (1-digit 0-9)
+    ("DFEDUC",               112,  113),   # Detail education of father
+    ("FEDUC6",               114,  114),   # Father's education recode 6
+
+    # ========================
+    # Gestation estimates (separate from combined @ 76-80)
+    # ========================
+    ("CLINGEST",             115,  116),   # Physician's estimate of gestation
+    ("COMPGEST",             117,  118),   # Computed gestation (V3b exposes separately; V2 combines)
+
+    # ========================
+    # Congenital malformation (umbrella flag only)
+    # ========================
+    ("CONGEN",               119,  119),   # 0=None reported; 1=Any reported (V3b has no 22-field breakdown like V2)
+
+    # 120-122: FILLER (reserved)
+
+    # ========================
+    # Residence reporting flags (123-140)
+    # Code: 0=Not reported by residence state; 1=Reported
+    # ========================
+    ("RF_GESTALL",           123,  123),   # All periods of gestation
+    ("RF_MARBC",             124,  124),   # Marital status on Birth Certificate
+    ("RF_EDUC",              125,  125),   # Education of parents (mother+father combined in V3b)
+    ("RF_LMP",               126,  126),   # Date of LMP
+    ("RF_MARFD",             127,  127),   # Marital status on Fetal Death Form
+    ("RF_MONPNC",            128,  128),   # Month prenatal care began
+    ("RF_NPNC",              129,  129),   # Number of prenatal visits
+    ("RF_CLINGEST",          130,  130),   # Physician's estimate of gestation
+    ("RF_CONGEN",            131,  131),   # Congenital malformations
+
+    # 132-140: FILLER (reserved, 9 bytes)
+
+    # ========================
+    # Occurrence reporting flag
+    # ========================
+    ("OCC_GESTALL",          141,  141),   # All periods of gestation: occurrence flag
+
+    # 142-186: FILLER (reserved, 45 bytes)
+
+    # ========================
+    # FIPS geographic codes (187-200)
+    # ========================
+    ("STOCCFIP",             187,  188),   # FIPS state of occurrence
+    ("CNTOCFIP",             189,  191),   # FIPS county of occurrence
+    ("STRESFIP",             192,  193),   # FIPS state of residence (00=Foreign)
+    ("CNTRSFIP",             194,  196),   # FIPS county of residence (000=Foreign)
+    ("SMSARFIP",             197,  200),   # FIPS SMSA of residence (0000=Nonmetro/Foreign; 0040-9340)
+]
 
 
 # --- 1989-2002 uniform layout (1989 revision, 360 data bytes per record) ---
@@ -1152,6 +1344,14 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
         # guides match the 1992 user guide field-by-field; first-record
         # DATAYEAR @ bytes 1-4 spot-verified. Re-uses FETAL_1992_2002_FIELDS.
         return RECORD_LEN_1992, FETAL_1992_2002_FIELDS
+    if 1982 <= year <= 1988:
+        # V3b extension (1982-1988): 1978-revision layout, 200 data bytes.
+        # Structurally different from V3a/V2/V1: different field names + byte
+        # positions + recode schemes. Page-4/5/6 cross-year diff across all 7
+        # V3b years confirms byte-identical field positions. Empirical
+        # anchor-field spot-check on 1982/1983/1985/1988 raw zips PASS.
+        # Canonical layout in record_layout_1982_1988.csv (87 rows).
+        return RECORD_LEN_1978, FETAL_1982_1988_FIELDS
     if year == 2003:
         # V2.1: 1350 data bytes. Per-record A/S byte at position 7 selects
         # 2003-revision vs 1989-revision schema. Fields at bytes 1-801 are
@@ -1165,5 +1365,5 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
         # set as 2003. See fetal_death/record_layout_2004.csv.
         return RECORD_LEN_2004, FETAL_2005_2006_FIELDS
     raise ValueError(
-        f"Year {year} not configured. Currently supported: 1989-2022."
+        f"Year {year} not configured. Currently supported: 1982-2022."
     )

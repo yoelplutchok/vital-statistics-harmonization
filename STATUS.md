@@ -1,6 +1,149 @@
-# STATUS — last updated 2026-05-12T16:45:00Z
+# STATUS — last updated 2026-05-12T17:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T17:30:00Z — Task 7 V3b DO steps 3 + 7 + 8 complete: field_specs.py extended; 7 V3b yearly_clean parquets parsed; Tier-2 + L13-extension value-distribution PASS byte-exact
+
+### Current phase
+
+Phase A continuing. **Task 7 V3b DO step 8 boundary checkpoint.** Steps 1-3 + 7-8 complete this session; steps 4-6 (harmonize.py + crosswalk + harmonized_schema) + 9-12 (harmonize/derive/validate/RECEIPT) deferred to next session per the LLM's halt-and-commit checkpoint discipline. User authorized "do whatever you think is best" — LLM chose to push through parse + value-distribution verification (which had byte-exact NVSR-control matches as the gate) but halt BEFORE the harmonize.py pipeline mutation (the largest risk surface).
+
+### What was done this session (DO steps 3, 7, 8)
+
+**DO step 3: extend `fetal_death/scripts/01_import/field_specs.py`** (commit this STATUS section + field_specs.py edit):
+- Added `RECORD_LEN_1978 = 200` constant
+- Added `FETAL_1982_1988_FIELDS: list[tuple[str, int, int]]` with **81 field tuples** (87 layout-CSV rows minus 6 FILLER/RESERVED + 1 CERTNUM-blank row = 81 active fields)
+- Extended `layout_for_year()` with `if 1982 <= year <= 1988: return RECORD_LEN_1978, FETAL_1982_1988_FIELDS` branch above the V3a branch
+- Updated module docstring with V3b era line
+- Updated `ValueError` message year range: "1989-2022" → "1982-2022"
+- New SHA `f67e5924ea7fc73a0bbf4a59f3d1da906d86cb2c501e3dd2c89c4baa46a290e5` (was `7a99641984eb5e83…`)
+- Smoke-test verified clean dispatch: 1982-1988 → 81 fields; 1989-2002 → 197 fields; 1981/1979 raise ValueError with updated msg
+
+**DO step 7: parse 7 V3b raw zips** (output to build-dir `output/yearly_clean/`, not git-tracked):
+- All 7 yearly_clean parquets created; per-year record counts **byte-exact** to user-guide page-7 "Record count":
+  - 1982: 62,352 ✓  | 1983: 60,584 ✓  | 1984: 59,863 ✓  | 1985: 59,690 ✓  | 1986: 59,343 ✓  | 1987: 59,358 ✓  | 1988: 59,935 ✓
+  - Total: 421,125 records across the 7 V3b years (matches STATUS 16:45Z projection exactly)
+  - No bad-length warnings (i.e., every record in every file is exactly 200 data bytes + line terminator)
+- Per-year parquet SHAs (build-dir, baseline for forward-stability verification):
+  - 1982: `f2327a2602a14c13b02fd89c406f169d4528e7243665b06824cfdfab2f478bbc`
+  - 1983: `e3b16d3ae3c28938f02cd54151fb6c5916705f61385d692cd4dc5c3ef6aeeb42`
+  - 1984: `b6cdde0502738e05cf30a3a2b9ae86f544cfa504bb0ea8ef9bfe07340d4aaf27`
+  - 1985: `b682580cd159e27f720f6a89e1441c6498c51496d05386313b62168cef99116f`
+  - 1986: `f37c6cc0cf5c5f4d6b9c62c2d524cea7d3d16b8089d94d1fb5759deef1ea8e89`
+  - 1987: `8d6b98ec2325e8e8db62d52d88e7c1acbead7e68a552ec25c5b970815eefffe9`
+  - 1988: `fc0d217d1cce1b8bf6dac58aab40c784a29be37111119c4e7fc8839d85f770ea`
+
+**DO step 8: L13-extension Tier-2 value-distribution check**: **PASS byte-exact for all 7 V3b years**.
+
+  - **DATAYEAR** (bytes 1-2): every row carries the 2-digit year string ("82" for 1982 etc.). No drift. ✓
+  - **TABFLAG** (byte 10): all values ∈ {1, 2}; ~50/50 split by year (consistent with user-guide page-7 "20+wk" being roughly half of "All records"). ✓
+  - **RECTYPE** (byte 11): all values ∈ {1, 2}. ✓
+  - **RESTATUS** (byte 12): all values ∈ {1, 2, 3, 4}; foreign-resident counts (RESTATUS=4) match user-guide page-7 "To foreign residents" each year (1982: 83 records; 1983: 70; 1984: 47; 1985: 50; 1986: 61; 1987: 49; 1988: 50). ✓
+  - **DMAGE** (bytes 81-82): plausible 10-49 range across all 7 years; no 99 sentinel observed (consistent with user-guide page 18 declaring only 10-49 codes for mother age, no Not-stated code). ✓
+  - **MRACE** (byte 86, 1-digit 1978-rev): all values ∈ {0,1,2,3,4,5,6,7,8,9} observed every year. Distribution dominated by 1 (White) ~42K/yr and 2 (Black) ~13K/yr; 9 (Not stated) ~2400-3200/yr (~5%); 7 (Other nonwhite residual) very rare 3-27/yr; 0 (Other API) and 4-6 + 8 (Chinese/Japanese/Hawaiian/Filipino) low-hundreds each. ✓
+  - **Canonical filter `TABFLAG=2 AND RESTATUS!=4`** byte-exact against user-guide page-7 "20 weeks or more → by residence" for all 7 years:
+    - 1982: 32,694 = 32,694 ✓  | 1983: 30,752 = 30,752 ✓  | 1984: 30,099 = 30,099 ✓
+    - 1985: 29,661 = 29,661 ✓ (OCR `29,66I` → digit-1 disambiguation CONFIRMED empirically)
+    - 1986: 28,972 = 28,972 ✓  | 1987: 29,349 = 29,349 ✓  | 1988: 29,442 = 29,442 ✓
+  - **No halt conditions tripped.** L13-extension discipline cleared every probed column.
+
+### Critical finding
+
+**V3b layout reconstruction is empirically valid.** The canonical-filter cross-check is the gold-standard validation: it computes the SAME number that NVSR would tabulate for fetal deaths 20+ weeks U.S. residents, derived independently from raw zip → parquet through the V3b layout. Byte-exact match for all 7 years across two independent NVSR-equivalent statistics (record count + by-residence-20wk count) **strongly validates**:
+1. The 200-byte record length is correct.
+2. TABFLAG byte 10 is correct (else 20+wk count would diverge).
+3. RESTATUS byte 12 is correct (else foreign-resident exclusion would diverge).
+4. The layout CSV's byte positions for at least these 3 fields are correct.
+
+The B3 maternal_race_bridged recode for V3b can now be designed against ACTUAL data (not anticipated data):
+- Codes 1, 2, 3 → bridged 1, 2, 3 (White, Black, AIAN) — straightforward
+- Codes 0, 4, 5, 6, 8 → bridged 4 (API: Other API, Chinese, Japanese, Hawaiian, Filipino)
+- Code 7 (Other nonwhite, 3-27 records/yr) → **null** (residual catch-all; parallels V3a code 09 → null per DECISION_LOG 2026-05-12T14:30Z)
+- Code 9 (Not stated, 2400-3200 records/yr, ~5%) → **null** (parallels V2 code 99 → null)
+
+This decision will be documented in DECISION_LOG at DO step 4 close.
+
+### Last completed step
+
+DO step 8 (L13-extension value-distribution check) — PASS byte-exact. DO steps 4-6 (harmonize.py + crosswalk + harmonized_schema edits) and 9-12 (full harmonize + derive + validate + RECEIPT) deferred to next session per the LLM's deliberate halt-at-clean-checkpoint discipline.
+
+### In-progress
+
+(none — clean checkpoint at DO step 8 boundary)
+
+### Next planned task
+
+**DO steps 4-6 in next session** (~1 session of edit work; mechanical given the V3a precedent):
+
+- **DO step 4: edit `harmonize.py`**: extend `_build_field_map()` with `("field_1985", "1985")` entry; extend `_era_tag()` with `if 1982 <= year <= 1988: return "1985"` branch; **add V3b-specific era handling for DATAYEAR**: V3b's DATAYEAR is 2-digit ("82"..."88"); harmonize.py must apply `int(raw)+1900` in the era=='1985' branch (analogous to era=='2003' B7 TABFLG correction pattern at line 351+). Extend B3 maternal_race_bridged recode with 1-digit codes 0-9 per design above.
+- **DO step 5: edit `variable_crosswalk_working.csv`**: add 2 new columns `field_1985,pos_1985`. Populate for V3b-applicable harmonized columns (estimated ~20-25 rows; the rest are V1-era-only and remain "N/A"). Some harmonized columns (e.g., `delivery_year`) map to V3b `DATAYEAR` with the +1900 derivation handled in harmonize.py.
+- **DO step 6: edit `harmonized_schema.csv`**: extend `years_available` strings + `raw_source_by_year` cells for V3b-covered rows (~25-30 rows of 73; V1-era-only rows unchanged).
+
+Then **steps 9-12**:
+- Step 9: full harmonize 1982-2022 (41 yrs) — expected row count ~2.35M unfiltered
+- Step 10: derive
+- Step 11: validate (gate **33/33 PASS** = 26 V3a/V2/V2.1 + 7 V3b; plus V1-era 55/55 byte-clean)
+- Step 12: RECEIPT + version bumps (.zenodo.json + CITATION.cff to 2.3.0) + V3b_LAYOUT_DECISIONS.md + tag `task7_v3b-complete`
+
+### Blocked
+
+(none — clean halt at user-review checkpoint; not technically blocked)
+
+### Open questions for human
+
+Carried + Q26/Q27 (resolved this session: continuing autonomously; CSV convention matches V2).
+
+NEW:
+28. **DO step 4 DATAYEAR conversion approach** — V3b DATAYEAR is 2-digit raw ("82"). Two options to expand to 4-digit:
+    - **Option A (chosen by default)**: harmonize.py era=='1985' branch applies `df["delivery_year"] = df["delivery_year"].astype(str).str.zfill(2).astype(int) + 1900` (or similar); the crosswalk maps `delivery_year: field_1985=DATAYEAR`. Pattern matches V2 era==1992 (where DELYR @ 190-193 is already 4-digit so no conversion needed) plus the era=='2003' B7-correction pattern at line 351+ of harmonize.py.
+    - **Option B**: pre-process the yearly_clean parquet to expand DATAYEAR before harmonize sees it (requires parse_fetal_year.py modification). Rejected: parse should preserve raw bytes; year-conversion is a harmonization step.
+    
+    Default A unless feedback.
+
+29. **B3 code 7 (Other nonwhite) → null mapping** — per V3a precedent (DECISION_LOG 2026-05-12T14:30Z 09 → null), V3b code 7 is the 1978-rev residual catch-all and should map to null in `maternal_race_bridged`. Affects ~89 records total across 1982-1988 (7+6+3+18+10+27+18). DECISION_LOG entry will be filed at DO step 4 close. Cross-product effect: 89 V3b records will have null `maternal_race_bridged` (compared to ~165 V3a 09-records nulled previously). User notice: the absolute count grows from V3a's 165 to V3b+V3a's 254 nulled records, ~0.013% of the 1,989,184 NVSR-comparable records post-V3b.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`task7_v3b-pre-do` tag** at commit `39652b5`. ✓ (set DO step 1)
+2. **`record_layout_1982_1988.csv`** SHA `431fd7ac72135afc…` unchanged.
+3. **field_specs.py** SHA `f67e5924ea7fc73a0…` unchanged. New baseline post-DO step 3.
+4. **7 V3b yearly_clean parquet SHAs** (above 7 SHAs) unchanged. Re-running parse_fetal_year.py with identical inputs MUST produce byte-identical output.
+5. **7 V3b raw zips + user guides** SHAs unchanged from prior PRE-FLIGHT / DO step 1 baselines.
+6. **V3a baselines** (5 parquet SHAs from STATUS 14:30Z) unchanged.
+7. **harmonize.py + variable_crosswalk_working.csv + harmonized_schema.csv** SHAs unchanged from STATUS 16:00Z PRE-FLIGHT baselines — these are next-session DO step 4-6 targets. If any has drifted between this commit and next session start, halt + investigate (would mean unauthorized edit).
+
+### Build artifacts current
+
+- 7 V3b raw zips at `raw_data/fetal_death/`. SHAs unchanged.
+- 7 V3b user guides at `raw_docs/fetal_death/`. SHAs unchanged.
+- `fetal_death/record_layout_1982_1988.csv`: SHA `431fd7ac72135afc…` (DO step 2 artifact).
+- `fetal_death/scripts/01_import/field_specs.py`: SHA `f67e5924ea7fc73a0…` (DO step 3 edit).
+- 7 V3b yearly_clean parquets at `output/yearly_clean/fetal_death_{1982..1988}_raw.parquet` (NEW; build-dir; not git-tracked but in monorepo via symlink). SHAs above.
+- V3a state (34 years 1989-2022): unchanged; all 5 baseline parquet SHAs intact.
+- v2.8.0 natality state: unchanged.
+
+### Notes for next session
+
+- **The hardest single risk** in DO steps 4-12 is the harmonize.py edit for V3b's DATAYEAR 2-digit-to-4-digit expansion. Pattern is similar to era=='2003' B7 TABFLG correction (DECISION_LOG-worthy precedent exists). Smoke-test at DO step 4: harmonize a single V3b year (e.g., 1985 alone), inspect `delivery_year` column distribution — should be all 1985 integers, not strings or 85.
+- **B3 1-digit recode coexists with B3 2-digit recode** in the same `_checked_remap` call: V3b yearly_clean parquet's MRACE column is 1-byte (values "0"-"9"); V2/V3a yearly_clean's MRACE column is 2-byte (values "01"-"09" + "18"-"78" + "99"). Two different key-sets in the same map; no collision risk. Smoke-test: run harmonize.py on 1985-only and check no defensive-halt raised.
+- **Tier-2 NVSR validation gate at DO step 11** is the FINAL gate: 33/33 PASS byte-exact. The PoC-equivalent of this gate is already met at DO step 8 (canonical filter byte-exact against user-guide page-7 controls) — so the V3b numerator side is verified; the V3a/V2/V1 baseline preservation is the additional check at DO step 11.
+- **V3b-induced changes to manuscript**:
+  - "1.74M fetal-death records" → "~2.35M unfiltered / ~1.99M NVSR-comparable"
+  - "Fetal death coverage 1992-2022" → "Fetal death coverage 1982-2022"
+  - V2.1 / V3a / V3b sections to add to ABOUT_THIS_RELEASE
+  - Validation table: 81/81 V3a → 88/88 V3b (+7 new per-year counts)
+
+### Session summary
+
+This is the densest single session of canonical-state mutation in HVS's history so far:
+- DO steps 1, 2, 3, 7, 8 ✓ (5 of 12 plan steps)
+- New artifacts: shared layout CSV + 7 yearly_clean parquets + extended field_specs.py
+- Validation: 7-for-7 byte-exact NVSR-equivalent controls + L13-extension value-distribution clean
+- Commits: 3 this session (PRE-FLIGHT @ 39652b5; DO step 1+2 @ b763e5c; DO step 3+7+8 @ this commit)
+- Tags: task7_v3b-pre-do
+- No FIX_LOG entries (no bugs found); no LESSONS entries (no new mistake classes)
 
 ---
 
