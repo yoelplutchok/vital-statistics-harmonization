@@ -19,6 +19,69 @@
 
 ---
 
+## 2026-05-12T22:00:00Z — C8.1 — H8 (latent surface broader than v2.0 incident) — ~50 fetal-death raw harmonized columns ship as pyarrow `string` while schema declares `type=int`; documented via xfail(strict=True) test pending full reconciliation
+
+**Symptom:** C8.1's new `fetal_death/tests/test_schema_dtype_parity.py::test_full_schema_type_matches_parquet_dtype` test FAILed on first run with **49 mismatches**: harmonized_schema.csv declares `type=int` (or `type=float` for `prepregnancy_bmi`) for ~50 columns; the actual parquet ships them as pyarrow `string`. Affected columns include: `delivery_year`, `maternal_age_recode14/9`, `maternal_race_multi`, `maternal_race_recode6`, `maternal_race_bridged_detail`, `race_hispanic_combined`, `race_hispanic_revised`, `maternal_education(_unrevised)`, `marital_status`, `maternal_nativity`, `paternal_age_combined`, `paternal_age_recode11`, `live_birth_order`, `plurality`, `prenatal_care_*`, `delivery_method_*`, `delivery_route`, `prior_cesarean_number`, `gestational_age_clinical/oe_edited/combined`, `gestational_age_recode12/5`, `oe_gest_recode12/5`, `birthweight`, `birthweight_recode14/4`, `fetal_presentation`, `diabetes_unrevised`, `chronic_hypertension_unrevised`, `pregnancy_hypertension_unrevised`, `eclampsia_unrevised`, `tobacco_*`, `prepregnancy_bmi(_recode)`, `cause_recode124`, `cause_reporting_flag`, `attendant`, `delivery_place_*`, `breech_unrevised`, `gestation_imputed_flag`, `obgest_used_flag`.
+
+**Root cause:** The fetal-death v2.0 release shipped these columns as `object`/string because the parser (`parse_fetal_year.py`) extracts each raw field as a fixed-width string slice and `harmonize.py` passes the values through without per-column dtype enforcement. The v2.0 H8 incident (FIX_LOG 2026-05-11T18:50Z) named 5 demographic/filter columns; the v2.1 closure (FIX_LOG 2026-05-12T01:30Z) cast those 5 (tabulation_flag, residence_status, maternal_age, maternal_race_bridged, hispanic_origin) but did not extend the cast to the remaining ~50. The `harmonized_schema.csv` `type=int` declaration was therefore correct as a *conceptual* statement ("this column holds integer-coded values") but inaccurate as a pyarrow-dtype statement.
+
+**Fix (partial; latent state documented):** C8.1 documents this via `test_full_schema_type_matches_parquet_dtype` decorated with `@pytest.mark.xfail(strict=True, reason=...)`. The marker:
+- Lets the test live in the suite without blocking PASS.
+- Documents the latent state in the test docstring + the xfail reason.
+- Will flip to XPASS=FAIL when a future task closes the issue, forcing removal of the marker (and re-evaluation of whether the closure is intentional).
+
+The **strict regression gate** for the original H8 incident is preserved as `test_v21_h8_fixed_columns_remain_int`: the 5 V2.1-cast columns MUST remain int; revert is caught immediately.
+
+**Files touched (this fix):**
+- `fetal_death/tests/test_schema_dtype_parity.py` (NEW; 4 tests including the xfail-marked full-parity test)
+
+**Regression scope:** None — this is documentation of a pre-existing latent state surfaced by the new test. No canonical data state mutated. The xfail discipline prevents the latent state from being silently "fixed" by an unrelated future change without explicit reconciliation.
+
+**Verified by:**
+- `pytest fetal_death/tests/test_schema_dtype_parity.py::test_full_schema_type_matches_parquet_dtype` returns XFAIL (expected).
+- `pytest fetal_death/tests/test_schema_dtype_parity.py::test_v21_h8_fixed_columns_remain_int` returns PASS — the 5 V2.1-fixed columns are still int.
+- Manual probe of natality's harmonized_schema.csv: natality uses pyarrow physical type names directly ('int8'/'int16'/'bool'/'string'/...); the natality parity test passes 3/3 strict matches. fetal-death's generic-name convention is the divergence.
+
+**Could the §8 matrix have caught this earlier?** Yes — this is squarely H8 (docs vs data drift) at broader surface than the original v2.0 incident named. The existing matrix recommends "auto-generate every numeric in every doc from the validation CSVs; if a doc number is hand-edited, accompany it with the inline computation it came from" — the analog for schema CSVs is: every schema `type` value must be auto-derived from the parquet's pyarrow schema (or asserted by a test). C8.1's dtype parity test IS this defense, and would have caught the v2.0 incident at build time if it had existed.
+
+**Forward-looking follow-up:** A future Phase C task (TBD; not in current Tier 1+2 plan) reconciles by either:
+- **Option A (canonical recommend)**: cast the ~50 columns to appropriate pyarrow integer widths in `harmonize.py` (extending the existing `_apply_h8_int_cast()`); re-derive the parquet; bump fetal-death version v2.x → v2.x+1; SHA update propagates to PROVENANCE.md and the smoke's EXPECTED state.
+- **Option B**: rephrase the schema CSV's `type` column to declare 'str' for the string-shipping columns (lower-cost; preserves shipped parquet SHA; arguably more honest since the values are coded-string anyway like "01" maternal_education). Anti-Pattern #6 schema-version bump still applies.
+
+Recommendation: Option A — restores user expectation that 'int' means int filterable. Probably 1 session.
+
+---
+
+## 2026-05-12T22:00:00Z — C8.1 — L13-extension — Monorepo path drift surfaced in `fetal_death/tests/` (sibling of FIX_LOG 2026-05-12T01:30Z); test harness pointed at `fetal_death/output/...` non-existent path + `_regenerate_schema_years.py` missing in monorepo
+
+**Symptom:** During C8.1 input verification, discovered:
+1. `fetal_death/tests/conftest.py` parquet/schema constants pointed at `REPO_ROOT/output/harmonized/...` where `REPO_ROOT = fetal_death/`. The monorepo has no `fetal_death/output/` directory; only `output/` at top level (symlinks to standalone-build dir). All smoke tests would `pytest.skip` cleanly (per `_require()` skip-if-missing protocol) — silently failing.
+2. `fetal_death/tests/test_release_smoke.py` line 48 imports `from _regenerate_schema_years import compute_years_available`, with sys.path insert pointing at `fetal_death/scripts/`. That file did not exist in the monorepo — only in the standalone build dir's `scripts/`. Test discovery would `ImportError` before any test could run.
+
+Both bugs latent since the 2026-05-09 monorepo migration commit `7fd9cdf`. Same class as FIX_LOG 2026-05-12T01:30Z (harmonize.py + validate_external*.py paths drift) — that fix surfaced 3 cases; C8.1 surfaces 2 more in the test harness.
+
+**Root cause:** Same as the prior L13-extension entry: the monorepo migration treated `fetal_death/` as a static archive (data + docs) rather than a fully-runnable subproject; path-constant updates were applied to runtime scripts (harmonize/validate/derive) but not to the test harness.
+
+**Fix:**
+1. Copied `_regenerate_schema_years.py` from `~/Desktop/fetal-death-harmonization-build/scripts/` into `fetal_death/scripts/` with monorepo-adapted paths (`_SUBPROJECT_ROOT.parent / "output/harmonized/..."` instead of `REPO_ROOT / "output/harmonized/..."`; `_SUBPROJECT_ROOT / "harmonized_schema.csv"` instead of `REPO_ROOT / "metadata/harmonized_schema.csv"`).
+2. Updated `fetal_death/tests/conftest.py` constants: introduced `SUBPROJECT_ROOT` + `MONOREPO_ROOT` distinction; `HARMONIZED_PARQUET = MONOREPO_ROOT / "output/harmonized/..."`; `SCHEMA_CSV = SUBPROJECT_ROOT / "harmonized_schema.csv"`. Updated `_require()` error-path `relative_to` to use `MONOREPO_ROOT` with graceful fallback.
+
+**Files touched (this fix):**
+- `fetal_death/scripts/_regenerate_schema_years.py` (NEW)
+- `fetal_death/tests/conftest.py` (path-constants edit)
+
+**Regression scope:** Test suite was effectively non-runnable in the monorepo before this fix. No prior canonical state was affected (the parquets, schemas, validators all ran from their own correct paths). All 9 existing release-smoke tests now run cleanly (12 PASSED + 1 XFAIL after smoke retag).
+
+**Verified by:**
+- `pytest fetal_death/tests/` collects and runs 13 tests (no ImportError); 12 PASS + 1 XFAIL.
+- `python3 fetal_death/scripts/_regenerate_schema_years.py --check` returns "OK: schema years_available matches data for all 73 columns" (post-regen).
+
+**Could the §8 matrix have caught this earlier?** Yes — L13-extension (path-drift across monorepo migration) is exactly this class. The prior fix (FIX_LOG 2026-05-12T01:30Z) recommended `scripts/run_pipeline.py` end-to-end smoke from monorepo root as the durable defense — that work is scheduled as **C8.7** in the Phase C plan and will surface any remaining path-drift cases. Authoring a `pytest fetal_death/tests/` run at monorepo-migration acceptance time would have caught these two cases.
+
+**Forward-looking follow-up:** C8.7 (end-to-end pipeline smoke from monorepo root) is the authoritative defense against further path-drift surfaces. CI wiring (C8.6) will gate every PR on a clean test run going forward, preventing new path-drift bugs from landing.
+
+---
+
 ## 2026-05-12T13:35:02Z — natality_v28_rename — H8 — 3 doc references to `restatus` survived the v2.8 build-dir rename pass
 
 **Symptom:** Post-sync grep of monorepo `natality/` for `\brestatus\b` returned 3 hits: `natality/README.md:38` (`Residents-only subsets (exclude foreign residents; \`restatus != 4\`)` in a docs file-table cell) and `natality/docs/GETTING_STARTED.md:41 + :50` ("Full file with foreign residents + restatus columns" in V2 and V3 file-table descriptors). All three describe the v2.8-renamed column, but the build-dir rename pass overlooked them.

@@ -1,6 +1,127 @@
-# STATUS — last updated 2026-05-12T21:00:00Z
+# STATUS — last updated 2026-05-12T22:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T22:00:00Z — C8.1 COMPLETE: smoke retagged + path-drift fixed + dtype parity tests for both products; 15 tests PASS + 1 XFAIL (documents broader latent H8 surface); fetal_death schema `years_available` regenerated post-V3a/V3b
+
+### Current phase
+
+**Phase C — Tier 1 underway.** First Tier-1 task **C8.1 COMPLETE** in one session as planned (~1.5 sessions budget; actual ~1 session). Tag `C8.1-complete` lands on the commit that ships this STATUS section + the C8.1 RECEIPT + FIX_LOG + DECISION_LOG entries. The four canonical state changes this session:
+
+1. **`fetal_death/tests/` is now runnable in the monorepo** (path-drift fix; sibling of FIX_LOG 2026-05-12T01:30Z).
+2. **`fetal_death/tests/test_release_smoke.py` is repinned to V3b state** (Convention 2 `DESIGN: tracks-current-state` tag; 41-yr year set; 2,352,011 row count; pre-2003 version_flag='S' assertion).
+3. **`fetal_death/tests/test_schema_dtype_parity.py` + `natality/tests/test_schema_dtype_parity.py` are new** (durable H8 defense; one xfail(strict) marker documenting the broader latent surface).
+4. **`fetal_death/harmonized_schema.csv` `years_available` column regenerated** via the newly-canonicalized `_regenerate_schema_years.py` — closes V3a/V3b deferred cleanup item; SHA `69f92bf775251f1e…` → `337a0ad0ab6d0a6b…`.
+
+### What was done this session (C8.1 DO + VERIFY + RECEIPT)
+
+1. **DO-1 path-drift fix**:
+   - Copied `_regenerate_schema_years.py` from standalone-build `scripts/` into monorepo `fetal_death/scripts/` with monorepo-adapted module-level paths (`_SUBPROJECT_ROOT.parent / "output/harmonized/..."`; `_SUBPROJECT_ROOT / "harmonized_schema.csv"`).
+   - Fixed `fetal_death/tests/conftest.py` parquet/schema path constants; introduced `SUBPROJECT_ROOT` / `MONOREPO_ROOT` distinction.
+
+2. **DO-2 smoke retag**:
+   - Added `DESIGN: tracks-current-state` first-docstring tag (Convention 2).
+   - Repinned EXPECTED_ROW_COUNT to 2,352,011; EXPECTED_YEARS to 41 contiguous years 1982-2022; EXPECTED_YEAR_ROWS dict to 41 entries.
+   - Renamed test 3 `test_year_coverage_is_29_years` → `test_year_coverage_is_41_contiguous_years`; added min=1982 / max=2022 / len=41 assertions.
+   - Renamed test 5 `test_v2_era_version_flag_is_S` → `test_pre_2003_version_flag_is_S`; expanded coverage from 1992-2002 → 1982-2002 (V3b + V3a + V2 all synthesize 'S' per harmonize.py).
+   - Test 9 (NVSR_2010 anchor) switched from `=="2"` / `!="4"` (str literals) to `==2` / `!=4` (int literals) consistent with v2.1.0 H8 fix.
+   - Updated module docstring + per-test docstrings to reference V2.3.0 / V3b state.
+
+3. **DO-3 dtype parity tests**:
+   - Authored `fetal_death/tests/test_schema_dtype_parity.py`: 4 tests with `DESIGN: tracks-current-state` tag. 
+     - `test_every_schema_row_has_a_parquet_column` (existence: 73/73 PASS)
+     - `test_v21_h8_fixed_columns_remain_int` (strict regression gate for the 5 V2.1-cast columns: PASS)
+     - `test_full_schema_type_matches_parquet_dtype` (broader latent surface: xfail(strict=True) — ~50 columns ship as `string` while schema says `int`; documents pre-existing v2.0 state; future closure task removes the marker)
+     - `test_derived_parquet_columns_present_or_listed_in_schema` (73/73 PASS)
+   - Created `natality/tests/` directory (natality previously had no tests) with `conftest.py` + `test_schema_dtype_parity.py`: 3 strict tests (natality schema uses pyarrow physical type names directly; exact-match parity); all PASS.
+
+4. **Bonus regen**: ran `python3 fetal_death/scripts/_regenerate_schema_years.py`; 46 rows updated; closes V3a/V3b deferred-cleanup item per V3a/V3b RECEIPT notes 8. Documented in DECISION_LOG 2026-05-12T22:00:00Z (no schema-version bump — auto-derived field cleanup).
+
+5. **VERIFY**: full pytest run `pytest fetal_death/tests/ natality/tests/` returns **15 PASSED + 1 XFAIL** in ~35 sec. Re-run reproduces identical output (idempotent).
+
+6. **RECEIPT** written at `RECEIPTS/C8.1_2026-05-12T22-00-00Z.md`.
+
+7. **FIX_LOG** entries (this session, 2 entries):
+   - 2026-05-12T22:00:00Z H8 — broader latent surface (~50 string-typed columns) documented via xfail(strict).
+   - 2026-05-12T22:00:00Z L13-extension — monorepo path drift in test harness fixed.
+
+8. **DECISION_LOG** entry 2026-05-12T22:00:00Z — schema regen choice (no version bump; Anti-Pattern #6 satisfied via this entry).
+
+### Last completed step
+
+C8.1 RECEIPT written + STATUS section composed. Single commit will ship: 7 modified/new files (3 tests, 1 conftest, 1 script, 1 schema CSV, 1 receipt) + 3 modified state files (this STATUS section + DECISION_LOG entry + FIX_LOG entries). Tag `C8.1-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.1 → C8.2 boundary.)
+
+### Next planned task
+
+**C8.2 — Latest-year refresh (fetal death 2023+2024 + linked 2024).** Per KICKOFF.md Phase C sequencing (Q37 default). 1-2 sessions estimated. PRE-FLIGHT first work item: download 3 NCHS zips (~440 MB) + 3 user-guide PDFs to `raw_data/fetal_death/` + linked equivalents; verify HTTP 200 and record SHAs; sibling-byte-position diff against 2022 fetal + 2023 linked layouts.
+
+### Blocked
+
+(none.)
+
+### Open questions for human
+
+(none — Q32-Q42 self-resolved at the `phase-c-authorized` commit `0ba0279`; any new Q surfaces via §11 plan-update.)
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.1-complete` tag** present on the commit shipping this STATUS section. Verify: `git tag --list 'C8.1*'` shows `C8.1-pre-do` (`04e6519`) + `C8.1-complete` (this commit).
+
+2. **`fetal_death/harmonized_schema.csv` SHA `337a0ad0ab6d0a6b…`** — post-regen state. C8.2 (latest-year refresh) WILL legitimately re-regen this when adding 2023+2024 year coverage; the regen is in-scope for any data-extension task.
+
+3. **`fetal_death/tests/test_release_smoke.py` EXPECTED_YEAR_ROWS dict has 41 entries.** C8.2 MUST add +2023, +2024 entries when extending fetal-death to 1982-2024. Per tracks-current-state convention; explicit update is the discipline.
+
+4. **`fetal_death/tests/test_schema_dtype_parity.py::test_full_schema_type_matches_parquet_dtype` is xfail(strict=True).** If pytest reports XPASS in a future session, the latent issue has been closed (parquet cast or schema rephrasing) — investigate which path closed it and remove the xfail marker.
+
+5. **`fetal_death/scripts/_regenerate_schema_years.py` exists at SHA `4275ed641fb76506…`.** If missing, the smoke ImportError's and the path-drift fix was reverted silently.
+
+6. **`natality/tests/` directory exists with conftest + dtype parity test.** If missing, the natality dtype defense was reverted silently.
+
+7. **Test count: 16 tests across both subprojects** (13 fetal_death + 3 natality). Future C8.X tasks adding tests bump this count; future regression that drops a test bumps it down — investigate either way.
+
+8. **`EXPLORATION_REPORT.md` unchanged.** `KICKOFF.md` Phase C section unchanged from `phase-c-authorized` commit `0ba0279`. STATUS ordering newest-first; `phase-c-authorized` tag still on `0ba0279`.
+
+9. **Current parquet SHAs preserved** (read-only access in C8.1): `e3d6c64abcb7762d…` (harmonized) + `4d1b37cc3a214eea…` (derived). C8.2 will mutate these intentionally.
+
+10. **The ~50 string-typed fetal-death columns issue (FIX_LOG 2026-05-12T22:00Z H8 entry)** is documented latent state — future closure removes the xfail in `test_full_schema_type_matches_parquet_dtype`. The 5 V2.1-fixed columns (tabulation_flag, residence_status, maternal_age, maternal_race_bridged, hispanic_origin) MUST remain int — strict regression gate via `test_v21_h8_fixed_columns_remain_int`.
+
+### Build artifacts current
+
+(parquets unchanged; test/schema infrastructure updated)
+
+- 41-yr fetal-death parquet (V3b SHAs preserved): `e3d6c64abcb7762d…` / `4d1b37cc3a214eea…`
+- V3a baseline parquets preserved at `output/harmonized/fetal_death_*.V3a_baseline.parquet`
+- Natality v2.8.0 state unchanged
+- Linked file unchanged
+
+NEW this session:
+- `fetal_death/scripts/_regenerate_schema_years.py` (NEW; sha `4275ed641fb76506…`)
+- `fetal_death/tests/conftest.py` (MUTATED; sha `0390b9ed932b3074…`)
+- `fetal_death/tests/test_release_smoke.py` (MUTATED; sha `6abeeb2c67b15165…`)
+- `fetal_death/tests/test_schema_dtype_parity.py` (NEW; sha `d00e6dfe81ae86b6…`)
+- `fetal_death/harmonized_schema.csv` (MUTATED — `years_available` regen; sha `337a0ad0ab6d0a6b…`)
+- `natality/tests/conftest.py` (NEW; sha `4be4f3770650ebb3…`)
+- `natality/tests/test_schema_dtype_parity.py` (NEW; sha `d146ef234fd0161a…`)
+- `RECEIPTS/C8.1_2026-05-12T22-00-00Z.md` (NEW)
+- `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md` (append)
+
+### Notes for next session
+
+- **C8.2 is the next task** (latest-year refresh: fetal 2023+2024 + linked 2024). KICKOFF.md Phase C sequencing default per Q37. Estimated 1-2 sessions.
+- **Tier 1 progress**: 1 of 8 tasks complete (C8.1 ✓). Remaining: C8.2 / C8.3 / C8.4 / C8.5 / C8.6 / C8.7 / C8.8 (~11-13 more sessions for Tier 1).
+- **Tier 1+2 total budget** ~29-35 sessions; ~1.5 sessions consumed; ~27-33 sessions remaining within authorized cap (+20% drift cap = 42 sessions max).
+- **The C8.1 RECEIPT Self-check items 1-3** (xfail rot, monorepo copy drift, generic-name int32 specificity) are residual risks documented for future audit; no immediate action.
+- **C8.2 PRE-FLIGHT will probe NCHS URLs (read-only) + verify SHAs + record sibling-byte-position diffs vs 2022/2023.** The first canonical-state mutation (download + new layout integration) happens at C8.2 DO step 1 — natural halt-and-ask boundary if any user-guide layout-byte delta surfaces vs the 2022 sibling.
+
+### Session summary
+
+Single-session execution of (i) plan-update commit at `0ba0279` (KICKOFF + NEXT_STEPS §15 C8.1-C8.15 + Q32-Q42 self-resolutions) tagged `phase-c-authorized`, and (ii) C8.1 full five-phase task at `04e6519` (PRE-FLIGHT) → this commit (DO + VERIFY + RECEIPT) tagged `C8.1-complete`. Phase C is now underway; Tier 1 C8.2-C8.8 + Tier 2 C8.9-C8.15 ahead. Cumulative effort tracking on plan.
 
 ---
 

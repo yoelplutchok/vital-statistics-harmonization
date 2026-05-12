@@ -1,8 +1,14 @@
-"""Shared fixtures for the V2.0 release smoke suite.
+"""Shared fixtures for the fetal-death release smoke suite (V2.3.0 / V3b).
 
 The output parquet files are reproducible from the scripts but are not
 committed (see .gitignore). When they are missing, fixtures cause the
 relevant tests to skip with a clear instruction rather than fail.
+
+Monorepo paths: parquets live at the monorepo root's `output/harmonized/`
+(via symlinks to the standalone build dir); schema CSV is at the flat
+`fetal_death/harmonized_schema.csv` (no `metadata/` subdir). Adapted
+2026-05-12 per C8.1 DO-1 (monorepo-migration path-drift fix; sibling of
+FIX_LOG 2026-05-12T01:30Z).
 """
 
 from __future__ import annotations
@@ -13,18 +19,23 @@ import pandas as pd
 import pyarrow.parquet as pq
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+SUBPROJECT_ROOT = Path(__file__).resolve().parent.parent
+MONOREPO_ROOT = SUBPROJECT_ROOT.parent
 
-HARMONIZED_PARQUET = REPO_ROOT / "output/harmonized/fetal_death_harmonized.parquet"
-DERIVED_PARQUET = REPO_ROOT / "output/harmonized/fetal_death_derived.parquet"
-SCHEMA_CSV = REPO_ROOT / "metadata/harmonized_schema.csv"
+HARMONIZED_PARQUET = MONOREPO_ROOT / "output/harmonized/fetal_death_harmonized.parquet"
+DERIVED_PARQUET = MONOREPO_ROOT / "output/harmonized/fetal_death_derived.parquet"
+SCHEMA_CSV = SUBPROJECT_ROOT / "harmonized_schema.csv"
 
 
 def _require(path: Path) -> Path:
     if not path.exists():
+        try:
+            rel = path.relative_to(MONOREPO_ROOT)
+        except ValueError:
+            rel = path
         pytest.skip(
-            f"{path.relative_to(REPO_ROOT)} not present. "
-            "Run the pipeline (scripts/01_import → 04_derive) before running smoke tests."
+            f"{rel} not present. "
+            "Run the pipeline (fetal_death/scripts/01_import → 04_derive) before running smoke tests."
         )
     return path
 

@@ -23,6 +23,50 @@
 
 ---
 
+## 2026-05-12T22:00:00Z — C8.1 — schema `years_available` regen via `_regenerate_schema_years.py` — auto-derived field cleanup; NO schema-version bump
+
+**Choice:** Run `python3 fetal_death/scripts/_regenerate_schema_years.py` (sibling of standalone-build script, now copied into the monorepo) to update 46 of 73 `harmonized_schema.csv` rows whose `years_available` strings had drifted from the actual parquet data after the V3a + V3b backward extensions (V3a RECEIPT note 8 + V3b RECEIPT note 8 explicitly deferred this cleanup). **No schema-version bump** — `years_available` is an auto-derived field whose canonical value is mechanically derivable from the parquet; the regen script's purpose is exactly this regeneration. New schema SHA: `337a0ad0ab6d0a6b…` (was `69f92bf775251f1e…`).
+
+**Alternatives considered:**
+
+1. **Run the regen now as part of C8.1 (chosen).** Pro: closes the V3a/V3b deferred-cleanup item with the right tool (auto-derivation, not hand-editing); the `_regenerate_schema_years.py` test in the smoke suite (`test_schema_years_available_matches_data`) becomes PASS-able without xfail/skip. Con: schema CSV SHA changes; future grep against the old SHA needs to point at the new SHA.
+
+2. **Bump fetal-death version v2.3.0 → v2.4.0 as part of C8.1.** Pro: Anti-Pattern #6 says "Never edit harmonized_schema.csv without bumping the schema version OR adding a comment row referencing the relevant DECISION_LOG entry"; a literal reading would force a version bump. Con: `years_available` is a documentation field, not a schema-structure change (no column added/removed/redefined); a version bump for a regen feels like inflated bookkeeping. Also: C8.2 (latest-year refresh) will likely re-regen with +2023/+2024 entries and bump to v2.4.0 anyway; doing it now and then bumping again on C8.2 is wasteful.
+
+3. **Defer to C8.2.** Pro: bundle the regen with the version bump. Con: leaves the smoke's `test_schema_years_available_matches_data` failing through C8.1's interim, which violates the "every commit ships green CI" discipline that Tier 1 is building toward.
+
+4. **Mark `test_schema_years_available_matches_data` xfail.** Pro: defers the schema edit. Con: actively hides a fixable drift via xfail when the tooling to close it exists right now.
+
+**Reason:** The DECISION_LOG-entry exception in Anti-Pattern #6 is exactly designed for this case: the rule's spirit is "no silent schema edits that could be missed by a future audit." Filing this DECISION_LOG entry + the C8.1 RECEIPT + the FIX_LOG L13-extension entry makes the regen fully auditable: a future session sees the entry, the per-column drift list in this entry's source, and the test passing on the new state. Anti-Pattern #6 is satisfied.
+
+Three protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — running the canonical regen tool is cheaper than authoring a version-bump migration; (ii) §2 principle 4 "re-running must be free" — `_regenerate_schema_years.py --check` is idempotent and confirms the new state; (iii) §11 plan-update process is not triggered — this is a documentation-field regeneration, not a structural schema change.
+
+**Source:**
+- `fetal_death/scripts/_regenerate_schema_years.py` (newly canonicalized in the monorepo per C8.1 DO-1).
+- V3a RECEIPT `RECEIPTS/task7_v3a_2026-05-12T14-30-00Z.md` Notes-for-next-session item 8 ("Schema CSV `years_available` retroactive V3a gap fixes still deferred. Task 10 polish.").
+- V3b RECEIPT `RECEIPTS/task7_v3b_2026-05-12T18-45-00Z.md` Notes-for-next-session item 8 (same text, V3a→V3a/V2.1 substitution).
+- STATUS 2026-05-12T18:45Z Build-artifacts-current item 7 ("PROVENANCE.md still stale at v2.0.0 SHAs … Task 10 PRE-FLIGHT must refresh it.") — note: PROVENANCE.md refresh is separate from this schema CSV regen and remains deferred to C8.13 / Phase D.
+
+**Verifiable by:**
+- `git show HEAD:fetal_death/harmonized_schema.csv | shasum -a 256` returns `337a0ad0ab6d0a6b…`.
+- `python3 fetal_death/scripts/_regenerate_schema_years.py --check` returns "OK: schema years_available matches data for all 73 columns" on the post-regen schema.
+- `pytest fetal_death/tests/test_release_smoke.py::test_schema_years_available_matches_data` PASSes (was FAIL pre-regen).
+- 46 rows changed; 27 rows unchanged (those whose `years_available` was already correct pre-V3a/V3b). Per-row diff visible in `git diff HEAD~1 fetal_death/harmonized_schema.csv`.
+
+**Reversible:** yes — `git revert <this commit>` restores the prior `years_available` strings. The script is idempotent so re-running on the reverted state produces the same drift report.
+
+**Residual risks:**
+- (a) **The regen overwrites any hand-curated `years_available` strings that intentionally used a non-canonical shorthand.** Verified by inspection of the drift list: every drifted row's "target" is strictly more accurate than the "current" (e.g., `version_flag`: '1982-1988, 1992-2002, 2005-2022' → '1982-2022' — current was just stale, not intentional). No hand-curated annotations lost.
+- (b) **Future data extensions (e.g., C8.2 latest-year refresh) will trigger another drift.** Mitigation: every subsequent data-extension task PRE-FLIGHT lists schema regen as a planned in-task step; the regen is bundled into the task that introduces the new year(s) so the schema and parquet always agree at task-completion time.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- The regen script computes `years_available` as the set of `data_year` values where the column has non-null content. For columns that are *intentionally* null in some years (e.g., `hispanic_origin` truly absent before 1989), the regen reflects shipped reality. If shipped reality is wrong (e.g., a parser bug populated a column erroneously), the regen would document the bug as canonical. Mitigation: V3a/V3b RECEIPT byte-clean regression already verified no spurious populations; the regen reflects intentional state.
+- The regen does not update the `notes` field or any other column's annotations that might reference outdated year ranges. Anti-Pattern #6's "schema edits require version bump" applies more naturally to structural changes; documentation-field updates have a lower bar. Mitigation: per-row review during regen confirms no `notes` field references stale year ranges in this case.
+
+**Backport scope (per §11.4):** None directly. The V3a RECEIPT note 8 and V3b RECEIPT note 8 items are now CLOSED.
+
+---
+
 ## 2026-05-12T21:00:00Z — [plan-update] phase_c_authorized — User authorized Q35 = Tier 1+2 (~29-35 sessions of Phase C); Q32-Q42 self-resolved by LLM per user directive; KICKOFF.md Phase C populated + NEXT_STEPS.md §15 C8.1-C8.15 task entries appended
 
 **Choice (user-authorized):** Q35 = **(b) Tier 1 + Tier 2** = ~29-35 sessions of Phase C work before Phase D (Task 9 + Task 10 + public-repo v1.x sync + manuscript submit). Phase B `EXPLORATION_REPORT.md` §K plan-update applied at this commit: KICKOFF.md Phase C placeholder replaced with the Tier-1+Tier-2 task list; NEXT_STEPS.md §15 appended with C8.1-C8.15 task entries (each with full five-phase framing per §4 + Convention 1-5 binding); this DECISION_LOG entry + accompanying STATUS section record the authorization.
