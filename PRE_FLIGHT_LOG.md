@@ -8,6 +8,120 @@
 
 ---
 
+## PRE-FLIGHT for C8.4 — 2026-05-13T01:30:00Z — Invariant tests: canonical-filter + row-count conservation + cross-product join parity — **RESULT: PROCEED**
+
+### Scope summary
+
+C8.4 §15.C entry (NEXT_STEPS.md lines 931–949): three new invariant test harnesses defending core analytic-correctness invariants per §8 H6 (silent row drops), §8 F2 (cross-product join without filter), §8 H9 (external targets cancel internal bugs), and §8 L3 (validator self-blindness — defended via mutation tests). Files land at monorepo-root `tests/` (NEW directory). Each harness carries a Convention 2 `DESIGN:` first-docstring tag and asserts SHAPE-not-VALUE invariants per Convention 1 (§4.2.1), with Tier-0 mutation tests asserting the harness fails predictably when an invariant is violated.
+
+Three harnesses:
+- **B.3** `tests/test_canonical_filter_invariants.py` — `DESIGN: structural-invariant-no-pins`. Sum-across-strata = unstratified-total for every canonical filter, every product, every year.
+- **B.4** `tests/test_row_count_conservation.py` — `DESIGN: tracks-current-state`. Carries a documented-drops dict; asserts harmonized↔derived row equality per-product per-year (no drops between these stages); asserts total row counts match documented v2.4.0 / v2.8.0 / v3 envelope.
+- **B.5** `tests/test_cross_product_join_parity.py` — `DESIGN: structural-invariant-no-pins`. Joint canonical-filter coverage; canonical join-key column presence; per-stratum natality vs `stratified_denominators.csv` parity.
+
+Estimated effort 3 sessions per §15 (may close faster — Tier-1 tasks have run ~50% of their estimates).
+
+### Inputs
+
+- [x] All required parquets exist + match C8.3-complete (STATUS 2026-05-13T00:30:00Z) SHAs
+  - `output/harmonized/fetal_death_harmonized.parquet` sha256=`38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` ✓ (verified by `shasum -a 256`)
+  - `output/harmonized/fetal_death_derived.parquet` sha256=`185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09` ✓
+  - `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` sha256=`e16ad5323d68e28d401518f1ff56b12c09e43883e76022a9823d51a677c41d44` ✓
+  - `…/natality_v3_linked_harmonized_derived.parquet` sha256=`9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777` ✓
+- [x] All four C8.3 FL-HALTs verified: PDF=`dd8b3203…` ✓, PNG=`f32ad101…` ✓, helper=`e3e74264…` ✓, JOINT_USE_GUIDE.md=`4569b0b4…` ✓, joint_use_demo.ipynb=`e0094812…` ✓, 4× `__init__.py` present (0 bytes each) ✓.
+- [x] All required upstream tasks marked complete: `C8.1-complete` (`9fe662a`), `C8.2-complete` (`bb19c5a`), `C8.3-complete` (`ffbb4da` — HEAD) ✓.
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/C8.4_*.md`: does not exist ✓
+  - `tests/` at monorepo root: does not exist (good — this task creates it) ✓
+- [x] `shared/helpers/canonical_join_keys.py` present and importable; `CANONICAL_JOIN_KEYS = [data_year, maternal_age, maternal_race_bridged, hispanic_origin, residence_status]`; `NATALITY_TO_CANONICAL` populated (kept for v2.7.0 backcompat; v2.8.0+ adopts canonical names natively — verified via column-name probe of the v2.8.0 parquet showing `data_year`/`residence_status`/`maternal_race_bridged`/`hispanic_origin` present natively).
+
+### Environment
+
+- [x] Python: 3.13.9 ✓
+- [x] pandas: ≥2.3 (verified at runtime) ✓
+- [x] pyarrow: ≥18.0 (verified at runtime) ✓
+- [x] pytest: 9.0.2 ✓
+- [x] Working directory clean (`git status --short` returns empty) ✓
+- [x] On expected branch: `main`, HEAD=`ffbb4da` (`C8.3-complete`) ✓
+- [x] Cache-cleared `pytest fetal_death/tests/ natality/tests/` reproduces 15 passed + 1 xfailed in 41.14s ✓ (C8.3 FL-HALT #5)
+
+### Source documentation
+
+- [x] Not applicable — C8.4 consumes no external PDFs; it only consumes already-validated parquets + the canonical-filter definitions documented in `docs/JOINT_USE_GUIDE.md` (sha `4569b0b4…`).
+
+### Outputs
+
+- [x] Intended output paths do not exist OR are explicitly marked for new
+  - `tests/` (monorepo root): NEW directory ✓
+  - `tests/__init__.py`: NEW (empty, namespace package per Convention from FIX_LOG 2026-05-12T22:30:00Z L17-extension) ✓
+  - `tests/conftest.py`: NEW ✓
+  - `tests/test_canonical_filter_invariants.py`: NEW ✓
+  - `tests/test_row_count_conservation.py`: NEW ✓
+  - `tests/test_cross_product_join_parity.py`: NEW ✓
+  - `RECEIPTS/C8.4_2026-05-13T<ts>.md`: NEW ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.4 does not mutate any canonical parquet, schema CSV, or doc number. It authors NEW test files. The "cells being mutated" are the test-asset *assertions* themselves; the Field-value snapshot enumerates the **current parquet-derived invariants the new tests will assert**, so a future audit can verify the test was authored against the actual v2.4.0 / v2.8.0 / v3 state, not a stale assumption.
+
+#### Parquet envelope (verified by `pyarrow.parquet.read_table` 2026-05-13T01:25:00Z)
+
+| Product | Path | Rows | Years | residence_status uniques | tabulation_flag uniques |
+|---|---|---|---|---|---|
+| fetal_death harmonized | `output/harmonized/fetal_death_harmonized.parquet` | 2,427,233 | 1982–2024 (43 contiguous) | {1, 2, 3, 4} | {1, 2} |
+| fetal_death derived | `…/fetal_death_derived.parquet` | 2,427,233 (= harmonized) | 1982–2024 | {1, 2, 3, 4} | {1, 2} |
+| natality derived | `…/natality_v2_harmonized_derived.parquet` | 138,819,655 | 1990–2024 (35 contiguous) | {1, 2, 3, 4} | n/a (no tabulation_flag) |
+| linked derived | `…/natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 2005–2023 (19 contiguous) | {1, 2, 3, 4} | n/a |
+
+#### Canonical filters (from `docs/JOINT_USE_GUIDE.md` §"Canonical analytic filters")
+
+| Product | Filter | Dtype literal |
+|---|---|---|
+| Natality | `residence_status != 4` | int8 |
+| Linked | `residence_status != 4` | int8 |
+| Fetal-death | `tabulation_flag == 2 AND residence_status != 4` | Int8 (both, post-v2.1.0 H8 cast) |
+
+#### Canonical join keys (from `shared/helpers/canonical_join_keys.py`)
+
+`CANONICAL_JOIN_KEYS = [data_year, maternal_age, maternal_race_bridged, hispanic_origin, residence_status]`. All five present in both fetal-death derived parquet (verified) and natality v2.8.0 derived parquet (verified).
+
+#### Documented row-conservation invariants (the B.4 documented-drops registry)
+
+- **harmonized ↔ derived (all three products):** **NO drops.** `derive.py` adds columns; row count must be conserved. Test asserts `len(harmonized) == len(derived)` per-product. Per-year row count also conserved.
+- **No documented per-year drops at any pipeline stage** in any product's `DECISION_LOG` after the v2.4.0 / v2.8.0 / v3 releases — verified by `grep` against DECISION_LOG.md for "documented_drop" / "drop" / "exclude" → matches refer to filter exclusions (`residence_status == 4`, `tabulation_flag == 1`), not to silent row drops at parse/harmonize/derive boundaries.
+- **The 2003–2004 fetal-death "deferred years" were not dropped; they are present in v2.1.0+.** Verified by `data_year` uniques showing {1982–2024} contiguous.
+
+#### Canonical-filter invariant (the B.3 SHAPE check)
+
+For each (product, year):
+- `total_filtered = len(df[canonical_filter])`
+- For every demographic stratum column S in {residence_status, tabulation_flag (FD only), maternal_race_bridged, hispanic_origin}:
+  - `sum_across_S = df[canonical_filter].groupby(S, dropna=False).size().sum()`
+  - assert `sum_across_S == total_filtered` (the grouping with `dropna=False` preserves null cells; sum across all strata including null must equal the unstratified total).
+
+This is a SHAPE-not-VALUE invariant: it holds regardless of the specific count values; survives V2.x → V2.x+1 row-count growth; survives bridged-race-null era boundaries.
+
+#### Cross-product join parity invariant (the B.5 SHAPE check)
+
+For each year Y in the joint-coverage intersection {2005…2023} (where all three products are present):
+- canonical-filter applied on all three sides
+- After `to_canonical_natality()` rename, all three products expose `{data_year, residence_status, maternal_race_bridged, hispanic_origin, maternal_age}` columns
+- For natality + linked: linked rows for year Y is a subset of natality rows for year Y (every linked birth is a natality birth); test asserts `len(linked_Y) <= len(natality_Y)` after canonical filter on both.
+- For natality + fetal-death: independent populations (live births vs fetal deaths); the join-key columns must be present + compatible-dtype.
+- For natality_per_year vs stratified_denominators.csv: per-year sum from CSV matches direct natality groupby on residence_status != 4 byte-exact (29 years — already verified at Task 1; this is the durable test).
+
+- [x] Current values match task plan's assumed state ✓
+
+### Halt conditions tripped
+
+None. All §15-named inputs verified present; no §7 condition surfaced. The "documented drops" registry is empty (no documented drops at parse/harmonize/derive boundaries in any product's release notes), which means B.4's `tracks-current-state` design starts with an empty drops dict — clean.
+
+### Result
+
+**PROCEED.** Tag `C8.4-pre-do` lands on the commit that ships this PRE-FLIGHT entry. The DO phase authors three test files + an empty `tests/__init__.py` + a `tests/conftest.py` (shared fixtures for cross-product parquet loading at session scope) + runs Tier 0 mutation tests as part of each harness's authoring, then a cache-cleared combined-pytest VERIFY pass before tagging `C8.4-complete`.
+
+---
+
 ## PRE-FLIGHT for C8.3 — 2026-05-12T22:30:00Z — Cross-product Tier-1: timeline + perinatal joint + Section B race validation — **RESULT: HALT**
 
 ### Scope summary
