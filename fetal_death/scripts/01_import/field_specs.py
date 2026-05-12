@@ -6,10 +6,11 @@ positions are 1-based inclusive (matching NCHS documentation).
 
 Eras:
   - 1992-2002: V2.0 — single uniform 1989-revision layout (360 data bytes)
+  - 2003: V2.1 transition — 1350 data bytes; A/S per-record revision overlay
+  - 2004: V2.1 transition — 1500 data bytes (= 2003 layout + 150-byte trailing pad)
   - 2005-2013: V1 — non-COD layout, varying record lengths
   - 2014-2017: V1 — COD layout available (use COD variant)
   - 2018-2022: V1 — COD-only layout
-  - 2003, 2004: NOT YET SUPPORTED — distinct transition-year layouts; deferred to V2.1.
 
 Sources: NCHS fetal death user guide PDFs for each year.
 """
@@ -17,6 +18,8 @@ Sources: NCHS fetal death user guide PDFs for each year.
 # --- Record lengths (bytes per line excluding newline) ---
 
 RECORD_LEN_1992 = 360    # 1992-2002 uniform 1989-revision layout
+RECORD_LEN_2003 = 1350   # 2003 transition (V2.1; 801 useful data + 549 trailing pad)
+RECORD_LEN_2004 = 1500   # 2004 transition (V2.1; = 2003 + 150 trailing pad)
 RECORD_LEN_2022 = 2651   # 2018-2022 COD-only
 RECORD_LEN_2014 = 3050   # 2014-2017 COD variant
 RECORD_LEN_2006 = 3350   # 2005-2006 (non-COD, dual revision layout, 801 data + 2549 filler)
@@ -1140,12 +1143,18 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
         return RECORD_LEN_2008, FETAL_2005_2006_FIELDS
     if 1992 <= year <= 2002:
         return RECORD_LEN_1992, FETAL_1992_2002_FIELDS
-    if year in (2003, 2004):
-        raise ValueError(
-            f"Year {year} has a transition-specific layout and is deferred "
-            "to V2.1 (see project_v2_scope memory and "
-            "raw_docs/fetal_death/fetaldeath0304problems.pdf)."
-        )
+    if year == 2003:
+        # V2.1: 1350 data bytes. Per-record A/S byte at position 7 selects
+        # 2003-revision vs 1989-revision schema. Fields at bytes 1-801 are
+        # shared across A and S (parser extracts them uniformly); A-specific
+        # race detail at bytes 833-847 + 1088-1111 is documented in
+        # fetal_death/record_layout_2003.csv but not used by the V2.1
+        # harmonization (race comes from MRACEREC@byte-143 for both branches).
+        return RECORD_LEN_2003, FETAL_2005_2006_FIELDS
+    if year == 2004:
+        # V2.1: 1500 data bytes (= 2003 + 150-byte trailing pad). Same field
+        # set as 2003. See fetal_death/record_layout_2004.csv.
+        return RECORD_LEN_2004, FETAL_2005_2006_FIELDS
     raise ValueError(
-        f"Year {year} not configured. Currently supported: 1992-2002, 2005-2022."
+        f"Year {year} not configured. Currently supported: 1992-2022."
     )

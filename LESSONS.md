@@ -17,6 +17,33 @@
 
 ---
 
+## 2026-05-11T21:50:00Z — task3_v21_fetal_death — L13 — `record_layout_2006.csv` likely incomplete: declares bytes 802-3351 as a single "BLANK" filler block, but 2003/2004 user guides document race fields at bytes 833-847 and 1088-1111 within that range
+
+**What was discovered (not a failure within Task 3 — surfaced as adjacent risk):** Task 3 DO step 1 (record_layout_2003/2004 reconstruction) read the 2003 user guide pages 48-49 and found:
+- Bytes 833-847: Mother's Race checkboxes (MRACE1-15), 2003-revision (A) records only.
+- Bytes 1088-1111: Mother's Race Edited codes (MRACE1E-8E), declared in layout but empirically empty in 2003/2004 public-use file.
+
+The existing monorepo file `record_layout_2006.csv` (255 data rows) declares bytes 802-3351 as one single row: `BLANK Blank filler to end of record`. If the 2006 user guide also documents the MRACE1-15 + MRACE1E-8E fields at those positions (which is highly likely, since the 2006 layout is the 2003 layout's natural successor in the V1 era), then the 2006 monorepo CSV omits them. This means:
+- A reader cross-referencing `record_layout_2006.csv` against the 2006 user guide would find missing race-detail rows.
+- The v2.0.0 harmonization may have undercounted multi-race signal for the 2005-2013 V1 era (the bridged race recode at MRACEREC@byte-143 was still used, so per-NVSR-validated outputs are unaffected, but multi-race detail isn't in the shipped parquet).
+
+**Why the existing matrix didn't catch it:** L13 (inventory CSV records file roles before column-content verification) is the closest existing class. L13 names CSV-level role-vs-column mismatches; the 2006 layout case is FILE-INTERNAL — the CSV correctly enumerates many fields but truncates the documentation past a certain byte boundary into a single BLANK row. This is one notch removed from L13 but it's the same shape (a declarative record about a file's structure being incomplete relative to the file's source documentation).
+
+**What worked (within Task 3):** Reading the 2003 user guide pages 48-49 and cross-referencing against `record_layout_2006.csv` at PRE-FLIGHT. The L9 cheap-check on the user guide spent the time to actually look up named fields in the PDF and discovered the mismatch.
+
+**Proposed new matrix row:** L13 already covers this in principle (extended sense). No new row proposed; the upstream NHANES L13 already names "row's role/description names columns without a sibling column-name list is a soft-flag for downstream consumers to re-verify." The HVS variant: when an inventory CSV summarises a byte range as "blank/unused" without enumerating the documented fields the source PDF places in that range, downstream consumers must re-verify before assuming the CSV is complete.
+
+**Backport scope:** Out-of-scope for Task 3 (Task 3 ships V2.1 fetal-death; does not re-derive 2005-2013 V1 era). Post-submission audit pass should:
+1. Read 2006 Fetal Death User Guide PDF pages parallel to 2003 user guide pages 48-49 + 13-49 generally.
+2. If 2006 user guide documents race detail at the same byte positions, add the missing rows to `record_layout_2006.csv` (with a schema-version comment row referencing this entry).
+3. Decide whether to re-derive the V1-era yearly_clean parquets with the additional race fields surfaced. If yes, a separate FIX_LOG entry tracks the parquet-rebuild scope. If no (because the bridged race at MRACEREC@byte-143 is sufficient for harmonization), document the deliberate omission in a fetal_death/COMPARABILITY.md note.
+
+**Related (this same task):** the V2.1 layout (`record_layout_2003.csv` + `record_layout_2004.csv`, shipped this task at sha `a88e1fa3…85635` and `f4ad74ca…77630`) includes a placeholder `MRACE_LEGACY_S` row at bytes 833-836 for S-revision (1989) records. Empirical sampling found digit patterns (e.g. `9009`, `0001`) but the field's NCHS-canonical semantics were not identified during Task 3 (since the V2.1 harmonization uses MRACEREC@byte-143 for race and does not consume MRACE_LEGACY_S). The semantics question is filed alongside the 2006-CSV-completeness audit above for the post-submission pass.
+
+**Upstream lesson?** Possibly. The upstream NHANES protocol's L13 row could be re-worded to explicitly include the file-internal-completeness case (where a CSV declares a byte range as filler/unused but the source PDF documents fields there).
+
+---
+
 ## 2026-05-11T16:32:34Z — protocol-sync — n/a (sync, not a new bug class) — Port generalizable conventions from upstream NHANES protocol
 
 **What happened (not a failure — a proactive sync):** The HVS operating protocol in `NEXT_STEPS.md` §1-§13 and `KICKOFF.md` was originally modeled on the NHANES Assay-Bridging `EXECUTION_PROTOCOL.md`. The NHANES protocol has since accumulated five generalizable conventions (dated 2026-05-11 in NHANES `KICKOFF.md`) plus three new mistake-class matrix rows (L13, L14, L17) that are HVS-applicable and not already in our discipline.
