@@ -1,0 +1,282 @@
+position_start,position_end,length,field_name,description,version,values_summary,notes
+1,6,6,BLANK,Blank filler,"A,S",,
+7,7,1,VERSION,Version flag,"A,S",A=2003 revision (Revised); S=1989 revision (Unrevised),Identifies which standard the state used
+8,8,1,BLANK,Blank filler,"A,S",,
+9,9,1,TABFLG,Tabulation Flag (gestational age),"A,S",1=Under 20 weeks (exclude); 2=20 weeks or more (include),Used to select records for tabulation
+10,14,5,BLANK,Blank filler,"A,S",,
+15,18,4,DOD_YY,Delivery Year,"A,S",2006,Year of delivery
+19,20,2,DOD_MM,Delivery Month,"A,S",01-12 (January-December),Month of delivery
+21,28,8,BLANK,Blank filler,"A,S",,
+29,29,1,DOD_WK,Weekday,"A,S",1=Sunday; 2=Monday; 3=Tuesday; 4=Wednesday; 5=Thursday; 6=Friday; 7=Saturday,Day of week of delivery
+30,31,2,OSTATE,Territory of Occurrence,"A,S",AS=American Samoa; GU=Guam; MP=Northern Marianas; PR=Puerto Rico; VI=Virgin Islands,Territory file only; not available in U.S. file
+32,36,5,BLANK,Blank filler,"A,S",,
+37,39,3,OCNTYFIPS,Occurrence County FIPS,"A,S",021-999 (territory county codes); 000=No county level geography; 999=County <100000,Territory file only; not available in U.S. file
+40,40,1,OCNTYPOP,Occurrence Territory County Population,"A,S",0=1M+; 1=500K-1M; 2=250K-500K; 3=100K-250K; 4=50K-100K; 5=25K-50K; 6=10K-25K; 9=<10K,Territory file only; not available in U.S. file
+41,41,1,BFACIL,Delivery Place (Revised),A,1=Hospital; 2=Freestanding Birth Center; 3=Home (intended); 4=Home (not intended); 5=Home (unknown if intended); 6=Clinic/Doctor's Office; 7=Other; 9=Unknown; Blank=Not on certificate,Revised version only; reporting flag at position 676
+42,42,1,UBFACIL,Delivery Place,"A,S",1=Hospital; 2=Freestanding Birthing Center; 3=Clinic/Doctor's Office; 4=Residence; 5=Other; 9=Unknown,Available for both revisions
+43,58,16,BLANK,Blank filler,"A,S",,
+59,59,1,BFACIL3,Delivery Place Recode,"A,S",1=In Hospital; 2=Not in Hospital; 3=Unknown/not stated,
+60,86,27,BLANK,Blank filler,"A,S",,
+87,87,1,MAGE_IMPFLG,Mother's Age Imputed Flag,"A,S",Blank=Age not imputed; 1=Age imputed,
+88,88,1,MAGE_REPFLG,Reported Age of Mother Flag,"A,S",Blank=Reported age not used; 1=Reported age used,
+89,90,2,MAGER,Mother's Single Year of Age,"A,S",12=12 years and under; 13-49=individual years; 50=50 years and over,Includes ages 50-64
+91,92,2,MAGER14,Mother's Age Recode 14,"A,S",01=Under 15; 03=15; 04=16; 05=17; 06=18; 07=19; 08=20-24; 09=25-29; 10=30-34; 11=35-39; 12=40-44; 13=45-49; 14=50-54,
+93,93,1,MAGER9,Mother's Age Recode 9,"A,S",1=Under 15; 2=15-19; 3=20-24; 4=25-29; 5=30-34; 6=35-39; 7=40-44; 8=45-49; 9=50-54,
+94,95,2,MBCNTRY,Mother's Birth Country,"A,s",AA-ZZ See Geographic Documentation,Territory file only; version s = 1989 conforming to 2003 standards
+96,108,13,BLANK,Blank filler,,,
+109,110,2,MRSTATEPSTL,Mother's Territory of Residence,"A,S",AS=American Samoa; GU=Guam; MP=Northern Marianas; PR=Puerto Rico; VI=Virgin Islands,Territory file only; not available in U.S. file
+111,113,3,BLANK,Blank filler,,,
+114,116,3,MRCNTYFIPS,Mother's FIPS County of Residence,"A,s",001-999=See Geographic Tables; 000=Foreign,Territory file only; not available in U.S. file
+117,131,15,BLANK,Blank filler,,,
+132,132,1,RCNTY_POP,Population of Residence County,"A,S",0=1M+; 1=500K-1M; 2=250K-500K; 3=100K-250K; 4=50K-100K; 5=25K-50K; 6=10K-25K; 9=<10K; Z=Foreign resident,Territory file only; not available in U.S. file
+133,136,4,BLANK,Blank filler,,,
+137,137,1,RECTYPE,Record Type,"A,S",1=RESIDENT (occurrence and residence same); 2=NONRESIDENT (occurrence and residence different),Territory file only; not available in U.S. file
+138,138,1,RESTATUS,Residence Status,"A,S",1=RESIDENT; 2=INTRASTATE NONRESIDENT; 3=INTERSTATE NONRESIDENT; 4=FOREIGN RESIDENT,
+139,140,2,MBRACE,Mother's Bridged Race,A,01-14=Single race codes; 21-24=Bridged race codes,Includes only states reporting multiple race; code 24 also for multiple Asian/PI
+141,142,2,BLANK,Blank filler,,,
+143,143,1,MRACEREC,Mother's Race Recode,"A,S",1=White; 2=Black; 3=American Indian/Alaskan Native; 4=Asian/Pacific Islander; 0=Other (Puerto Rico only),
+144,144,1,MRACEIMP,Mother's Race Imputed,"A,S",Blank=Not imputed; 1=Unknown race imputed; 2=All other races formerly coded 09 imputed,
+145,147,3,BLANK,Blank filler,,,
+148,148,1,UMHISP,Mother's Hispanic Origin,"A,S",0=Non-Hispanic; 1=Mexican; 2=Puerto Rican; 3=Cuban; 4=Central/South American; 5=Other/Unknown Hispanic; 9=Unknown/not stated,Reporting flag at position 569
+149,149,1,MRACEHISP,Mother's Race/Hispanic Origin,"A,S",1=Mexican; 2=Puerto Rican; 3=Cuban; 4=Central/South American; 5=Other/Unknown Hispanic; 6=Non-Hispanic White; 7=Non-Hispanic Black; 8=Non-Hispanic Other; 9=Unknown/not stated,Reporting flag at position 569
+150,152,3,BLANK,Blank filler,,,
+153,153,1,MAR,Mother's Marital Status,"A,S",1=Yes; 2=No; 9=Unknown/not stated; (PR: 2=Unmarried living together; 3=Unmarried not living together),Reporting flag at position 780
+154,154,1,MAR_IMP,Mother's Marital Status Imputed,"A,S",Blank=Not imputed; 1=Imputed,
+155,155,1,MEDUC,Mother's Education (Revised),A,1=8th grade or less; 2=9-12th no diploma; 3=HS graduate/GED; 4=Some college; 5=Associate; 6=Bachelor's; 7=Master's; 8=Doctorate/Professional; 9=Unknown,Reporting flag at position 571
+156,157,2,UMEDUC,Mother's Education (Unrevised),S,00=No formal education; 01-08=Elementary; 09-12=High school; 13-17=College; 99=Not stated,Reporting flag at position 647
+158,158,1,MEDUC_REC,Mother's Education Recode,S,1=0-8 years; 2=9-11 years; 3=12 years; 4=13-15 years; 5=16+ years; 6=Not stated,Reporting flag at position 647
+159,174,16,BLANK,Blank filler,,,
+175,175,1,FAGERPT_FLG,Father's Reported Age Used Flag,"A,S",Blank=Not used; 1=Father's reported age used,
+176,181,6,BLANK,Blank filler,,,
+182,183,2,FAGECOMB,Father's Combined Age (Revised),A,09-98=Age in years; 99=Unknown/not stated,Revised version only
+184,185,2,UFAGECOMB,Father's Combined Age (Unrevised),"A,S",10-98=Age in years; 99=Unknown/not stated,
+186,187,2,FAGEREC11,Father's Age Recode 11,"A,S",01=Under 15; 02=15-19; 03=20-24; 04=25-29; 05=30-34; 06=35-39; 07=40-44; 08=45-49; 09=50-54; 10=55-98; 11=Not stated,
+188,203,16,BLANK,Blank filler,,,
+204,211,8,BLANK,Blank filler,,,
+212,212,1,LBO_REC,Live Birth Order Recode,"A,S",0-7=Number of live birth order; 8=8 or more; 9=Unknown/not stated,
+213,216,4,BLANK,Blank filler,,,
+217,217,1,TBO_REC,Total Birth Order Recode,"A,S",1-7=Number of total birth order; 8=8 or more; 9=Unknown/not stated,
+218,244,27,BLANK,Blank filler,,,
+245,246,2,PRECARE,Month Prenatal Care Began (Revised),A,00=No prenatal care; 01-10=Month began; 99=Unknown/not stated,Reporting flag at position 668
+247,247,1,PRECARE_REC,Month Prenatal Care Began Recode (Revised),A,1=1st-3rd month; 2=4th-6th month; 3=7th-final month; 4=No prenatal care; 5=Unknown/not stated,Reporting flag at position 668
+248,255,8,BLANK,Blank filler,,,
+256,257,2,MPCB,Month Prenatal Care Began (Unrevised),S,00=No prenatal care; 01-10=Month began; 99=Unknown/not stated,Reporting flag at position 647
+258,258,1,MPCB_REC6,Month Prenatal Care Began Recode 6 (Unrevised),S,1=1st-2nd month; 2=3rd month; 3=4th-6th month; 4=7th-final month; 5=No prenatal care; 6=Unknown/not stated,Reporting flag at position 647
+259,259,1,MPCB_REC5,Month Prenatal Care Began Recode 5 (Unrevised),S,1=1st trimester; 2=2nd trimester; 3=3rd trimester; 4=No prenatal care; 5=Unknown/not stated,Reporting flag at position 647
+260,269,10,BLANK,Blank filler,,,
+270,271,2,UPREVIS,Number of Prenatal Visits,"A,S",00-49=Number of visits; 99=Unknown/not stated,Reporting flag at position 671
+272,273,2,PREVIS_REC,Number of Prenatal Visits Recode,"A,S",01=No visits; 02=1-2; 03=3-4; 04=5-6; 05=7-8; 06=9-10; 07=11-12; 08=13-14; 09=15-16; 10=17-18; 11=19+; 12=Unknown/not stated,Reporting flag at position 671
+274,275,2,BLANK,Blank filler,,,
+276,277,2,WTGAIN,Weight Gain,"A,S",00-97=Pounds; 98=98+ pounds; 99=Unknown/not stated,Reporting flag at position 648
+278,278,1,WTGAIN_REC,Weight Gain Recode,"A,S",1=<10 lbs; 2=10-14; 3=15-19; 4=20-24; 5=25-29; 6=30-34; 7=35+; 8=Unknown/not stated,Reporting flag at position 648
+279,279,1,BLANK,Blank filler,,,
+280,280,1,DFPC_IMP,Day of Date First Prenatal Care Imputed,A,Blank=Not imputed; 1=Imputed,Revised only
+281,283,3,BLANK,Blank filler,,,
+284,285,2,CIG_1,Cigarettes 1st Trimester,A,00-97=Number daily; 98=98+; 99=Unknown/not stated; Blank=Not on certificate,Reporting flag at position 673
+286,287,2,CIG_2,Cigarettes 2nd Trimester,A,00-97=Number daily; 98=98+; 99=Unknown/not stated; Blank=Not on certificate,Reporting flag at position 674
+288,289,2,CIG_3,Cigarettes 3rd Trimester,A,00-97=Number daily; 98=98+; 99=Unknown/not stated; Blank=Not on certificate,Reporting flag at position 675
+290,290,1,TOBUSE,Tobacco Use (Unrevised),S,1=Yes; 2=No; 9=Unknown/not stated; Blank=Not on certificate,Reporting flag at position 667
+291,292,2,CIGS,Cigarettes per Day (Unrevised),S,00-97=Number daily; 98=98+; 99=Unknown/not stated; Blank=Not on certificate,
+293,293,1,UCIG_REC6,Cigarette Recode (Unrevised),S,0=Non-smoker; 1=1-5 daily; 2=6-10; 3=11-20; 4=21-40; 5=41+; 6=Unknown/not stated; Blank=Not on certificate,
+294,294,1,CIG_REC,Smoking Status Recode (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 575
+295,304,10,BLANK,Blank filler,,,
+305,307,3,PWGT,Prepregnancy Weight,A,074=<75 lbs; 075-374=pounds; 375=375+; 999=Unknown/not stated,Reporting flag at position 577
+308,308,1,FILLER,Filler,,,Blank
+309,311,3,DWGT,Maternal Delivery Weight,A,099=<100 lbs; 100-399=pounds; 400=400+; 999=Unknown/not stated,Reporting flag at position 578
+312,312,1,FILLER,Filler,,,Blank
+313,313,1,RF_DIAB,Prepregnancy Diabetes (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 582
+314,314,1,RF_GEST,Gestational Diabetes (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 583
+315,315,1,RF_PHYP,Prepregnancy Hypertension (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 584
+316,316,1,RF_GHYP,Gestational Hypertension (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 585
+317,317,1,RF_ECLAM,Hypertension Eclampsia (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 586
+318,318,1,RF_PPTERM,Previous Preterm Birth (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 587
+319,319,1,RF_PPOUTC,Poor Pregnancy Outcome (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 588
+320,323,4,BLANK,Blank filler,,,
+324,324,1,RF_CESAR,Previous Cesareans (Revised),A,Y=Yes; N=No; U=Unknown/not stated; X=Not on certificate,Reporting flag at position 593
+325,326,2,RF_CESARN,Previous Cesareans Number (Revised),A,00=None; 01-30=Number; 99=Unknown/not stated; Blank=Not on certificate,Reporting flag at position 594
+327,330,4,BLANK,Blank filler,,,
+331,331,1,URF_DIAB,Diabetes (Unrevised),"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown,Reporting flag at position 684
+332,334,3,BLANK,Blank filler,,,
+335,335,1,URF_CHYPER,Chronic Hypertension (Unrevised),"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown,Reporting flag at position 688
+336,336,1,URF_PHYPER,Pregnancy-Associated Hypertension (Unrevised),"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown,Reporting flag at position 689
+337,337,1,URF_ECLAMP,Eclampsia (Unrevised),"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown,Reporting flag at position 690
+338,356,19,BLANK,Blank filler,,,
+357,357,1,UOP_INDUC,Induction of Labor,"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Not stated,Reporting flag at position 703
+358,358,1,BLANK,Blank filler,,,
+359,359,1,UOP_TOCOL,Tocolysis,"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Not stated,Reporting flag at position 705
+360,383,24,BLANK,Blank filler,,,
+384,384,1,ULD_BREECH,Breech Delivery,"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Not stated,Reporting flag at position 721
+385,391,7,BLANK,Blank filler,,,
+392,392,1,ME_PRES,Fetal Presentation (Revised),A,1=Cephalic; 2=Breech; 3=Other; 9=Unknown/not stated,Reporting flag at position 619
+393,393,1,ME_ROUT,Route and Method of Delivery (Revised),A,1=Spontaneous; 2=Forceps; 3=Vacuum; 4=Cesarean; 9=Unknown/not stated,Reporting flag at position 620
+394,394,1,ME_TRIAL,Trial of Labor Attempted (Revised),A,Y=Yes; N=No; X=Not applicable; U=Unknown/not stated,Reporting flag at position 621
+395,395,1,ME_HYSTER,Hysterotomy/Hysterectomy (Revised),A,Y=Yes; N=No; X=Not on certificate; U=Unknown/not stated,Reporting flag at position 800
+396,396,1,UME_VAG,Vaginal Delivery,"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 730
+397,397,1,UME_VBAC,Vaginal After C-Section,S,1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 731
+398,398,1,UME_PRIMC,Primary C-Section,S,1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 732
+399,399,1,UME_REPEC,Repeat C-Section,S,1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 733
+400,400,1,UME_FORCP,Forceps,"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 734
+401,401,1,UME_VAC,Vacuum,"A,S",1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 735
+402,402,1,UME_HYSTER,Hysterectomy/Hysterotomy (Unrevised),S,1=Yes; 2=No; 8=Not on certificate; 9=Unknown/not stated,Reporting flag at position 797
+403,403,1,DMETH_REC,Delivery Method Recode,"A,S",1=Vaginal; 2=C-section; 9=Not stated,Reporting flag at position 678
+404,409,6,BLANK,Blank filler,,,
+410,410,1,ATTEND,Attendant at Delivery,"A,S",1=MD; 2=DO; 3=CNM; 4=Other Midwife; 5=Other; 9=Unknown/not stated,Reporting flag at position 801
+411,422,12,BLANK,Blank filler,,,
+423,423,1,DPLURAL,Plurality Recode,"A,S",1=Single; 2=Twin; 3=Triplet; 4=Quadruplet; 5=Quintuplet or higher,
+424,424,1,BLANK,Blank filler,,,
+425,425,1,IMP_PLUR,Plurality Imputed Flag,"A,S",Blank=Imputed; 1=Not imputed,
+426,435,10,BLANK,Blank filler,,,
+436,436,1,SEX,Sex of Infant,"A,S",M=Male; F=Female,
+437,437,1,IMP_SEX,Sex Imputed Flag,"A,S",Blank=Not imputed; 1=Imputed,Only where gestation >= 20 weeks
+438,439,2,DLMP_MM,Last Normal Menses Month,"A,S",01-12=Month; 99=Unknown/not stated,
+440,441,2,BLANK,Blank filler,,,
+442,445,4,DLMP_YY,Date of Last Normal Menses Year,"A,S",nnnn=Year; 9999=Unknown/not stated,
+446,447,2,ESTGEST,Obstetric/Clinical Gestation Estimate,"A,S",A: 0-98=Obstetric estimate weeks (revised); S: 02-47=Clinical estimate weeks (unrevised); 99=Unknown/not stated,Reporting flag at position 573
+448,450,3,BLANK,Blank filler,,,
+451,452,2,COMBGEST,Combined Gestation Detail in Weeks,"A,S",02-47=Weeks of gestation; 99=Unknown,
+453,454,2,GESTREC12,Gestation Recode 12,"A,S",01=Under 16 wks; 02=16-19; 03=20-23; 04=24-27; 05=28-31; 06=32-35; 07=36; 08=37-39; 09=40; 10=41; 11=42+; 12=Unknown,
+455,455,1,GESTREC5,Gestation Recode 5,"A,S",1=Under 20 wks; 2=20-23; 3=24-27; 4=28+; 5=Unknown,
+456,456,1,OBGEST_FLG,Obstetric Estimate of Gestation Used Flag,"A,S",Blank=Not used; 1=Used,
+457,457,1,GEST_IMP,Gestation Imputed Flag,"A,S",Blank=Not imputed; 1=Imputed,
+458,462,5,BLANK,Blank filler,,,
+463,466,4,DBWT,Birth Weight Detail in Grams,"A,S",0001-8165=Grams; 9999=Not stated,
+467,470,4,BLANK,Blank filler,,,
+471,472,2,BWTR14,Birth Weight Recode 14,"A,S",01=<=249g; 02=250-349; 03=350-499; 04=500-999; 05=1000-1499; 06=1500-1999; 07=2000-2499; 08=2500-2999; 09=3000-3499; 10=3500-3999; 11=4000-4499; 12=4500-4999; 13=5000-8165; 14=Unknown/not stated,
+473,473,1,BWTR4,Birth Weight Recode 4,"A,S",1=<=1499g; 2=1500-2499; 3=2500-8165; 4=Unknown/not stated,Note: PDF shows two codes as 1; likely 1=<=1499; 2=1500-2499
+474,491,18,BLANK,Blank filler,,,
+492,492,1,CA_ANEN,Anencephaly (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 635
+493,493,1,CA_MNSB,Meningomyelocele/Spina Bifida (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 636
+494,494,1,CA_CCHD,Cyanotic Congenital Heart Disease (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 637
+495,495,1,CA_CDH,Congenital Diaphragmatic Hernia (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 638
+496,496,1,CA_OMPH,Omphalocele (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 639
+497,497,1,CA_GAST,Gastroschisis (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 640
+498,498,1,CA_LIMB,Limb Reduction Defect (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 641
+499,499,1,CA_CLEFT,Cleft Lip with/without Cleft Palate (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 642
+500,500,1,CA_CLPAL,Cleft Palate Alone (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 643
+501,501,1,CA_DOWN,Down Syndrome (Revised),A,C=Confirmed; P=Pending; N=No; U=Unknown,Reporting flag at position 644
+502,502,1,CA_DISOR,Suspected Chromosomal Disorder (Revised),A,C=Confirmed; P=Pending; N=No; U=Unknown,Reporting flag at position 645
+503,503,1,CA_HYPO,Hypospadias (Revised),A,Y=Yes; N=No; U=Unknown,Reporting flag at position 646
+504,504,1,UCA_ANEN,Anencephalus (Unrevised),"A,S",1=Reported; 2=Not reported; 8=Not on certificate; 9=Not classifiable,Reporting flag at position 752
+505,505,1,UCA_SPINA,Spina Bifida/Meningocele (Unrevised),"A,S",1=Reported; 2=Not reported; 8=Not on certificate; 9=Not classifiable,Reporting flag at position 753
+506,512,7,BLANK,Blank filler,,,
+513,513,1,UCA_OMPHA,Omphalocele/Gastroschisis (Unrevised),"A,S",1=Reported; 2=Not reported; 8=Not on certificate; 9=Not classifiable,Reporting flag at position 761
+514,517,4,BLANK,Blank filler,,,
+518,518,1,UCA_CLEFTLP,Cleft Lip/Palate (Unrevised),"A,S",1=Reported; 2=Not reported; 8=Not on certificate; 9=Not classifiable,Reporting flag at position 766
+519,522,4,BLANK,Blank filler,,,
+523,523,1,UCA_DOWNS,Down Syndrome (Unrevised),"A,S",1=Reported; 2=Not reported; 8=Not on certificate; 9=Not classifiable,Reporting flag at position 771
+524,568,45,BLANK,Blank filler,,,
+569,569,1,F_MORIGIN,Mother's Hispanic Origin Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+570,570,1,BLANK,Blank filler,,,
+571,571,1,F_MEDUC,Education of Mother Flag (Revised),A,0=Not reporting; 1=Reporting,Reporting flag
+572,572,1,BLANK,Blank filler,,,
+573,573,1,F_CLINEST,Obstetric Estimate of Gestation Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+574,574,1,BLANK,Blank filler,,,
+575,575,1,F_TOBACO,Tobacco Use Flag (Revised),A,0=Not reporting; 1=Reporting,Reporting flag
+576,581,6,BLANK,Blank filler,,,
+582,582,1,F_RF_PDIAB,Prepregnancy Diabetes Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+583,583,1,F_RF_GDIAB,Gestational Diabetes Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+584,584,1,F_RF_PHYPER,Prepregnancy Hypertension Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+585,585,1,F_RF_GHYPER,Gestational Hypertension Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+586,586,1,F_RF_ECLAMP,Hypertension Eclampsia Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+587,587,1,F_RF_PPB,Previous Preterm Birth Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+588,588,1,F_RF_PPO,Poor Pregnancy Outcomes Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+589,592,4,BLANK,Blank filler,,,
+593,593,1,F_RF_CESAR,Previous Cesarean Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+594,594,1,F_RF_NCESAR,Number of Previous Cesareans Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+595,618,24,BLANK,Blank filler,,,
+619,619,1,F_MD_PRESENT,Fetal Presentation Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+620,620,1,F_MD_ROUTE,Final Route and Method of Delivery Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+621,621,1,F_MD_TRIAL,Trial of Labor Attempted Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+622,634,13,BLANK,Blank filler,,,
+635,635,1,F_CA_ANEN,Anencephaly Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+636,636,1,F_CA_MENIN,Meningomyelocele/Spina Bifida Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+637,637,1,F_CA_HEART,Cyanotic Congenital Heart Disease Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+638,638,1,F_CA_HERNIA,Congenital Diaphragmatic Hernia Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+639,639,1,F_CA_OMPHA,Omphalocele Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+640,640,1,F_CA_GASTRO,Gastroschisis Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+641,641,1,F_CA_LIMB,Limb Reduction Defect Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+642,642,1,F_CA_CLEFTLP,Cleft Lip with/without Cleft Palate Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+643,643,1,F_CA_CLEFT,Cleft Palate Alone Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+644,644,1,F_CA_DOWNS,Down Syndrome Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+645,645,1,F_CA_CHROM,Suspected Chromosomal Disorder Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+646,646,1,F_CA_HYPOS,Hypospadias Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+647,647,1,F_MED,Mother's Education Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+648,648,1,F_WTGAIN,Weight Gain Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+649,666,18,BLANK,Blank filler,,,
+667,667,1,F_TOBAC,Tobacco Use Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+668,668,1,F_MPCB,Month Prenatal Care Began Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+669,669,1,BLANK,Blank filler,,,
+670,670,1,F_CMBGST,Combined Gestation Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+671,671,1,F_TPCV,Total Prenatal Care Visits Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+672,672,1,BLANK,Blank filler,,,
+673,673,1,F_CIGS_1,Cigarettes 1st Trimester Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+674,674,1,F_CIGS_2,Cigarettes 2nd Trimester Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+675,675,1,F_CIGS_3,Cigarettes 3rd Trimester Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+676,676,1,F_FACILITY,Facility Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+677,677,1,BLANK,Blank filler,,,
+678,678,1,DelMethRecF,Delivery Method Recode Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+679,683,5,BLANK,Blank filler,,,
+684,684,1,F_URF_DIABETES,Diabetes Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+685,687,3,BLANK,Blank filler,,,
+688,688,1,F_URF_CHYPER,Chronic Hypertension Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+689,689,1,F_URF_PHYPER,Pregnancy Hypertension Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+690,690,1,F_URF_ECLAMP,Eclampsia Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+691,702,12,BLANK,Blank filler,,,
+703,703,1,F_UOB_INDUCT,Induction Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+704,704,1,BLANK,Blank filler,,,
+705,705,1,F_UOB_TOCOL,Tocolysis Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+706,720,15,BLANK,Blank filler,,,
+721,721,1,F_ULD_BREECH,Breech Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+722,729,8,BLANK,Blank filler,,,
+730,730,1,F_U_VAGINAL,Vaginal Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+731,731,1,F_U_VBAC,VBAC Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+732,732,1,F_U_PRIMAC,Primary C-Section Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+733,733,1,F_U_REPEAC,Repeat C-Section Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+734,734,1,F_U_FORCEP,Forceps Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+735,735,1,F_U_VACUUM,Vacuum Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+736,751,16,BLANK,Blank filler,,,
+752,752,1,F_UCA_ANEN,Anencephalus Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+753,753,1,F_UCA_SPINA,Spina Bifida Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+754,760,7,BLANK,Blank filler,,,
+761,761,1,F_UCA_OMPHALO,Omphalocele Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+762,765,4,BLANK,Blank filler,,,
+766,766,1,F_UCA_CLEFTLP,Cleft Lip Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+767,770,4,BLANK,Blank filler,,,
+771,771,1,F_UCA_DOWNS,Down Syndrome Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+772,779,8,BLANK,Blank filler,,,
+780,780,1,F_MS_u,Mother's Marital Status Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+781,793,13,BLANK,Blank filler,,,
+794,794,1,F_CIG_DAY_u,Cigarettes per Day Flag (Unrevised),S,0=Not reporting; 1=Reporting,Reporting flag
+795,795,1,F_NPREV,Number of Prenatal Visits Flag,A,0=Not reporting; 1=Reporting,Reporting flag
+796,796,1,BLANK,Blank filler,,,
+797,797,1,F_HYSTERu,Hysterectomy Flag (Unrevised),"A,S",0=Not reporting; 1=Reporting,Reporting flag
+798,799,2,BLANK,Blank filler,,,
+800,800,1,F_HYSTER_r,Hysterectomy Flag (Revised),A,0=Not reporting; 1=Reporting,Reporting flag
+801,801,1,F_ATTENDANT,Attendant Flag,"A,S",0=Not reporting; 1=Reporting,Reporting flag
+802,832,31,BLANK,Blank filler (pre-MRACE-checkboxes gap),"A,S",,"Per 2003FetalUserGuide.pdf pg 48 (798-832 declared FILLER); 798-801 are split out (F_HYSTER_r, F_ATTENDANT, BLANK)."
+833,833,1,MRACE1,Mother's Race - White checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+834,834,1,MRACE2,Mother's Race - Black or African American checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+835,835,1,MRACE3,Mother's Race - American Indian or Alaska Native checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+836,836,1,MRACE4,Mother's Race - Asian Indian checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+837,837,1,MRACE5,Mother's Race - Chinese checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+838,838,1,MRACE6,Mother's Race - Filipino checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+839,839,1,MRACE7,Mother's Race - Japanese checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+840,840,1,MRACE8,Mother's Race - Korean checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+841,841,1,MRACE9,Mother's Race - Vietnamese checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+842,842,1,MRACE10,Mother's Race - Other Asian checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+843,843,1,MRACE11,Mother's Race - Native Hawaiian checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+844,844,1,MRACE12,Mother's Race - Guamanian or Chamorro checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+845,845,1,MRACE13,Mother's Race - Samoan checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+846,846,1,MRACE14,Mother's Race - Other Pacific Islander checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+847,847,1,MRACE15,Mother's Race - Other checkbox,A,Y=checked; N=not checked,2003-revision (A) records only; per 2003FetalUserGuide.pdf pg 48-49. S records reuse bytes 833-836 for a legacy 4-byte code (see MRACE_LEGACY_S row).
+833,836,4,MRACE_LEGACY_S,Legacy 4-byte race-related field (1989-revision records only),S,"byte 833 in {0,2,4,6,8,9}; byte 834 in {0,4}; byte 835 in {0,2}; byte 836 in {1,2,9}; bytes 837-847 blank for S records","S-revision (1989) records only. Semantics not yet identified; observed empirically as digit patterns like 9009, 0001 in 2003 file. Not used by V2.1 harmonization (race comes from MRACEREC@143 for both A and S records). Filed as L13 audit follow-up: verify against the 2003/2004 FULL user-guide layout tables and the 1989-revision-era 2002 layout."
+848,1087,240,BLANK,Blank filler (between race checkboxes and MRACEnE codes),"A,S",,Per 2003FetalUserGuide.pdf pg 49 (848-1087 FILLER).
+1088,1090,3,MRACE1E,Mother's Race Edited (occurrence 1),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1091,1093,3,MRACE2E,Mother's Race Edited (occurrence 2),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1094,1096,3,MRACE3E,Mother's Race Edited (occurrence 3),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1097,1099,3,MRACE4E,Mother's Race Edited (occurrence 4),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1100,1102,3,MRACE5E,Mother's Race Edited (occurrence 5),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1103,1105,3,MRACE6E,Mother's Race Edited (occurrence 6),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1106,1108,3,MRACE7E,Mother's Race Edited (occurrence 7),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1109,1111,3,MRACE8E,Mother's Race Edited (occurrence 8),A,100-999 numeric; A00-R99 alpha; declared but EMPTY in 2003/2004 public-use file,Per 2003FetalUserGuide.pdf pg 49. Empirically all-blank in 2003 records (both A and S sampled). NCHS suppressed multi-race detail from the 2003-2004 public-use file.
+1112,1500,389,BLANK,Blank filler (truncated end-of-record),"A,S",,Per 2004FetalUserGuide.pdf pg 49 (1112-3336 declared FILLER in full layout); 2004 public-use file is truncated at byte 1500 (= 2003 layout + 150 bytes of trailing padding).
