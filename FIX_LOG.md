@@ -19,6 +19,31 @@
 
 ---
 
+## 2026-05-12T13:35:02Z — natality_v28_rename — H8 — 3 doc references to `restatus` survived the v2.8 build-dir rename pass
+
+**Symptom:** Post-sync grep of monorepo `natality/` for `\brestatus\b` returned 3 hits: `natality/README.md:38` (`Residents-only subsets (exclude foreign residents; \`restatus != 4\`)` in a docs file-table cell) and `natality/docs/GETTING_STARTED.md:41 + :50` ("Full file with foreign residents + restatus columns" in V2 and V3 file-table descriptors). All three describe the v2.8-renamed column, but the build-dir rename pass overlooked them.
+
+**Root cause:** The build-dir v2.8 rename pass (DECISION_LOG 2026-05-12T03:25Z 14-step plan) targeted `metadata/harmonized_schema.csv`, scripts (string-literal column-name references), and 6 documented docs (`CODEBOOK`, `COMPARABILITY`, `ABOUT_THIS_RELEASE`, `VALIDATION`, `FAQ`, `GETTING_STARTED`). The pass caught the schema rows + the script string literals + most doc backtick references. It missed:
+1. `README.md` was NOT in the 6-docs list (the natality build-dir README was treated as a top-level README, not a "doc"); the `restatus != 4` filter expression on line 38 escaped.
+2. `GETTING_STARTED.md` was in the list, but the rename caught backtick `\`restatus\`` patterns and missed two bare-word "restatus columns" instances in narrative-text file-table cells.
+
+**Fix:** Edited the 3 lines in both repos (monorepo `natality/README.md` + `natality/docs/GETTING_STARTED.md`; build-dir `README.md` + `docs/GETTING_STARTED.md`). The grep `\brestatus\b` for monorepo now returns zero hits in `natality/` user-facing docs. (3 other occurrences exist in state files — FIX_LOG entries, STATUS sections, PRE_FLIGHT_LOG — which are append-only historical records and intentionally retain the old name where they describe pre-rename state.)
+
+**Files touched (this fix):**
+- `natality/README.md` (monorepo + build-dir)
+- `natality/docs/GETTING_STARTED.md` (monorepo + build-dir) — `replace_all=true` caught both lines 41 + 50.
+
+**Regression scope:** None — these are user-facing doc strings; the rename does not affect data, validation, or notebook execution. Caught during the routine post-sync `\brestatus\b` grep that runs as part of the v2.8 close-out's verification gate.
+
+**Verified by:**
+- `grep -rn '\brestatus\b' natality/ --include='*.md'` returns no hits.
+- Build-dir `grep -rn '\brestatus\b' README.md docs/*.md` returns no hits.
+- (Scripts still contain `restatus` as a LOCAL PYTHON VARIABLE — `restatus = _to_int_or_null(_get_col(batch, "RESTATUS"), ...)` — which is intentional per the raw-field-name convention. Output column is `residence_status`. Documented in the natality_v28_rename receipt Self-check item 3.)
+
+**Could the §8 matrix have caught this earlier?** Yes — this is squarely **L4 (LLM forgets to propagate fix to sibling)** + **H8 (docs vs data drift)** in combination. The 14-step plan's doc-edit list was incomplete: it should have included `README.md` as a top-level user-facing doc. The cheap-check that would have caught it before this point: at PRE-FLIGHT time, the Field-value snapshot's "edit surface" enumeration could have used a stronger filter than the targeted-sed patterns — specifically a word-boundary grep `\brestatus\b` across ALL markdown in the build dir, not just the 6 listed docs. Proposed plan-update for future schema-rename tasks: the PRE-FLIGHT edit-surface table must specify the regex/grep that enumerates the surface, NOT a curated file list, so that no files are silently omitted from the rename pass. Filed as a residual L4-class catch; documented for future schema renames.
+
+---
+
 ## 2026-05-11T18:50:00Z — task2_joint_use_demo — H8 — fetal-death schema documents `int` dtype for five columns shipped as `object`/string in v2.0.0 parquet
 
 **Symptom:** Task 2 SMOKE Tier 1 produced 0 rows when the filter `(fd["tabulation_flag"] == 2) & (fd["residence_status"] != 4)` was applied to the shipped `fetal_death_derived.parquet`. `JOINT_USE_GUIDE.md` documented the filter with int literals, matching `fetal_death/harmonized_schema.csv`'s `type=int` column for `tabulation_flag` (allowed_values `1-2`) and `residence_status` (allowed_values `1-4`). A naive user copy-pasting the worked example would silently filter out 100% of records.

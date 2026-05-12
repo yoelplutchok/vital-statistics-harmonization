@@ -23,6 +23,36 @@
 
 ---
 
+## 2026-05-12T13:35:02Z — natality_v28_rename — Retain aliasing helper NATALITY_TO_CANONICAL populated post-v2.8 (override prior "becomes no-op" framing to keep v2.7.0 Zenodo backward-compat)
+
+**Choice:** Keep `shared/helpers/canonical_join_keys.py` `NATALITY_TO_CANONICAL` populated with its 4-entry mapping after v2.8 ships. Update the docstring to clarify that the helper is a no-op for v2.8+ input (rename map produces empty dict) but is retained for v2.7.0 input where the immutable Zenodo deposit 10.5281/zenodo.19868835 still has the old column names. Premature neuter (emptying the dict) is deferred — possibly indefinitely — until the v2.7.0 deposit is no longer in common use.
+
+**Alternatives considered:**
+
+1. **Empty the dict post-v2.8 (the prior framing).** DECISION_LOG 2026-05-12T03:25Z DO-plan step 10 said: "Update `shared/helpers/canonical_join_keys.py` in the monorepo: `NATALITY_TO_CANONICAL` becomes empty dict + deprecation note." Pro: visible deprecation; the helper becomes a true passthrough. Con: breaks any code that reads the v2.7.0 Zenodo parquet through the helper expecting the rename to happen. The v2.7.0 deposit is immutable and remains the canonical citable artifact until Task 10 deposits v2.8.0.
+
+2. **Retain dict + add docstring deprecation note (chosen).** Helper continues to work for both v2.7.0 and v2.8.0+ input. Joint-use code that should be version-agnostic keeps calling `to_canonical_natality()` (no-op for v2.8, full rename for v2.7.0). Cost: minor cognitive overhead (the helper "always works" framing requires the docstring to explain why); benefit: zero breakage risk for any current consumer.
+
+3. **Remove the helper entirely.** Aggressive but unnecessary. The helper is small (~50 lines) and the cost of keeping it is near-zero. Premature.
+
+**Reason:** Forward-looking HALT 4 in STATUS 2026-05-12T05:10Z and 06:30Z both flagged premature neuter as risky for v2.7.0 backward-compat. This session's empirical confirmation (re-running both monorepo notebooks against v2.8 parquets and observing the helper's empty-rename-map behavior) verified that the v2.8 path is unchanged whether the dict is populated or empty (no rename needed when input columns are already canonical). The v2.7.0 path REQUIRES the dict populated. Choice 2 dominates choice 1 on both safety and operational simplicity.
+
+**Source:**
+- Smoke-test inline at commit `5174552`: `python3 -c "from shared.helpers.canonical_join_keys import to_canonical_natality, NATALITY_TO_CANONICAL; df = pd.DataFrame({'data_year':[2020], 'residence_status':[1]}); out = to_canonical_natality(df); print(list(out.columns))"` returned `['data_year', 'residence_status']` (no rename); v2.7.0 input columns `['year', 'restatus']` renamed to `['data_year', 'residence_status']`. Dual-path verified.
+- `paper_companion_results.csv` byte-identical to prior v2.7.0 commit after rebuilding both monorepo notebooks against v2.8 parquets (commit `a6b3d36`). The end-to-end value preservation gives high confidence that the helper's dual-path behavior is correct.
+
+**Verifiable by:**
+- The 5-line smoke-test above; reproducible at any time.
+- `git diff shared/helpers/canonical_join_keys.py` at commit `5174552`: dict content unchanged; only docstring updated.
+
+**Reversible:** yes — emptying the dict is a one-line edit at a future task (e.g., when the v2.7.0 deposit is migrated or formally deprecated). Recorded here so the future-empty task can cite this entry as the prior-state justification.
+
+**Residual risks:**
+- (a) Some user code might check `if NATALITY_TO_CANONICAL: ... ` as a sentinel that the rename is "needed"; that pattern would silently always-rename even on v2.8 input. Mitigation: `to_canonical_natality()` does the right thing in both cases (it's the wrapper that filters by input columns), and the docstring directs callers to use the wrapper, not to introspect the dict.
+- (b) When the v2.7.0 Zenodo deposit is eventually superseded (Task 10 deposits v2.8.0), this retention will outlive its useful life. A future task should re-evaluate.
+
+---
+
 ## 2026-05-12T04:30:00Z — task7_v3b_doc_hunt — KICKOFF Step 0 V3b doc retry succeeded; proposing Task 7 scope expansion to 1982-2022 (41 years)
 
 **Choice (proposal pending user confirmation):** Expand Task 7 scope from the prior session's "V3a only (1989-1991, 34 years total)" framing back to "V3a + V3b (1982-2022, 41 years total)" per KICKOFF.md Step 0 contingency ("If V3b authoritative docs found → expand Task 7 scope to 1982-2022 and proceed with V3a + V3b"). Step 0 found all 10 fetal-death user guides 1982-1991 obtainable from NCHS canonical FTP path `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/<YYYY>FetalUserGuide.pdf` (all HTTP 200; sizes/last-modified per STATUS 2026-05-12T04:30Z). The proposal is NOT yet authorized — it requires explicit user yes before Task 7 PRE-FLIGHT begins downloading the PDFs to the build dir.

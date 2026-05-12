@@ -1,6 +1,87 @@
-# STATUS — last updated 2026-05-12T06:30:00Z
+# STATUS — last updated 2026-05-12T13:35:02Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T13:35:02Z — Natality v2.8.0 column rename COMPLETE (steps 9-14 of 14 closed this session); monorepo synced; both notebooks rebuilt; RECEIPT + tags landed
+
+### Current phase
+
+Phase A continuing. **KICKOFF.md sequence step 1 (natality v2.8 column rename) is now FULLY COMPLETE**: data-side shipped prior session (steps 1-8); doc straggler edits, aliasing-helper docstring update, both monorepo notebook rebuilds, monorepo sync, partial version-string ripple, and formal RECEIPT all landed this session (steps 9-14). `natality_v28_rename-complete` tagged on both repos. Next task per KICKOFF sequence is Task 7 (fetal-death V3 backward extension), gated on Q19/Q20.
+
+### What was done this session
+
+1. Session start: full §1 read of STATUS (2026-05-12T06:30Z top section), NEXT_STEPS end-to-end, README, PROJECT_STRUCTURE, DECISION_LOG (last 10 entries), FIX_LOG (all 4 entries), LESSONS (all 4 entries). (a)-(d) handshake returned to user; user authorized "proceed as you think best."
+2. Forward-looking HALT verifications from prior STATUS:
+   - HALT 2 (parquet SHA stability): all 4 v2.8 build-dir parquet SHAs unchanged from STATUS 2026-05-12T06:30Z record. ✓
+   - HALT 1 (stashed README diff): popped, committed standalone on build-dir as `6837b34` (`[cosmetic] README: scrub LLM mention from Reading order header`); tree clean before further mutations.
+3. **Plan step 12 (sync, executed early)**: 23 files synced from build-dir to monorepo `natality/` (metadata 3, scripts 9, docs 6, output/validation 2, README + .zenodo.json + 1 doc-supplement). 116 ins / 116 dels, pure renames. Monorepo commit `9a66b60`.
+4. **Plan step 11 (notebook re-run)**: Discovered that `pd.read_parquet(..., columns=[old_names])` in `_build_joint_use_demo.py` (6 lines) and `_build_paper_companion.py` (3 lines) would fail under v2.8 because column-selective parquet reads happen BEFORE the aliasing helper rename. Updated both builders to use canonical names natively. Re-executed both. joint_use_demo: clean (0 FAIL/DIFF/error). paper_companion: clean execution with 2 pre-existing DIFFs (C03 fetal-death V2.1 count growth from 1.63M→1.74M; C04 natality "~3.5M" wording precision) — both byte-identical to prior commit's synthesis CSV. **`paper_companion_results.csv` byte-identical to the prior v2.7.0 commit** = strong end-to-end value-preservation signal. Monorepo commit `a6b3d36`.
+5. **Plan step 10 (aliasing helper docstring update)**: per Forward-looking HALT 4, did NOT empty NATALITY_TO_CANONICAL dict; instead added a docstring note that the helper is a no-op for v2.8+ input but retained for v2.7.0 backward-compat (the immutable Zenodo deposit at 10.5281/zenodo.19868835 still has old column names). Smoke-test confirms dual-path behavior. Monorepo commit `5174552`.
+6. **Plan step 13 (version-string ripple, partial)**: per Forward-looking HALT 5, full Zenodo DOI swap deferred to Task 10. Updated:
+   - `VERSION_ROADMAP.md` table now distinguishes in-repo state (natality v2.8.0, fetal-death v2.1.0) vs latest-deposited state (v2.7.0, v2.0.0).
+   - `PROJECT_STRUCTURE.md` natality line updated.
+   - `CITATION.cff` notes field updated.
+   - `natality/README.md` — added "v2.8.0 not yet deposited" note next to existing v2.7.0 DOI block.
+   - Caught 3 missed `restatus` doc references in `natality/README.md` + `natality/docs/GETTING_STARTED.md` (lines 41, 50 referring to "restatus columns") that the build-dir rename pass had overlooked; fixed in both monorepo and build-dir. Build-dir commit `80c0380`; monorepo commit `50dd7b4`.
+7. **Plan step 14 (RECEIPT + state-file updates + tags)**:
+   - Wrote `RECEIPTS/natality_v28_rename_2026-05-12T13-35-02Z.md` per §6 template (full 5-phase trace; VERIFY criteria with thresholds; 8-item self-check; 7-item Forward-looking HALTs for next session).
+   - This STATUS section.
+   - FIX_LOG entry for the 3 missed `restatus` doc refs (H8 / docs-data drift class).
+   - DECISION_LOG entry for the choice to retain `NATALITY_TO_CANONICAL` populated rather than empty.
+   - Will tag `natality_v28_rename-complete` on both monorepo (this STATUS commit) and build-dir (`80c0380`).
+
+### Last completed step
+
+KICKOFF.md sequence **step 1 (natality v2.8 column rename) — COMPLETE**. All 14 plan sub-steps closed.
+
+### In-progress
+
+(none — clean checkpoint at task close)
+
+### Next planned task
+
+Per KICKOFF.md sequence: **step 2 — Task 7 (fetal-death V3a backward extension to 1989-1991, possibly +V3b to 1982 if Q19 expands scope)**. PRE-FLIGHT requires Q19 (V3a-only vs V3a+V3b) and Q20 (sequence after v2.8) answered. Per KICKOFF.md Step 0 (executed 2026-05-12T04:30Z) the V3b user guides ARE obtainable at canonical NCHS FTP, so expanding to V3a+V3b is feasible — but ~3-4 sessions more effort vs ~1 for V3a-only (incl. OCR risk on bitmap-scanned 1980s PDFs).
+
+After Task 7: Task 9 (redirect notices on old GitHub repos), Task 10 (unified Zenodo deposit + v2.8.0 natality + v2.1.0 fetal-death uploads), v1.1 GitHub push, manuscript re-pass + submit.
+
+### Blocked
+
+- **Q19 / Q20** remain open and gate Task 7 PRE-FLIGHT.
+
+### Open questions for human
+
+Carried + (none new this session):
+1-17: (carried)
+18: ~~V3b post-submission resolution path~~ — SUPERSEDED at 2026-05-12T04:30Z.
+19: **Task 7 scope expansion** (V3a-only [~1 session, 34 yrs] vs V3a+V3b [~3-4 sessions inc. OCR, 41 yrs]). UNANSWERED.
+20: **Task ordering after v2.8** (KICKOFF as-is vs pull Task 7 forward — moot now that v2.8 is done; default = KICKOFF as-is unless human directs). UNANSWERED.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`natality_v28_rename-complete` tag** must exist on BOTH monorepo (at this STATUS commit) and build-dir (at `80c0380`). Verify at session start: `git -C ~/Desktop/vital-statistics-harmonization tag --list 'natality_v28_*'` and `git -C ~/Desktop/natality-harmonization tag --list 'natality_v28_*'`.
+2. **The 4 v2.8 parquet SHAs in the receipt are now baseline.** If session-start verification finds drift in `~/Desktop/natality-harmonization/output/harmonized/*.parquet`, halt and investigate before any further task work.
+3. **`paper_companion_results.csv` byte-identical-to-prior is the rename-validation gold standard.** Future natality/fetal-death schema-only mutations (renames, dtype-only changes, doc-only changes) should preserve this CSV byte-identical; a future drift is the audit signal to investigate why.
+4. **Re-derive determinism for v2.8 specifically is unverified across sessions.** Schedule a clean re-derive verification BEFORE the v2.8.0 Zenodo deposit lands at Task 10; compare new SHAs to the 4 receipt SHAs. If match → bit-stable; deposit. If not → investigate.
+5. **Aliasing helper retains NATALITY_TO_CANONICAL** for v2.7.0 backward-compat. Premature neuter risks breaking any code that reads the immutable v2.7.0 Zenodo deposit through the monorepo helper.
+6. **Internal Python variable `restatus` in `harmonize_v1_core.py` + `harmonize_linked_v3.py`** is intentional (raw-field convention; output column is `residence_status`). Don't re-flag as missed rename.
+7. **Q19/Q20 still gate Task 7.** Surface to human before next session's first DO mutation.
+
+### Build artifacts current
+
+- v2.7.0 natality parquets: OVERWRITTEN locally with v2.8.0 at the build dir (immutable v2.7.0 still at https://doi.org/10.5281/zenodo.19868835).
+- v2.8.0 natality parquets: SHAs locked in receipt; not yet deposited to Zenodo (Task 10).
+- Monorepo `natality/` subdir: now at v2.8 schema state (synced).
+- Monorepo `shared/helpers/canonical_join_keys.py`: dual-path operational (v2.7.0 → canonical rename; v2.8 → no-op).
+- Monorepo `notebooks/{joint_use_demo,paper_companion}.ipynb`: rebuilt against v2.8 parquets; synthesis CSV byte-identical to prior commit.
+
+### Notes for next session
+
+- v2.8 close-out is end-to-end clean: data shipped, monorepo synced, helper updated, notebooks rebuilt, docs scrubbed, receipt written, tags landed.
+- Task 7 is the next blocking item. Q19/Q20 should be answered before next-session DO begins.
+- The v2.8.0 Zenodo deposit at Task 10 will need: fresh re-derive verification (HALT 4) + bump natality/README.md v2.7.0 DOI lines to v2.8.0 DOI (HALT 5 in prior STATUS).
+- No new mistake classes surfaced this session; the 3 missed `restatus` doc refs are a routine H8 docs-data drift instance (the build-dir rename pass missed them; this session caught them on contact).
 
 ---
 
