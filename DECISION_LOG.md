@@ -23,6 +23,109 @@
 
 ---
 
+## 2026-05-12T03:30:00Z — sequencing — Pull Task 7 (V3 1982-1991) and natality v2.8 rename INTO pre-submission scope
+
+**Choice:** Override the prior "out of pre-submission scope" status (KICKOFF.md, DECISION_LOG 2026-05-11T20:50Z) for both Task 7 fetal-death V3 backward extension AND natality v2.8 column rename. Both will be completed before manuscript submission. New pre-submission sequence:
+
+1. ~~Task 3 V2.1 fetal-death~~ DONE 2026-05-12 (`task3-complete` at `8ca5bf9`).
+2. ~~Push monorepo to GitHub at v1.0~~ DONE 2026-05-12 (public repo at https://github.com/yoelplutchok/vital-statistics-harmonization, commit `a18ca3a`).
+3. **Natality v2.8 column rename** (start NEXT session per parallel-paths choice; user downloads Task 7 inputs concurrently). ~2 sessions.
+4. **Task 7 V3 fetal-death** (1982-1991, +10 years). 2-4 sessions; OCR risk on older user guides.
+5. **Task 9 — redirect notices on the two old GitHub repos** (~15-30 min, human-driven).
+6. **Task 10 — Unified Zenodo deposit** + v2.1.0 patch to old fetal-death deposit (1 session + upload time).
+7. **Push v1.1 to GitHub** (replaces current v1.0 contents; cleanly amended single-commit history not preserved — incremental release).
+8. **Manuscript re-pass + submit** (~½ session).
+
+**Alternatives considered:**
+
+1. **Keep prior sequence (Task 7 + natality v2.8 post-submission).** Original NEXT_STEPS.md §17 + KICKOFF.md "out of scope" framing. Pro: shortest path to submission. Con: per the human's preference, the manuscript would cite a 31-year fetal-death series + v2.7.0 natality, then require v3-extended fetal-death + v2.8-renamed natality in a follow-up correction. Pre-emptively doing them before submission means the paper goes out at the latest data state.
+
+2. **Pull Task 7 + natality v2.8 + extend further (chosen).** Pre-submission scope grows by 3-5 sessions. Pro: manuscript ships at maximum-coverage state (41 years fetal-death; aligned natality column names). Con: 3-5 more sessions of work before submission.
+
+**Reason:** Same as DECISION_LOG 2026-05-11T20:50Z (data-first sequencing) but with maximum-extent target instead of minimum-viable. The marginal session-cost of Task 7 + v2.8 (3-5 sessions) is justified by the manuscript-once-and-final outcome. User explicitly authorized.
+
+**Source:** Chat 2026-05-12 between commits `8ca5bf9` (Task 3 V2.1 complete) and `a18ca3a` (public repo push) and this entry. User explicit confirmation of override + parallel-paths sequencing.
+
+**Verifiable by:**
+- This DECISION_LOG entry timestamp 2026-05-12T03:30:00Z supersedes 2026-05-11T20:50Z's pre-submission scope listing.
+- Future sessions reading STATUS.md + this DECISION_LOG see natality v2.8 as next task; Task 7 follows once 1982-1991 NCHS inputs are downloaded.
+
+**Reversible:** yes — if Task 7 hits a multi-session blocker (e.g., NCHS 1982-1991 user guides only available as scanned/OCR-resistant PDFs), the human can direct a fall-back to submitting at the post-V3-attempt state with Task 7 explicitly deferred again.
+
+**Residual risks:**
+- (a) **Task 7 input availability**: PRE-FLIGHT this session showed ZERO 1982-1991 zips or user guides on disk. User has been asked to download from NCHS FTP path `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetal-deaths/`. Some older-year files may not be in the standard public-use FTP path — verification required.
+- (b) **Natality v2.8 scope larger than initial estimate**: PRE-FLIGHT shows 61 string-literal column-name references across natality scripts + 4 schema rows + 6 docs + 2 parquets to re-derive + 183 NVSR validation targets to re-gate. Estimated 2 sessions, not 1.
+- (c) **Cross-product effects of natality v2.8 rename**: monorepo's `shared/helpers/canonical_join_keys.py` aliasing helper becomes a no-op after v2.8. monorepo's `notebooks/joint_use_demo.ipynb` and `paper_companion.ipynb` use the aliasing helper; they should continue to work (helper still imports, just renames are no-ops). Re-run both notebooks after v2.8 to verify.
+- (d) **v1.0 public repo is now slightly stale**: pushed at Task 3 V2.1 state, will be superseded by v1.1 (post-Task-7 + post-v2.8). No external pulls expected in the brief window; acceptable.
+
+---
+
+## 2026-05-12T03:25:00Z — natality_v28_rename — PRE-FLIGHT findings: 61-string-literal rename surface (Field-value snapshot per Convention 3)
+
+**Pre-flight result:** PROCEED to next session DO. No halt conditions. Inputs all available (natality build dir intact at v2.7.0; aliasing helper documents exact renames).
+
+**Field-value snapshot — current state of canonical artifacts that v2.8 will mutate:**
+
+| Artifact | Current (v2.7.0) | Target (v2.8) |
+|---|---|---|
+| `metadata/harmonized_schema.csv` row 1 | `year,Birth year,int16,...` | `data_year,Data year,int16,...` |
+| `metadata/harmonized_schema.csv` row 2 | `restatus,Resident status (NCHS),int8,...` | `residence_status,Residence status,int8,...` |
+| `metadata/harmonized_schema.csv` row N | `maternal_hispanic_origin,...` | `hispanic_origin,...` |
+| `metadata/harmonized_schema.csv` row M | `maternal_race_bridged4,...` | `maternal_race_bridged,...` |
+| natality parquets | columns named `year`, `restatus`, `maternal_hispanic_origin`, `maternal_race_bridged4` | renamed to canonical names |
+| `shared/helpers/canonical_join_keys.py` `NATALITY_TO_CANONICAL` dict | 4 explicit renames at read time | EITHER no-op (empty dict) OR full removal with helper deprecation notice |
+
+**String-literal reference counts (the edit surface, scoped to natality build dir scripts/metadata/docs):**
+
+- `"year"` / `'year'`: 48 references (most string-literal column-name uses; some may be `df.groupby("year")` style; many are validation filter expressions like `mask = subset["year"] == y`)
+- `"restatus"` / `'restatus'`: 3 references
+- `"maternal_race_bridged4"` / `'maternal_race_bridged4'`: 6 references
+- `"maternal_hispanic_origin"` / `'maternal_hispanic_origin'`: 4 references
+- Total: **61 string-literal references**
+
+**Files touching these columns (per `grep -rln`):**
+
+| Layer | Files |
+|---|---|
+| Schema | `metadata/harmonized_schema.csv`, `metadata/external_validation_targets_v1.csv` |
+| Harmonize | `scripts/03_harmonize/harmonize_v1_core.py`, `scripts/03_harmonize/harmonize_linked_v3.py` |
+| Validate | `scripts/05_validate/qa_yearly_core_parquet.py`, `validate_row_counts_vs_nchs.py`, `harmonized_missingness.py`, `key_rates_from_derived_core.py`, `compare_external_targets_v3_linked.py`, `compare_external_targets_v1.py`, `validate_linked_parquets.py`, `validate_v1_invariants.py` |
+| Convenience | `scripts/06_convenience/write_residents_only.py` |
+| Figures | `scripts/07_figures/generate_paper_figures.py` |
+| Docs | `docs/CODEBOOK.md`, `docs/COMPARABILITY.md`, `docs/FAQ.md`, `docs/ABOUT_THIS_RELEASE.md`, `docs/GETTING_STARTED.md`, `docs/VALIDATION.md` |
+| Import (linked) | `scripts/01_import/parse_linked_cohort_year.py`, `scripts/01_import/README.md` |
+
+**DO-phase plan:**
+
+1. Edit `metadata/harmonized_schema.csv`: rename 4 rows. Verify schema-version bump (v2.7.0 → v2.8.0) annotated.
+2. Edit `scripts/03_harmonize/harmonize_v1_core.py`: rename column-write string literals.
+3. Edit `scripts/03_harmonize/harmonize_linked_v3.py`: same.
+4. Re-derive `natality_v2_harmonized_derived.parquet` + `natality_v3_linked_harmonized_derived.parquet`.
+5. Verify column names in resulting parquets (should be `data_year`, `residence_status`, `maternal_race_bridged`, `hispanic_origin`).
+6. Edit 5 validate scripts + 2 misc scripts + 1 import script: rename column-read string literals.
+7. Run 183 NVSR validation targets; gate 183/183 byte-exact.
+8. Run linked-file validation; gate 33/35 + 2 differ-by-1.
+9. Edit 6 docs (CODEBOOK, COMPARABILITY, FAQ, ABOUT_THIS_RELEASE, GETTING_STARTED, VALIDATION) to use new column names.
+10. Update `shared/helpers/canonical_join_keys.py` in the monorepo: `NATALITY_TO_CANONICAL` becomes empty dict + deprecation note; the helper continues to import for backward compatibility but is a no-op for natality v2.8.
+11. Re-run `notebooks/joint_use_demo.ipynb` + `notebooks/paper_companion.ipynb` against the v2.8 natality parquet to verify cross-product joins still work.
+12. Sync renamed files to monorepo's `natality/` subdirectory.
+13. Bump version: `CITATION.cff` 2.7.0 → 2.8.0; new Zenodo deposit (since v2.8 is a breaking change; v2.7.0 stays at its DOI for backward compatibility).
+14. Write RECEIPT + FIX_LOG + DECISION_LOG entries.
+
+**Forward-looking HALTs for the DO session:**
+
+1. Some "year" references in scripts may be LOCAL VARIABLES, not column-name string literals. The rename must distinguish `df["year"]` (rename target) from `for year in range(...)` (untouched). Use targeted sed patterns like `s|"year"|"data_year"|g` and `s|'year'|'data_year'|g` only — not bare-word replacement.
+
+2. `external_validation_targets_v1.csv` may have "year" as a column header. Inspect before editing; the V1 validation target CSV is canonical state.
+
+3. The downstream user's local projects (multiple-gestation-linked-imr, lbw-imr-divergence per DECISION_LOG 2026-05-11T18:06:12Z) will break on v2.8 — they hard-code `df["year"]` etc. A separate compatibility task to update those projects is OUT OF SCOPE for natality v2.8 itself; flag for the user.
+
+4. The aliasing helper currently maps 4 names. After v2.8, natality natively has the canonical names. The helper's `NATALITY_TO_CANONICAL` dict should be empty `{}` (so `to_canonical_natality(df)` becomes a passthrough). Verify nothing breaks at the call sites.
+
+5. Re-deriving natality parquet takes ~5-10 minutes on the v2.7.0 build laptop. Budget accordingly.
+
+---
+
 ## 2026-05-12T01:35:00Z — task3_v21_fetal_death — Bundle 4 fixes into Task 3 V2.1 build (B7 + H8 + data_year + monorepo path drift)
 
 **Choice:** Land the following four orthogonal fixes inside a single Task 3 V2.1 build, producing one new shipped artifact pair (`fetal_death_harmonized.parquet` sha=`333e1e66…d9e0`, `fetal_death_derived.parquet` sha=`55d3d310…c447`) and one set of canonical-state log entries:

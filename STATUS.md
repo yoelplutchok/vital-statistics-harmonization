@@ -1,6 +1,97 @@
-# STATUS — last updated 2026-05-12T02:45:32Z
+# STATUS — last updated 2026-05-12T03:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T03:30:00Z — Pre-submission scope expanded: Task 7 + natality v2.8 pulled IN; v1.0 public repo pushed; natality v2.8 next
+
+### Current phase
+
+Phase A continuing. Two same-session post-Task-3 events:
+
+1. **Public release v1.0 pushed to GitHub** at https://github.com/yoelplutchok/vital-statistics-harmonization (commit `a18ca3a`, public staging dir at `~/Desktop/vital-statistics-harmonization-public/`, 125 files, no LLM-process artifacts). Build snapshot reflects Task 3 V2.1 complete state.
+
+2. **Pre-submission scope expanded by user override** (DECISION_LOG 2026-05-12T03:30:00Z): Task 7 (V3 1982-1991) and natality v2.8 rename both pulled from post-submission to pre-submission. New sequence: natality v2.8 → Task 7 → Task 9 redirect notices → Task 10 Zenodo → v1.1 push → manuscript submit. Est. 3-5 more sessions before submission.
+
+### What was done this session
+
+(Continuation of 2026-05-12T02:45:32Z session)
+
+- Public release scrubbed + pushed. `~/Desktop/vital-statistics-harmonization-public/` is a clean staging dir (separate git repo, single commit `a18ca3a`, 125 files). Scrubbed all LLM-process file refs, scrubbed protocol terminology (Task N, PRE-FLIGHT, Convention N, L1x mistake-class IDs), removed `notebooks/_build_*.py` and `paper/` directory per user choice. Notebooks regenerated cleanly via JSON-aware scrubbing; JSON validity confirmed.
+- `gh repo create yoelplutchok/vital-statistics-harmonization --public --source=. --push` succeeded.
+- Sequencing override captured in DECISION_LOG 2026-05-12T03:30:00Z.
+- Natality v2.8 PRE-FLIGHT performed: 61-string-literal rename surface identified across 18 files (Field-value snapshot in DECISION_LOG 2026-05-12T03:25:00Z). NO halt conditions; inputs all available; estimated 2 sessions of focused work for DO + receipt. Task 7 PRE-FLIGHT: HALT condition (zero 1982-1991 inputs on disk; user downloads from NCHS FTP in parallel).
+
+### Last completed step
+
+**v1.0 GitHub push (commit `a18ca3a` in public-staging dir).**
+
+### In-progress
+
+(none in the private monorepo; user downloading Task 7 inputs in parallel)
+
+### Blocked
+
+**Task 7** blocked on user-side input download:
+- 10 zip files: `Fetal{1982..1991}US.zip` from NCHS FTP path `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetal-deaths/`
+- 10 user-guide PDFs: `{1982..1991}FetalUserGuide.pdf` from same path
+- Drop into `~/Desktop/fetal-death-harmonization-build/raw_data/` and `raw_docs/` (symlinked into monorepo)
+- Some older-year files may not be at the standard FTP path; verification needed
+
+### Next planned task
+
+**Natality v2.8 column rename** (next session). 4 column renames: `year → data_year`, `restatus → residence_status`, `maternal_race_bridged4 → maternal_race_bridged`, `maternal_hispanic_origin → hispanic_origin`. PRE-FLIGHT scope captured in DECISION_LOG 2026-05-12T03:25:00Z. Build dir: `/Users/yoelplutchok/Desktop/natality-harmonization/` (standalone repo; v2.7.0 current). Output: new natality v2.8.0 deposit (breaking change; v2.7.0 stays at its DOI for backward compat). Aliasing helper at `shared/helpers/canonical_join_keys.py` becomes a no-op.
+
+### Open questions for human
+
+Carried forward + new:
+
+1-13: (carried from 2026-05-12T02:45:32Z; status unchanged)
+
+14. NEW: **Task 7 input availability** — pending user download from NCHS FTP. PRE-FLIGHT cannot complete until inputs present. Verify all 10 years available before kicking off Task 7.
+
+15. NEW: **Natality v2.8 breaking-change downstream impact** — DECISION_LOG 2026-05-11T18:06:12Z names two downstream projects on the user's Desktop (`multiple-gestation-linked-imr`, `lbw-imr-divergence`) that hard-code v2.7.0 column names. They will break on v2.8 (e.g., `df["year"]` → KeyError). A separate compatibility update for those projects is OUT OF SCOPE for natality v2.8 itself; user should plan a follow-up update.
+
+### Forward-looking HALTs for next session
+
+Convention 4 — assertions the next session's PRE-FLIGHT must verify before starting natality v2.8 DO:
+
+1. **natality build dir v2.7.0 unchanged**: `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` still at sha `9f917a43474eb9e3ed23aa95c714209421c25c29937376651149d22fab934ef0` (recorded at DECISION_LOG 2026-05-11T18:06:12Z). If sha drift, halt.
+
+2. **Aliasing helper at expected state**: `shared/helpers/canonical_join_keys.py` `NATALITY_TO_CANONICAL` dict has exactly 4 entries (`year→data_year`, `restatus→residence_status`, `maternal_race_bridged4→maternal_race_bridged`, `maternal_hispanic_origin→hispanic_origin`). Verify before editing.
+
+3. **harmonized_schema.csv 4 target rows exist**: `metadata/harmonized_schema.csv` has rows for `year`, `restatus`, `maternal_race_bridged4`, `maternal_hispanic_origin` (current state) — these are the rows to be renamed.
+
+4. **No prior natality v2.8 work**: confirm no partial v2.8 changes on disk (no in-progress edits, no orphan parquets). Working tree clean on the standalone natality repo's main branch.
+
+5. **`external_validation_targets_v1.csv` column-header inspection**: verify whether the file uses `year` as a column header (canonical state mutation target) or merely references `year` in cell values. Inspect before editing.
+
+6. **DO-phase L1-class risk**: `year` is a common Python identifier (loop variables, function args). The rename must be SCOPED to string-literal column-name references (`"year"` / `'year'`), NOT bare-word replacement. Targeted sed patterns: `s|"year"|"data_year"|g` and `s|'year'|'data_year'|g`. Audit each replacement before committing.
+
+7. **Re-derive natality + linked parquets**: budget ~5-10 minutes wall-clock. The 2 parquets must be re-derived from the renamed harmonize scripts; sha of new parquets recorded for PROVENANCE.
+
+8. **183 NVSR validation gate**: V1 validation 183/183 byte-exact MUST still pass after rename. Any drift = regression (not expected — column renames don't change values).
+
+9. **Linked file validation gate**: V3 linked 33/35 byte-exact + 2 differ-by-1 MUST still pass.
+
+10. **Cross-product re-probe**: `notebooks/joint_use_demo.ipynb` and `notebooks/paper_companion.ipynb` in the monorepo use the aliasing helper. After v2.8, the helper becomes a no-op (NATALITY_TO_CANONICAL = {}). Re-run both notebooks to verify cross-product joins still work natively.
+
+### Build artifacts current
+
+- v2.1.0 fetal-death parquet pair: shipped at SHAs `333e1e66…d9e0` (harmonized) / `55d3d310…c447` (derived). Unchanged from 2026-05-12T02:45:32Z.
+- v2.7.0 natality parquet: unchanged at `9f917a43…34ef0`. About to be superseded by v2.8.0.
+- Public GitHub repo: v1.0 commit `a18ca3a` at https://github.com/yoelplutchok/vital-statistics-harmonization (125 files, no LLM-process artifacts).
+- Private monorepo: HEAD at `8ca5bf9` (Task 3 V2.1 complete) + uncommitted state-file edits (DECISION_LOG, STATUS this section).
+- `~/Desktop/vital-statistics-harmonization-public/` staging dir: clean separate git repo; reuse for v1.1 sync after Task 7 + v2.8 complete.
+
+### Notes for next session
+
+- Next session starts natality v2.8 DO per the PRE-FLIGHT scope in DECISION_LOG 2026-05-12T03:25:00Z.
+- The natality work happens in the standalone natality repo (`~/Desktop/natality-harmonization/`), not the monorepo. After v2.8 is complete and validated, sync the renamed scripts + new parquet into the monorepo's `natality/` subdirectory and re-test cross-product notebooks.
+- Task 7 starts when user has downloaded 1982-1991 NCHS inputs. Both v2.8 and Task 7 can be done in parallel from the agent perspective; the user-side download is the blocker.
+- v1.1 GitHub push happens AFTER both v2.8 + Task 7 complete (per sequence step 7 in DECISION_LOG 2026-05-12T03:30:00Z).
+- Zenodo upload: new unified deposit + v2.1.0 patch to old fetal-death deposit per AskUserQuestion 2026-05-12. Manuscript re-pass after data is final.
 
 ---
 
