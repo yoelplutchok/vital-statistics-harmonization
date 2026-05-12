@@ -11,6 +11,11 @@ fetal_death_yearly_raw_*.zip
 **/raw_docs/*
 !**/raw_docs/.gitkeep
 
+# Build outputs (yearly_clean parquets, harmonized/derived parquets, validation
+# results). Symlinked from a sibling build dir; large derived artifacts that
+# Zenodo carries authoritatively.
+output/
+
 # Python
 __pycache__/
 *.pyc

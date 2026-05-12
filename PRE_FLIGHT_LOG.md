@@ -8,6 +8,156 @@
 
 ---
 
+## PRE-FLIGHT for task3_v21_fetal_death — 2026-05-11T21:30:00Z
+
+### Scope summary
+
+Add 2003 + 2004 fetal-death transition years to the harmonized resource (V2.1.0). Bundle the H8 schema-doc dtype-drift reconciliation (5 columns shipped `string` in v2.0.0 parquet but declared `int` in `harmonized_schema.csv`) into the same Task 3 parquet re-derivation. Per `KICKOFF.md` 2026-05-11 sequencing decision and STATUS 2026-05-11T20:50Z, this is sequence step 1 of 5; manuscript re-pass is step 5.
+
+### Staging decisions (resolved at PRE-FLIGHT per Convention 3 second bullet)
+
+§15 Task 3 spec + `fetal_death/scripts/run_pipeline.py` assume `RAW_DIR = REPO_ROOT / "raw_data/fetal_death"` (monorepo-local), but the actual raw zips + user-guide PDFs + the existing 29-year `output/yearly_clean/` parquets all live at `~/Desktop/fetal-death-harmonization-build/` (the v2.0.0 build environment). Three sub-decisions resolved before any DO mutation:
+
+1. **Build location** — symlink raw inputs into monorepo. `raw_data/fetal_death` and `raw_docs/fetal_death` and `output/` (which contains `yearly_clean/`, `harmonized/`, `validation/`) are now symlinks to the sibling build dir. All symlink targets are `.gitignore`d (`**/raw_data/*`, `**/raw_docs/*` already present; `output/` newly added in this PRE-FLIGHT to keep the tree clean). The monorepo can now run `fetal_death/scripts/run_pipeline.py` without further plumbing.
+2. **Yearly-parse reuse** — reuse existing `output/yearly_clean/fetal_death_{year}_raw.parquet` for the 29 already-shipped years; only parse 2003 + 2004 fresh. Saves ~5 min build time. Safe because the parser code is unchanged for 1992-2002 + 2005-2022 (DO-phase changes are 2003/2004-only in `field_specs.py` and the harmonize-step dtype fix for H8, which lands at the harmonize stage downstream of yearly_clean).
+3. **Layout ambiguity policy** — halt-and-ask per ambiguity (§7 halt condition 12, conflicting documentation). Aligned with §2 principle "fail closed".
+
+### Inputs
+- [x] All required input files exist (verified via symlinks; sibling-build-dir-resolved paths)
+  - `raw_data/fetal_death/Fetal2003US.zip`: present, sha256=`7311ffab3314bf8f7ebb1465b153cc569be88d3126edabab680b90c7a4844f99`, 2,755,093 B compressed; uncompressed `VS03FETL.DETUSPUB` is 73,679,944 B ✓
+  - `raw_data/fetal_death/Fetal2004US.zip`: present, sha256=`42d68172ea1976cc5c371ecce36f5b33bb0efb6b6f139443bbec729674395c41`, 2,721,055 B compressed; uncompressed `VS04FETL.DETUSPUB` is 80,034,070 B ✓
+  - `raw_docs/fetal_death/fetaldeath0304problems.pdf`: present, sha256=`b2214b09722a214932728b8a3dc38c83d85b97a3a728f9e78daa7b26739e1331`, 135,683 B, 6 pages ✓
+  - `raw_docs/fetal_death/2003FetalUserGuide.pdf`: present, sha256=`281160b5339693412ce8275593584fc728e90fd29f4d23ac5273d9b3d5ad8146`, 2,931,130 B, 163 pages ✓
+  - `raw_docs/fetal_death/2004FetalUserGuide.pdf`: present, sha256=`ca8be48e77891660059ad93110f606ad0eedded703f174da8c283e4914272709`, 2,584,516 B, 110 pages ✓
+  - `output/harmonized/fetal_death_derived.parquet` (v2.0.0 shipped baseline for byte-clean regression check): sha256=`90af89b9e659ca2b580d8286b5598588cfb2d17e93f26c1dc1ae00d097f0afdd` — MATCHES `fetal_death/PROVENANCE.md` ✓
+  - `output/harmonized/fetal_death_derived.V1_baseline.parquet`: present (alternate V1-only regression baseline) ✓
+  - `output/yearly_clean/fetal_death_{year}_raw.parquet` for year ∈ {1992-2002, 2005-2022}: 29 files present (verified by directory listing) ✓
+  - `fetal_death/harmonized_schema.csv`: present, sha256=`72272c5537fdfa5b926a6aded69920bb5357a7bb5daef09742dfb494dadfa1ab` ✓
+  - `fetal_death/file_inventory.csv`: present, 30 rows (no 2003 or 2004 row yet — DO will append) ✓
+  - `fetal_death/external_validation_targets.csv`: present (DO will append 2003 + 2004 rows for NVSR 57-08 counts + rates) ✓
+  - `fetal_death/scripts/01_import/{parse_fetal_year,field_specs,zip_text_stream}.py`: present ✓
+  - `fetal_death/scripts/03_harmonize/harmonize.py`: present ✓
+  - `fetal_death/scripts/04_derive/derive.py`: present ✓
+  - `fetal_death/scripts/05_validate/{validate_2022,validate_external,validate_external_v2}.py`: present ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - task1 (2026-05-11): ✓
+  - task2 (2026-05-11): ✓
+  - task6 (2026-05-11): ✓
+  - task4 (2026-05-11): ✓
+  - task5 (2026-05-11, `9aaa702`): ✓
+  - sequencing decision (2026-05-11, `5577c87`): ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/task3_*.md`: does not exist ✓
+  - `output/yearly_clean/fetal_death_2003_raw.parquet`: does not exist (good) ✓
+  - `output/yearly_clean/fetal_death_2004_raw.parquet`: does not exist (good) ✓
+  - `fetal_death/record_layout_2003.csv`, `record_layout_2004.csv`: do not exist (good — DO will create) ✓
+  - No `task3-pre-do` git tag yet (good — will tag after this PRE-FLIGHT commit) ✓
+
+### Environment
+- [x] Python 3.13.9 (required ≥3.11) ✓
+- [x] pandas 2.3.2 (required ≥2.3) ✓
+- [x] pyarrow 18.1.0 (required ≥18.0) ✓
+- [x] R version: N/A (Task 3 is Python-only)
+- [x] Working directory clean before staging: `git status` showed clean before symlinks. After staging: only `.gitignore` modified (one-line `output/` addition). After this PRE-FLIGHT commit: clean again. ✓
+- [x] On expected branch: `main` at `5577c87` ✓
+
+### Source documentation — L9 cheap-check on 2003 + 2004 user guides
+
+Per §15 Task 3 PRE-FLIGHT direction ("Apply L9 cheap-check: verify the named page/section in the user-guide PDF actually documents the field at the claimed byte position"):
+
+- [x] **Apparent 1351-vs-3350 conflict resolved at PRE-FLIGHT.** Both user guides' page-2 SAS reproduction snippet declares `INFILE 'C:FETxxUS.DAT' LRECL=3350`. The §15 Task 3 spec says 1351-byte records for 2003 and 1501-byte records for 2004. Empirical verification: opened the actual `VS03FETL.DETUSPUB` and `VS04FETL.DETUSPUB` member inside each zip; first 5 records measured byte-exact at **1351 bytes (data 1350 + CRLF) for 2003** and **1501 bytes (data 1500 + CRLF) for 2004**. Total uncompressed sizes divide evenly: 73,679,944 / 1351 = 54,537 records (2003); 80,034,070 / 1501 = 53,320 records (2004). The user guide's `LRECL=3350` is a SAS-side maximum, not the literal data byte length — the public-use files contain the actual shorter records and SAS pads internally. The §15 record-length numbers are CORRECT; no plan amendment needed. ✓
+- [x] **TABFLAG position-9 confirmed empirically.** First 12 chars of records 1-3 in both zips are exactly `b'      S12   '`; the user guide and `fetaldeath0304problems.pdf` both name TABFLAG at position 9. Char 9 = `2` (= 20+ weeks, the dominant value in the early-records sample). The known TABFLAG error documented in `fetaldeath0304problems.pdf` (records with COMBGEST=99 in a 42-state list misclassified as <20 weeks) is a derivable normalization that will land in `harmonize.py` during DO as a new "B-class" normalization. **Open: this is a NEW normalization not in `fetal_death/ABOUT_THIS_RELEASE.md`'s B1-B6 list — DO will document it as B7 in the receipt and DECISION_LOG.** Soft-flag, not a halt.
+- [x] **A/S version-byte at position 7 confirmed empirically.** Sampled first 100,000 records of each zip; position 7 distribution: 2003 = {S: 53,503; A: 994}; 2004 = {S: 51,321; A: 1,964}. Both years dominated by S (the 2003-revision) — the A records (1.8% in 2003; 3.7% in 2004) are the persisting-1989-revision-state records. **The §15 plan's "per-state branch on the version-byte (A vs S)" terminology is consistent with empirical observation.** Whether the dispatch should genuinely branch on position 7 byte, or branch on state code mapped to a revision-adoption table, will be reconciled in DO from a fuller reading of the 2003 user guide's record-layout section. Soft-flag, not a halt.
+- [x] All cited Zenodo DOIs resolve: not specifically queried (Task 3 does not consume Zenodo deposit contents directly; the existing parquets are local).
+
+### Outputs
+Intended outputs do not yet exist (or, where they exist, will be overwritten with version-bumped successors). All non-trivial new outputs will be written under `output/` (gitignored; the new v2.1.0 Zenodo deposit is the canonical home) or in `fetal_death/` (the monorepo-shipped state).
+
+- [x] `fetal_death/record_layout_2003.csv` — does not exist (good) ✓
+- [x] `fetal_death/record_layout_2004.csv` — does not exist (good) ✓
+- [x] `output/yearly_clean/fetal_death_2003_raw.parquet` — does not exist (good) ✓
+- [x] `output/yearly_clean/fetal_death_2004_raw.parquet` — does not exist (good) ✓
+- [x] `output/harmonized/fetal_death_harmonized.parquet` — exists at v2.0.0 sha=`f09beb4a…0e5928` (will be overwritten with v2.1.0; v2.0.0 sha preserved in `fetal_death/PROVENANCE.md` and recoverable from the published Zenodo deposit 10.5281/zenodo.20031571)
+- [x] `output/harmonized/fetal_death_derived.parquet` — exists at v2.0.0 sha=`90af89b9…f0afdd` (same disposition; canonical baseline for the V1-era byte-clean regression check)
+- [x] `output/harmonized/fetal_death_derived.V1_baseline.parquet` — exists; auxiliary V1-only filtered baseline; will be re-derived
+- [x] `fetal_death/scripts/01_import/field_specs.py` — exists; will be extended (add 2003/2004 layouts + per-state A/S dispatch)
+- [x] `fetal_death/scripts/03_harmonize/harmonize.py` — exists; will be extended (handle 2003/2004 raw → harmonized + fix H8 int dtypes for 5 columns + add B7 TABFLAG correction for 0304)
+- [x] `fetal_death/scripts/run_pipeline.py` — exists; will be extended (add 2003 + 2004 to `V_TRANSITION_YEARS` list)
+- [x] `fetal_death/file_inventory.csv` — exists; will append 2 rows (2003, 2004) with SHAs and user-guide PDF names
+- [x] `fetal_death/external_validation_targets.csv` — exists (26 metrics, 29-year coverage); will append 2003 + 2004 cells for per-year counts + rates from NVSR 57-08 (and corrected values per `fetaldeath0304problems.pdf` Table 1)
+- [x] `fetal_death/validation_results.csv` — exists; will be re-generated by `validate_external_v2.py`
+- [x] `fetal_death/harmonized_schema.csv` — exists; should NOT be edited in this task (per anti-pattern #6, schema edits require schema-version bump). The H8 fix makes the parquet match the schema (parquet int matches schema int), not the other way around.
+- [x] `fetal_death/PROVENANCE.md`, `fetal_death/PROVENANCE.sha256` — exist; will be overwritten with v2.1.0 SHAs
+- [x] `fetal_death/README.md`, `ABOUT_THIS_RELEASE.md`, `COMPARABILITY.md`, `CODEBOOK.md`, `FAQ.md`, `GETTING_STARTED.md`, `.zenodo.json`, `CITATION.cff` — exist at v2.0.0 framing; will be edited for v2.1.0 narrative (2003/2004 coverage, B7 normalization, H8 dtype fix-up, 31/31 + 28/28 validation counts)
+- [x] `fetal_death/live_births_by_year.csv` — exists; will append 2003 + 2004 rows from natality denominators (using the existing `shared/helpers/build_stratified_denominators.py` runtime against the natality parquet)
+- [x] Downstream joint-use code using string literals (per `FIX_LOG.md` 2026-05-11 H8 entry, list of files: `docs/JOINT_USE_GUIDE.md`, `notebooks/joint_use_demo.ipynb`, `notebooks/_build_joint_use_demo.py`, `notebooks/paper_companion.ipynb`, `notebooks/_build_paper_companion.py`) — will be updated to int literals as part of Task 3 (per STATUS HALT 2 forward-looking commitment). VERIFY must re-run both demo notebooks and confirm they still pass byte-exact after the dtype switch.
+
+### Field-value snapshot (Convention 3)
+
+**Snapshot A — H8 dtype-drift columns (shipped state vs schema declaration).**
+
+For every canonical artifact this task will mutate, the current values are snapshot below. Divergences resolved here at the cheap-check moment.
+
+| Column | `harmonized_schema.csv` type | v2.0.0 parquet dtype (verified at sha=`90af89b9…f0afdd`) | Post-Task-3 plan |
+|---|---|---|---|
+| `tabulation_flag` | `int` (allowed `1-2`) | `string` (Python `str`, values `'1'`, `'2'`) | rebuild parquet under int dtype |
+| `residence_status` | `int` (allowed `1-4`) | `string` (values `'1'`-`'4'`) | rebuild parquet under int dtype |
+| `maternal_age` | `int` (allowed `10-54;99`) | `string` (values `'10'`-`'54'`, `'99'`) | rebuild parquet under int dtype |
+| `maternal_race_bridged` | `int` (allowed `1-4`) | `string` (values `'1'`-`'4'`) | rebuild parquet under int dtype |
+| `hispanic_origin` | `int` (allowed `0-9`) | `string` (values `'0'`-`'9'`) | rebuild parquet under int dtype |
+
+**Bundling decision (Convention 3 second bullet — resolved at PRE-FLIGHT, will be re-stated in DECISION_LOG entry at DO start).** The H8 reconciliation is bundled into Task 3 because: (i) the parquet is re-derived anyway as part of adding 2003 + 2004 records, so the dtype fix rides for free; (ii) the schema CSV is the canonical authority — fixing the parquet to match the schema (rather than the reverse) preserves the design intent; (iii) the FIX_LOG 2026-05-11 entry already commits to this resolution path. Schema CSV is NOT edited (anti-pattern #6 preserved).
+
+**Snapshot B — Task 5 manuscript HALTs (verify they still hold pre-Task-3-DO).**
+
+| HALT | Pre-DO state | Holds? |
+|---|---|---|
+| 1: 3 `<!-- YP: review -->` markers in `paper/draft_v2_hmd_styled.md` | `grep -c "<!-- YP:"` returns 3 | ✓ unchanged |
+| 5: paper_companion_results.csv shows C04 DIFF / C33 L11 / C47-C49 L11 | sha=`7891809c5040f25d7fcbe3e35ac262f049c4c75be68f0814718ea119757f35ce` matches Task 5 receipt | ✓ unchanged |
+| 6: paper sha `0685fe9c…1bddd1` | matches manuscript current file | ✓ unchanged |
+| 2, 3, 4, 7, 8, 9 | informational / deferred per data-first sequence | not Task-3-blockers ✓ |
+
+**Snapshot C — Sequence-specific HALTs from STATUS 2026-05-11T20:50Z (verify pre-Task-3-DO).**
+
+| HALT | Pre-DO state | Holds? |
+|---|---|---|
+| 1: Task 3 PRE-FLIGHT L9 risk on 2003/2004 layout reconstruction | L9 cheap-check above resolved record-length apparent-conflict; A/S byte and TABFLAG-9 position both confirmed empirically; deep layout reconstruction is DO work (halt-and-ask policy committed per AskUserQuestion at PRE-FLIGHT) | ✓ resolved at the cheap-check level |
+| 2: H8 bundling decision committed | Snapshot A above; 5 columns confirmed string-typed in v2.0.0 parquet | ✓ committed |
+| 3: Manuscript sha will change post-Task-3 in step 5 of sequence | informational; not Task-3 in-scope (Task 3 does not touch the manuscript) | ✓ acknowledged |
+
+**Snapshot D — `fetal_death/file_inventory.csv` rows being mutated.**
+
+DO will APPEND 2 rows (2003 + 2004). Current state: 30 data rows (1992-2002 + 2005-2022), all with `imported,no`. The new rows will follow the same convention:
+
+- 2003: `2003,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2003US.zip,NCHS,Fetal2003US.zip,fixed-width zip,2003FetalUserGuide.pdf,1351,no,transition year; per-state A/S dispatch at position 7; B7 TABFLAG correction applies (fetaldeath0304problems.pdf); 54,537 records`
+- 2004: `2004,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2004US.zip,NCHS,Fetal2004US.zip,fixed-width zip,2004FetalUserGuide.pdf,1501,no,transition year; per-state A/S dispatch at position 7; B7 TABFLAG correction applies (fetaldeath0304problems.pdf); 53,320 records`
+
+(The 1351 / 1501 in the `record_length` column matches the existing `record_length` semantic in the CSV — see 1992 row's `360` and 2006 row's `3351`; this is the line length including the trailing CRLF per measured behavior of comparable rows.)
+
+### Halt conditions tripped
+None. The two soft-flags above (B7 normalization is new; A/S dispatch needs deeper user-guide reading at DO start) are tracked items for DO, not PRE-FLIGHT halts. The L9 record-length apparent-conflict was resolved empirically at PRE-FLIGHT.
+
+### Result
+**PROCEED.** All 5 input categories verified, environment meets requirements, three staging decisions resolved at the cheap-check moment per Convention 3, H8 bundling committed, Task 5 + sequencing HALTs all hold. Halt-and-ask policy on layout ambiguities committed for DO phase per AskUserQuestion at PRE-FLIGHT.
+
+### Next steps (DO phase, not part of PRE-FLIGHT)
+
+1. Tag `task3-pre-do` after this PRE-FLIGHT commit lands.
+2. Read 2003 user guide record-layout section (estimated mid-document, ~30-60 pages in); reconstruct `record_layout_2003.csv` mirroring `record_layout_1992.csv` and `record_layout_2006.csv` formats. Halt-and-ask on any field whose byte position is ambiguous from the user guide alone.
+3. Same for `record_layout_2004.csv` (which is mostly the 2003 layout extended; verify identity for shared fields).
+4. Extend `field_specs.py` with `FETAL_2003_FIELDS` + `FETAL_2004_FIELDS` lists and per-state A/S dispatch in `layout_for_year(year, state_code, revision_byte)`.
+5. Parse 2003 + 2004 zips into `output/yearly_clean/fetal_death_{2003,2004}_raw.parquet`. Halt if either parse rejects > 1% of records as bad-length.
+6. Extend `harmonize.py`: (a) include 2003 + 2004 in the year set; (b) implement B7 TABFLAG correction per `fetaldeath0304problems.pdf` (records with COMBGEST=99 and state in 42-state list → set TABFLAG=2); (c) cast the 5 H8 columns to int (NaN-aware: maternal_age=99 sentinel stays a int 99 but maternal_age=blank → null; tabulation_flag and residence_status are mandatory; etc.).
+7. Re-run derive.py and validate scripts. VERIFY: 31/31 per-year counts + 28/28 rates byte-exact against NVSR 57-08 (was 29/29 + 26/26 in v2.0.0); 2005-2022 byte-clean regression on all 73 harmonized + 89 derived columns vs. v2.0.0 baselines AFTER the int-dtype fix is normalized away in the comparison.
+8. Update downstream joint-use code to int literals (5 files per STATUS HALT 2). Re-run `_build_joint_use_demo.py` and confirm 8/8 NVSR cells still byte-exact.
+9. Bump fetal-death version to v2.1.0 in `.zenodo.json`, `CITATION.cff`, `ABOUT_THIS_RELEASE.md`, `README.md`, `COMPARABILITY.md`, `FAQ.md`, `PROVENANCE.md`.
+10. Append 2003 + 2004 rows to `file_inventory.csv`, `external_validation_targets.csv`, `live_births_by_year.csv`.
+11. Write FIX_LOG entry closing the 2026-05-11 H8 entry (H8 reconciled in v2.1.0 parquet).
+12. Write receipt to `RECEIPTS/task3_v21_fetal_death_<UTC>.md` with five-phase trace, self-check, Forward-looking HALTs.
+13. Tag `task3-complete`.
+
+---
+
 ## PRE-FLIGHT for task5_manuscript_trim — 2026-05-11T20:05:00Z
 
 ### Inputs
