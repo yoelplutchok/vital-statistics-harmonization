@@ -1,6 +1,110 @@
-# STATUS — last updated 2026-05-13T00:30:00Z
+# STATUS — last updated 2026-05-13T03:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T03:00:00Z — C8.4 COMPLETE: 3 invariant-test harnesses (B.3 canonical-filter + B.4 row-count conservation + B.5 cross-product join parity) at monorepo-root `tests/`; 41 new tests + 12 mutation tests (Tier-0 L3 defense); cache-cleared combined pytest = 56 PASS + 1 XFAIL; linked-vs-natality bounded-drift finding surfaced + resolved via DECISION_LOG; zero canonical-data mutation
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.4 COMPLETE.** Fourth Tier-1 task closed in ~1 session vs estimated 3 sessions — another Tier-1 efficiency overshoot (consistent with C8.1 / C8.2 / C8.3). Tag `C8.4-complete` lands on the commit shipping this STATUS section + receipt + DECISION_LOG entry. Tier 1 progress: 4 of 8 tasks complete. Cumulative Phase C effort ~4 sessions of 29–35 budget.
+
+Four canonical-state changes this session (zero parquet mutation):
+
+1. **`tests/` directory created at monorepo root** (NEW; symmetric sibling of `fetal_death/tests/` + `natality/tests/`). Contains `__init__.py` (empty namespace package per L17-extension defense from FIX_LOG 2026-05-12T22:30Z) + `conftest.py` (shared session-scope fixtures for all three parquets + stratified_denominators) + 3 invariant-test harnesses.
+2. **B.3 — `tests/test_canonical_filter_invariants.py`** (sha=`4de9fe1c…`). `DESIGN: structural-invariant-no-pins`. 12 tests (7 invariant + 5 mutation). 334 stratum-sum invariants across all (product, year, stratum) combinations.
+3. **B.4 — `tests/test_row_count_conservation.py`** (sha=`f9dd4191…`). `DESIGN: tracks-current-state`. 16 tests (12 invariant + 4 mutation). Documents v2.4.0 / v2.8.0 / v3 release-state row counts as Convention 2 pins; DOCUMENTED_DROPS registry empty (no documented drops at any pipeline boundary).
+4. **B.5 — `tests/test_cross_product_join_parity.py`** (sha=`4cb8b4e0…`). `DESIGN: structural-invariant-no-pins`. 13 tests (10 invariant + 3 mutation). Includes the post-halt-and-ask bounded-drift invariant for linked-vs-natality (`_LINKED_NATALITY_DRIFT_TOLERANCE = 1e-4`; covers documented NCHS post-release re-tabulation envelope).
+
+One §7 halt condition surfaced at DO step 3 (B.5 strict-subset assertion failed on 5/19 joint years showing linked > natality by 1–228 records, max 0.0055% relative drift) and was resolved via AskUserQuestion 2026-05-13T02:30Z → option (a) soften to bounded-drift invariant + DECISION_LOG entry. DECISION_LOG 2026-05-13T03:00:00Z records the linked-vs-natality bounded-drift finding as a Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+
+### What was done this session (C8.4 PRE-FLIGHT + DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed in the best way possible."
+2. **C8.4 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T01:30:00Z): verified all 10 C8.3 Forward-looking HALTs (tags, parquet SHAs, figure SHAs, JOINT_USE_GUIDE.md sha, joint_use_demo.ipynb sha, 4× `__init__.py` present, cache-cleared pytest 15+1xfail reproduces); Field-value snapshot enumerated current parquet envelope (43yr FD 2,427,233 / 35yr nat 138,819,655 / 19yr linked 74,943,824), canonical filters (FD: tabflag==2 AND restatus!=4; nat/linked: restatus!=4), and DOCUMENTED_DROPS registry (empty). Result: **PROCEED**.
+3. **Tag `C8.4-pre-do`** at commit `9dc7604`.
+4. **DO step 1**: created `tests/__init__.py` + `tests/conftest.py` (session-scope fixtures for `fd_*`, `natality_*`, `linked_*` row counts, join cols, per-year counts; plus `stratified_denominators`).
+5. **DO step 2**: authored `tests/test_canonical_filter_invariants.py` (B.3). Per-year per-stratum sum-equals-total invariants for all three products; 5 mutation tests demonstrating L3 defense (duplicate row caught at total level; `dropna=True` undercount; negated filter; partial filter; synthetic-fixture sanity). 12/12 PASS first run.
+6. **DO step 3**: authored `tests/test_row_count_conservation.py` (B.4). Convention 2 release-state pins for all three products; per-year harmonized↔derived equality; documented-drops formula validation; off-by-one mutation test. 16/16 PASS first run (~3s).
+7. **DO step 4 + halt-and-ask**: authored `tests/test_cross_product_join_parity.py` (B.5). First run revealed `test_linked_per_year_count_le_natality` FAILed on 5 years (2005/2006/2008/2011/2012) with linked > natality by 1–228 records (0.0055% max). Halted per §7.4 + §7.16; AskUserQuestion 2026-05-13T02:30Z offered 4 resolution options; user authorized option (a) bounded-drift + DECISION_LOG.
+8. **DO step 5**: refactored `test_linked_per_year_count_le_natality` → `test_linked_per_year_count_within_drift_tolerance_of_natality` with `_LINKED_NATALITY_DRIFT_TOLERANCE = 1e-4`; mutation test re-shaped to inject 0.5% drift (10× tolerance). 13/13 B.5 PASS.
+9. **VERIFY**: cache-cleared combined `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 passed + 1 xfailed in 115s (run 1) / 132s (run 2). Reproducible. All four parquet SHAs unchanged (verified).
+10. **DECISION_LOG entry 2026-05-13T03:00:00Z** authored documenting the linked-vs-natality bounded-drift resolution.
+11. **RECEIPT** written at `RECEIPTS/C8.4_2026-05-13T03-00-00Z.md` with full §6 template incl. Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+
+### Last completed step
+
+Single commit ships: 5 new files (`tests/__init__.py`, `tests/conftest.py`, `tests/test_canonical_filter_invariants.py`, `tests/test_row_count_conservation.py`, `tests/test_cross_product_join_parity.py`) + 1 new receipt + 1 new DECISION_LOG entry + this STATUS section. Tag `C8.4-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.4 → C8.5 boundary)
+
+### Next planned task
+
+**C8.5 — Distribution: uv/poetry lockfile + Dockerfile (F.2 + F.3).** Per KICKOFF.md Phase C Tier-1 sequencing (line 181) + NEXT_STEPS.md §15.C C8.5 entry. Estimated 1.5–3 sessions. Authors `uv.lock` (or `poetry.lock`) pinning exact versions; `Dockerfile` producing a runnable image that rebuilds every parquet end-to-end. Depends on no upstream Tier-1 task; C8.6 depends on C8.5 (CI gates on a pinned env).
+
+### Blocked
+
+(none.)
+
+### Open questions for human
+
+None for C8.5 scope.
+
+**Open soft-flags (carried forward):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections incl. Sections B-NEW + B-legacy + C); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (2005/2006/2008/2011/2012, max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate. DECISION_LOG 2026-05-13T03:00Z is the canonical record.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.4-complete` tag** present on this commit. Verify: `git tag --list 'C8.4*'` shows `C8.4-pre-do` (`9dc7604`) + `C8.4-complete` (this commit).
+2. **`tests/` directory at monorepo root present + 4 files non-empty + 1 empty `__init__.py`:** `conftest.py` (sha=`b374ef44…`), `test_canonical_filter_invariants.py` (sha=`4de9fe1c…`), `test_row_count_conservation.py` (sha=`f9dd4191…`), `test_cross_product_join_parity.py` (sha=`4cb8b4e0…`).
+3. **Combined cache-cleared pytest reproduces 56 passed + 1 xfailed:** `find . -name __pycache__ -type d -exec rm -rf {} + ; pytest fetal_death/tests/ natality/tests/ tests/`.
+4. **All four parquet SHAs unchanged post-C8.4** (C8.4 is tests-only): fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad5323d68e28d…`, linked_der=`9b828a4d…`.
+5. **`_LINKED_NATALITY_DRIFT_TOLERANCE` constant** in `tests/test_cross_product_join_parity.py` is `1e-4` (0.01%). Future adjustment requires a sibling DECISION_LOG entry.
+6. **`DOCUMENTED_DROPS` dict** in `tests/test_row_count_conservation.py` is `{}` (empty). Any future authorized row drop at parse/harmonize/derive boundary MUST extend this dict in the same commit.
+7. **B.4 release-state pins** (FD_EXPECTED_TOTAL=2_427_233, NATALITY_EXPECTED_TOTAL=138_819_655, LINKED_EXPECTED_TOTAL=74_943_824 + the three year-list constants) are Convention 2 tracks-current-state pins. Any future C8.X data-extension task MUST update these in the same commit.
+8. **C8.5 (lockfile + Dockerfile) is the next task.** C8.6 (CI wiring) depends on C8.5 + must include the monorepo-root `tests/` in its pytest invocation (`pytest fetal_death/tests/ natality/tests/ tests/`).
+9. **B.5 `test_to_canonical_natality_is_noop_under_v2_8`** FAILs if a future natality release reverts to v2.7 column names; that's a structural break warranting §11 plan-update on canonical_join_keys.py.
+10. **C8.4 closed the H6/F2/H9/L3 invariant-test mandate in the same shape as C8.1 closed B.1/B.2.** Combined post-C8.4 test count: 57 (56 PASS + 1 XFAIL by-design) across 3 test directories. C8.6 CI workflow has its target.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.3).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d68e28d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4de4e59b17…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged, from `[c8.1-followup]` commit `b84ff0d`).
+
+NEW this session:
+- `tests/__init__.py` (empty, namespace package)
+- `tests/conftest.py` (sha=`b374ef44a354e7b6…`)
+- `tests/test_canonical_filter_invariants.py` (sha=`4de9fe1c9ebc23a9…`)
+- `tests/test_row_count_conservation.py` (sha=`f9dd419172e3f508…`)
+- `tests/test_cross_product_join_parity.py` (sha=`4cb8b4e0f78d80f4…`)
+- `RECEIPTS/C8.4_2026-05-13T03-00-00Z.md` (NEW)
+- `DECISION_LOG.md` 2026-05-13T03:00:00Z entry (linked-vs-natality bounded-drift)
+- `PRE_FLIGHT_LOG.md` 2026-05-13T01:30:00Z entry (PROCEED; landed at commit `9dc7604`)
+- `STATUS.md` this section (append)
+
+### Notes for next session
+
+- **C8.5 — Distribution lockfile + Dockerfile** is the next task. PRE-FLIGHT should consider: (i) which lockfile tool to use (uv vs poetry; `EXPLORATION_REPORT.md` §F suggests `uv` for faster solve); (ii) Python version pin (Python 3.13.9 currently in use; pin to 3.13.x for reproducibility); (iii) which dependencies must be pinned exactly vs which families can flex (pandas, pyarrow, numpy, matplotlib for figure generation, pytest, nbclient for notebook builds). The Dockerfile depends on the lockfile output.
+- **Tier 1 progress: 4 of 8 tasks complete** (C8.1, C8.2, C8.3, C8.4). Remaining: C8.5 / C8.6 / C8.7 / C8.8 (4 more sessions estimated).
+- **Cumulative Phase C effort: ~4 sessions of 29–35 budget.** C8.4 estimated 3 sessions; closed in ~1; freed ~2 sessions of buffer.
+- **C8.6 CI wiring** is the next downstream consumer of C8.4: GitHub Actions must include `tests/` in its pytest invocation. The cache-cleared discipline (find . -name __pycache__ -delete) is free under CI (clean checkouts).
+- **The 5-year linked-vs-natality drift snapshot** (2005, 2006, 2008, 2011, 2012; max 0.0055%) is now an automated invariant via `_LINKED_NATALITY_DRIFT_TOLERANCE = 1e-4`. Phase D / C8.11 cross-product COMPARABILITY consolidation may add a per-year drift baseline if needed. DECISION_LOG 2026-05-13T03:00:00Z is the canonical record.
+- **The bounded-drift class of invariant** is a sibling of the JOINT_USE_GUIDE-documented natality-vs-NVSR microdata drift. Future C8.X tasks adding cross-product invariants may want to consult both pre-existing documented drifts (JOINT_USE_GUIDE table) + the new linked-vs-natality finding to set tolerances consistently.
+- **No new mistake class** surfaced from C8.4 itself. The §11 plan-update + AskUserQuestion + DECISION_LOG flow handled the only surface that needed it cleanly.
+
+### Session summary
+
+C8.4 closed in one session (combined PRE-FLIGHT + DO + VERIFY + RECEIPT) at ~33% of the 3-session estimate — the same Tier-1 efficiency pattern as C8.1 / C8.2 / C8.3. One §7-class halt surfaced at DO and was resolved via AskUserQuestion authorization to soften an assertion + log the underlying finding. Three new invariant test harnesses (41 invariant tests + 12 mutation tests) defend the §8 H6 / F2 / H9 / L3 mistake classes; the combined-pytest baseline rises from 16 tests (15 PASS + 1 XFAIL) at C8.3-complete to 57 tests (56 PASS + 1 XFAIL) at C8.4-complete. Zero canonical-data mutation. The C8.3 envelope (43yr FD + 35yr natality + 19yr linked + 4 parquet SHAs) is unchanged.
+
+Next session = C8.5 distribution lockfile + Dockerfile (1.5–3 sessions estimated).
 
 ---
 

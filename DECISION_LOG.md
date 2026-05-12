@@ -23,6 +23,57 @@
 
 ---
 
+## 2026-05-13T03:00:00Z — C8.4 — Linked-vs-natality per-year drift bounded by 0.01% (was previously undocumented for this product pair); B.5 harness softened from strict-subset to bounded-drift invariant
+
+**Choice (user-authorized at C8.4 DO halt-and-ask 2026-05-13T02:30Z, option `(a) Soften to relative-drift invariant (≤0.01%) + DECISION_LOG entry (Recommended)`):** The B.5 cross-product join parity harness's `test_linked_per_year_count_le_natality` was authored with a strict-subset assumption ("every linked birth is a natality birth"). On first run against the v2.4.0 / v2.8.0 / v3 release state, 5 of 19 joint years (2005, 2006, 2008, 2011, 2012) violated strict subset: linked exceeds natality by 1–228 records (max 0.0055% relative drift, year 2005 with +228 records on a 4.14M base).
+
+**Resolution:** Replace the strict-subset assertion with a bounded-drift invariant: `|linked - natality| / max(linked, natality) ≤ 0.01%` per joint year. The 0.01% tolerance is 2× the observed max (0.0055%) and matches the order of magnitude of the JOINT_USE_GUIDE.md-documented "<0.006% NCHS post-release re-tabulation" between microdata and NVSR-style products. Test renamed: `test_linked_per_year_count_within_drift_tolerance_of_natality`. Mutation test re-shaped: `test_mutation_linked_bounded_drift_violation_caught` injects a 0.5% drift (10× tolerance) on synthetic data and asserts the harness flags it.
+
+**Alternatives considered (per AskUserQuestion 2026-05-13T02:30Z):**
+
+1. **(a) Soften to relative-drift invariant + DECISION_LOG (chosen).** Pro: keeps a meaningful invariant (>0.01% drift still flagged as regression); avoids hard-coding the 5 currently-drifting years (the SHAPE invariant survives any future linked-pipeline retabulation); aligns with JOINT_USE_GUIDE.md's documented tolerance class. Con: a future widening of NCHS's re-tabulation drift past 0.01% triggers a re-pin task.
+2. **(b) Strict subset + 5-year exception dict + DECISION_LOG.** Pro: more conservative — any new drifting year triggers FAIL. Con: heavy maintenance; hard-codes a tracks-current-state pin that violates Convention 1 (SHAPE-not-VALUE). Rejected as inconsistent with the file's `DESIGN: structural-invariant-no-pins` tag.
+3. **(c) Remove the linked-subset assertion entirely + DECISION_LOG.** Pro: cleanest architectural framing — NCHS doesn't guarantee subset between linked and natality pipelines. Con: loses a useful invariant (a >0.01% widening still indicates a real regression). Rejected as throwing the baby out with the bathwater.
+4. **(d) Halt + §11 plan-update.** Pro: methodologically cleanest. Con: ~30 min overhead for a problem solvable inside DO via a tolerance edit + log entry. Rejected as over-engineering.
+
+**Reason:** The JOINT_USE_GUIDE-documented natality-vs-NVSR drift (5 years with diffs of 38–224 records, max 0.0055%) is the same shape as the linked-vs-natality drift surfaced by C8.4 (5 years with diffs of 1–228 records, max 0.0055%). The linked file is constructed by NCHS using NVSR-style cohort tabulations that include the same post-release adjustments. The phenomenon is documented in the source domain; B.5 had inadvertently encoded a stricter invariant than the data supports. The right level of automated defense is a tolerance that catches a *widening* of the documented drift, not a re-litigation of the documented drift itself.
+
+Three protocol justifications: (i) §2 principle 2 "fail closed" — we halted at the FAIL rather than silently softening; AskUserQuestion is the formal "fail closed" surface. (ii) §4.2.1 Convention 1 SHAPE-not-VALUE — the bounded-drift invariant is a SHAPE check (true for any year-set, any record-count growth); the strict-subset claim was effectively a stale-pin against the year-set as it happened to exist when the test was first authored. (iii) §10 self-check — the residual risk "what could I have gotten wrong that VERIFY wouldn't catch" applies in reverse here: I HAD a strict invariant that caught something I hadn't known about. Surfacing it via AskUserQuestion + this log entry rather than silent edit is what the protocol prescribes.
+
+**Source:**
+- `tests/test_cross_product_join_parity.py` (NEW; sha=`4cb8b4e0f78d80f4…`) lines around `_LINKED_NATALITY_DRIFT_TOLERANCE = 1e-4`.
+- `docs/JOINT_USE_GUIDE.md` "NCHS-series note" table (5 years with 38–224 record diffs; <0.006% relative).
+- Observed empirical drift on v3 cohort-linked vs v2.8.0 natality (5 years, max 0.0055%):
+    - 2005: linked=4,138,577 natality=4,138,349 diff=+228 (0.0055%)
+    - 2006: linked=4,265,593 natality=4,265,555 diff=+38 (0.0009%)
+    - 2008: linked=4,247,726 natality=4,247,694 diff=+32 (0.0008%)
+    - 2011: linked=3,953,591 natality=3,953,590 diff=+1 (~0%)
+    - 2012: linked=3,952,842 natality=3,952,841 diff=+1 (~0%)
+- Linked parquet sha=`9b828a4de4e59b17…`; natality parquet sha=`e16ad5323d68e28d…`.
+- User authorization chat 2026-05-13: option (a) selected via AskUserQuestion.
+
+**Verifiable by:**
+- `pytest tests/test_cross_product_join_parity.py::test_linked_per_year_count_within_drift_tolerance_of_natality` PASS on current parquet state.
+- `pytest tests/test_cross_product_join_parity.py::test_mutation_linked_bounded_drift_violation_caught` PASS (mutation test).
+- Combined cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 passed + 1 xfailed.
+
+**Reversible:** yes — `git revert` of the C8.4 commit removes the bounded-drift invariant; the strict-subset assertion is preserved in git history. If a future task wants to investigate the underlying NCHS-pipeline cause (e.g., audit the 2005 +228-record source), the log entry + parquet SHAs above are the starting point.
+
+**Residual risks:**
+
+- (a) **The 0.01% tolerance may be too loose.** If a future linked-pipeline regression introduces a 0.005% systematic drift across more years, the harness won't catch it. Mitigation: the test reports actual drift values in the FAIL message, so a per-year drift inspection during any future failure surfaces the widening; the DECISION_LOG entry documents what the current envelope is.
+- (b) **The 5 currently-drifting years are not individually pinned.** A future NCHS re-release that re-tabulates one of these years to a different drift will silently pass as long as the new drift remains ≤ 0.01%. Mitigation: the parquet-SHA-pinned C8.4 receipt + this log entry are the canonical record of the v3 / v2.8.0 state.
+- (c) **The drift is documented as "NCHS post-release re-tabulation" but not directly verified.** A truly diligent investigation would compare a single drifting year's birth records between the natality public-use file and the linked file to verify that the +228 records in 2005 are NCHS-added (or natality-dropped), not a pipeline bug on our side. Mitigation: Phase D / C8.11 cross-product COMPARABILITY consolidation should incorporate this finding.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- The bounded-drift tolerance is set at 0.01% (1e-4) — 2× the observed max. If the observed max grew to 0.008% (still well within JOINT_USE_GUIDE's "<0.006%" qualitative bound but above the empirical 0.0055%), the harness would FAIL. Whether that's the right behavior depends on whether 0.008% counts as "expected NCHS drift" or "regression." The conservative choice (FAIL) is what's wired now; tuning is reversible via this entry's 1e-4 constant.
+- The 5-year observation list is a snapshot of the v2.8.0 + v3 state. If a future natality v2.9.0 closes some of the diffs (e.g., by re-deriving from a newer NCHS source), the snapshot in this entry becomes a frozen historical record — not a forward-looking invariant. The forward-looking invariant is the test code's 1e-4 tolerance, not the per-year diff list.
+
+**Backport scope (per §11.4):** None directly. C8.1, C8.2, C8.3 receipts are unaffected. Phase D step 6 manuscript re-pass should consider whether to mention the linked-vs-natality bounded drift as a Comparability note (analogous to the existing natality-vs-NVSR microdata mention).
+
+---
+
 ## 2026-05-12T23:50:00Z — [plan-update] C8.3 — Re-scope Section B race validation to 2022 single-race + Hispanic (vs NVSR 73-09 Table A); reframe perinatal joint as JOINT-USE DEMO with two sub-component validations (28+wk FD vs NVSR 73-09 Table 1; ENN <7d vs NVSR 73-05 Table 2)
 
 **Choice (user-authorized at PRE-FLIGHT halt-and-ask 2026-05-12T22:30Z, option `(a) 2022 race + perinatal demo (Recommended)`):** Apply a §11 plan-update rewriting `NEXT_STEPS.md` §15.C C8.3 entry's PRE-FLIGHT inputs + DO scope + VERIFY criteria, and `KICKOFF.md` line 179, to reflect actual NVSR contents instead of the original §15 wording's source-location errors.
