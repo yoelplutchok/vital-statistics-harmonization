@@ -1,6 +1,79 @@
-# STATUS — last updated 2026-05-12T04:30:00Z
+# STATUS — last updated 2026-05-12T05:10:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T05:10:00Z — Kickoff handshake; prior-session state-file edits committed; natality v2.8 build-dir read-only snapshot taken; Q19/Q20 still gate next DO
+
+### Current phase
+
+Phase A continuing. This was a short housekeeping + read-only-verification session. No canonical-data mutated; no DO phase entered. The 2026-05-12T04:30Z agent left STATUS+DECISION_LOG+LESSONS uncommitted (~184 line-additions, pure append-only); this session committed them as `43acf57` per §12 step 6 (clean-tree requirement) before doing anything else. User authorization on Q19 (Task 7 scope expansion to V3a+V3b vs V3a-only) and Q20 (task ordering) still required before next DO.
+
+### What was done this session
+
+1. Session start: read STATUS.md (full 2026-05-12T04:30Z section), NEXT_STEPS.md end-to-end, README.md, PROJECT_STRUCTURE.md, DECISION_LOG.md (last 10 entries — top entry 2026-05-12T04:30Z), FIX_LOG.md (full 4 entries), LESSONS.md (full 4 entries) per §1 + §12.
+2. Tripped session-start halt: `git status` showed STATUS.md + DECISION_LOG.md + LESSONS.md uncommitted from 2026-05-12T04:30Z V3b doc-hunt retry. User confirmed "do whatever you think makes the most sense"; interpreted as: commit the prior session's append-only state-file edits as housekeeping (clean fix), but DO NOT proceed past Q19/Q20 gates on Task 7 or start v2.8 DO.
+3. Committed prior session's state-file edits as `43acf57` with Convention-5 5-line summary referencing 2026-05-12T04:30Z work.
+4. Read-only build-dir snapshot of `/Users/yoelplutchok/Desktop/natality-harmonization/` (the standalone v2.7.0 build repo that natality v2.8 will mutate):
+
+| Probe | Result |
+|---|---|
+| dir exists | ✓ |
+| HEAD commit | `dcabd8c` "Fix concept DOI references + simplify .gitignore" |
+| working tree | DIRTY — `M README.md` (small uncommitted edit; pre-existing, NOT my session's) |
+| `metadata/harmonized_schema.csv` line 2 | `year,Birth year,int16,1990-2024,...` — confirms v2.7.0 column name, v2.8 will rename to `data_year` |
+| `metadata/harmonized_schema.csv` line 3 | `restatus,Resident status (NCHS),int8,1\|2\|3\|4,...` — confirms v2.7.0 column name, v2.8 will rename to `residence_status` |
+| `output/*.parquet` | NOT PRESENT (zsh "no matches found") — parquets live in Zenodo per .gitignore; need download or pipeline re-derive before v2.8 DO can complete |
+| `raw_data/` | present, 39 entries (per-year NCHS zips) |
+| `raw_docs/` | present, 40 entries |
+
+5. Updating this STATUS.md section. Pending: commit of this STATUS update.
+
+### Next planned task
+
+**Natality v2.8 column rename** — same as 2026-05-12T04:30Z and KICKOFF.md sequence step 1. NOT GATED by Q19/Q20 (those gate Task 7 scope, not v2.8). Inputs verified above. Build-laptop must re-derive the v2.7.0 parquets from raw_data (the harmonized/derived parquets aren't on disk) OR download them from Zenodo concept DOI 10.5281/zenodo.19868835 before column-rename re-derivation can complete.
+
+### In-progress
+
+(none)
+
+### Blocked
+
+- **Q19/Q20** still gate Task 7 (post-v2.8). User confirmation needed: V3a+V3b (1982-2022, 41 yrs, ~4-5 sessions inc. OCR) vs V3a-only (1989-1991, 34 yrs, ~1 session)?
+- **Natality build-dir's uncommitted `M README.md`** (pre-existing): not strictly a halt for v2.8 DO, but session-start convention says clean tree before DO mutations. Next session should either commit or stash that diff first.
+
+### Open questions for human
+
+Carried from 2026-05-12T04:30Z STATUS (1-20). No new open questions this session.
+
+Highest-priority for next session start:
+- **Q19**: Task 7 scope — V3a+V3b (41 yrs, +OCR on bitmap-scanned 1980s PDFs) or V3a-only (34 yrs)?
+- **Q20**: Sequence after v2.8 — KICKOFF.md sequence as-is (v2.8 → Task 7 → Task 9 → Task 10 → v1.1 push → submit), or pull Task 7 forward?
+
+### Forward-looking HALTs for next session (Convention 4)
+
+If next session starts natality v2.8 DO:
+
+1. **v2.7.0 build dir `M README.md`** still dirty — either commit, stash, or document as non-blocking before starting v2.8 DO edits. Otherwise v2.8's first commit will accidentally include the README change.
+2. **PRE_FLIGHT_LOG entry must be written BEFORE first v2.8 DO commit per §4.1 + L10**. The 2026-05-12T03:25Z DECISION_LOG has the Field-value snapshot content but PRE_FLIGHT_LOG.md does NOT have a `natality_v28_rename` entry yet. Next session writes the formal §5-template entry to PRE_FLIGHT_LOG.md as its first act, then `git tag natality_v28_rename-pre-do`.
+3. **v2.7.0 parquets must be on disk** before re-derive can run. Either download from Zenodo concept DOI 10.5281/zenodo.19868835 (latest version v2.7.0 = 10.5281/zenodo.19868835) or full pipeline re-derive from `raw_data/`. Re-derive is ~5-10 min per the DECISION_LOG 2026-05-12T03:25Z estimate.
+4. **The 4-column rename plan (DECISION_LOG 2026-05-12T03:25Z 14-step DO plan) is canonical**. The targeted-sed warning (Forward-looking HALT 1 in that DECISION_LOG entry) is critical: distinguish `df["year"]` (rename target) from `for year in range(...)` (untouched). Apply `s|"year"|"data_year"|g` and `s|'year'|'data_year'|g` — NOT bare-word replacement.
+5. **183 NVSR validation must remain 183/183 byte-exact after rename**. Any drift is a v2.8 regression and a halt.
+6. **Linked-file validation must remain 33/35 + 2 differ-by-1 after rename** (per Task 6 canonical framing).
+7. **Monorepo's `shared/helpers/canonical_join_keys.py` becomes a no-op** post-v2.8. After build-dir v2.8 ships, sync the renamed natality files into the monorepo's `natality/` subdir AND update `NATALITY_TO_CANONICAL` to empty dict + deprecation note.
+
+If next session instead starts Task 7 V3a+V3b PRE-FLIGHT (Q19 = expansion authorized): the 2026-05-12T04:30Z Forward-looking HALTs 1-6 still apply unchanged.
+
+### Build artifacts current
+
+All unchanged from 2026-05-12T04:30Z. No mutations this session. State-file edits from 2026-05-12T04:30Z V3b doc-hunt retry now committed as `43acf57`.
+
+### Notes for next session
+
+- The build dir at `/Users/yoelplutchok/Desktop/natality-harmonization/` is the active mutation target for v2.8. The monorepo's `natality/` subdir is a mirror that gets re-synced AFTER v2.8 ships in the build dir.
+- This session's read-only verification confirms the v2.7.0 build dir is intact and at the expected pre-v2.8 state per the DECISION_LOG 2026-05-12T03:25Z plan. No surprises.
+- Q19/Q20 are best answered before next-session start to avoid mid-session sequence renegotiation.
 
 ---
 
