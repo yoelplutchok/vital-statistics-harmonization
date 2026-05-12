@@ -101,11 +101,16 @@ NVSR57_LIVE_BIRTHS = {
     2004: 4_112_055,
 }
 
-# 1992-1994 reference counts. Source: each year's NCHS Fetal Death User Guide,
+# 1989-1994 reference counts. Source: each year's NCHS Fetal Death User Guide,
 # page 7, "20 WEEKS AND OVER: By residence" figure. These guides were not stale
-# for 1992-1994 (the three known stale-guide years are 1996, 2001, 2002, and
+# for 1989-1994 (the three known stale-guide years are 1996, 2001, 2002, and
 # those three are cross-checked against NVSR 57-08).
+# V3a extension (2026-05-12): 1989-1991 reference counts added from NCHS user
+# guides at canonical FTP path (downloaded + SHA-recorded in file_inventory.csv).
 GUIDE_FETAL_DEATHS_GTE20 = {
+    1989: 30_469,
+    1990: 31_386,
+    1991: 30_160,
     1992: 30_256,
     1993: 28_766,
     1994: 27_937,
@@ -125,7 +130,7 @@ def _v2_gte20_resident_count(harm: pd.DataFrame, year: int) -> int:
         & (harm["tabulation_flag"] == 2)
         & (harm["residence_status"] != 4)
     )
-    if 1992 <= year <= 2002:
+    if 1989 <= year <= 2002:
         mask = mask & (harm["version_flag"] == "S")
     return int(mask.sum())
 
@@ -134,8 +139,8 @@ def validate_counts(harm: pd.DataFrame) -> list[dict]:
     """Count validation across 1992-2002."""
     results = []
 
-    # 1992-1994: guide-based reference
-    for year in (1992, 1993, 1994):
+    # 1989-1994: guide-based reference (V3a extension brings 1989-1991 into this loop)
+    for year in (1989, 1990, 1991, 1992, 1993, 1994):
         our = _v2_gte20_resident_count(harm, year)
         expected = GUIDE_FETAL_DEATHS_GTE20[year]
         results.append({

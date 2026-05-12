@@ -1,6 +1,124 @@
-# STATUS — last updated 2026-05-12T13:35:02Z
+# STATUS — last updated 2026-05-12T14:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T14:30:00Z — Task 7 V3a COMPLETE: fetal-death coverage 1992-2022 → 1989-2022 (+3 yrs, 34 years total); 81/81 NVSR validation PASS; B3 race-code extension documented
+
+### Current phase
+
+Phase A continuing. **KICKOFF.md sequence step 2 (Task 7 V3a, fetal-death backward extension to 1989) is COMPLETE this session.** All five phases (PRE-FLIGHT, SMOKE, DO, VERIFY, RECEIPT) ran end-to-end without halts. `task7_v3a-complete` tag set on the receipt commit. V3a effort estimate (~1 session) accurate.
+
+### What was done this session
+
+1. Session start: full §1 read of STATUS (2026-05-12T13:35Z top + 03:50Z + 04:30Z sections), NEXT_STEPS end-to-end, README, PROJECT_STRUCTURE, DECISION_LOG (last 10 entries), FIX_LOG (last 5 entries), LESSONS (all 5 entries). (a)-(d) handshake returned to user; user answered Q19 ("whatever you think is the best") and Q20 ("KICKOFF as-is"); LLM chose **V3a-only** for this task, with V3b deferred to a separate OCR-feasibility PoC.
+
+2. Forward-looking HALT verifications from STATUS 2026-05-12T13:35Z:
+   - HALT 1 (`natality_v28_rename-complete` tag): present on monorepo AND build-dir. ✓
+   - HALT 2 (v2.8 natality parquet SHA stability): all 4 v2.8 parquet SHAs byte-identical to receipt baselines. ✓
+
+3. **PRE-FLIGHT for task7_v3a** per §5 template + §11 conventions (PRE_FLIGHT_LOG entry at 2026-05-12T14:05:00Z, commit `43eb390`, tag `task7_v3a-pre-do`):
+   - Input arrangement: `mv` Fetal{1989,1990,1991}US.zip from build-dir top-level into `raw_data/fetal_death/` for monorepo-symlink visibility. SHAs match STATUS 2026-05-12T03:50Z baselines byte-exact.
+   - User-guide downloads: `curl -k` 3 PDFs from NCHS canonical FTP path to `raw_docs/fetal_death/`. SHAs recorded; content-length matches HEAD probe exactly for all 3.
+   - Validation source: user-guide page 7 "20 WEEKS AND OVER: By residence" control counts extracted via PyMuPDF (embedded text layer from NCHS's 2009 rescan batch). Values: 1989=30,469; 1990=31,386; 1991=30,160.
+   - Layout reusability L9 cheap-check: page 5-6 Data Elements list in 1989/1990/1991 user guides matches 1992 user guide field-by-field; first-record DATAYEAR @ bytes 1-4 verified per year.
+
+4. **SMOKE phase**: Tier 0 byte-length probe (360 bytes/record, all 3 years); Tier 2 per-year record count (61,295 / 64,349 / 63,265 = user-guide control byte-exact); Tier 3 canonical-filter aggregate match (TABFLG==2 AND RESTATUS!=4 → 30,469 / 31,386 / 30,160 = user-guide control byte-exact). All tiers PASS.
+
+5. **DO phase**:
+   - Edit `fetal_death/scripts/01_import/field_specs.py`: `layout_for_year(year)` year-range 1992-2002 → 1989-2002; docstring + section comment updates.
+   - Edit `fetal_death/scripts/03_harmonize/harmonize.py`: `_era_tag()` year-range 1992-2002 → 1989-2002; B3 maternal_race_bridged map +`08`→`4` (Other Asian/Pacific Islander → API), +`09`→`""` (All other Races → null per NCHS bridged-race convention).
+   - Edit `fetal_death/scripts/05_validate/validate_external_v2.py`: GUIDE_FETAL_DEATHS_GTE20 +3 entries; version_flag year-range 1992-2002 → 1989-2002; count-validation loop range (1992,1993,1994) → (1989,1990,1991,1992,1993,1994).
+   - Parse 3 raw zips → yearly_clean parquets.
+   - Run full harmonize across 34 years (1989-2022): 1,930,886 records × 73 cols, 73 sec wall.
+   - Run derive: 1,930,886 × 89 cols, 52 sec wall.
+   - **Mid-DO finding**: 1989 yearly_clean had MRACE codes 08 and 09 not in B3 map; harmonize.py raised defensive halt per AUDIT-V2-FINAL R3. Investigation against 1989FetalUserGuide.pdf page 28 confirmed 1989-revision MRACE uses 9-category coding (01-09) vs 1992+ scheme (01-07 + 18-78 + 99). B3 map extended with 2 entries (documented in DECISION_LOG below).
+   - Append 3 rows to `external_validation_targets.csv` for 1989/1990/1991.
+   - Append 3 rows to `file_inventory.csv` for 1989/1990/1991.
+
+6. **VERIFY phase**:
+   - `validate_external_v2.py`: **26/26 PASS** (was 23/23 V2.1; +3 V3a per-year counts byte-exact).
+   - `validate_external.py`: **55/55 PASS unchanged** (V1 era 2005-2022 byte-clean regression: 0/73 harmonized + 0/89 derived columns drifted).
+   - **Total: 81/81 PASS**, 0 FAIL, 0 MISSING.
+
+7. **RECEIPT phase**:
+   - Wrote `RECEIPTS/task7_v3a_2026-05-12T14-30-00Z.md` per §6 template (full 5-phase trace; 8-item self-check; 7-item Forward-looking HALTs for next session).
+   - Wrote `fetal_death/V3a_1989_1991_LAYOUT_DECISIONS.md` (the L13-extension verification trail + B3 extension rationale).
+   - Updated `fetal_death/ABOUT_THIS_RELEASE.md` (added V3a section + V2.1 section + Overview refresh).
+   - This STATUS section.
+   - DECISION_LOG entry for the B3 09→null choice.
+   - Will tag `task7_v3a-complete` on the STATUS commit.
+
+### V3a output parquet SHAs (record for PROVENANCE; CHANGED from V2.1 baseline as expected)
+
+```
+fetal_death_harmonized.parquet   23c56a9d6a0948b4ad985b534bc515f6850d9bea439b1fee8801fa70a5268f69
+fetal_death_derived.parquet      0dd3aec0e47785f191c17df83ef6af91884ca350c0edca7df657f232374165c4
+fetal_death_1989_raw.parquet     8dc050a3c03906642f51aa75c251e963517445b7749755cb203c266e86a1f87d
+fetal_death_1990_raw.parquet     cc5c840156cc3ab600bffdb595b1b6a3d20b21288e4be659f7b149825d951b27
+fetal_death_1991_raw.parquet     18ac106ac63c8487c1e5362fd05282452ab26a0ed9e7eafbb67388a86bc6040a
+```
+
+V2.1 (pre-V3a) baseline parquet SHAs (now superseded; preserved here for cross-version trace):
+- harmonized: `333e1e666815979e55f965702ad0004d031aeabe00b4d9fdf791159370e1d9e0`
+- derived: `55d3d310cf5e1cbd8719325e3122505472d69dc4316af32f17c67d78c6c8c447`
+
+### Last completed step
+
+KICKOFF.md sequence **step 2 (Task 7 V3a, fetal-death backward extension to 1989-1991) — COMPLETE**.
+
+### In-progress
+
+(none — clean checkpoint at task close)
+
+### Next planned task
+
+Per KICKOFF.md sequence: **step 3 — Task 9 (redirect notices on the two old GitHub repos, ~15-30 min, human-driven)** OR **V3b OCR feasibility PoC** (~20 min, decoupled Q19 sub-decision).
+
+After Task 9: Task 10 (unified Zenodo deposit + v2.2.0 fetal-death + v2.8.0 natality uploads), v1.1 GitHub push, manuscript re-pass + submit.
+
+### Blocked
+
+(none — all upstream HALTs resolved; both Q19 and Q20 answered.)
+
+### Open questions for human
+
+Carried + (no new):
+
+1-17: (carried)
+18: ~~V3b post-submission resolution path~~ — SUPERSEDED 2026-05-12T04:30Z.
+19: Q19 (Task 7 scope) — **RESOLVED this session**: V3a only; V3b deferred to OCR feasibility PoC.
+20: Q20 (sequence after v2.8) — **RESOLVED this session**: KICKOFF as-is.
+
+NEW:
+21. **V3b OCR feasibility PoC**: when to run? Suggested timing: between Task 9 and Task 10 (~20 min insertion). Or run after Task 10 (V3b stays post-submission). User preference?
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`task7_v3a-complete` tag** must exist on monorepo at this STATUS commit. Verify at session start: `git tag --list 'task7_v3a*'`. If missing, halt — receipt commit didn't land.
+2. **The 5 V3a output SHAs above are the new baselines.** If session-start verification finds drift in `output/harmonized/fetal_death_{harmonized,derived}.parquet` or `output/yearly_clean/fetal_death_{1989,1990,1991}_raw.parquet`, halt and investigate.
+3. **PROVENANCE.md is stale post-V3a (DELIBERATELY).** It documents the v2.0.0 Zenodo deposit state. Premature refresh = orphan manifest. Refresh is a planned mutation at Task 10 PRE-FLIGHT.
+4. **harmonize.py B3 map carries V3a `08`→4 and `09`→"" entries.** Removing them would re-introduce V3a halt on unseen codes. Only remove if also removing the 1989-2002 era_tag range.
+5. **Tasks 1+2 notebooks (`joint_use_demo.ipynb`, `paper_companion.ipynb`) not re-run for V3a.** Re-run before Task 10 / manuscript re-pass to detect cell drift. Both used V2.1 derived (sha `55d3d310...`) which is now superseded by V3a derived (sha `0dd3aec0...`).
+6. **V3b PoC is gated on user direction at next session start** (Q21). If user requests V3b PoC, run a 20-min PyMuPDF text-extraction test on `1985FetalUserGuide.pdf` (already downloaded at `/tmp/v3b_hunt/`; SHA `f7342480302017caf622243510c7e32ea03b6083b9797768b59fa50954eb1ed5`). If embedded text layer extracts cleanly (like 1989-1992 did), expand to V3b PRE-FLIGHT. If not, V3b post-submission as originally framed.
+7. **Total fetal-death record count is now 1,930,886 (unfiltered) / 1,778,215 NVSR-comparable** (V2.1 was 1,741,977 / ~1,686,200 NVSR-comparable). Manuscript "1.74M" reference becomes stale; Task 11 re-pass updates it.
+
+### Build artifacts current
+
+- v2.2.0 in-repo fetal-death state: `output/harmonized/fetal_death_{harmonized,derived}.parquet` at new SHAs (above); 1989/1990/1991 yearly_clean parquets added; 34 years total coverage.
+- v2.0.0 Zenodo fetal-death deposit (immutable at https://doi.org/10.5281/zenodo.20031571): unchanged; superseded by in-repo state but kept as the canonical citable artifact until Task 10 deposits v2.2.0.
+- v2.8.0 in-repo natality state: unchanged from STATUS 2026-05-12T13:35Z.
+- V3a raw inputs at `raw_data/fetal_death/`: Fetal{1989,1990,1991}US.zip + the 1992-2022 zips (V3a years now visible via the monorepo symlink alongside the existing V2.0+V2.1 years).
+- V3a documentation: `1989/1990/1991 FetalUserGuide.pdf` in `raw_docs/fetal_death/`; SHAs in receipt.
+- V3b raw inputs at `~/Desktop/fetal-death-harmonization-build/raw_data/` (top-level, NOT in fetal_death/ subdir; NOT visible to monorepo symlink). Out of V3a scope; remain available if V3b is later authorized.
+
+### Notes for next session
+
+- V3a close-out is end-to-end clean: parser+harmonize+derive ship 34 years; both validators PASS; one DECISION_LOG-worthy finding (B3 09→null choice for 1989-rev "All other Races") documented in receipt + V3a layout-decisions doc + DECISION_LOG entry.
+- Sequence per KICKOFF: Task 9 (GitHub redirects) is the next user-driven task. Task 10 (Zenodo deposit) is the next LLM-driven task.
+- Q21 (V3b PoC timing) should be answered before next session ends.
+- No new mistake classes surfaced this session. The B3 09→null decision is a clean L13-extension instance (the harmonize.py defensive halt + value-distribution check pre-empted any silent-error path; defensive halt working as designed).
 
 ---
 

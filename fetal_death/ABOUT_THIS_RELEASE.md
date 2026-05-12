@@ -1,8 +1,20 @@
-# About This Release: Version 2
+# About This Release: Version 2 (in-repo state: V3a)
 
 ## Overview
 
-Version 2 of the U.S. Fetal Death Harmonization Project provides a researcher-ready, harmonized microdata file covering **1992 through 2022** — twenty-nine consecutive years of NCHS fetal death records (with 2003 and 2004 deferred to V2.1 because of their distinct transition-year layouts). The release contains **1,634,195 total records** with **73 harmonized variables** in the base file and **16 additional derived analysis variables** (89 columns total) in the derived file.
+Version 2 of the U.S. Fetal Death Harmonization Project provides a researcher-ready, harmonized microdata file covering **1989 through 2022** — thirty-four consecutive years of NCHS fetal death records, since the V2.1 (2003+2004 transition) and V3a (1989-1991 backward extension) increments. The base V2 deposit at the v2.0.0 Zenodo DOI covers 1992-2022 with 2003/2004 deferred; the in-repo state has since landed V2.1 (2003+2004) and V3a (1989-1991) and ships from this monorepo. The release contains **~1.93M total records** with **73 harmonized variables** in the base file and **16 additional derived analysis variables** (89 columns total) in the derived file.
+
+## V3a (2026-05-12): backward extension to 1989
+
+V3a adds three years (1989, 1990, 1991) to the fetal-death series under the same 1989-revision uniform layout as V2.0. Records added: **188,909** (61,295 + 64,349 + 63,265). All three years are byte-position-identical to the 1992 benchmark; layout reusability verified by record-length probe + page 5-6 Data Elements cross-check + per-year record-count parity with each year's NCHS user-guide page 7 control block. The B3 maternal_race_bridged recode map was extended to handle two 1989-revision-only MRACE codes (`08` Other Asian/Pacific Islander → 4 API; `09` All other Races → null, consistent with how 1993+ Unknown is handled). All other B1/B2/B4/B6 recode maps unchanged. V3a validation gate: all 3 per-year fetal-death counts (≥20wk, residents) match each year's user-guide control-count block byte-exact (1989=30469, 1990=31386, 1991=30160). V1 era 2005-2022 byte-clean regression verified (55/55 still PASS, 0 column drift). See `V3a_1989_1991_LAYOUT_DECISIONS.md` for full layout reusability evidence, B3 extension rationale, and code-system mapping decisions.
+
+**Total external validation post-V3a: 81/81 PASS** (V2-era 26/26 + V1-era 55/55).
+
+## V2.1 (2026-05-12): the 2003-2004 transition years
+
+V2.1 adds two years (2003, 2004) that were deferred from V2.0 because of their distinct transition-year layouts (1351-byte and 1501-byte records with mixed 1989/2003-revision content). Records added: **107,782** post-canonical-filter (NCHS-errata B7 correction restoring 26,004 / 26,001 byte-exact against `fetaldeath0304problems.pdf` Table 1). Five demographic/filter columns (`tabulation_flag`, `residence_status`, `maternal_age`, `maternal_race_bridged`, `hispanic_origin`) were cast from `object` to nullable Int (closes the H8 schema-vs-data dtype drift surfaced at Task 2). The `data_year` column initialization bug was fixed (a latent crosswalk's `derived` row would silently overwrite the int32 init with empty-string object). Monorepo path drift on `harmonize.py` + `validate_external*.py` was re-pointed to the flattened layout. The 2003-revision MAGER vs MAGER41 byte-position-semantic mismatch at bytes 89-90 is documented; `maternal_age` is intentionally null for 2003+2004 records (downstream consumers should use `maternal_age_recode14` for age-stratified analyses spanning those years). See `V2_1_2003_2004_LAYOUT_DECISIONS.md` for full V2.1 details.
+
+## V2.0 (2026-05-05): the original 11-year backward extension
 
 V2 extends V1 (2005-2022, 933,491 records, originally completed 2026-04-19) backward by adding the eleven uniform 1989-revision years (1992-2002, 700,704 records). The same 73-column harmonized schema, the same 16 derived variables, and the same parquet file shape are preserved. V1's 2005-2022 slice is **byte-identical** to the V1 baseline (verified after every V2 fix: 0 / 73 harmonized + 0 / 89 derived columns drifted).
 

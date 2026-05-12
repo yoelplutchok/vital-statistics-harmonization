@@ -1,4 +1,7 @@
 year,metric,metric_detail,expected_value,source,notes
+1989,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,30469,1989 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block; V3a backward extension
+1990,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,31386,1990 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block; V3a backward extension
+1991,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,30160,1991 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block; V3a backward extension
 1992,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,30256,1992 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block
 1993,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,28766,1993 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block
 1994,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,27937,1994 NCHS Fetal Death User Guide control count,Residence-based count; user-guide control block

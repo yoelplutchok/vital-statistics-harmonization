@@ -40,7 +40,7 @@ def _build_field_map() -> dict[str, dict[str, str]]:
     Build a mapping: harmonized_name -> {era_tag -> raw_field_name}.
 
     era_tag is one of '1992', '2003', '2006', '2014', '2022':
-      '1992' = 1992-2002 (1989-revision uniform era, V2.0)
+      '1992' = 1989-2002 (1989-revision uniform era, V2.0 + V3a backward extension)
       '2003' = 2003-2004 (V2.1 transition: mixed A+S at 1351/1501-byte records;
                parser dispatches to FETAL_2005_2006_FIELDS so the raw column set
                is identical to '2006'; era tag exists so the B7 TABFLG correction
@@ -91,9 +91,9 @@ def _era_tag(year: int) -> str:
         return "2006"
     if year in (2003, 2004):
         return "2003"  # V2.1 transition era
-    if 1992 <= year <= 2002:
-        return "1992"
-    raise ValueError(f"Year {year} outside supported range (1992-2022)")
+    if 1989 <= year <= 2002:
+        return "1992"  # 1989-revision uniform era (V2.0 + V3a backward extension)
+    raise ValueError(f"Year {year} outside supported range (1989-2022)")
 
 
 # ---------------------------------------------------------------------------
@@ -268,12 +268,26 @@ def harmonize_year(year: int, field_map: dict[str, dict[str, str]]) -> pd.DataFr
         # blank to mirror V1 2018-2022 not-in-layout blank handling
         # (AUDIT-V2-FINAL M6, 2026-04-22). Unseen codes raise instead of silently
         # blanking, to fail loud on future NCHS test codes (AUDIT-V2-FINAL R3 closure).
+        #
+        # V3a extension (2026-05-12): the 1989-revision codes used in 1989-1991
+        # differ from the 1992+ scheme. Per the 1989 NCHS user guide page 28:
+        # 01=White, 02=Black, 03=AmIndian, 04=Chinese, 05=Japanese, 06=Hawaiian,
+        # 07=Filipino, 08=Other Asian/Pacific Islander, 09=All other Races.
+        # In 1992 NCHS switched API granularity from 04-08 to 18-78 (a parallel
+        # 2nd-digit scheme); the "All other Races" residual (code 09) was
+        # dropped. Mapping: 08→4 (API, same as 04-07 and 18-78); 09→"" (treated
+        # as unknown, consistent with how MRACE=99 unknown is handled 1993+).
+        # The 09 records (~165 total across 1989-1991) get null
+        # maternal_race_bridged but are preserved in the parquet for unbridged
+        # analyses. Documented in V3a_1989_1991_LAYOUT_DECISIONS.md.
         if "maternal_race_bridged" in df.columns:
             df["maternal_race_bridged"] = _checked_remap(
                 df["maternal_race_bridged"],
                 {
                     "01": "1", "02": "2", "03": "3",
                     "04": "4", "05": "4", "06": "4", "07": "4",
+                    "08": "4",  # V3a 1989-rev: Other Asian or Pacific Islander → API
+                    "09": "",   # V3a 1989-rev: All other Races → unknown/blank
                     "18": "4", "28": "4", "38": "4", "48": "4",
                     "58": "4", "68": "4", "78": "4",
                     "99": "",  # Unknown race -> blank (matches V1 not-in-layout)

@@ -5,7 +5,7 @@ Each spec is a list of (field_name, start_pos, end_pos) tuples where
 positions are 1-based inclusive (matching NCHS documentation).
 
 Eras:
-  - 1992-2002: V2.0 — single uniform 1989-revision layout (360 data bytes)
+  - 1989-2002: V2.0 + V3a — single uniform 1989-revision layout (360 data bytes)
   - 2003: V2.1 transition — 1350 data bytes; A/S per-record revision overlay
   - 2004: V2.1 transition — 1500 data bytes (= 2003 layout + 150-byte trailing pad)
   - 2005-2013: V1 — non-COD layout, varying record lengths
@@ -17,7 +17,7 @@ Sources: NCHS fetal death user guide PDFs for each year.
 
 # --- Record lengths (bytes per line excluding newline) ---
 
-RECORD_LEN_1992 = 360    # 1992-2002 uniform 1989-revision layout
+RECORD_LEN_1992 = 360    # 1989-2002 uniform 1989-revision layout (V3a extended 1989-1991)
 RECORD_LEN_2003 = 1350   # 2003 transition (V2.1; 801 useful data + 549 trailing pad)
 RECORD_LEN_2004 = 1500   # 2004 transition (V2.1; = 2003 + 150 trailing pad)
 RECORD_LEN_2022 = 2651   # 2018-2022 COD-only
@@ -27,13 +27,14 @@ RECORD_LEN_2007 = 801    # 2007 (non-COD, no trailing filler)
 RECORD_LEN_2008 = 3338   # 2008-2013 (non-COD, 801 data + 2537 filler)
 
 
-# --- 1992-2002 uniform layout (1989 revision, 360 data bytes per record) ---
-# Raw files are 362 bytes/line (360 data + CR+LF). Field positions are
-# 1-based inclusive, relative to the 360-byte record.
+# --- 1989-2002 uniform layout (1989 revision, 360 data bytes per record) ---
+# Raw files are 361 bytes/line (360 data + LF) or 362 bytes/line (360 data +
+# CR+LF). Field positions are 1-based inclusive, relative to the 360-byte
+# record.
 #
 # Decisions, OCR corrections, and gaps documented in
-# docs/V2_1992_LAYOUT_DECISIONS.md. Canonical layout CSV is
-# metadata/record_layout_1992.csv.
+# docs/V2_1992_LAYOUT_DECISIONS.md and (for V3a) V3a_1989_1991_LAYOUT_DECISIONS.md.
+# Canonical layout CSV is metadata/record_layout_1992.csv.
 #
 # All records are 1989-revision (the 2003 revision had not yet been issued).
 # Cause-of-death (ICD-9) codes are NOT in the public-use file for this era;
@@ -41,15 +42,19 @@ RECORD_LEN_2008 = 3338   # 2008-2013 (non-COD, 801 data + 2537 filler)
 #
 # Spot-checked on 2026-04-20 for 1992, 1995, 2000, 2002 (all 4 match). The
 # remaining years 1993-1994, 1996-1999, 2001 are presumed uniform; AUDIT-PARSE-2
-# must confirm each.
+# must confirm each. V3a extension (2026-05-12): page 5-6 Data Elements lists
+# in 1989/1990/1991 user guides match the 1992 user guide field-by-field; first-
+# record DATAYEAR @ bytes 1-4 verified for each year; record-length 360 bytes
+# verified empirically.
 #
-# Source: 1992FetalUserGuide.pdf (identical layout through 2002).
+# Source: 1989FetalUserGuide.pdf / 1990FetalUserGuide.pdf / 1991FetalUserGuide.pdf
+# (V3a) and 1992FetalUserGuide.pdf (V2.0; identical layout through 2002).
 
 FETAL_1992_2002_FIELDS: list[tuple[str, int, int]] = [
     # ========================
     # Record identification
     # ========================
-    ("DATAYEAR",        1,    4),   # Year of Delivery (1992-2002)
+    ("DATAYEAR",        1,    4),   # Year of Delivery (1989-2002)
     ("TABFLAG",         5,    5),   # Tabulation flag: 1=<20wk; 2=20wk+
     ("RECTYPE",         6,    6),   # Record type: 1=Resident; 2=Nonresident
     ("RESTATUS",        7,    7),   # Residence status: 1/2/3/4 (4=Foreign)
@@ -1141,7 +1146,11 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
         return RECORD_LEN_2007, FETAL_2005_2006_FIELDS
     if 2008 <= year <= 2013:
         return RECORD_LEN_2008, FETAL_2005_2006_FIELDS
-    if 1992 <= year <= 2002:
+    if 1989 <= year <= 2002:
+        # V3a extension (1989-1991): 1989-revision layout is byte-identical to
+        # 1992-2002. Page 5-6 Data Elements lists in the 1989/1990/1991 user
+        # guides match the 1992 user guide field-by-field; first-record
+        # DATAYEAR @ bytes 1-4 spot-verified. Re-uses FETAL_1992_2002_FIELDS.
         return RECORD_LEN_1992, FETAL_1992_2002_FIELDS
     if year == 2003:
         # V2.1: 1350 data bytes. Per-record A/S byte at position 7 selects
@@ -1156,5 +1165,5 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
         # set as 2003. See fetal_death/record_layout_2004.csv.
         return RECORD_LEN_2004, FETAL_2005_2006_FIELDS
     raise ValueError(
-        f"Year {year} not configured. Currently supported: 1992-2022."
+        f"Year {year} not configured. Currently supported: 1989-2022."
     )

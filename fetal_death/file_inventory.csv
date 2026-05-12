@@ -1,4 +1,7 @@
 year,source_url,source_org,raw_filename,file_format,doc_filename,record_length,imported,notes
+1989,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal1989US.zip,NCHS,Fetal1989US.zip,fixed-width zip,1989FetalUserGuide.pdf,360,no,1989-revision uniform; 61295 records; V3a backward-extension start year
+1990,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal1990US.zip,NCHS,Fetal1990US.zip,fixed-width zip,1990FetalUserGuide.pdf,360,no,1989-revision uniform; 64349 records; V3a backward extension
+1991,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal1991US.zip,NCHS,Fetal1991US.zip,fixed-width zip,1991FetalUserGuide.pdf,360,no,1989-revision uniform; 63265 records; V3a backward extension
 1992,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal1992US.zip,NCHS,Fetal1992US.zip,fixed-width zip,1992FetalUserGuide.pdf,360,no,1989-revision uniform; 70929 records; benchmark year for V2 layout reconstruction
 1993,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal1993US.zip,NCHS,Fetal1993US.zip,fixed-width zip,1993FetalUserGuide.pdf,360,no,1989-revision uniform
 1994,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal1994US.zip,NCHS,Fetal1994US.zip,fixed-width zip,1994FetalUserGuide.pdf,360,no,1989-revision uniform

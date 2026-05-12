@@ -23,6 +23,50 @@
 
 ---
 
+## 2026-05-12T14:30:00Z — task7_v3a — B3 maternal_race_bridged extension: 1989-rev MRACE 08→4 API, 09→null (consistent with 99 Unknown convention)
+
+**Choice:** Extend the B3 maternal_race_bridged recode map in `fetal_death/scripts/03_harmonize/harmonize.py` with two entries to handle 1989-revision MRACE codes that the V2 (1992+) map doesn't cover:
+
+- **`08` (Other Asian or Pacific Islander) → `4` (API)**: consistent with how codes 04-07 (Chinese, Japanese, Hawaiian, Filipino) and the parallel 1992+ codes 18-78 are mapped to bridged-API.
+- **`09` (All other Races) → `""` (null/unknown bridged)**: consistent with how code 99 ("Unknown/Not stated") is handled 1993+. Affects 165 records total (1989: 34; 1990: 72; 1991: 59 — 0.087% of V3a year coverage).
+
+**Alternatives considered:**
+
+1. **Map 09 → 4 (API).** Pro: keeps all 1989-1991 records in some bridged category. Con: incorrect — "All other Races" is a residual catch-all per the 1989 user guide, not specifically API. Mapping it to API would over-count the API-bridged group by 165 records cumulatively and bias race-stratified rates upward for the API subgroup. Rejected as semantically inaccurate.
+
+2. **Map 09 → 3 (AIAN).** Pro: AIAN is a "minority race other than Black" historical convention. Con: even worse than option 1 — explicit conflation of unrelated racial groups. The 1989 user guide's "All other Races" residual contains records whose race did NOT fit any of the 8 specific categories (01-08); imposing AIAN is misleading. Rejected.
+
+3. **Map 09 → null (chosen).** Pro: integrity-preserving (no false categorization); consistent with the existing convention for code 99 "Unknown" (1993+); the 165 affected records remain in the parquet for unbridged analyses (totals, year trends, GA distributions are unaffected); only race-stratified subgroups exclude them, which is what unbridged-unknown records should do. Con: 165 records exit race-stratified analyses without explicit notice; mitigated by documentation in V3a_1989_1991_LAYOUT_DECISIONS.md + this DECISION_LOG entry. **Selected.**
+
+4. **Add a new bridged category 5 = "Other (1989-rev residual)".** Pro: explicit. Con: requires harmonized_schema.csv allowed_values mutation (`1|2|3|4|5`); creates a category that exists only for V3a 1989-1991 records (since 1992+ has no equivalent); cross-era race comparability would break. Rejected as scope-creep beyond V3a.
+
+**Reason:** The 1989 NCHS Fetal Death User Guide page 28 explicitly defines MRACE codes 01-09 for 1989-revision records and states "Race codes effective with 1989 data differ from previous years." Codes 04-08 cover specific Asian/Pacific Islander subgroups (Chinese, Japanese, Hawaiian, Filipino, Other API); code 09 is the residual "All other Races." The bridged-race 4-category recode (the NCHS standard since the 1997 OMB directives, also used downstream in NVSR Fetal/Perinatal Mortality reports) does not have a code for "Other Races" — it's specifically White/Black/AIAN/API. Mapping a residual catch-all into one of the 4 specific buckets would be a false categorization; null preserves integrity per the 4-core-principle "fail closed" (§2 principle 2 — when in doubt, don't fabricate; let downstream code see null).
+
+**Source:**
+- `1989FetalUserGuide.pdf` page 28 (item 79-81 MRACE, downloaded this session, sha256=`54c55a40bffea18244bd14acc60a5fa094346e87c4557cb94633c7b52599e9d1`).
+- Per-year MRACE distributions in `output/yearly_clean/fetal_death_{1989,1990,1991}_raw.parquet` confirming the 9-code 01-09 scheme (no 99 sentinel; no 18-78 codes).
+- Existing B3 recode at `fetal_death/scripts/03_harmonize/harmonize.py` lines 271-284 (V2 era; the entry `"99": ""` is the precedent for the null mapping).
+- Documented in `fetal_death/V3a_1989_1991_LAYOUT_DECISIONS.md` ("The one code-system extension: B3 maternal_race_bridged" section).
+
+**Verifiable by:**
+- `validate_external_v2.py` post-V3a: 26/26 PASS. Per-year fetal-death counts (which use TABFLG/RESTATUS, not race) are byte-exact against user-guide controls — confirming the 09→null choice doesn't bias the canonical-filter aggregate (it can't, since the canonical filter doesn't use race).
+- `python -c "import pandas as pd; df = pd.read_parquet('output/harmonized/fetal_death_derived.parquet'); print(df.query('data_year in [1989,1990,1991]')['maternal_race_bridged'].isna().sum())"` returns ~165 (the 09 records + any other nulled-by-edge-case records).
+- Re-running the B3 recode map at `harmonize.py` line 271-300 inspection: the `"09": ""` entry is present alongside `"99": ""`.
+
+**Reversible:** yes — if a future analysis surfaces a defensible convention (e.g., a peer-reviewed paper that handled 1989-rev "All other Races" via a specific bridged mapping), the B3 map can be edited to that mapping with re-derive of the V3a years only (V1+V2.1 era unaffected). A separate FIX_LOG entry would record the re-mapping with regression-scope documentation.
+
+**Residual risks:**
+- (a) **NCHS may have a documented bridged-race convention for 1989-rev code 09 that I missed.** The 1989 user guide page 28 does not specify a 4-category bridged recode for code 09. The MRACE3 (item 82-83 in the user guide) field provides a separate 3-category recode (1=White / 2=Other / 3=Black) where code 09 records would have MRACE3=2 — but that 3-category collapse is incompatible with the harmonized schema's 4-category bridged scheme. If NCHS has an internal-use 4-category recode that specifies code 09's mapping (perhaps in a separate document I don't have on disk), my null mapping may diverge from NCHS convention. Mitigation: the 4-category bridged variable is widely used and documented in NVSR; if NCHS's own publications race-stratify the 1989-1991 fetal deaths, those stratifications would be the cross-check (search NVSR Volume 41/42/43 or NCHS Series 21 reports for 1989-1991 fetal deaths by race stratified at the 4-category bridged level). Such a cross-check is out of V3a scope; documented as a possible Task 11+ verification step.
+
+- (b) **The 165-record impact is small but non-zero on race-stratified analyses.** A researcher who uses `maternal_race_bridged` to stratify 1989-1991 fetal deaths will see the totals not exactly add up (165 records with null bridged-race). For unbridged analyses (year totals, year trends, GA-stratified, etc.) this has no effect. The behavior is consistent with how 1993+ Unknown-race records are handled, so a researcher familiar with the V2 era's race-handling will not be surprised. Documented in V3a_1989_1991_LAYOUT_DECISIONS.md.
+
+- (c) **Future audit may surface that "Other Asian or Pacific Islander" (code 08) should NOT map to bridged-API.** Per the 1989 user guide, the 08 records are explicitly Asian/Pacific Islander but not in the 5 specific named groups (Chinese/Japanese/Hawaiian/Filipino/Other API where Other API IS code 08 itself). Mapping 08 → 4 (API) is the natural reading. But a strict reading could argue that "Other Asian or Pacific Islander" was a NCHS-internal pre-bridged category that became finer 1992+ codes 18-78 — and that the bridged-race 4-cat scheme should always use 04-07 + 18-78 paths, never 08. In that strict reading, code 08 records (~2,800 across 1989-1991) would be null-bridged instead. Mitigation: the strict reading is unsupported by the 1989 user guide (which doesn't say "08 should be excluded from the bridged-API bucket"); the natural reading aligns 08 with 04-07 and 18-78 as all API-bridged. Documented as a strict-reading alternative in V3a_1989_1991_LAYOUT_DECISIONS.md.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- This entry asserts the 4-category bridged-race convention is "the NCHS standard since the 1997 OMB directives." That's a paraphrase of common usage in NCHS publications; if the actual OMB-directive language has more nuance (e.g., a 5-category breakdown that NCHS reduces to 4 for bridged use), the choice rationale should reference the OMB directive directly rather than the NCHS practice. Mitigation: the choice is internally consistent with how the existing V2 era B3 recode handles unknowns (99 → null) and the documented user-guide categories; a strict OMB-directive check is post-submission scope.
+
+---
+
 ## 2026-05-12T13:35:02Z — natality_v28_rename — Retain aliasing helper NATALITY_TO_CANONICAL populated post-v2.8 (override prior "becomes no-op" framing to keep v2.7.0 Zenodo backward-compat)
 
 **Choice:** Keep `shared/helpers/canonical_join_keys.py` `NATALITY_TO_CANONICAL` populated with its 4-entry mapping after v2.8 ships. Update the docstring to clarify that the helper is a no-op for v2.8+ input (rename map produces empty dict) but is retained for v2.7.0 input where the immutable Zenodo deposit 10.5281/zenodo.19868835 still has the old column names. Premature neuter (emptying the dict) is deferred — possibly indefinitely — until the v2.7.0 deposit is no longer in common use.
