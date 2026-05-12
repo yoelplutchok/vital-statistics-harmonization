@@ -175,7 +175,7 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 #### Tier 1 — pre-Phase-D must-haves (~13-15 sessions)
 
 - **C8.1** — SMOKE retag + dtype parity (B.1 + B.2)               [1.5 sessions]
-- **C8.2** — Latest-year refresh: fetal 2023+2024, linked 2024    [1-2 sessions]
+- **C8.2** — Latest-year refresh: fetal 2023+2024 (fetal-only)    [1 session]
 - **C8.3** — Cross-product Tier-1: timeline + perinatal joint     [2 sessions]
 - **C8.4** — Invariant tests: filter + row-count + join           [3 sessions]
 - **C8.5** — Distribution: lockfile + Dockerfile                  [1.5-3 sessions]

@@ -8,6 +8,176 @@
 
 ---
 
+## PRE-FLIGHT for C8.2 — 2026-05-12T22:30:00Z — Latest-year refresh (fetal 2023+2024, linked 2024) — **RESULT: HALT**
+
+### Scope summary
+
+C8.2 §15.C entry (`NEXT_STEPS.md` lines 817-880) goal: extend fetal-death from 1982-2022 (41 yrs) → 1982-2024 (43 yrs) by parsing `Fetal2023US_COD.zip` + `Fetal2024US_COD.zip`; extend linked from 2005-2023 (19 yrs) → 2005-2024 (20 yrs) by parsing `2024PE2023CO.zip`. Three new source zips (~440 MB), three new user-guide PDFs.
+
+This PRE-FLIGHT enumerates the §15 inputs read-only (no DO mutation), runs the Convention 3 Field-value snapshot for every cell/row/column the task would mutate, and verifies the STATUS 2026-05-12T22:00:00Z forward-looking HALTs. **Two HALT conditions surfaced; PRE-FLIGHT result is HALT pending user decision.**
+
+### Inputs
+
+- [x] All required input files exist (external)
+  - `Fetal2023US_COD.zip` at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2023US_COD.zip` — HEAD HTTP=200, Content-Length=**2,219,550**, Last-Modified=Thu, 05 Dec 2024 16:18:30 GMT, ETag=`"3599a0523147db1:0"` ✓
+  - `Fetal2024US_COD.zip` at same dir — HEAD HTTP=200, Content-Length=**1,925,286**, Last-Modified=Wed, 04 Feb 2026 12:21:08 GMT, ETag=`"52fea1bdd095dc1:0"` ✓
+  - `2024PE2023CO.zip` at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/period-cohort-linked/2024PE2023CO.zip` — HEAD HTTP=200, Content-Length=**432,493,258**, Last-Modified=Thu, 22 Jan 2026 11:57:31 GMT, ETag=`"e1529449968bdc1:0"` ✓ — **BUT see HALT #1 below: this file represents cohort year 2023, already imported.**
+- [x] User-guide PDFs (3 — one of three URL patterns corrected from §15 plan; see Source documentation below)
+  - `2023fetaluserguide.pdf` at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/2023fetaluserguide.pdf` (**path corrected** — see "L1-extension finding" below): HTTP=200, fetched to `/tmp/c82_preflight/2023fetaluserguide.pdf`, size=1,064,197, sha256=`947042d892ea1cf584392f55dbc833c30b7ff68b7290f5958164fefaf58863aa`, Last-Modified=Mon, 24 Feb 2025 20:20:59 GMT ✓
+  - `2024fetaluserguide.pdf` at same corrected dir: HTTP=200, size=906,615, sha256=`63bcc8b1082db135f698ddc194d5ce59e0dfee9558027269e3873be289eecb42`, Last-Modified=Thu, 12 Mar 2026 12:47:24 GMT ✓
+  - `24PE23CO_linkedUG.pdf` at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/period-cohort-linked/24PE23CO_linkedUG.pdf` (matches §15 plan): HTTP=200, Content-Length=1,079,044, Last-Modified=Thu, 19 Feb 2026 15:52:41 GMT ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - C8.1 (tag `C8.1-complete` at `9fe662a`): ✓
+  - `phase-c-authorized` tag at `0ba0279`: ✓
+  - task7_v3b-complete at `b0c8b4a`: ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/C8.2_*.md`: does not exist ✓
+  - `git tag --list 'C8.2*'`: empty ✓
+- [x] Forward-looking HALTs from STATUS 2026-05-12T22:00:00Z (10 items) — verified
+  - **#1** `C8.1-complete` tag at `9fe662a` ✓; `C8.1-pre-do` tag at `04e6519` ✓
+  - **#2** `fetal_death/harmonized_schema.csv` SHA `337a0ad0ab6d0a6b…` ✓ (will legitimately re-regen in C8.2 DO step 3)
+  - **#3** `EXPECTED_YEAR_ROWS` dict has 41 entries (line 70 in `test_release_smoke.py`) ✓
+  - **#4** `test_full_schema_type_matches_parquet_dtype` is xfail(strict=True) ✓ (XFAIL on isolated `pytest fetal_death/tests/` run)
+  - **#5** `_regenerate_schema_years.py` exists, SHA `4275ed641fb76506…` ✓
+  - **#6** `natality/tests/` exists with conftest.py + test_schema_dtype_parity.py ✓
+  - **#7** Test count: claim was "16 tests across both subprojects" — **HALT-WORTHY**: see HALT #2 below.
+  - **#8** `EXPLORATION_REPORT.md` unchanged (66,259 bytes, present at root) ✓; `KICKOFF.md` Phase C section unchanged ✓
+  - **#9** Parquet SHAs: harmonized=`e3d6c64abcb7762d…` ✓; derived=`4d1b37cc3a214eea…` ✓
+  - **#10** ~50 string-typed columns latent state still XFAIL ✓; 5 V2.1-fixed columns still int (`test_v21_h8_fixed_columns_remain_int` PASSes) ✓
+
+### Environment
+
+- [x] Python: 3.13.9 (≥3.11) ✓
+- [x] pandas: present ✓ ; pyarrow 18.1.0 (≥18.0) ✓
+- [x] PyMuPDF: present (needed for L12-extension `page.get_text()` PDF text-layer probes during SMOKE Tier 0) — verified via prior C8.1 work; no separate probe needed.
+- [x] Working directory clean (`git status`): ✓
+- [x] On `main` at commit `9fe662a`: ✓
+
+### Source documentation
+
+- [x] NVSR / NCHS user guides referenced by this task have current SHA-256s recorded above for the three new PDFs.
+- [x] Existing 2022 fetal user guide (sibling-byte-position anchor for SMOKE Tier 0): `raw_docs/fetal_death/2022fetaluserguide.pdf` sha256=`d515813f89765af0ca2804afb7673f03e4efd4737f3de04e6939f9e7f43b20b3` ✓
+- **L1-extension finding (URL drift; resolved):** §15 PRE-FLIGHT inputs cite "sibling-derived URLs at `…/Dataset_Documentation/DVS/fetaldeathus/{2023,2024}fetaluserguide.pdf`". Probed BOTH casings of the sibling-derived URL at `fetaldeathus/` → HTTP 404. NCHS reorganized the documentation directory; the canonical NCHS landing page (`cdc.gov/nchs/data_access/vitalstatsonline.htm`) directs to `…/Dataset_Documentation/DVS/fetaldeath/2023fetaluserguide.pdf` (note: `fetaldeath`, not `fetaldeathus`). Both 2023+2024 user guides verified at the corrected location. **Plan amendment**: at C8.2 DO step 3 (`file_inventory.csv` extension), the 2023+2024 rows' `doc_filename` URLs must use the new `Dataset_Documentation/DVS/fetaldeath/` prefix; the 2003-2022 rows' existing URLs in file_inventory.csv (`…/fetaldeathus/`) remain valid for the older user guides and need no change. This is one notch beyond the LESSONS L1-extension class (sibling-derivation correctly tried but the source FTP reorganized between releases).
+- [x] All cited Zenodo DOIs resolve — `10.5281/zenodo.20031571` (fetal-death concept) + `10.5281/zenodo.19363074` (natality concept) — no new DOI fetch needed at PRE-FLIGHT.
+
+### Outputs (intended)
+
+Per §15 DO scope items 1-8; targets do not yet exist (good):
+
+- [x] `raw_data/fetal_death/Fetal2023US_COD.zip` — does not exist (good) ✓
+- [x] `raw_data/fetal_death/Fetal2024US_COD.zip` — does not exist (good) ✓
+- [x] `raw_data/natality/2024PE2023CO.zip` — **already exists or already imported per `natality/metadata/file_inventory.csv` row `2023_linked` `imported=true`** — see HALT #1.
+- [x] `raw_docs/fetal_death/2023fetaluserguide.pdf` — does not exist ✓
+- [x] `raw_docs/fetal_death/2024fetaluserguide.pdf` — does not exist ✓
+- [x] `raw_docs/natality/24PE23CO_linkedUG.pdf` — TBD (not probed; deferred until HALT #1 resolved)
+- [x] New parquet outputs (post-rebuild): `output/harmonized/fetal_death_{harmonized,derived}.parquet` (mutate intended); V3b baseline preservation as `*.V3b_baseline.parquet` (new files; do not exist) ✓
+- [x] `RECEIPTS/C8.2_*.md` does not exist ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+- **`fetal_death/file_inventory.csv`** (current sha=`c561fd9487e73e73…`, **32 data rows** covering 1989-2022 — verified last row `2022` present). C8.2 plan adds 2 rows (2023, 2024). No row already exists for 2023 or 2024. ✓
+- **`fetal_death/external_validation_targets.csv`** (current sha=`83c58d68eca3941e…`, **84 data rows**). C8.2 plan adds 2 rows (one per new year). Last 2022 rows already present. ✓
+- **`fetal_death/harmonized_schema.csv`** (current sha=`337a0ad0ab6d0a6b…`, 73 data rows post-C8.1 regen). Sample `years_available` cells:
+  - `data_year` → `1992-2022` (plan: add `;2023;2024` per V3a/V3b convention)
+  - `version_flag` → starts with `A,S` followed by year-range strings (regen-derived; plan: regenerate)
+  - `tabulation_flag` → `1-2` (no change; allowed-values column not a year list)
+  - `maternal_age` → `10-54;99` (no change)
+- **`natality/metadata/file_inventory.csv`** (current sha=`0e31b92bc05b6011…`, **53 data rows**). Already contains `2023_linked` row pointing at `2024PE2023CO.zip` with `imported=true`. **NO 2024_linked row.** Adding one requires `2025PE2024CO.zip` which does not exist yet (probed → HTTP 404).
+- **`natality/metadata/external_validation_targets_v3_linked.csv`** (current sha=`4bbc75072e2dfea1…`, **52 data rows**). Latest validation row covers 2023; no 2024 cells. NVSR Linked-File 2024 report would be source; not yet released (sibling of the data file being unavailable).
+- **Linked parquet year coverage (current state on disk)**:
+  - `natality_v3_linked_harmonized.parquet`: 74,943,824 rows × data_year ∈ {2005…2023} (19 yrs); sha256=`e1795ac615a6ee40b0d5813ac6f6c072692bc30808b746b3c3efb06cf5f357e7`
+  - `natality_v3_linked_harmonized_derived.parquet`: same row count; data_year ∈ {2005…2023}; sha256=`9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777`
+- **Fetal-death parquet (current state)**: harmonized 41 yrs 1982-2022 (sha `e3d6c64abcb7762d…`), derived (sha `4d1b37cc3a214eea…`). Plan: rebuild as 43 yrs 1982-2024 (~110K new rows ≈ 55K × 2 yrs based on 2022's 40K).
+- **`fetal_death/scripts/01_import/field_specs.py`** sha=`f67e5924ea7fc73a…`. C8.2 DO step 2: probe layout-byte deltas vs 2022; if no delta, reuse 2022 era_tag; if delta, add new era_tag (would bump SHA).
+- **`fetal_death/scripts/01_import/parse_fetal_year.py`** sha=`e73ddb348deff53f…`. Plan: no edit expected; flagged for re-verification if `field_specs.py` mutates.
+- **Smoke EXPECTED state** (`fetal_death/tests/test_release_smoke.py` sha=`6abeeb2c67b15165…`): EXPECTED_ROW_COUNT=2,352,011; EXPECTED_YEARS=1982-2022 (41); EXPECTED_YEAR_ROWS dict 41 entries. Plan: re-pin to 43-yr / new row count post-rebuild (tracks-current-state per Convention 2).
+
+### Halt conditions tripped
+
+Two HALT conditions surfaced during PRE-FLIGHT; do not proceed to DO.
+
+#### HALT #1 — §7.12 (Conflicting documentation) + planning error: §15 C8.2 linked-file scope is a no-op at current state
+
+**Discovery.** §15 C8.2 entry (line 819) states: *"Extend fetal-death from 1982-2022 (41 yrs) to **1982-2024 (43 yrs)** … and linked from 2005-2023 (19 yrs) to **2005-2024 (20 yrs)** by parsing the newly-released NCHS public-use files."* Listed source: `2024PE2023CO.zip` (NCHS released 2026-01-22; 432.5 MB).
+
+**Reality (PRE-FLIGHT Field-value snapshot).**
+- `natality/metadata/file_inventory.csv` row `2023_linked` points at `2024PE2023CO.zip` with `imported=true` — the file is already imported, NCHS-released 2026-01-22, well before the §15 entry was written 2026-05-12T21:00Z.
+- The linked parquet on disk covers data_year ∈ {2005…2023} (19 yrs, 74,943,824 rows; SHAs above) — consistent with the file_inventory.
+- NCHS naming pattern (verified across 5 existing rows): `YYYY+1`PE`YYYY`CO.zip` where the first `YYYY+1` is the period/release year and the second `YYYY` is the cohort year. `2024PE2023CO.zip` is the **cohort 2023** file; the **cohort 2024** file would be `2025PE2024CO.zip` (HTTP 404 — not yet released) or `2024PE2024CO.zip` (HTTP 404).
+- The §15 entry conflated period year with cohort year.
+
+**Consequence.** As written, C8.2's linked-file scope is unachievable at current world state. The linked parquet is already at maximum-extent for NCHS-public-use data; the next 1-year extension requires `2025PE2024CO.zip` which is not yet released (estimated NCHS cadence: 2027-Q1).
+
+**Options for resolution (user decision required)**:
+- **(a) Re-scope C8.2 to fetal-only** (drop linked-file work). Effort drops from 1-2 sessions to ~1 session. Linked-2024-cohort refresh becomes a `[plan-update]` candidate for whenever NCHS releases `2025PE2024CO.zip`. This is the LLM's recommended option.
+- **(b) Defer C8.2 entirely** until NCHS releases the 2024-cohort linked file. Phase C reorders to start with C8.3 or C8.4 (which depend on C8.2's refreshed parquets per §15 line 903, 925 — so this option also requires §11 re-sequencing).
+- **(c) Confirm the linked file is genuinely current** (no version bump; document the no-op in the receipt). Bump natality v2.8.0 → v2.9.0 anyway to acknowledge the refresh-checkpoint, OR leave natality at v2.8.0 since nothing changed.
+
+#### HALT #2 — §7.18 (Reproducibility regression) + C8.1 test-infra latent bug: `pytest fetal_death/tests/ natality/tests/` errors at collection under default import mode
+
+**Discovery.** STATUS 2026-05-12T22:00:00Z item 5 + forward-looking HALT #7 assert: "VERIFY: full pytest run `pytest fetal_death/tests/ natality/tests/` returns **15 PASSED + 1 XFAIL** in ~35 sec." Re-running the literal documented command at PRE-FLIGHT:
+
+```
+ERROR collecting natality/tests/test_schema_dtype_parity.py
+import file mismatch:
+imported module 'test_schema_dtype_parity' has this __file__ attribute:
+  …/fetal_death/tests/test_schema_dtype_parity.py
+which is not the same as the test file we want to collect:
+  …/natality/tests/test_schema_dtype_parity.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename
+```
+
+Reproducible after `find … -name __pycache__ -delete`. Default pytest import mode (`prepend`) fails on duplicate module basenames across test directories that lack `__init__.py`. The C8.1 RECEIPT/STATUS claim is reproducible **only with `--import-mode=importlib`**: `pytest fetal_death/tests/ natality/tests/ --import-mode=importlib` → 15 passed, 1 xfailed.
+
+**Consequence.** C8.6 (CI: GitHub Actions wiring) is scheduled to call `pytest fetal_death/tests/ natality/tests/` in CI; under default mode it will fail at collection. C8.2 itself doesn't gate on this, but C8.2 DO step 8 ("Refresh smoke EXPECTED_ROW_COUNT + EXPECTED_YEARS + EXPECTED_YEAR_ROWS") cannot meaningfully VERIFY via the documented combined-run command.
+
+**Fix options** (cheap; pick one):
+- **(a) Add `__init__.py`** to both `fetal_death/tests/` and `natality/tests/` — makes them proper namespace packages; pytest's `prepend` import then produces unique fully-qualified names (`fetal_death.tests.test_schema_dtype_parity` vs `natality.tests.test_schema_dtype_parity`). Trivial; ~30 seconds.
+- **(b) Add `pyproject.toml`** with `[tool.pytest.ini_options]\naddopts = "--import-mode=importlib"`. Trivial; ~1 minute.
+- **(c) Rename one of the test files** (e.g., `fetal_death/tests/test_fd_schema_dtype_parity.py`). 2 minutes; updates 1 test file, no other references.
+- **(d) Defer to C8.6** (where CI wiring will encounter and force-fix). Document HALT here; C8.2 proceeds; the bug ships to C8.6.
+
+The fix is **not part of C8.2 scope**; it's a C8.1 latent bug that should be filed in FIX_LOG (L17-extension or new "test-infra basename collision under default import mode" class). LLM recommends (b) bundled with C8.6 wiring — but a quick (a) right now is also reasonable since it's pure-defensive and unblocks the next runner of the documented combined-pytest command.
+
+#### Other findings (NOT HALTs)
+
+- **L1-extension URL-drift** for 2023+2024 fetal user guides (sibling-derived path `fetaldeathus/` returned 404; NCHS landing page at `cdc.gov/nchs/data_access/vitalstatsonline.htm` directs to `fetaldeath/`). Resolved at PRE-FLIGHT moment; no halt. File `file_inventory.csv` rows for 2023/2024 will use the corrected path at DO step 3.
+- **cert-chain TLS warning** when probing NCHS FTP via curl (exit 60 `unable to get local issuer certificate`). Repo precedent (LESSONS L1-extension 2026-05-12T04:30:00Z) is `curl -sI -k` for read-only HEAD probes; that's what this PRE-FLIGHT used. For canonical-data DOWNLOAD at C8.2 DO step 1, integrity will be re-verified via SHA-256 against the values recorded above (`Fetal2023US_COD.zip` Content-Length=2,219,550 byte-exact; etag preserved). Cert-pinning option (`--cacert <path>`) is also available if the user prefers stricter verification at download time.
+
+### Result
+
+**HALT** — Two §7 conditions tripped (#1 §7.12 conflicting documentation; #2 §7.18 reproducibility regression on C8.1 test-infra). Do not proceed to C8.2 SMOKE/DO without user authorization on:
+
+- Resolution of HALT #1 (re-scope C8.2 to fetal-only / defer entirely / something else).
+- Resolution of HALT #2 (fix now as a C8.1-followup patch / fold into C8.6 / defer with documented FIX_LOG entry).
+
+---
+
+## PRE-FLIGHT addendum for C8.2 — 2026-05-12T22:45:00Z — both HALTs resolved per user authorization; PROCEED to SMOKE/DO
+
+**User authorization received 2026-05-12T22:30Z** (single AskUserQuestion round):
+
+- **HALT #1 → "Re-scope C8.2 to fetal-only (Recommended)"** — apply §11 plan-update editing `NEXT_STEPS.md` §15.C C8.2 entry + `KICKOFF.md` line 178. Linked-2024-cohort refresh deferred to a future task triggered when NCHS releases `2025PE2024CO.zip`. DECISION_LOG entry 2026-05-12T22:30:00Z files the [plan-update].
+- **HALT #2 → "Add __init__.py to both test dirs now (Recommended)"** — shipped as separate `[c8.1-followup]` commit `b84ff0d` (4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/`); pytest co-collection now reproducible under default import mode (`pytest fetal_death/tests/ natality/tests/` → 15 passed, 1 xfailed in 38.77s on a cache-cleared run). FIX_LOG entry 2026-05-12T22:30:00Z files as L17-extension.
+
+### Post-resolution input state (revised)
+
+- 2 source zips (was 3): `Fetal2023US_COD.zip` + `Fetal2024US_COD.zip`. Linked `2024PE2023CO.zip` removed from scope (already imported as cohort 2023).
+- 2 user-guide PDFs (was 3): `2023fetaluserguide.pdf` + `2024fetaluserguide.pdf` at corrected `Dataset_Documentation/DVS/fetaldeath/` URL. Linked `24PE23CO_linkedUG.pdf` removed.
+- Field-value snapshot updated: no `natality/metadata/file_inventory.csv` or `external_validation_targets_v3_linked.csv` mutation needed.
+- Smoke EXPECTED state still needs re-pin (43 yrs / new row count).
+- Version bump now fetal-death-only: v2.3.0 → v2.4.0; natality v2.8.0 unchanged.
+
+### Halt conditions tripped (post-resolution)
+
+None.
+
+### Result
+
+**PROCEED** — Tag `C8.2-pre-do` lands on this `[plan-update]` commit. Subsequent commits execute the revised §15.C DO scope (downloads → layout probe → harmonize → version bump → smoke retag → receipt → tag `C8.2-complete`).
+
+---
+
 ## PRE-FLIGHT for C8.1 — 2026-05-12T21:15:00Z
 
 ### Scope summary

@@ -1,6 +1,114 @@
-# STATUS — last updated 2026-05-12T22:00:00Z
+# STATUS — last updated 2026-05-12T22:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T22:45:00Z — C8.2 PRE-FLIGHT complete + two HALTs resolved: (1) `[c8.1-followup]` shipped 4× `__init__.py` fixing pytest co-collection (default import mode now reproduces 15 PASS + 1 XFAIL); (2) `[plan-update]` re-scoping C8.2 to fetal-only (linked file already at max NCHS-public-use extent); ready to start C8.2 SMOKE/DO
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.2 PRE-FLIGHT just landed.** Two HALTs surfaced at PRE-FLIGHT and both resolved via cheap-checks in this sub-session:
+
+1. **HALT #1 (§7.12 conflicting docs) — RESOLVED via §11 plan-update.** §15.C C8.2 entry as originally written (DECISION_LOG 21:00Z) said "extend linked 2005-2023 → 2005-**2024**" via `2024PE2023CO.zip`. PRE-FLIGHT Field-value snapshot (Convention 3) caught: that file is **cohort 2023**, already imported in `natality/metadata/file_inventory.csv` as `2023_linked`, and the linked parquet on disk already covers 2005-2023 (74.9M rows, sha=`e1795ac615a6ee40…`). NCHS pattern is `period`PE`cohort`CO; the cohort-2024 file `2025PE2024CO.zip` HTTP-404s. C8.2 re-scoped to **fetal-only** per user authorization 22:30Z. Effort revised 1-2 sessions → 1 session.
+
+2. **HALT #2 (§7.18 reproducibility regression / C8.1 test-infra) — RESOLVED via separate `[c8.1-followup]` commit.** STATUS 22:00Z claimed `pytest fetal_death/tests/ natality/tests/` returns 15 PASS + 1 XFAIL. Under default pytest import mode on a clean __pycache__-deleted run, the command errors at collection: both subprojects ship `test_schema_dtype_parity.py` with no `__init__.py` to namespace them. Added 4× empty `__init__.py` at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/`. Verified: cache-cleared default-mode `pytest` → 15 passed, 1 xfailed in 38.77s. FIX_LOG entry 2026-05-12T22:30:00Z files as L17-extension.
+
+### What was done this sub-session (C8.2 PRE-FLIGHT + HALT resolutions)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user confirmed to proceed with C8.2 PRE-FLIGHT.
+2. **C8.2 PRE-FLIGHT** (PRE_FLIGHT_LOG entry 2026-05-12T22:30:00Z):
+   - URL HEAD probes via `curl -skI`: 2 fetal zips HTTP 200 + sizes verified; 1 linked zip HTTP 200; cohort-2024 candidates (2025PE2024CO.zip, 2024PE2024CO.zip) both 404.
+   - User-guide probes: §15-cited URL pattern `fetaldeathus/{year}fetaluserguide.pdf` returned 404 for 2023+2024 (L1-extension URL-drift discovery: NCHS reorganized to `fetaldeath/` directory between 2022 and 2023 releases). Confirmed via WebFetch on NCHS canonical landing page. Both 2023+2024 user guides verified HTTP 200 at corrected URL; SHAs recorded after fetch to `/tmp/c82_preflight/`.
+   - Field-value snapshots: file_inventory + external_validation_targets + harmonized_schema years_available + smoke EXPECTED state + parquet SHAs + script SHAs all recorded.
+   - Linked parquet year coverage verified via `pq.read_table(... columns=['data_year'])` → {2005…2023}, confirming `2024PE2023CO.zip` = cohort 2023 already imported.
+   - All 10 STATUS 22:00Z forward-looking HALTs verified (item 7 tripped, see HALT #2).
+   - **Result: HALT** (both halt conditions surfaced; PRE-FLIGHT halt-and-ask invoked).
+3. **AskUserQuestion** 22:30Z surfaced both HALTs with 3 options each; user selected recommended option for both.
+4. **HALT #2 fix** (commit `b84ff0d` `[c8.1-followup]`): 4× empty `__init__.py` + FIX_LOG entry 2026-05-12T22:30:00Z (L17-extension). Sanity-check: no existing Python code imports `fetal_death` or `natality` as packages; harmonize.py dry-imports OK.
+5. **HALT #1 plan-update** (this commit `[plan-update]`):
+   - `NEXT_STEPS.md` §15.C C8.2 entry rewritten as **FETAL-ONLY**. Original linked-file scope (DO step 5, Tier 4 SMOKE, linked VERIFY criteria, natality version bump) removed. Effort 1-2 sessions → 1 session.
+   - `KICKOFF.md` line 178 edited: "fetal 2023+2024, linked 2024 [1-2 sessions]" → "fetal 2023+2024 (fetal-only) [1 session]".
+   - `DECISION_LOG.md` entry 2026-05-12T22:30:00Z documenting the §11 plan-update with both HALT resolutions, alternatives, residual risks, self-check.
+   - `PRE_FLIGHT_LOG.md` addendum 2026-05-12T22:45:00Z marking **PROCEED**; original HALT entry preserved per append-only convention.
+   - This STATUS section.
+6. Forward-looking HALT bookkeeping: STATUS 22:00Z HALT #7 ("16 tests across both subprojects") is now durable post-`[c8.1-followup]`.
+
+### Last completed step
+
+`[plan-update]` commit ready to land: edits to `NEXT_STEPS.md`, `KICKOFF.md`, `DECISION_LOG.md`, `PRE_FLIGHT_LOG.md` (addendum + back-reference to original HALT entry), and this STATUS section. Tag `C8.2-pre-do` lands on this commit.
+
+### In-progress
+
+(none — clean checkpoint at the C8.2 PRE-FLIGHT → SMOKE/DO boundary)
+
+### Next planned task
+
+**C8.2 SMOKE + DO + VERIFY + RECEIPT (fetal-only).** Per the revised §15.C C8.2 entry. Substantial DO work (~1 session estimated):
+
+- SMOKE Tier 0: byte-position diff (`page.get_text()` PDF text-layer probe) between `/tmp/c82_preflight/2024fetaluserguide.pdf` and `raw_docs/fetal_death/2022fetaluserguide.pdf`; record any layout deltas.
+- SMOKE Tier 1: 100-record parse of 2024 fetal-death.
+- DO step 1: move PDFs from `/tmp/c82_preflight/` to `raw_docs/fetal_death/`; download 2 zips to `raw_data/fetal_death/` (with SHA-256 integrity check against PRE-FLIGHT-recorded values).
+- DO step 2: confirm or extend `field_specs.py` era_tag for 2023/2024.
+- DO step 3: extend `file_inventory.csv` + `external_validation_targets.csv` + regen `harmonized_schema.csv` years_available.
+- DO step 4: re-harmonize + re-derive 1982-2024 fetal-death parquet; preserve V3b parquet as `.V3b_baseline.parquet`.
+- DO steps 5-7: version bump v2.3.0 → v2.4.0; doc updates; smoke EXPECTED state re-pin.
+- VERIFY: 88/88 → 90/90 external validation; 0/162 V3b byte-clean regression.
+- RECEIPT + tag `C8.2-complete`.
+
+### Blocked
+
+(none — all PRE-FLIGHT halts resolved.)
+
+### Open questions for human
+
+None for the C8.2 DO scope. **Open soft-flag**: when NCHS releases `2025PE2024CO.zip` (estimated 2027-Q1), a future task should trigger via §11 plan-update to refresh the linked-file portion (deferred from this C8.2).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.2-pre-do` tag** present on the commit shipping this STATUS section. Verify: `git tag --list 'C8.2*'` shows `C8.2-pre-do` only (no `C8.2-complete` yet).
+2. **4× `__init__.py` files exist** at `fetal_death/__init__.py`, `fetal_death/tests/__init__.py`, `natality/__init__.py`, `natality/tests/__init__.py`. If any missing, the pytest co-collection bug returns.
+3. **`pytest fetal_death/tests/ natality/tests/` under default mode** returns 15 PASS + 1 XFAIL after cache-cleared run. Forward-looking durable check.
+4. **§15.C C8.2 entry in `NEXT_STEPS.md`** reads "FETAL-ONLY" with linked-file scope removed. If a future session finds the linked-file scope back, the plan-update was overridden silently.
+5. **`KICKOFF.md` line 178** reads "C8.2 — Latest-year refresh: fetal 2023+2024 (fetal-only) [1 session]".
+6. **Pre-C8.2-DO parquet SHAs** unchanged: harmonized=`e3d6c64abcb7762d…`, derived=`4d1b37cc3a214eea…` (C8.2 DO step 4 will mutate these intentionally).
+7. **`/tmp/c82_preflight/` PDFs** may be cleared at any time without consequence; PRE-FLIGHT recorded SHAs (947042d8…, 63bcc8b1…) are the authoritative reference for SHA integrity verification at DO step 1 download.
+8. **`fetal_death/scripts/01_import/field_specs.py` SHA `f67e5924ea7fc73a…`** unchanged at C8.2 PRE-FLIGHT. May mutate at C8.2 DO step 2 IF layout-byte delta surfaces vs 2022 sibling (forward-looking soft-flag).
+9. **`fetal_death/harmonized_schema.csv` SHA `337a0ad0ab6d0a6b…`** unchanged at C8.2 PRE-FLIGHT. Will mutate at C8.2 DO step 3 via `_regenerate_schema_years.py`.
+10. **`fetal_death/file_inventory.csv` 32 data rows** unchanged at C8.2 PRE-FLIGHT. Plan: add 2 rows (2023, 2024) at DO step 3. Updated URL pattern for 2023+ user guides is `Dataset_Documentation/DVS/fetaldeath/{YYYY}fetaluserguide.pdf` (no `us` suffix).
+
+### Build artifacts current
+
+(unchanged from STATUS 22:00Z; this is a plan-update + test-infra fix sub-session, no data mutation)
+
+- 41-yr fetal-death parquet (V3b SHAs preserved): `e3d6c64abcb7762d…` / `4d1b37cc3a214eea…`
+- V3a baseline parquets preserved
+- Natality v2.8.0 state unchanged (linked stays at 2005-2023 per re-scope)
+- Linked file unchanged
+- Test infrastructure now durable under default pytest mode (4× __init__.py added in `[c8.1-followup]` commit `b84ff0d`)
+
+NEW this sub-session:
+- `fetal_death/__init__.py` + `fetal_death/tests/__init__.py` + `natality/__init__.py` + `natality/tests/__init__.py` (all empty; commit `b84ff0d`)
+- `KICKOFF.md` line 178 (C8.2 scope label)
+- `NEXT_STEPS.md` §15.C C8.2 entry (full rewrite to fetal-only)
+- `FIX_LOG.md` 2026-05-12T22:30:00Z (L17-extension; commit `b84ff0d`)
+- `DECISION_LOG.md` 2026-05-12T22:30:00Z (this commit)
+- `PRE_FLIGHT_LOG.md` 2026-05-12T22:30:00Z (HALT) + 2026-05-12T22:45:00Z (PROCEED addendum)
+- `STATUS.md` this section (append)
+
+### Notes for next session
+
+- **C8.2 SMOKE/DO is the next action.** PRE-FLIGHT is complete; tag `C8.2-pre-do` lands on this `[plan-update]` commit. DO step 1 (downloads) is the first irreversibility boundary — content is fetched from the public NCHS FTP, no canonical-state mutation in the monorepo until DO step 2+ writes to `raw_data/`, `raw_docs/`, then later parses produce yearly_clean parquets.
+- **The two `__init__.py` files at the subproject level (`fetal_death/__init__.py`, `natality/__init__.py`) are not currently imported as Python packages by any code** — they exist purely to disambiguate pytest's prepend-mode module names. Future C8.5 (lockfile + pyproject.toml) PRE-FLIGHT should acknowledge that the subprojects are NOT pip-installable and decide whether to keep them as namespace-only packages or to extend them.
+- **L17-extension** entered service via FIX_LOG; promotion to §8 matrix row pending C8.6 CI authoring (where automated cache-cleared runs become the durable defense).
+- **L1-extension URL-drift correction** for 2023+2024 fetal user guides: the `file_inventory.csv` rows added at C8.2 DO step 3 must use the `Dataset_Documentation/DVS/fetaldeath/` URL prefix (no `us` suffix), unlike the existing 2003-2022 rows which use `fetaldeathus/`. Per Convention 3 Field-value snapshot in PRE-FLIGHT addendum.
+- **Tier 1 progress**: 1 of 8 tasks complete (C8.1 ✓). C8.2 PRE-FLIGHT done (1.0 sub-session); remaining C8.2 SMOKE/DO/VERIFY/RECEIPT (~0.5-1 session). Cumulative Phase C effort estimate: ~2.0 sessions consumed of ~29-35 budget; comfortably within +20% drift cap (42 sessions).
+
+### Session summary
+
+C8.2 PRE-FLIGHT executed in one sub-session, surfaced two real HALTs at the cheap-check moment (exactly what Convention 3 Field-value snapshot is for), both resolved via low-cost cheap fixes: one `[c8.1-followup]` commit (4× `__init__.py`; 49 LOC additions; FIX_LOG entry) and one `[plan-update]` commit (this one; NEXT_STEPS §15.C rewrite + KICKOFF + DECISION_LOG + STATUS + PRE-FLIGHT addendum). Cumulative time: ~1 hour wall-clock of focused PRE-FLIGHT work. Net savings: avoided a ~412 MB download + multi-hour linked-file re-harmonize attempt that would have produced byte-identical output.
+
+Ready to start C8.2 SMOKE/DO (fetal-only) in the next sub-session or this one if user authorizes.
 
 ---
 

@@ -23,6 +23,61 @@
 
 ---
 
+## 2026-05-12T22:30:00Z — [plan-update] C8.2 — Re-scope to fetal-only; linked-2024-cohort deferred (no NCHS public-use file exists yet); C8.1 test-infra bug fixed as a followup commit
+
+**Choice (user-authorized at PRE-FLIGHT halt-and-ask 2026-05-12T22:30Z):** Apply two resolutions to two HALT conditions surfaced at C8.2 PRE-FLIGHT.
+
+1. **HALT #1 resolution — re-scope C8.2 to fetal-only.** Edit `NEXT_STEPS.md` §15.C C8.2 entry and `KICKOFF.md` Phase C task list: remove all linked-file scope (DO steps 5, 7 partial; SMOKE Tier 4; linked VERIFY criteria). Effort revised from 1-2 sessions to 1 session. Linked-2024-cohort refresh becomes a future task to be triggered via §11 plan-update when NCHS publishes `2025PE2024CO.zip` (estimated 2027-Q1).
+2. **HALT #2 resolution — C8.1 test-infra fix.** Add four empty `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` to make pytest's default-mode co-collection work. Shipped as a separate `[c8.1-followup]` commit `b84ff0d` immediately before this plan-update commit. FIX_LOG entry filed at 2026-05-12T22:30:00Z as L17-extension.
+
+**Alternatives considered (per HALT #1):**
+
+1. **Re-scope C8.2 to fetal-only (chosen).** Pro: avoids ~50% of original C8.2 effort that has no canonical state to mutate; produces a clean v2.4.0 fetal-death-only release; clear plan-of-record for the linked file (wait for `2025PE2024CO.zip`). Con: leaves the linked refresh as a small future task — but since NCHS hasn't released the 2024-cohort file, there's nothing to do *now* regardless.
+2. **Defer C8.2 entirely** (re-sequence Phase C). Pro: zero canonical-state mutation in this session. Con: fetal-death 2023+2024 IS available and refreshing it is the cheapest-pre-submission win identified in Phase B (`EXPLORATION_REPORT.md` §A.1); deferring loses that signal. **Rejected.**
+3. **Confirm linked file is current and ship a v2.9.0 no-op refresh-checkpoint.** Pro: explicit version-history note that the C8.2 linked-refresh check ran. Con: a Zenodo version bump for an empty diff is wasteful (Anti-Pattern #6's spirit) and confuses cite-by-version downstream. **Rejected.**
+
+**Alternatives considered (per HALT #2):**
+
+1. **Add four `__init__.py` (chosen).** Pro: cleanest fix; pytest's default prepend mode generates unique fully-qualified names; no new config file; forward-compatible with C8.5 (lockfile) which will add a `pyproject.toml` for environment-pinning unrelated to test config. Con: makes `fetal_death/` and `natality/` formal Python packages (zero existing code imports them as packages — verified via `git ls-files | xargs grep -lE "^(from|import) (fetal_death|natality)\b"` → 0 matches; harmonize.py dry-imports OK).
+2. **Add `pyproject.toml` with `[tool.pytest.ini_options] addopts = "--import-mode=importlib"`.** Pro: documents the import mode explicitly; no package-structure change. Con: adds a new top-level config file that C8.5 will then have to coexist with or replace. Slightly more architectural surface.
+3. **Rename one test file** (e.g., `test_fd_schema_dtype_parity.py`). Pro: 2-line code change. Con: breaks the symmetry between subprojects' test naming; the next time a paired test file is added (e.g., `test_release_smoke.py` for natality at C8.4) the same bug returns. **Rejected as not-durable.**
+4. **Defer to C8.6 (CI wiring).** Pro: zero work now. Con: STATUS 22:00Z's "16 tests across both subprojects" claim remains unverifiable from the documented combined-pytest command until C8.6 forces a fix. **Rejected** — cheap-check moment is now.
+
+**Reason:** Both HALTs are inexpensive to resolve at the C8.2 PRE-FLIGHT cheap-check moment and both have clean, forward-compatible fixes. The §11 plan-update process specifically accommodates this kind of scope correction surfaced during PRE-FLIGHT verification of plan-vs-reality alignment (Convention 3 Field-value snapshot caught the linked-file conflict at the right moment — exactly what cheap-checks are for).
+
+Two protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — discovering the linked no-op now saves a ~412 MB download + multi-hour re-harmonize attempt that would have produced byte-identical output; (ii) §11 plan-update process is the canonical path for in-Phase-C scope adjustments (per Q42 self-resolution: §11 plan-update required for any new candidate adding >1 session OR removing >1 session of scope). The linked-portion of C8.2 was ~0.5-1 session of work; the removal is right at the §11 threshold and gets a [plan-update] commit anyway.
+
+**Source:**
+- `PRE_FLIGHT_LOG.md` 2026-05-12T22:30:00Z entry documenting both HALTs.
+- §15.C C8.2 entry pre-revision text (line 817-880 in NEXT_STEPS.md at commit `9fe662a`; full text preserved in git history).
+- `EXPLORATION_REPORT.md` §A.1 (fetal-only portion remains in scope; linked-file portion already noted as "the 2024-cohort linked file isn't out yet but a refresh task can fire when it lands").
+- NCHS public-use FTP HEAD probes 2026-05-12T22:30Z: `2024PE2023CO.zip` → HTTP 200 (cohort 2023, already imported); `2025PE2024CO.zip` → HTTP 404 (cohort 2024 not yet released).
+- `natality/metadata/file_inventory.csv` row `2023_linked,…,2024PE2023CO.zip,imported=true,Cohort year 2023` (sha=`0e31b92bc05b6011…`).
+- Linked parquet on disk (`/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized.parquet` sha=`e1795ac615a6ee40…`, 74,943,824 rows × data_year ∈ {2005…2023}) confirms 2023-cohort already shipped.
+- User authorization chat 2026-05-12T22:30Z: HALT #1 = "Re-scope C8.2 to fetal-only (Recommended)"; HALT #2 = "Add __init__.py to both test dirs now (Recommended)".
+
+**Verifiable by:**
+- This `[plan-update]` commit's diff shows `NEXT_STEPS.md` §15.C C8.2 entry rewritten + `KICKOFF.md` line 178 edit + `PRE_FLIGHT_LOG.md` addendum + `STATUS.md` new section + this DECISION_LOG entry.
+- Tag `C8.2-pre-do` lands on this commit (PRE-FLIGHT now PROCEEDS post-resolution).
+- Commit `b84ff0d` (immediately prior, `[c8.1-followup]`) shows the 4× `__init__.py` additions + FIX_LOG entry.
+- `pytest fetal_death/tests/ natality/tests/` under default import mode now returns "15 passed, 1 xfailed in ~39s" (cache-cleared run).
+- Future re-scope of the linked-file portion: triggers a new `[plan-update]` commit when NCHS releases `2025PE2024CO.zip` (HEAD-probe will return HTTP 200; PRE-FLIGHT for the new task fires).
+
+**Reversible:** yes — `git revert <this commit>` restores the original C8.2 §15 entry. The 4× `__init__.py` files can be removed by `git revert b84ff0d` (the `[c8.1-followup]` commit). Both reverts are independent and additive.
+
+**Residual risks:**
+- (a) **The "linked-2024-cohort needs a future task" assertion may be wrong** if NCHS changes the period-cohort-linked release cadence (e.g., releases two cohorts in one period file, or skips a cohort year). Mitigation: the future task's PRE-FLIGHT will run a sibling-probe of the FTP directory before assuming any specific filename. The §11 plan-update at that time would record any naming-convention surprise.
+- (b) **The 4× `__init__.py` may interact with future package-management work** at C8.5 (uv/poetry lockfile) if the lockfile authoring chooses to treat `fetal_death/` and `natality/` as installable packages. Currently they are not installable; the `__init__.py` files are inert for `pip install` purposes. Mitigation: C8.5 PRE-FLIGHT explicitly notes the package-vs-not-package status of each subproject.
+- (c) **The re-scoped C8.2 still mutates many files** (file_inventory.csv, validation_targets.csv, schema.csv years_available, harmonize.py SHA if era_tag mutates, version bumps in 4+ doc files, smoke EXPECTED state). The PRE-FLIGHT addendum's PROCEED clause covers these; the receipt's Forward-looking HALTs spec covers them too.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- This entry asserts the linked file is already at maximum NCHS-public-use extent. Verification: linked parquet data_year ∈ {2005…2023} confirmed by `pq.read_table(p, columns=['data_year'])`. If NCHS *had* released a partial 2024-cohort file under a different naming convention, this entry would miss it. Mitigation: explicit HEAD probes of `2025PE2024CO.zip` (404) and `2024PE2024CO.zip` (404) cover the natural sibling-derived candidate URLs; sibling probe of the NCHS landing page (`cdc.gov/nchs/data_access/vitalstatsonline.htm` via WebFetch 2026-05-12T22:30Z) confirms the most-recent period-cohort release documented is "2024 period/2023 cohort."
+- The `[c8.1-followup]` commit's classification as "fix" (not a §11 plan-update) is borderline — it touches test infrastructure not data, and Anti-Pattern #6 ("never edit harmonized_schema.csv without bumping the schema version") doesn't apply. The 4× `__init__.py` files are pure-additive and reversible.
+
+**Backport scope (per §11.4):** None. C8.1's RECEIPT and STATUS 22:00Z section remain canonical for what C8.1 shipped; the `[c8.1-followup]` patch is documented in FIX_LOG 2026-05-12T22:30:00Z; future audits see the trail. The C8.1 RECEIPT's Self-check section already flagged "test infrastructure may need closer scrutiny" as a residual risk (item 1 — though framed around xfail rot, the broader test-infra fragility was implied).
+
+---
+
 ## 2026-05-12T22:00:00Z — C8.1 — schema `years_available` regen via `_regenerate_schema_years.py` — auto-derived field cleanup; NO schema-version bump
 
 **Choice:** Run `python3 fetal_death/scripts/_regenerate_schema_years.py` (sibling of standalone-build script, now copied into the monorepo) to update 46 of 73 `harmonized_schema.csv` rows whose `years_available` strings had drifted from the actual parquet data after the V3a + V3b backward extensions (V3a RECEIPT note 8 + V3b RECEIPT note 8 explicitly deferred this cleanup). **No schema-version bump** — `years_available` is an auto-derived field whose canonical value is mechanically derivable from the parquet; the regen script's purpose is exactly this regeneration. New schema SHA: `337a0ad0ab6d0a6b…` (was `69f92bf775251f1e…`).

@@ -814,69 +814,67 @@ The C8.X entries below were appended at the `phase-c-authorized` `[plan-update]`
 
 ---
 
-### Task C8.2 — Latest-year refresh (fetal death 2023+2024, linked 2024)
+### Task C8.2 — Latest-year refresh (fetal death 2023+2024) — FETAL-ONLY
 
-**Goal.** Extend fetal-death from 1982-2022 (41 yrs) to **1982-2024 (43 yrs)** and linked from 2005-2023 (19 yrs) to **2005-2024 (20 yrs)** by parsing the newly-released NCHS public-use files. Natality stays at 1990-2024 (NCHS Natality 2025 not yet released; expected ≈Aug-Oct 2026).
+**Re-scoped 2026-05-12T22:30:00Z at PRE-FLIGHT.** Original §15 entry covered fetal-death 2023+2024 + linked 2024 (DECISION_LOG 2026-05-12T21:00:00Z). C8.2 PRE-FLIGHT discovered that the linked-file portion was a no-op (`2024PE2023CO.zip` is cohort year **2023**, already imported as `2023_linked` in `natality/metadata/file_inventory.csv`; NCHS naming pattern is `period`PE`cohort`CO, not `year`PE`prev`CO; the cohort-2024 file `2025PE2024CO.zip` does not yet exist — HTTP 404). User authorized re-scope to fetal-only at 2026-05-12T22:30Z (DECISION_LOG 2026-05-12T22:30:00Z). Linked-2024-cohort refresh deferred to a future task triggered when NCHS publishes `2025PE2024CO.zip` (estimated 2027-Q1 by annual cadence).
 
-**Why this matters.** Cheapest pre-submission data win identified by Phase B (`EXPLORATION_REPORT.md` §A.1). Three NCHS source files released **after** the most recent HVS shipment:
-- `Fetal2023US_COD.zip` (NCHS released 2024-12-05; 2,219,550 B)
-- `Fetal2024US_COD.zip` (NCHS released 2026-02-04; 1,925,286 B)
-- `2024PE2023CO.zip` (NCHS released 2026-01-22; 432.5 MB)
+**Goal.** Extend fetal-death from 1982-2022 (41 yrs) to **1982-2024 (43 yrs)** by parsing the two newly-released NCHS public-use files. Natality stays at 1990-2024 (NCHS Natality 2025 not yet released; expected ≈Aug-Oct 2026). Linked stays at 2005-2023 (most-recent NCHS public-use cohort).
 
-All three are sibling-layout extensions of V1-era and post-2017 combined-period-cohort layouts already parsed. Layout-byte delta vs 2022 (fetal) and 2023 (linked) expected to be ≤1 byte/column if any (NCHS rarely reorders within a release series).
+**Why this matters.** Cheapest pre-submission data win identified by Phase B (`EXPLORATION_REPORT.md` §A.1, fetal-only portion). Two NCHS source files released **after** the most recent HVS shipment:
+- `Fetal2023US_COD.zip` (NCHS released 2024-12-05; 2,219,550 B; verified HTTP 200 at C8.2 PRE-FLIGHT)
+- `Fetal2024US_COD.zip` (NCHS released 2026-02-04; 1,925,286 B; verified HTTP 200 at C8.2 PRE-FLIGHT)
 
-**PRE-FLIGHT inputs.**
-- 3 NCHS source zip URLs (verified HTTP 200, `EXPLORATION_REPORT.md` §A.1).
-- 3 user-guide PDFs (sibling-derived URLs at `https://ftp.cdc.gov/.../Dataset_Documentation/DVS/fetaldeathus/{2023,2024}fetaluserguide.pdf` + `.../period-cohort-linked/24PE23CO_linkedUG.pdf`).
-- Existing parser `fetal_death/scripts/01_import/parse_fetal_year.py` + `field_specs.py` (post-V3b SHAs in STATUS 18:45Z FL-HALTs 2-3).
-- Natality-linked import code under `natality/scripts/01_import/` (existing for 2005-2023).
-- All forward-looking HALTs from `task7_v3b-complete` receipt + STATUS 20:30Z (parquet SHAs, schema SHA, field_specs SHA, validate_external_v2 SHA, V3a baseline parquet SHAs).
-- Field-value snapshot (Convention 3) of:
-  - `fetal_death/external_validation_targets.csv` (needs +2 years extension).
-  - `fetal_death/file_inventory.csv` (needs +3 rows: 2 fetal + 1 linked).
-  - `fetal_death/harmonized_schema.csv` `years_available` cells (needs `+2023, +2024` prepend per V3a/V3b convention).
-  - `natality/external_validation_targets.csv` or equivalent (linked validation row).
-  - Existing 2022 fetal user guide SHA (sibling-byte-position diff anchor for 2023+2024).
+Both are sibling-layout extensions of the post-2017 V1-era COD layout already parsed. Layout-byte delta vs 2022 expected to be ≤1 byte/column if any (NCHS rarely reorders within a release series). Will be confirmed at SMOKE Tier 0 via `page.get_text()` PDF text-layer probe (per LESSONS L12-extension 2026-05-12T15:00:00Z) of both 2023 and 2024 user guides against the on-disk 2022 sibling.
+
+**PRE-FLIGHT inputs (recorded in PRE_FLIGHT_LOG entry 2026-05-12T22:30:00Z).**
+- 2 NCHS source zip URLs (verified HTTP 200 + sizes + Last-Modified + ETags at PRE-FLIGHT).
+- 2 user-guide PDFs at the **corrected URL** `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/{2023,2024}fetaluserguide.pdf` (NOT `fetaldeathus/`; NCHS reorganized between the 2022 and 2023 releases). SHAs recorded.
+- Existing parser `fetal_death/scripts/01_import/parse_fetal_year.py` + `field_specs.py` (post-V3b SHAs recorded in PRE-FLIGHT).
+- Existing 2022 fetal user guide on disk (`raw_docs/fetal_death/2022fetaluserguide.pdf` sha=`d515813f89765af0…`) — sibling-byte-position diff anchor for 2023+2024.
+- Field-value snapshot (Convention 3): `fetal_death/file_inventory.csv` (current 32 rows; plan adds 2), `fetal_death/external_validation_targets.csv` (current 84 rows; plan adds 2), `fetal_death/harmonized_schema.csv` `years_available` cells (plan regenerates via `_regenerate_schema_years.py`), parquet SHAs.
 
 **SMOKE plan.**
-- Tier 0: byte-position diff between 2024 fetal user guide and 2022 (sibling-derive); same between 2024 linked user guide and 2023 linked. Per L13-extension, value-distribution sanity-check 5 anchor fields after parse (TABFLG, RESTATUS, DOD_YY, MAGER, MRACEREC).
+- Tier 0: byte-position diff between 2024 fetal user guide and 2022 (sibling-derive via `page.get_text()`). Per L13-extension, value-distribution sanity-check 5 anchor fields after parse (TABFLG, RESTATUS, DOD_YY, MAGER, MRACEREC).
 - Tier 1: 100-record parse of 2024 fetal-death; assert plausible distribution (no unexpected nulls).
 - Tier 2: full-year 2023 + 2024 fetal-death parse; per-year control-count match against user-guide page-7 control counts.
 - Tier 3: 1982-2024 re-harmonize; V3b-era byte-clean regression (0/162 column drift on 1982-2022 slice vs current parquet).
-- Tier 4: linked 2024 parse + per-year count match against NCHS Linked File 2024 report control.
+
+(Tier 4 linked smoke removed under re-scope.)
 
 **DO scope.**
-1. Download 3 source zips + 3 user-guide PDFs to `raw_data/fetal_death/` + `raw_docs/fetal_death/` + linked equivalents; record SHAs.
-2. Probe layout-byte deltas vs the 2022 sibling (fetal) and 2023 sibling (linked). If no delta: reuse existing era_tag. If delta: extend `field_specs.py` with new era_tag + DECISION_LOG entry.
-3. Add 3 rows to `fetal_death/file_inventory.csv`; 2 rows to `fetal_death/external_validation_targets.csv` (one per new year); extend `harmonized_schema.csv` `years_available` (+2023, +2024 prepend on every applicable row).
+1. Download 2 source zips + 2 user-guide PDFs to `raw_data/fetal_death/` + `raw_docs/fetal_death/`; record SHAs.
+2. Probe layout-byte deltas vs the 2022 sibling. If no delta: reuse existing era_tag. If delta: extend `field_specs.py` with new era_tag + DECISION_LOG entry.
+3. Add 2 rows to `fetal_death/file_inventory.csv` (2023, 2024); 2 rows to `fetal_death/external_validation_targets.csv` (one per new year); regenerate `harmonized_schema.csv` `years_available` via `_regenerate_schema_years.py` (auto-derived; no version bump required per DECISION_LOG 2026-05-12T22:00:00Z precedent).
 4. Re-harmonize + re-derive fetal-death parquet (now 1982-2024); preserve V3b parquet as a `.V3b_baseline.parquet` forward-stability anchor.
-5. Re-harmonize + re-derive linked parquet (now 2005-2024); preserve current 2023 parquet as a `.pre_2024_refresh_baseline.parquet`.
-6. Bump fetal-death version v2.3.0 → v2.4.0; bump natality+linked v2.8.0 → v2.9.0.
-7. Update CITATION.cff + .zenodo.json + ABOUT_THIS_RELEASE.md + README.md per-product.
-8. Refresh smoke EXPECTED_ROW_COUNT + EXPECTED_YEARS + EXPECTED_YEAR_ROWS (C8.1 smoke pins under tracks-current-state — explicit re-pin).
+5. Bump fetal-death version v2.3.0 → v2.4.0.
+6. Update CITATION.cff + .zenodo.json + ABOUT_THIS_RELEASE.md + README.md (fetal-death only). Natality + linked version files unchanged.
+7. Refresh smoke EXPECTED_ROW_COUNT + EXPECTED_YEARS + EXPECTED_YEAR_ROWS (C8.1 smoke pins under tracks-current-state — explicit re-pin).
+
+(Original DO step 5 "re-harmonize linked parquet" removed under re-scope.)
 
 **VERIFY criteria.**
 - Per-year fetal counts 2023+2024 match user-guide control counts byte-exact.
 - V3b baseline byte-clean regression: 0/162 columns drift on 1982-2022 slice (anchor preserved per L5).
-- Linked 2024 per-year count matches NCHS Linked File 2024 report control byte-exact.
-- C8.1's updated dtype-parity test PASSes on the v2.4.0 / v2.9.0 parquets.
-- External validation count: 88/88 → 90/90 (fetal +2 counts; linked target add depends on per-year reports).
+- C8.1's updated dtype-parity test PASSes on the v2.4.0 parquet.
+- External validation count: 88/88 → 90/90 (fetal +2 counts).
 
-**RECEIPT requirement.** Standard. Self-check: did I re-run V3b baseline byte-clean comparison after the re-harmonize? Did I update the manuscript's pipeline-timing claims if the wall-clock materially changed?
+(Linked verification criteria removed.)
 
-**Estimated effort.** 1-2 sessions.
+**RECEIPT requirement.** Standard. Self-check: did I re-run V3b baseline byte-clean comparison after the re-harmonize? Did I correctly omit linked-file work per the re-scope? Did I update the manuscript's pipeline-timing claims if the wall-clock materially changed?
+
+**Estimated effort.** **1 session** (revised from 1-2 under re-scope; linked-file work was ~50% of the original scope).
 
 **Dependencies.** None. Recommended FIRST Phase C data task (Q37) since it predates any test/CI scaffolding work — subsequent tests gate on the extended envelope.
 
-**Halt-condition flags.** H1, L13 (if layout-byte delta surfaces vs 2022/2023 siblings), L17 (SMOKE pin shifts post-refresh — handled by C8.1's `DESIGN: tracks-current-state` tag). Convention 1 SHAPE-not-VALUE on every new SMOKE.
+**Halt-condition flags.** H1, L13 (if layout-byte delta surfaces vs 2022 sibling), L17 (SMOKE pin shifts post-refresh — handled by C8.1's `DESIGN: tracks-current-state` tag). Convention 1 SHAPE-not-VALUE on every new SMOKE.
 
 **Forward-looking HALTs to write in receipt.**
 - 2023+2024 fetal zip + PDF SHAs unchanged.
-- 2024 linked zip + PDF SHAs unchanged.
 - Post-refresh fetal_death parquet SHAs.
-- Post-refresh linked parquet SHAs.
 - `field_specs.py` SHA unchanged if no era_tag added; new SHA otherwise.
 - C8.1's smoke EXPECTED_YEAR_ROWS dict updated to include +2023, +2024.
+- 4× `__init__.py` files (added 2026-05-12T22:30Z C8.1-followup commit) present at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` — if any missing, the pytest co-collection bug returns.
+- Future linked-2024-cohort refresh task: trigger when NCHS publishes `2025PE2024CO.zip` (sibling check via `curl -sIk` HEAD probe; PRE-FLIGHT triggered automatically by §11 plan-update at that time).
 
 ---
 
