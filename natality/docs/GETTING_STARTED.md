@@ -38,7 +38,7 @@ linked_res = pd.read_parquet("output/convenience/natality_v3_linked_residents_on
 | File | Rows | Columns | Use case |
 |------|------|---------|----------|
 | `output/convenience/natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Recommended** — residents only, derived indicators included |
-| `output/harmonized/natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | Full file with foreign residents + restatus columns |
+| `output/harmonized/natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | Full file with foreign residents + residence_status columns |
 | `output/harmonized/natality_v2_harmonized.parquet` | 138,819,655 | 71 | Harmonized only (no derived indicators) |
 | `output/yearly_clean/natality_{year}_core.parquet` | varies | varies | Raw NCHS substrings (audit/debug only) |
 
@@ -47,7 +47,7 @@ linked_res = pd.read_parquet("output/convenience/natality_v3_linked_residents_on
 | File | Rows | Columns | Use case |
 |------|------|---------|----------|
 | `output/convenience/natality_v3_linked_residents_only.parquet` | 74,785,708 | 92 | **Recommended** — residents only, derived indicators included |
-| `output/harmonized/natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | Full file with foreign residents + restatus columns |
+| `output/harmonized/natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | Full file with foreign residents + residence_status columns |
 | `output/harmonized/natality_v3_linked_harmonized.parquet` | 74,943,824 | 78 | Harmonized only (no derived indicators) |
 | `output/linked/linked_{year}_denomplus.parquet` | varies | 55–87 (layout-dependent) | Raw parsed linked records (audit/debug only; 55 cols for 2005–2013, 87 cols for 2014–2023) |
 

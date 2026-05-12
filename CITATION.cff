@@ -30,7 +30,7 @@ references:
       - family-names: Plutchok
         given-names: Yoel
     doi: 10.5281/zenodo.19363074
-    notes: "Concept DOI; resolves to latest version. Current version v2.7.0."
+    notes: "Concept DOI; resolves to latest deposited version. Latest Zenodo version v2.7.0. In-repo state v2.8.0 (canonical column-name rename: data_year, residence_status, maternal_race_bridged, hispanic_origin) pending unified-HVS Zenodo deposit."
   - type: dataset
     title: "Harmonized U.S. Fetal Death Microdata, 1992–2022"
     authors:

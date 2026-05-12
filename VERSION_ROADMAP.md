@@ -4,13 +4,13 @@ The unified U.S. Harmonized Vital Statistics (HVS) resource versions each subpro
 
 ## Currently shipped
 
-| Subproject | Version | Coverage | Records | Zenodo |
-|---|---|---|---|---|
-| Natality | v2.7.0 | 1990–2024 | 138,819,655 | [10.5281/zenodo.19868835](https://doi.org/10.5281/zenodo.19868835) |
-| Linked birth–infant death | v2.7.0 (bundled) | 2005–2023 | 74,943,824 | (same deposit as natality) |
-| Fetal death | v2.0.0 | 1992–2022 (excl. 2003–2004) | 1,634,195 | [10.5281/zenodo.20031571](https://doi.org/10.5281/zenodo.20031571) |
+| Subproject | Version (repo) | Latest Zenodo | Coverage | Records | Zenodo (latest deposited) |
+|---|---|---|---|---|---|
+| Natality | **v2.8.0** (canonical column-name rename; not yet deposited) | v2.7.0 | 1990–2024 | 138,819,655 | [10.5281/zenodo.19868835](https://doi.org/10.5281/zenodo.19868835) (v2.7.0) |
+| Linked birth–infant death | **v2.8.0** (bundled) | v2.7.0 | 2005–2023 | 74,943,824 | (same deposit as natality) |
+| Fetal death | **v2.1.0** (adds 2003 + 2004; H8 dtype reconciliation) | v2.0.0 | 1992–2022 | 1,741,977 | [10.5281/zenodo.20031571](https://doi.org/10.5281/zenodo.20031571) (v2.0.0) |
 
-A new unified Zenodo deposit covering all three products under the HVS umbrella is planned.
+The natality v2.8.0 and fetal-death v2.1.0 in-repo states are pending Zenodo deposit. A new unified Zenodo deposit covering all three products under the HVS umbrella is planned; the per-subproject deposits will be updated alongside.
 
 ## Planned
 
