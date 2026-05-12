@@ -168,11 +168,50 @@ Current data envelope: 41-yr fetal death (1982-2022, 2.35M records, 88/88 NVSR v
 
 **Time budget**: 1 session (estimated 60-120 min of agent time). If the exploration is incomplete at session end, deliver a partial proposal + flag the unfinished dimensions; do NOT defer the halt.
 
-### Phase C — EXECUTE PHASE B-PROPOSED ADDITIONS (subsequent sessions)
+### Phase C — EXECUTE PHASE B-AUTHORIZED ADDITIONS (Tier 1 + Tier 2, ~29-35 sessions)
 
-To be populated by Phase B's plan-update proposal. Estimated 5-20 sessions depending on Phase B-recommended scope.
+Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user authorization 2026-05-12 (Q35 = Tier 1 + Tier 2; logged in `DECISION_LOG.md` 2026-05-12T21:00:00Z; Q32-Q42 self-resolutions in same entry). Each task below uses the full `NEXT_STEPS.md` §4 five-phase discipline (PRE-FLIGHT, SMOKE, DO, VERIFY, RECEIPT) per the `§15` entries C8.1-C8.15 appended at the same `[plan-update]` commit.
 
-Strict NEXT_STEPS.md §4 five-phase discipline per added task (PRE-FLIGHT, SMOKE, DO, VERIFY, RECEIPT). Each shipped task tagged `<task_id>-pre-do` + `<task_id>-complete`. Each authoring decision logged in DECISION_LOG. Each new mistake class (if any) logged in LESSONS.md per §11.
+#### Tier 1 — pre-Phase-D must-haves (~13-15 sessions)
+
+- **C8.1** — SMOKE retag + dtype parity (B.1 + B.2)               [1.5 sessions]
+- **C8.2** — Latest-year refresh: fetal 2023+2024, linked 2024    [1-2 sessions]
+- **C8.3** — Cross-product Tier-1: timeline + perinatal joint     [2 sessions]
+- **C8.4** — Invariant tests: filter + row-count + join           [3 sessions]
+- **C8.5** — Distribution: lockfile + Dockerfile                  [1.5-3 sessions]
+- **C8.6** — CI: GitHub Actions wiring                            [1 session]
+- **C8.7** — End-to-end pipeline smoke                            [1 session]
+- **C8.8** — CHANGELOG + PRIOR_ART update                         [1 session]
+
+#### Tier 2 — high-value additions (~16-20 sessions)
+
+- **C8.9** — Usability: state denominators + R + DuckDB views     [2.5-3 sessions]
+- **C8.10** — Worked-example notebooks (3 of 5)                   [3-4 sessions]
+- **C8.11** — Migration guides + cross-product COMPARABILITY      [3-4 sessions]
+- **C8.12** — Mutation tests + L13/L14 audits + SHA stability     [3-4 sessions]
+- **C8.13** — Performance + GitHub release artifacts              [1.5-2 sessions]
+- **C8.14** — Worked-example FAQ + PROJECT_STRUCTURE upgrade      [1 session]
+- **C8.15** — Notebooks 4-5 (education, state quirks)             [2 sessions]
+
+**Tier 3 (5 candidates) and Tier 5 (3 candidates) deferred** per user authorization. Tier 3 reconsidered at Phase D close (Q41 default = defer all to post-v1); Tier 5 framed as a post-v1 v1.1/v2.0 release (Q40 default = single submission after Tier 2, Tier 5 ships as Zenodo concept-DOI patch with IJE *Update* note). Re-authorization needed before any Tier 3 / Tier 5 task starts.
+
+#### Sequencing notes within Phase C
+
+- **C8.1 first** (Q37): cheapest item, pure-metadata, fixes the known stale L17 smoke case (forward-looking HALT #10 in STATUS 20:30Z). Unblocks any subsequent task that touches fetal-death state.
+- **C8.2 second** (Q37): latest-year refresh extends the data envelope before downstream test/CI scaffolding so subsequent CI runs gate on the full extended envelope (no rework when 2023-2024 land).
+- **C8.5 + C8.6 paired**: CI (B.9) depends on a pinned env (F.2 Dockerfile + F.3 lockfile); ship lockfile first.
+- **C8.4 before C8.6**: CI gates on real invariant tests, not bare structural smokes.
+- **C8.8 last in Tier 1**: PRIOR_ART updates + CHANGELOG land after Tier 1 work supplies the evidence to cite.
+- **C8.9-C8.11 ordering within Tier 2**: usability (C8.9, C8.10) ships before docs (C8.11) so migration guides can reference live R/DuckDB examples.
+- **C8.12 mutation tests last in Tier 2**: defends every prior validator; surfaces FIX_LOG cascades if any validator rubber-stamps.
+
+#### Always-on Phase C discipline
+
+- Each task: full five-phase (`NEXT_STEPS.md` §4). PRE-FLIGHT writes Field-value snapshot (Convention 3). RECEIPT writes Forward-looking HALTs (Convention 4). Every new SMOKE asserts SHAPE-not-VALUE (Convention 1) + carries `DESIGN:` first-docstring tag (Convention 2).
+- Each shipped task tagged `<task_id>-pre-do` (before DO) + `<task_id>-complete` (after RECEIPT). Receipt at `RECEIPTS/<task_id>_<UTC_timestamp>.md`.
+- Halt-and-ask on any §7 condition. Do not silently work around. Do not patch downstream artifacts to match buggy upstream.
+- Effort-ceiling cap (Q33 self-resolution): if cumulative Phase C effort drifts beyond +20% of the 29-35 session estimate (i.e., >42 sessions), halt at the next clean checkpoint and re-ask the user.
+- Phase B-2 trigger (Q42 self-resolution): any new candidate >1 session triggers a `[plan-update]` per §11; silent in-Phase-C scope-creep forbidden.
 
 ### Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (after Phase C completes)
 

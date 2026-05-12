@@ -23,6 +23,76 @@
 
 ---
 
+## 2026-05-12T21:00:00Z — [plan-update] phase_c_authorized — User authorized Q35 = Tier 1+2 (~29-35 sessions of Phase C); Q32-Q42 self-resolved by LLM per user directive; KICKOFF.md Phase C populated + NEXT_STEPS.md §15 C8.1-C8.15 task entries appended
+
+**Choice (user-authorized):** Q35 = **(b) Tier 1 + Tier 2** = ~29-35 sessions of Phase C work before Phase D (Task 9 + Task 10 + public-repo v1.x sync + manuscript submit). Phase B `EXPLORATION_REPORT.md` §K plan-update applied at this commit: KICKOFF.md Phase C placeholder replaced with the Tier-1+Tier-2 task list; NEXT_STEPS.md §15 appended with C8.1-C8.15 task entries (each with full five-phase framing per §4 + Convention 1-5 binding); this DECISION_LOG entry + accompanying STATUS section record the authorization.
+
+**Q32-Q42 self-resolutions** (per user directive "the rest of the questions attempt to answer by yourself without my input in the best way possible"):
+
+- **Q32 (Phase B 7th-dimension inclusivity).** CLOSED — no 7th dimension surfaced during Phase B. The six-dimension brief (data extensions, robustness/testing, usability/convenience, cross-product/joint-use, documentation, performance/distribution) was comprehensive. The ~42 candidates enumerated in EXPLORATION_REPORT §A-§F cover every legitimate pre-submission expansion surface identified.
+
+- **Q33 (Phase C effort ceiling).** No explicit cap; user authorized Tier 1+2 ~29-35 sessions and asked LLM to self-pace. **Self-imposed halt-checkpoint**: if cumulative Phase C effort drifts beyond +20% of the 29-35 session estimate (i.e., >42 sessions), halt at the next clean task boundary and re-ask the user before continuing. Encoded in KICKOFF.md "Always-on Phase C discipline" section.
+
+- **Q34 (in-scope vs out-of-HVS-mission boundary).** **Affirmed as-defined**: HVS scope is vital events around birth (natality + fetal death + linked birth-infant death). Marriage/Divorce, Multiple-Cause-of-Death (all-age mortality), and abortion surveillance are explicitly OUT-of-scope per EXPLORATION_REPORT §A.6. The one-paragraph boundary statement in PRIOR_ART.md ships as part of **C8.8** (CHANGELOG + PRIOR_ART update) to preempt reviewer "why not all vital events?" comments.
+
+- **Q35.** **(b) Tier 1 + Tier 2 authorized** by user directive 2026-05-12. ~29-35 sessions of Phase C before Phase D.
+
+- **Q36 (Tier-5 ordering).** **N/A** — Tier 5 not authorized in this round. If user later authorizes Tier 5: default A.2 (natality 1968-1989) first (shorter, cleaner sibling of V3b just shipped), A.3 (linked 1983-2004) second (benefits from A.2's 1978-cert layout knowledge).
+
+- **Q37 (Phase C kickoff item).** **C8.1 first** (cheapest item, pure-metadata, fixes the known stale L17 smoke case per STATUS 20:30Z FL-HALT #10). **C8.2 second** (latest-year refresh: extends data envelope before any test/CI scaffolding so subsequent CI gates on the full envelope). Sequencing encoded in KICKOFF.md "Sequencing notes within Phase C" section.
+
+- **Q38 (R-only vs full Stata/SAS/R coverage).** **R full quickstart ships** (C.2 inside **C8.9**). **Stata/SAS pointer-files deferred** to post-v1 ancillary (C.3 = Tier 3 = deferred per Q41 default). Rationale: R quickstart's marginal cost is ~1 session; full Stata/SAS quickstarts require Stata/SAS licenses on the build machine (we don't have them) and pointer-files give 80% of the value at 10% of the cost. Defer until a Stata/SAS-using contributor surfaces, or until the IJE post-publication community signals demand.
+
+- **Q39 (CLI tool vs DuckDB views).** **DuckDB views ship** (C.4 inside **C8.9**). **CLI tool deferred** (C.7 = Tier 3 = deferred per Q41). Rationale: DuckDB's SQL surface covers the same ad-hoc-query use cases as a custom CLI but with zero maintenance burden (DuckDB ships with its own CLI; users wrap with `duckdb -c "SELECT * FROM <view>"`). The custom CLI was strictly dominated by DuckDB in `EXPLORATION_REPORT.md` §C.7.
+
+- **Q40 (manuscript re-paragraph cadence).** **Single submission after Tier 2.** Tier 5 deferred per Q35; the re-paragraph-twice scenario does not apply. If Tier 5 is later authorized post-submission, ships as v1.1 / v2.0 with an IJE *Update* note or a new Zenodo concept-DOI patch. Manuscript Coverage paragraph updated once (KICKOFF Phase D step 6) reflecting 1982-2024 fetal death + 1990-2024 natality + 2005-2024 linked envelope (post-C8.2 refresh).
+
+- **Q41 (Tier-3 items).** **Defer all to post-v1 ancillary releases.** Specifically: A.5 matched-multiples (1-2 sessions; post-v1), E.7 CODEBOOK extensions (2-4 sessions; post-v1 — diminishing returns vs. existing CODEBOOK), C.3 Stata/SAS pointer-files (per Q38), C.5 pre-computed cross-tab CSVs (1 session; defer — maintenance tax), C.7 CLI tool (per Q39). All five Tier-3 candidates revisitable at Phase D close.
+
+- **Q42 (Phase B-2 trigger conditions).** **§11 plan-update required** for any new candidate adding **>1 session**. ≤1 session candidates may be folded into the nearest in-progress C8.X task as a scope amendment via DECISION_LOG entry (no separate `[plan-update]` commit). >1 session candidates require explicit user authorization before execution. Encoded in KICKOFF.md "Always-on Phase C discipline" section.
+
+**Alternatives considered:** None for this specific authorization-application — the user explicitly directed Q35 = (b) and self-resolution of the rest. The alternatives considered for each Q above are documented in EXPLORATION_REPORT.md §H + this entry's per-Q rationale.
+
+**Reason:** User explicit directive 2026-05-12 in response to LLM's (a)-(d) handshake post-kickoff: *"Q35: Tier 1+2 the rest of the questions attempt to answer by yourself without my input in the best way possible."* The §11 plan-update process (LESSONS → propose diff → human review → LLM applies → commit `[plan-update]`) is satisfied: EXPLORATION_REPORT.md §K is the proposed diff; user reviewed via the (a)-(d) handshake; this commit applies it; the `[plan-update]` prefix tag is on the commit.
+
+**Source:**
+- `EXPLORATION_REPORT.md` §G.4 (suggested execution order) + §H (open questions) + §K (plan-update structure).
+- `STATUS.md` 2026-05-12T20:30:00Z "Notes for next session" item 2 (Tier 1+2 default path) + items 3-5 (per-prefix execution branches).
+- `KICKOFF.md` "Current planned sequence" 2026-05-12 (Phase B mandate; commit `306370e`).
+- User authorization chat 2026-05-12: *"Q35: Tier 1+2 the rest of the questions attempt to answer by yourself without my input in the best way possible."*
+
+**Verifiable by:**
+- This `[plan-update]` commit's diff shows KICKOFF.md Phase C placeholder replaced with the Tier-1+Tier-2 task list + NEXT_STEPS.md §15 appended with C8.1-C8.15 entries.
+- Tag `phase-c-authorized` lands on this commit.
+- The next session's `git tag --list 'C8.*'` shows progression: first `C8.1-pre-do` (after PRE-FLIGHT), then `C8.1-complete` (after RECEIPT), then `C8.2-pre-do`, etc.
+- Q32-Q42 self-resolutions in this entry are auditable: a future audit session can verify each resolution against the EXPLORATION_REPORT.md options + the user's stated preferences (the user explicitly authorized Tier 1+2 = "robust and useful middle ground" — every Q32-Q42 self-resolution follows that signal).
+
+**Reversible:** yes at any point during Phase C — the user can re-issue any of (a) "skip ahead to Phase D", (b) "trim Tier 2 to subset", (c) "add Tier 5 candidate X", (d) "reverse a specific Q-resolution" — each triggers a new `[plan-update]` commit (per §11). Already-shipped Phase C tasks are reversible via `git tag <task_id>-pre-do` rollback.
+
+**Residual risks:**
+
+- (a) **Q33 effort-ceiling may surface mid-Phase-C.** If C8.4 (invariant tests) takes 5 sessions instead of 3, or if C8.12 (mutation tests) cascades through FIX_LOG, the cumulative drift breaks the +20% cap. Mitigation: halt at next clean checkpoint per encoded discipline; surface honestly; ask user to trim Tier 2 if needed.
+
+- (b) **Q38 + Q39 deferrals may need re-opening if reviewer feedback specifically asks.** A reviewer who works in Stata or wants a CLI tool may surface the request post-submission. Mitigation: framing the deferrals as "post-v1 ancillary" (not "rejected"); easy to add via §11 plan-update.
+
+- (c) **Q41 Tier-3 defer-all may be wrong for E.7 CODEBOOK extensions.** Per-variable historical-value-distribution panels could materially strengthen the manuscript's *Comparability classification* claim. The 2-4 session cost is the friction. Mitigation: revisit at Phase D close; possibly pull E.7 into Phase D scope.
+
+- (d) **Q42 §11-plan-update threshold (>1 session) may be too lenient or too strict.** A 0.6-session candidate that affects schema (e.g., a new derived column) is materially different from a 0.6-session candidate that affects docs only. Mitigation: schema-touching candidates default to §11 regardless of session count; docs-only candidates default to in-progress-task amendment regardless of session count.
+
+- (e) **The plan-update applies the §K.1 KICKOFF replacement + §K.2 NEXT_STEPS §15 appends but does NOT yet update PROVENANCE.md, the manuscript, or any data artifact.** Those updates remain queued per existing STATUS.md notes. Mitigation: encoded in C8.X task descriptions; each task's RECEIPT updates the relevant downstream artifact.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- The Q32-Q42 self-resolutions reflect *my* read of EXPLORATION_REPORT.md's defaults + the user's "best way possible" signal. A subtle risk: the user might have intended a meaningfully different default for one or more Qs (e.g., they might have wanted Stata/SAS quickstarts to ship, or the CLI tool, or Tier-3 CODEBOOK extensions). Mitigation: each self-resolution is explicit + reversible; if the user surfaces a disagreement post-fact, a single `[plan-update]` commit adjusts the plan.
+
+- The NEXT_STEPS.md §15 C8.1-C8.15 entries vary in detail (C8.1 + C8.2 fully fleshed per §K.2 promise; C8.3-C8.15 compact). The compact entries name the goal + inputs + DO scope + VERIFY but defer the full SMOKE plan + Forward-looking HALTs spec to each task's own PRE-FLIGHT. This is per existing §15 precedent (Task 9 entry is similarly compact). Risk: a future session might claim "C8.X §15 entry is too thin to PRE-FLIGHT from" — mitigated by PRE-FLIGHT extending the entry as needed per §4.1.
+
+- This entry's Q-self-resolutions are not user-confirmed individually. A safer protocol would have surfaced each Q as a separate AskUserQuestion; the user's "answer them yourself" directive explicitly waived that. Risk surfaced + accepted by user; the §11.4 backport process covers any reversal.
+
+**Backport scope (per §11.4):** None. Phase A + Phase B receipts are unaffected by this plan-update. C8.X tasks ship forward.
+
+---
+
 ## 2026-05-12T20:30:00Z — phase_b_exploration — Phase B exploration session COMPLETE; `EXPLORATION_REPORT.md` drafted; plan-update proposal status PENDING USER REVIEW; recommended prefix Tier 1+2 ~29-35 sessions
 
 **Choice (proposal pending user confirmation):** Phase B's deliverable is `EXPLORATION_REPORT.md` at monorepo root (new file; 6-dimension candidate enumeration ~42 candidates across §A–§F + cumulative effort estimate + suggested execution order in §G.4 + plan-update proposal in §K + open questions Q35–Q42 in §H). The plan-update proposal (KICKOFF.md Phase C replacement + NEXT_STEPS.md §15 task entries C8.1–C8.23) is NOT yet applied; it requires explicit user authorization via Q35.

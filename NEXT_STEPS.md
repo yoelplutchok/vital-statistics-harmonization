@@ -751,6 +751,414 @@ Each task is a five-phase unit per §4. The fields below specify the PRE-FLIGHT 
 
 ---
 
+# §15.C Phase C tasks (authorized 2026-05-12 per `EXPLORATION_REPORT.md` Q35 = Tier 1+2)
+
+The C8.X entries below were appended at the `phase-c-authorized` `[plan-update]` commit (`DECISION_LOG.md` 2026-05-12T21:00:00Z). Tier 1 = C8.1-C8.8 (pre-Phase-D must-haves). Tier 2 = C8.9-C8.15 (high-value additions). Each task uses the §4 five-phase discipline; halts on any §7 condition; tagged `<task_id>-pre-do` and `<task_id>-complete`.
+
+---
+
+### Task C8.1 — Smoke retag + dtype parity (B.1 + B.2)
+
+**Goal.** (i) Repin `fetal_death/tests/test_release_smoke.py` to post-V3b state with Convention 2 `DESIGN: tracks-current-state` first-docstring tag; (ii) fix monorepo path drift in the test fixtures + the `_regenerate_schema_years.py` import (analog of FIX_LOG 2026-05-12T01:30Z); (iii) author `fetal_death/tests/test_schema_dtype_parity.py` + `natality/tests/test_schema_dtype_parity.py` to enforce every `harmonized_schema.csv` `type` row matches the parquet's pyarrow dtype (durable H8 defense per FIX_LOG 2026-05-11T18:50Z follow-up).
+
+**Why this matters.** The existing smoke pins V2.0 row count = 1,634,195 (current = 2,352,011) and 29-yr year set; **runs FAIL on the V3b parquet today.** This is a textbook L17 stale-pin case; the smoke also currently `ImportError`s in the monorepo because its `_regenerate_schema_years` import resolves to a path that exists only in the standalone build dir. Plus the v2.0 H8 incident (5 demographic columns shipped as `object` while schema declared `int`, FIX_LOG 2026-05-11T18:50Z) explicitly recommended a `tests/test_schema_dtype_parity.py` as the durable defense; it was never written. C8.1 closes both loops in one task.
+
+**PRE-FLIGHT inputs.**
+- Existing `fetal_death/tests/test_release_smoke.py` (smoke under repair) + `fetal_death/tests/conftest.py` (path-drift target).
+- Standalone-build `scripts/_regenerate_schema_years.py` (source of `compute_years_available()` helper; needs monorepo copy or import path fix).
+- Post-V3b parquet at monorepo `output/harmonized/fetal_death_{harmonized,derived}.parquet` (SHAs `e3d6c64abcb7762d…` / `4d1b37cc3a214eea…` per STATUS 20:30Z FL-HALTs 7-8).
+- `fetal_death/harmonized_schema.csv` (current SHA `69f92bf775251f1e…`, 73 rows; post-V3b state per STATUS 18:45Z) for dtype parity.
+- `natality/metadata/harmonized_schema.csv` for natality-side dtype parity.
+- Natality v2.8.0 derived parquet (monorepo `output/...` or per natality build-dir symlink).
+- Field-value snapshot (Convention 3) of:
+  - `test_release_smoke.py` EXPECTED_ROW_COUNT, EXPECTED_YEARS, EXPECTED_YEAR_ROWS dict.
+  - `conftest.py` HARMONIZED_PARQUET / DERIVED_PARQUET / SCHEMA_CSV paths.
+  - smoke module-level `_SCRIPTS_DIR` path.
+
+**SMOKE plan.**
+- Tier 0 (mutation-test of the new dtype parity assertion): inject a known dtype mismatch (e.g., temporarily edit a copy of `harmonized_schema.csv` to claim `type=int` for a string column); assert the parity test fails. Restore the canonical schema.
+- Tier 1: run the retagged smoke against the V3b parquet on a clean checkout; expect 100% PASS (9/9 tests + new dtype-parity test).
+- Tier 2: confirm SHAPE assertions (column counts 73 + 89; year-set membership; B-PUB-3 invariant; B4 paternal_age_recode11 no-residue; NVSR_2010 anchor 24,258) are unchanged by the retag — they were always SHAPE-class and must remain so.
+
+**DO scope.** Three commits within the task:
+
+1. **DO-1 path drift fix**: copy `scripts/_regenerate_schema_years.py` from the standalone build dir into `fetal_death/scripts/` (the monorepo's canonical scripts location). Update `conftest.py` parquet/schema constants to point at monorepo-canonical paths (parquets resolve via the `output/` symlink at monorepo root; schema CSV at `fetal_death/harmonized_schema.csv` not `fetal_death/metadata/harmonized_schema.csv` per the existing flat layout).
+
+2. **DO-2 smoke retag**: edit `test_release_smoke.py`:
+   - Add `DESIGN: tracks-current-state` on the first docstring line (Convention 2).
+   - Repin: `EXPECTED_ROW_COUNT = 2_352_011`; `EXPECTED_YEARS = tuple(range(1982, 2023))` (41 contiguous years 1982-2022).
+   - Rewrite `EXPECTED_YEAR_ROWS` with all 41 years from STATUS 18:45Z per-year counts.
+   - Update test 5 to assert version_flag='S' across **1982-2002** (V3b + V3a + V2 eras, all synthesized 'S' per harmonize.py era branches); explicitly EXCLUDE 2003-2004 (V2.1 transition; mixed A/S) and 2005+ (V1; native A/S).
+   - Re-verify the NVSR_2010 anchor against the V3b parquet (B7 TABFLG correction may have shifted the count; if shifted, this is an EXPECTED tracks-current-state update with a DECISION_LOG soft-flag).
+   - Update module-level + per-test docstrings to mention V3b state.
+
+3. **DO-3 dtype parity test**:
+   - Author `fetal_death/tests/test_schema_dtype_parity.py` with `DESIGN: tracks-current-state` first-docstring tag. Reads `harmonized_schema.csv`; reads each parquet column's pyarrow `physical_type` + `logical_type`; asserts the schema's `type` field maps to the actual dtype (e.g., schema `int` matches Int8/Int16/Int32/Int64; schema `str` matches `string` or `binary`; schema `float` matches `float32/64`).
+   - Author `natality/tests/test_schema_dtype_parity.py` analog (natality columns; same DESIGN tag).
+   - Both harnesses include a Tier-0 mutation-test docstring documenting which specific dtype-mismatch they catch (e.g., "if `tabulation_flag` ships as `object` while schema declares `int`, this test FAILs at row N").
+
+**VERIFY criteria.**
+- `pytest fetal_death/tests/` returns 100% PASS (9 existing + 1 new = 10 tests).
+- `pytest natality/tests/` returns 100% PASS (1 new test; natality previously had 0).
+- The new dtype-parity tests catch the mutation injected in Tier-0 SMOKE (and PASS on canonical schemas).
+- Re-running the full suite produces identical output (idempotent).
+- Existing v2.0/V2.1/V3a baseline parquets still load correctly under the new conftest paths (forward-stability anchor still valid).
+
+**RECEIPT requirement.** Standard template + Forward-looking HALTs covering: new smoke + dtype-parity SHAs; conftest SHA post-path-fix; the EXPECTED_YEAR_ROWS dict's tracks-current-state status (will need re-update at every future data-extension task — flag this in the FL-HALT).
+
+**Estimated effort.** 1.5 sessions (DO-1 ~0.3, DO-2 ~0.5, DO-3 ~0.7).
+
+**Dependencies.** None upstream. C8.6 (CI wiring) depends on this.
+
+**Halt-condition flags.** L13 (path-drift extension to test harness), L17 (smoke-pin shift), H8 (schema-data dtype drift this defends against). Convention 1 SHAPE-not-VALUE retained where structural; Convention 2 DESIGN tag added.
+
+---
+
+### Task C8.2 — Latest-year refresh (fetal death 2023+2024, linked 2024)
+
+**Goal.** Extend fetal-death from 1982-2022 (41 yrs) to **1982-2024 (43 yrs)** and linked from 2005-2023 (19 yrs) to **2005-2024 (20 yrs)** by parsing the newly-released NCHS public-use files. Natality stays at 1990-2024 (NCHS Natality 2025 not yet released; expected ≈Aug-Oct 2026).
+
+**Why this matters.** Cheapest pre-submission data win identified by Phase B (`EXPLORATION_REPORT.md` §A.1). Three NCHS source files released **after** the most recent HVS shipment:
+- `Fetal2023US_COD.zip` (NCHS released 2024-12-05; 2,219,550 B)
+- `Fetal2024US_COD.zip` (NCHS released 2026-02-04; 1,925,286 B)
+- `2024PE2023CO.zip` (NCHS released 2026-01-22; 432.5 MB)
+
+All three are sibling-layout extensions of V1-era and post-2017 combined-period-cohort layouts already parsed. Layout-byte delta vs 2022 (fetal) and 2023 (linked) expected to be ≤1 byte/column if any (NCHS rarely reorders within a release series).
+
+**PRE-FLIGHT inputs.**
+- 3 NCHS source zip URLs (verified HTTP 200, `EXPLORATION_REPORT.md` §A.1).
+- 3 user-guide PDFs (sibling-derived URLs at `https://ftp.cdc.gov/.../Dataset_Documentation/DVS/fetaldeathus/{2023,2024}fetaluserguide.pdf` + `.../period-cohort-linked/24PE23CO_linkedUG.pdf`).
+- Existing parser `fetal_death/scripts/01_import/parse_fetal_year.py` + `field_specs.py` (post-V3b SHAs in STATUS 18:45Z FL-HALTs 2-3).
+- Natality-linked import code under `natality/scripts/01_import/` (existing for 2005-2023).
+- All forward-looking HALTs from `task7_v3b-complete` receipt + STATUS 20:30Z (parquet SHAs, schema SHA, field_specs SHA, validate_external_v2 SHA, V3a baseline parquet SHAs).
+- Field-value snapshot (Convention 3) of:
+  - `fetal_death/external_validation_targets.csv` (needs +2 years extension).
+  - `fetal_death/file_inventory.csv` (needs +3 rows: 2 fetal + 1 linked).
+  - `fetal_death/harmonized_schema.csv` `years_available` cells (needs `+2023, +2024` prepend per V3a/V3b convention).
+  - `natality/external_validation_targets.csv` or equivalent (linked validation row).
+  - Existing 2022 fetal user guide SHA (sibling-byte-position diff anchor for 2023+2024).
+
+**SMOKE plan.**
+- Tier 0: byte-position diff between 2024 fetal user guide and 2022 (sibling-derive); same between 2024 linked user guide and 2023 linked. Per L13-extension, value-distribution sanity-check 5 anchor fields after parse (TABFLG, RESTATUS, DOD_YY, MAGER, MRACEREC).
+- Tier 1: 100-record parse of 2024 fetal-death; assert plausible distribution (no unexpected nulls).
+- Tier 2: full-year 2023 + 2024 fetal-death parse; per-year control-count match against user-guide page-7 control counts.
+- Tier 3: 1982-2024 re-harmonize; V3b-era byte-clean regression (0/162 column drift on 1982-2022 slice vs current parquet).
+- Tier 4: linked 2024 parse + per-year count match against NCHS Linked File 2024 report control.
+
+**DO scope.**
+1. Download 3 source zips + 3 user-guide PDFs to `raw_data/fetal_death/` + `raw_docs/fetal_death/` + linked equivalents; record SHAs.
+2. Probe layout-byte deltas vs the 2022 sibling (fetal) and 2023 sibling (linked). If no delta: reuse existing era_tag. If delta: extend `field_specs.py` with new era_tag + DECISION_LOG entry.
+3. Add 3 rows to `fetal_death/file_inventory.csv`; 2 rows to `fetal_death/external_validation_targets.csv` (one per new year); extend `harmonized_schema.csv` `years_available` (+2023, +2024 prepend on every applicable row).
+4. Re-harmonize + re-derive fetal-death parquet (now 1982-2024); preserve V3b parquet as a `.V3b_baseline.parquet` forward-stability anchor.
+5. Re-harmonize + re-derive linked parquet (now 2005-2024); preserve current 2023 parquet as a `.pre_2024_refresh_baseline.parquet`.
+6. Bump fetal-death version v2.3.0 → v2.4.0; bump natality+linked v2.8.0 → v2.9.0.
+7. Update CITATION.cff + .zenodo.json + ABOUT_THIS_RELEASE.md + README.md per-product.
+8. Refresh smoke EXPECTED_ROW_COUNT + EXPECTED_YEARS + EXPECTED_YEAR_ROWS (C8.1 smoke pins under tracks-current-state — explicit re-pin).
+
+**VERIFY criteria.**
+- Per-year fetal counts 2023+2024 match user-guide control counts byte-exact.
+- V3b baseline byte-clean regression: 0/162 columns drift on 1982-2022 slice (anchor preserved per L5).
+- Linked 2024 per-year count matches NCHS Linked File 2024 report control byte-exact.
+- C8.1's updated dtype-parity test PASSes on the v2.4.0 / v2.9.0 parquets.
+- External validation count: 88/88 → 90/90 (fetal +2 counts; linked target add depends on per-year reports).
+
+**RECEIPT requirement.** Standard. Self-check: did I re-run V3b baseline byte-clean comparison after the re-harmonize? Did I update the manuscript's pipeline-timing claims if the wall-clock materially changed?
+
+**Estimated effort.** 1-2 sessions.
+
+**Dependencies.** None. Recommended FIRST Phase C data task (Q37) since it predates any test/CI scaffolding work — subsequent tests gate on the extended envelope.
+
+**Halt-condition flags.** H1, L13 (if layout-byte delta surfaces vs 2022/2023 siblings), L17 (SMOKE pin shifts post-refresh — handled by C8.1's `DESIGN: tracks-current-state` tag). Convention 1 SHAPE-not-VALUE on every new SMOKE.
+
+**Forward-looking HALTs to write in receipt.**
+- 2023+2024 fetal zip + PDF SHAs unchanged.
+- 2024 linked zip + PDF SHAs unchanged.
+- Post-refresh fetal_death parquet SHAs.
+- Post-refresh linked parquet SHAs.
+- `field_specs.py` SHA unchanged if no era_tag added; new SHA otherwise.
+- C8.1's smoke EXPECTED_YEAR_ROWS dict updated to include +2023, +2024.
+
+---
+
+### Task C8.3 — Cross-product Tier-1: timeline + perinatal joint + Section B race validation
+
+**Goal.** Land three cross-product items in one task: (i) cross-product timeline figure (NEXT_STEPS §15 Task 8 — pulled in here since D.3 is Tier-1 must-have); (ii) three-product perinatal mortality joint computation (`EXPLORATION_REPORT.md` §D.1); (iii) Section B 2017 race-stratified NVSR validation (§D.2 — closes the deferred Task 4 fragment).
+
+**Why this matters.** Manuscript's "designed for joint use" central claim is currently demoed only as single-product fetal mortality. The perinatal-mortality rate formula `(FD ≥28wk + ENN <7d) / (live_births + FD ≥28wk) × 1000` requires all three products simultaneously — this is the *unique* HVS capability. D.3 timeline plausibly becomes manuscript Figure 1.
+
+**PRE-FLIGHT inputs.** All three parquets (post-C8.2 refresh state). NVSR 73-09 Table A for 2022 perinatal validation; NVSR fetal-mortality table for 2017 by maternal race (PDF location verified at PRE-FLIGHT per L9). Era-boundary metadata in each subproject's COMPARABILITY.
+
+**SMOKE plan.** Tier 0: render 1-row timeline test; verify era bands at correct years. Tier 1: 2022 perinatal computation on a 100-record sample; manual sanity check. Tier 4: full 2022 cross-product perinatal computation; compare to NVSR Table A.
+
+**DO scope.**
+- `shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`.
+- Extend `notebooks/joint_use_demo.ipynb` with a new Section C: three-product perinatal mortality 2022 by race.
+- Append a Section B race-validation block to `notebooks/joint_use_demo.ipynb` (or backfill its 2017 race-stratified cells).
+- Update `docs/JOINT_USE_GUIDE.md` with the perinatal-mortality worked example.
+
+**VERIFY criteria.** Timeline era bands match COMPARABILITY docs. Perinatal rate matches NVSR 73-09 Table A within rounding. 2017 race-stratified cells match NVSR fetal-mortality table.
+
+**Estimated effort.** 2 sessions.
+
+**Dependencies.** C8.2 (run on refreshed parquets to avoid re-render after refresh).
+
+**Halt-condition flags.** F1, F2, F4 (cross-product join + canonical filter on both sides), H9, L9 (NVSR cell location).
+
+---
+
+### Task C8.4 — Invariant tests: canonical-filter + row-count conservation + cross-product join parity (B.3 + B.4 + B.5)
+
+**Goal.** Author three invariant test harnesses defending the core analytic-correctness invariants: (B.3) sum-across-strata = unstratified-total per canonical filter per product per year; (B.4) row-count conservation at every parse → harmonize → derive boundary (input = output + documented_drops); (B.5) cross-product join parity (natality joined to fetal-death + linked produces the expected demographic-stratum counts per JOINT_USE_GUIDE).
+
+**Why this matters.** These three close §8 H6 (silent row drops), §8 F2 (cross-product join without filter), §8 H9 (external targets cancel internal bugs). Currently no automated guard against these classes.
+
+**PRE-FLIGHT inputs.** All three parquets; `docs/JOINT_USE_GUIDE.md` for canonical-filter definitions; `shared/helpers/canonical_join_keys.py` for join keys; DECISION_LOG entries for documented drops (need consolidation registry).
+
+**SMOKE plan.** Tier 0: mutation tests (inject a violation: duplicate a row, drop a row, mis-apply a filter; assert the harness catches each).
+
+**DO scope.** Three new test files in `tests/` (monorepo-root level since they're cross-product). Each harness with `DESIGN: tracks-current-state` (B.4 documented-drops dict) or `DESIGN: structural-invariant-no-pins` (B.3, B.5 — pure SHAPE invariants).
+
+**VERIFY criteria.** All three tests PASS on current parquet state. Mutation injections fail predictably.
+
+**Estimated effort.** 3 sessions.
+
+**Dependencies.** C8.1 (test infrastructure), C8.2 (refreshed parquets).
+
+**Halt-condition flags.** H6, F2, H9, L3 (validator self-blindness — defended via mutation tests).
+
+---
+
+### Task C8.5 — Distribution: uv/poetry lockfile + Dockerfile (F.2 + F.3)
+
+**Goal.** (F.3) Author `uv.lock` (or `poetry.lock`) pinning exact versions for Python + pandas + pyarrow + every dependency. Replace `requirements.txt` `>=` semantics. (F.2) Author `Dockerfile` that produces a runnable image rebuilding every parquet end-to-end.
+
+**Why this matters.** Manuscript Reproducibility Strengths claim is currently advertised without a pinned env or one-command rebuild. Closes the gap per `EXPLORATION_REPORT.md` §F.2 + §F.3.
+
+**PRE-FLIGHT inputs.** Existing `requirements.txt`; current Python version on build machine; raw zip inventory (Dockerfile needs to know where to fetch them — initial choice: bind-mount `raw_data/` into the container rather than baking 5+ GB of raw zips into the image).
+
+**SMOKE plan.** Tier 0: `uv lock` (or `poetry lock`) on the existing requirements; verify lock-file resolves. Tier 1: `docker build` on a clean checkout; verify the image builds. Tier 2: `docker run` invokes `scripts/run_pipeline.py` end-to-end; verify outputs match expected SHAs.
+
+**DO scope.** Choose `uv` (faster than poetry, simpler conventions). Author `pyproject.toml` + `uv.lock`. Author `Dockerfile` (multi-stage: base python:3.11-slim → deps install → script copy → entrypoint). Author `docker-compose.yml` if bind-mount complexity warrants. README section "Reproducibility via Docker."
+
+**VERIFY criteria.** `uv sync` + `python scripts/run_pipeline.py` produces parquets with current SHAs. `docker build && docker run` produces same.
+
+**Estimated effort.** 1.5-3 sessions.
+
+**Dependencies.** None upstream. C8.6 (CI) depends on this.
+
+**Halt-condition flags.** None unique (H10 covered by SHA cross-check).
+
+---
+
+### Task C8.6 — CI: GitHub Actions wiring (B.9)
+
+**Goal.** Author `.github/workflows/ci.yml` running C8.1 smoke + C8.4 invariant tests on every push to main. Includes dtype-parity (C8.1), invariant tests (C8.4), and a basic linting step.
+
+**Why this matters.** No automated test runs today; regressions discovered post-hoc. CI is the cheapest single signal of project health for external reviewers (`EXPLORATION_REPORT.md` §B.9). Public-repo CI minutes are free at this scale.
+
+**PRE-FLIGHT inputs.** Existing tests (C8.1 + C8.4); pinned env (C8.5 lockfile); GitHub repo (already public at https://github.com/yoelplutchok/vital-statistics-harmonization).
+
+**SMOKE plan.** Tier 0: workflow file validates against GitHub Actions schema. Tier 1: trigger a test commit; CI runs; expect green.
+
+**DO scope.** Workflow: matrix on Python 3.11 + 3.12 if both supported per uv.lock; install via `uv sync --frozen`; run `pytest fetal_death/tests/ natality/tests/ tests/`. Optional: post-test artifact upload of any FIX_LOG-relevant outputs.
+
+**VERIFY criteria.** Green check on the test commit. Subsequent PRs gate on CI.
+
+**Estimated effort.** 1 session.
+
+**Dependencies.** C8.1, C8.4, C8.5.
+
+**Halt-condition flags.** None unique.
+
+---
+
+### Task C8.7 — End-to-end pipeline smoke from monorepo root (B.10)
+
+**Goal.** Run `scripts/run_pipeline.py` from monorepo root end-to-end (raw zips → yearly_clean → harmonized → derived → validate) and fix any path-drift findings as L13-style "fix on contact" patches.
+
+**Why this matters.** FIX_LOG 2026-05-12T01:30Z noted three latent path-drift bugs in `fetal_death/scripts/` not caught because no end-to-end run from the monorepo root had been attempted. C8.1 already surfaced a fourth (test conftest + `_regenerate_schema_years.py`). Confirms no further path-drift exists.
+
+**PRE-FLIGHT inputs.** Existing pipeline scripts (fetal_death + natality); raw zips (already on disk per file_inventory).
+
+**SMOKE plan.** Tier 0: dry-run each script's path-constant block; flag any that resolves to a non-existent monorepo path. Tier 1: live run on a single year per product. Tier 2: full re-build.
+
+**DO scope.** Patch each surfaced path-drift case + FIX_LOG entry per case. Verify final parquet SHAs match current shipped SHAs (byte-identical re-derive).
+
+**VERIFY criteria.** Re-built parquets sha256-match current shipped parquets. No new FIX_LOG entries needed (or all surfaced cases patched and verified).
+
+**Estimated effort.** 1 session (budget for 1-2 more L13-style path-drift cases).
+
+**Dependencies.** None upstream; ideally after C8.5 (run in clean Docker env).
+
+**Halt-condition flags.** L13 (path-drift extension class), H10 (reproducibility regression if final SHAs differ).
+
+---
+
+### Task C8.8 — CHANGELOG.md + PRIOR_ART.md updates (E.1 + E.5)
+
+**Goal.** (E.1) Author `CHANGELOG.md` at monorepo root: one section per version, v1.0 → v1.x → … delta. (E.5) Three concrete PRIOR_ART.md updates from `EXPLORATION_REPORT.md` §A.7 + literature-gap agent: (i) GitHub precursors subsection (Mikuana, arebe, damiancclarke); (ii) Hoyert et al. 2024 + NICHD Stillbirth WG July 2024 citation; (iii) one-sentence HL7/fhir-bfdr mention.
+
+**Why this matters.** No CHANGELOG exists today. PRIOR_ART literature gap defensible as of 2026-05; three small updates close it to 2024. Pre-empts manuscript-reviewer pushback.
+
+**PRE-FLIGHT inputs.** Existing RECEIPTS/ (changelog source); ABOUT_THIS_RELEASE.md files; existing PRIOR_ART.md; cited PMIDs (resolve at PRE-FLIGHT per L8); HL7/fhir-bfdr standard URL.
+
+**DO scope.** Author CHANGELOG.md with sections: v1.0 (2026-05-12 public push) → v1.1 (C8.X work ships); each section has "data extensions / robustness / docs / breaking" subsections. Edit PRIOR_ART.md per §A.7 specifics. Update boundary statement per Q34 (out-of-scope M-D / MCD / abortion).
+
+**VERIFY criteria.** CHANGELOG covers every shipped version since v1.0; cited PMIDs/DOIs resolve; HL7 reference is current.
+
+**Estimated effort.** 1 session.
+
+**Dependencies.** Tier 1 work ideally lands first (so CHANGELOG cites concrete deltas).
+
+**Halt-condition flags.** L8 (citation resolution); L11 (stale roadmap claims — re-check on contact).
+
+---
+
+### Task C8.9 — Usability: state-stratified denominators + R quickstart + DuckDB views (C.1 + C.2 + C.4)
+
+**Goal.** Three usability layers: (C.1) `stratified_denominators_state.csv` adding state × race × age × Hispanic × year strata; (C.2) `quickstart.R` mirroring `quickstart.py` with `arrow::read_parquet()` round-trip; (C.4) `views.sql` defining canonical-filter views + common joins as DuckDB-compatible views over the parquets.
+
+**Why this matters.** State-stratified rates are a primary analytic need (state-level disparity studies). R-using community needs a worked example. DuckDB-views path means zero Python for ad-hoc analyses. Each independently directly supports the manuscript *Accessibility* claim.
+
+**PRE-FLIGHT inputs.** Natality derived parquet (state available 1990-2024; suppressed in fetal-death V1 era 2005+); existing `quickstart.py` as R template; DuckDB installed in the env (C8.5 lockfile).
+
+**SMOKE plan.** Tier 0: `quickstart.R` runs on a single-year subset. Tier 1: state-stratified denominator for one year matches the existing race/age/Hispanic denominator's per-state sum. Tier 1: DuckDB view query produces same row count as Python filter on a 100-record subset.
+
+**DO scope.** Author `shared/helpers/build_stratified_denominators_state.py` (mirror of existing `build_stratified_denominators.py`). Output: `natality/stratified_denominators_state.csv` (or `.parquet`). Author `quickstart.R` per-product (fetal_death + natality + linked). Author `views.sql` at monorepo root (or `shared/`). Document in `docs/JOINT_USE_GUIDE.md`.
+
+**VERIFY criteria.** State-stratified sums per state-year match natality validation target. R quickstart loads each parquet successfully. DuckDB views produce same record counts as canonical filter applied in Python.
+
+**Estimated effort.** 2.5-3 sessions.
+
+**Dependencies.** None upstream.
+
+**Halt-condition flags.** F1 (canonical filter on natality side), L13 (state-code dtype verification).
+
+---
+
+### Task C8.10 — Worked-example notebooks 1-3 of 5 (C.6.a + C.6.b + C.6.c)
+
+**Goal.** Author three notebooks:
+- C.6.a `maternal_age_stratified_imr.ipynb` (linked file; replicable IMR-by-maternal-age curve).
+- C.6.b `preterm_outcomes_time_series.ipynb` (FD + natality + linked; preterm-birth secular trends).
+- C.6.c `cross_race_fetal_mortality.ipynb` (V3a/V3b demo; race-stratified FD; documents the B3 1-digit-recode caveats).
+
+**Why this matters.** First two are the most-cited HVS use cases per literature scan. Third demonstrates the analytic value of the V3a/V3b backward extension shipped 2026-05-12.
+
+**PRE-FLIGHT inputs.** All three parquets (post-C8.2 refresh state). NVSR validation cells per notebook (L9 cheap-check). `notebooks/_build_*.py` builder pattern from existing notebooks.
+
+**DO scope.** Per-notebook: `notebooks/_build_<name>.py` deterministic builder + `notebooks/<name>.ipynb` with executed outputs. Each notebook validates ≥3 published-NVSR-equivalent cells at the bottom in a PASS/FAIL summary table.
+
+**VERIFY criteria.** Each notebook runs end-to-end with the builder script; PASS/FAIL table all-PASS or any FAIL documented.
+
+**Estimated effort.** 3-4 sessions (one session per notebook minimum).
+
+**Dependencies.** C8.2 (refreshed parquets), C8.3 (perinatal demo precedent).
+
+**Halt-condition flags.** F1, F2, F4 (within-era columns in cross-era contexts), L6 (manuscript numerics), H9.
+
+---
+
+### Task C8.11 — Migration guides + cross-product COMPARABILITY.md + sub-project SHA manifest (E.2 + E.4 + E.8)
+
+**Goal.** (E.2) Two migration guides: `migrations/v2.7.0-to-v2.8.0-natality.md` (column renames + sample sed/awk) + `migrations/v2.0.0-to-v2.3.0-fetal-death.md` (V2.1 + V3a + V3b extension + query updates). (E.4) `docs/COMPARABILITY.md` at monorepo root synthesizing within_era/cross_era caveats from both subprojects. (E.8) Cross-product NCHS-source-data SHA manifest at monorepo root.
+
+**Why this matters.** Users with legacy code need migration aids. Cross-product COMPARABILITY currently requires reading two separate files. SHA manifest confirms reproducibility from raw inputs.
+
+**PRE-FLIGHT inputs.** DECISION_LOG entries (migration content source); both COMPARABILITY files; both `file_inventory.csv` files.
+
+**DO scope.** Author the 4 documents. Cross-link from monorepo README + per-product README sections.
+
+**VERIFY criteria.** Migration guides include working sample queries (PASS). Cross-product COMPARABILITY covers every era boundary. SHA manifest checksums match each subproject's file_inventory.csv.
+
+**Estimated effort.** 3-4 sessions.
+
+**Dependencies.** C8.2 (post-refresh column state + SHAs).
+
+**Halt-condition flags.** L11 (stale claims in COMPARABILITY narratives), H8 (SHA drift).
+
+---
+
+### Task C8.12 — Mutation tests + L13 audit + L14 audit + SHA-stability test + snapshot regression (B.6 + B.7 + B.8 + B.11 + B.12)
+
+**Goal.** Author mutation-test scaffolding for every validator (B.6); audit every metadata CSV for L13 role-vs-column claims (B.7); audit every validator's main() for L14 exit-code propagation (B.8); author SHA-stability test (B.11); author per-column snapshot regression test (B.12).
+
+**Why this matters.** Five durable defenses against L3, L5, L11, L13, L14 in one task. Currently no validator has a paired mutation test; every L13/L14 case surfaces only at downstream cost.
+
+**PRE-FLIGHT inputs.** All validators across both subprojects (~13 across 5 scripts); all metadata CSVs; PROVENANCE.md.
+
+**DO scope.** Per-validator mutation test in `tests/mutations/`; mutation-runner uses AND-of-rows per L14. L13 audit script enumerates every metadata CSV's role/description claims; verifies column-content matches. L14 audit patches any `main()` returning implicit None on per-row failures. SHA-stability test reads PROVENANCE.md SHAs + on-disk SHAs; FAILs on drift. Snapshot regression: per-column SHA manifest at release; CI compares.
+
+**VERIFY criteria.** Every validator has a paired mutation test that catches a known violation. L13/L14 audit FIX_LOG entries filed per finding (or empty if none). SHA-stability test PASSes on current state.
+
+**Estimated effort.** 3-4 sessions.
+
+**Dependencies.** C8.6 (CI to run them).
+
+**Halt-condition flags.** L3, L13, L14, H10. **Likely surfaces FIX_LOG cascades** — budget for fix-on-contact.
+
+---
+
+### Task C8.13 — Performance + GitHub release artifacts (F.1 + F.4 + F.5)
+
+**Goal.** (F.1) Parquet column-dictionary tuning per low-cardinality column. (F.4) Attach parquets to GitHub Release alongside Zenodo. (F.5) Pipeline timing benchmark (re-verify manuscript's "approximately six minutes" / "approximately ninety minutes" claims against post-V3b state).
+
+**Why this matters.** F.1 typically yields 30-50% size reduction (smaller Zenodo deposit + faster downloads). F.4 gives Zenodo-blocked users an alternate path. F.5 verifies a manuscript-cited number.
+
+**PRE-FLIGHT inputs.** Existing harmonized + derived parquets; GitHub Release infrastructure; timer harness.
+
+**DO scope.** Re-write `derive.py`'s parquet-write call with `use_dictionary=True` per column. Re-derive; measure size delta. SHA changes — one-time forward-stability shift documented. Author GitHub Release v1.x with parquet uploads. Run timing benchmark; update manuscript timing claim if shifted.
+
+**VERIFY criteria.** Size reduction ≥20% (or document why less). GitHub Release downloads work. Timing matches manuscript ±10% (else update manuscript).
+
+**Estimated effort.** 1.5-2 sessions.
+
+**Dependencies.** C8.2 (post-refresh state); C8.7 (clean pipeline confirms timing).
+
+**Halt-condition flags.** B.12 snapshot-regression interaction (one-time SHA shift expected — bundle DECISION_LOG note).
+
+---
+
+### Task C8.14 — Worked-example FAQ + PROJECT_STRUCTURE.md upgrade (E.3 + E.6)
+
+**Goal.** (E.3) `docs/WORKED_EXAMPLE_FAQ.md` answering "how do I compute the perinatal mortality rate?", "how do I get state-level data?", "what's the right canonical filter?". (E.6) Upgrade PROJECT_STRUCTURE.md with notebook-deps graph, build-order DAG, "which-file-by-use-case" matrix.
+
+**Why this matters.** Lowers the onboarding cost for new users. Cross-references existing notebooks + JOINT_USE_GUIDE + COMPARABILITY.
+
+**PRE-FLIGHT inputs.** Existing FAQ files (per subproject); notebooks; PROJECT_STRUCTURE.md.
+
+**DO scope.** Author the two documents.
+
+**VERIFY criteria.** FAQ answers reference live notebook cells. PROJECT_STRUCTURE.md DAG matches actual script invocation order.
+
+**Estimated effort.** 1 session.
+
+**Dependencies.** C8.10 (notebooks ship before FAQ cites them).
+
+**Halt-condition flags.** L11.
+
+---
+
+### Task C8.15 — Worked-example notebooks 4-5 (C.6.d + C.6.e)
+
+**Goal.** (C.6.d) `education_gradient.ipynb` (within-era only, with 1989/2003 boundary explicit). (C.6.e) `state_reporting_quirks.ipynb` (Oklahoma Hispanic, Maryland/Massachusetts 1992-1998, Louisiana plurality).
+
+**Why this matters.** C.6.d demonstrates the 1989/2003 boundary problem the manuscript invokes. C.6.e operationalizes COMPARABILITY notes that are currently text-only.
+
+**PRE-FLIGHT inputs.** Same as C8.10. State-reporting-quirk references in COMPARABILITY.md.
+
+**DO scope.** Same builder pattern as C8.10. Each notebook documents within_era usage (per §8 F4) for any cross-era field.
+
+**VERIFY criteria.** Each notebook runs end-to-end; within_era columns flagged in markdown; no cross-era groupby on within_era columns.
+
+**Estimated effort.** 2 sessions.
+
+**Dependencies.** C8.10, C8.11.
+
+**Halt-condition flags.** F4 (within_era column cross-era misuse).
+
+---
+
 # §16. Cross-cutting concerns
 
 ### What NOT to change without consulting the user

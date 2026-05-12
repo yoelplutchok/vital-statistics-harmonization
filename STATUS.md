@@ -1,6 +1,103 @@
-# STATUS — last updated 2026-05-12T20:30:00Z
+# STATUS — last updated 2026-05-12T21:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T21:00:00Z — `[plan-update]` Phase C AUTHORIZED (Q35 = Tier 1+2; Q32-Q42 LLM-self-resolved); KICKOFF.md Phase C populated + NEXT_STEPS.md §15 C8.1-C8.15 appended; ready to start C8.1 (smoke retag + dtype parity)
+
+### Current phase
+
+**Phase B → Phase C transition COMPLETE.** User authorized Q35 = Tier 1 + Tier 2 (~29-35 sessions). LLM self-resolved Q32-Q34 + Q36-Q42 per user directive "the rest of the questions attempt to answer by yourself without my input in the best way possible." `[plan-update]` commit applies §K diff from EXPLORATION_REPORT.md: KICKOFF.md Phase C placeholder replaced with Tier-1+Tier-2 task list; NEXT_STEPS.md §15 appended with C8.1-C8.15 entries (each with five-phase framing per §4 + Convention 1-5 binding). Tag `phase-c-authorized` lands on this commit.
+
+### What was done this session (continuation of 2026-05-12 work; new sub-session)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; identified current state as Phase B → Phase C user-authorization halt.
+2. **User authorized Q35 = (b) Tier 1+2** + directed LLM to self-resolve Q32-Q42.
+3. **Self-resolutions documented** in DECISION_LOG 2026-05-12T21:00:00Z (full per-Q rationale):
+   - Q32: CLOSED (no 7th dimension surfaced).
+   - Q33: no explicit cap; self-imposed +20% drift checkpoint (>42 sessions triggers halt).
+   - Q34: HVS scope affirmed (vital events around birth); M-D/MCD/abortion explicitly OUT.
+   - Q36: N/A (Tier 5 not authorized).
+   - Q37: C8.1 first, C8.2 second.
+   - Q38: R quickstart ships in C8.9; Stata/SAS pointer-files deferred to post-v1.
+   - Q39: DuckDB views ship in C8.9; CLI deferred.
+   - Q40: single submission after Tier 2; Tier 5 (if later authorized) is v1.1/v2.0.
+   - Q41: all Tier-3 items deferred to post-v1 ancillary.
+   - Q42: §11 plan-update for any new candidate >1 session.
+4. **KICKOFF.md edited** to replace Phase C placeholder block with the Tier-1+Tier-2 task list + sequencing notes + always-on Phase C discipline. Phase B + Phase D blocks unchanged.
+5. **NEXT_STEPS.md §15 appended** with new section `§15.C Phase C tasks` containing C8.1-C8.15 entries. C8.1 + C8.2 fully fleshed per §K.2 promise (Goal/Why/PRE-FLIGHT/SMOKE/DO/VERIFY/RECEIPT/Effort/Dependencies/Halt-condition flags + Forward-looking HALTs spec). C8.3-C8.15 compact-but-complete (same fields, less prose).
+6. **Path-drift discovery during C8.1 input verification**: `fetal_death/tests/test_release_smoke.py` ImportError's in the monorepo because its `_regenerate_schema_years` import resolves to a path that exists only in the standalone build dir; conftest.py also assumes `fetal_death/output/...` which doesn't exist (output is at monorepo root via symlinks). C8.1 scope honestly expanded to include path-drift fix (analog of FIX_LOG 2026-05-12T01:30Z). Still within 1.5-session budget per `EXPLORATION_REPORT.md` §B.1.
+7. **DECISION_LOG entry** 2026-05-12T21:00:00Z + this STATUS section appended.
+
+### Last completed step
+
+`[plan-update]` commit ready to land: KICKOFF.md + NEXT_STEPS.md + DECISION_LOG.md + this STATUS.md, all together. Tag `phase-c-authorized` follows.
+
+### In-progress
+
+(none — clean checkpoint at the `phase-c-authorized` boundary, immediately before C8.1 PRE-FLIGHT.)
+
+### Next planned task
+
+**C8.1 — Smoke retag + dtype parity (B.1 + B.2 + L13-extension path-drift fix).** Three DO sub-steps under one PRE-FLIGHT umbrella per §4.1 L10 "one upfront PRE-FLIGHT enumerating every sub-step's inputs":
+
+- **DO-1**: copy `_regenerate_schema_years.py` from standalone-build `scripts/` into monorepo `fetal_death/scripts/`; fix conftest.py path constants.
+- **DO-2**: retag `test_release_smoke.py` with `DESIGN: tracks-current-state` + repin to V3b state (EXPECTED_ROW_COUNT=2_352_011, EXPECTED_YEARS=1982-2022 contiguous 41 yrs, full EXPECTED_YEAR_ROWS dict). Expand test 5 version_flag='S' coverage to 1982-2002 (V3b + V3a + V2). Re-verify NVSR_2010 anchor.
+- **DO-3**: author `fetal_death/tests/test_schema_dtype_parity.py` + `natality/tests/test_schema_dtype_parity.py` with DESIGN tag + Tier-0 mutation-test documentation.
+
+VERIFY = full `pytest fetal_death/tests/ natality/tests/` PASS.
+
+### Blocked
+
+(none — Phase C authorized; cleared to proceed.)
+
+### Open questions for human
+
+(none — Q35 authorized + Q32-Q42 self-resolved at user directive; any new Q surfaces via §11 plan-update.)
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`phase-c-authorized` tag** present at the `[plan-update]` commit applying the §K diff. Verify: `git tag --list 'phase-c*'` shows the tag.
+2. **KICKOFF.md Phase C section** populated with the Tier-1+Tier-2 task list (8 + 7 = 15 task IDs C8.1-C8.15). If a future session finds the placeholder text back, halt — the plan-update was overridden silently.
+3. **NEXT_STEPS.md §15.C section** present with C8.1-C8.15 entries. If a future session attempts to start C8.X work without the §15 entry present, halt — task plan was not committed.
+4. **`EXPLORATION_REPORT.md` unchanged** at monorepo root (append-only; future Phase B-2 / Phase C reports append new dated sections, never edit the existing report).
+5. **All STATUS 20:30Z forward-looking HALTs preserved**: parquet SHAs, schema SHA, harmonize.py SHA, V3a baseline parquet SHAs. The plan-update touched zero data/script artifacts; only docs + this STATUS + DECISION_LOG.
+6. **C8.1 has not started yet** — `git tag --list 'C8.1*'` should be empty until C8.1 PRE-FLIGHT lands.
+7. **Existing fetal-death smoke is still stale** (this STATUS section is BEFORE C8.1 DO; expected). Forward-looking HALT #10 in STATUS 20:30Z is now actionable via C8.1.
+
+### Build artifacts current
+
+(unchanged from STATUS 20:30Z; this is a plan-update, no data mutation)
+
+- 41-yr fetal-death parquet (V3b SHAs preserved)
+- V3a baseline parquets preserved
+- Natality v2.8.0 state unchanged
+- Linked file unchanged
+
+NEW this session:
+- `KICKOFF.md` — Phase C section replaced (Phase B + Phase D blocks unchanged)
+- `NEXT_STEPS.md` — §15.C section appended with C8.1-C8.15 entries
+- `DECISION_LOG.md` — 2026-05-12T21:00:00Z entry (Phase C authorization + Q32-Q42 self-resolutions)
+- `STATUS.md` — this section (append)
+
+### Notes for next session
+
+- **C8.1 PRE-FLIGHT entry needed before any DO mutation.** §5 template + Convention 3 Field-value snapshot. The snapshot must cover: (i) current `test_release_smoke.py` SHA + EXPECTED_ROW_COUNT/YEARS/YEAR_ROWS contents; (ii) current `conftest.py` SHA + path-constant values; (iii) standalone-build `_regenerate_schema_years.py` SHA (source of the monorepo copy); (iv) `fetal_death/harmonized_schema.csv` SHA + row count (73); (v) `natality/metadata/harmonized_schema.csv` SHA + row count (verify against natality v2.8.0 state).
+- **C8.1 three sub-steps execute under one PRE-FLIGHT umbrella** per §4.1 L10. Three commits planned: DO-1 path-drift fix; DO-2 smoke retag; DO-3 dtype parity tests. Tag `C8.1-pre-do` on the PRE-FLIGHT commit; tag `C8.1-complete` on the RECEIPT commit.
+- **NVSR_2010 anchor re-verification** is a soft-flag candidate: the V2.1 work shipped a B7 TABFLG correction that fired 699 records in 2003 + 690 in 2004; if the 2010 count shifted (it shouldn't, since the B7 correction was era=='2003' only), update the anchor + DECISION_LOG entry. If unchanged, no soft-flag needed.
+- **C8.2 (latest-year refresh)** is the next-next task; its PRE-FLIGHT will download 3 NCHS zips (~440 MB) + 3 user-guide PDFs. Halt-and-ask boundary lives at C8.2 DO step 1 (the first canonical-state mutation) — the URL verification + SHA recording is read-only PRE-FLIGHT work.
+- **No new mistake classes surfaced this session** — the path-drift L13-extension class was already documented in FIX_LOG 2026-05-12T01:30Z; C8.1's discovery adds another instance, not a new class.
+
+### Session summary
+
+The 2026-05-12 work stream now spans three sub-sessions:
+1. **18:45Z** — Task 7 V3b shipped (fetal-death backward extension 1982-1988; 41-yr coverage).
+2. **19:15Z** — `[plan-update]` Phase B/C/D restructure mandated.
+3. **20:30Z** — Phase B exploration session COMPLETE; EXPLORATION_REPORT drafted; PENDING USER REVIEW.
+4. **21:00Z** (this section) — Phase C AUTHORIZED (Q35 = Tier 1+2) + plan-update applied + ready for C8.1 PRE-FLIGHT.
+
+The next sub-session's first work item: C8.1 PRE-FLIGHT entry + three DO commits + RECEIPT + tag `C8.1-complete`. Estimated 1.5 sessions; the L13-extension path-drift fix surfaced during input verification adds modestly to the original B.1+B.2 scope but stays within budget.
 
 ---
 
