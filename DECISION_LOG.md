@@ -23,6 +23,46 @@
 
 ---
 
+## 2026-05-12T04:30:00Z — task7_v3b_doc_hunt — KICKOFF Step 0 V3b doc retry succeeded; proposing Task 7 scope expansion to 1982-2022 (41 years)
+
+**Choice (proposal pending user confirmation):** Expand Task 7 scope from the prior session's "V3a only (1989-1991, 34 years total)" framing back to "V3a + V3b (1982-2022, 41 years total)" per KICKOFF.md Step 0 contingency ("If V3b authoritative docs found → expand Task 7 scope to 1982-2022 and proceed with V3a + V3b"). Step 0 found all 10 fetal-death user guides 1982-1991 obtainable from NCHS canonical FTP path `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/<YYYY>FetalUserGuide.pdf` (all HTTP 200; sizes/last-modified per STATUS 2026-05-12T04:30Z). The proposal is NOT yet authorized — it requires explicit user yes before Task 7 PRE-FLIGHT begins downloading the PDFs to the build dir.
+
+**Alternatives considered:**
+
+1. **Keep prior session's V3a-only scope** (1989-1991, 34 years; V3b deferred post-submission). Pro: shorter Task 7 budget (~1 session, not ~4-5); ships a strict superset of the current 31-year coverage; preserves integrity-principle simplicity. Con: leaves 7 years on the table that authoritative sources now confirm are accessible; the manuscript would cite 34 years with a post-submission v1.2 promise to extend, instead of citing the final 41-year extent.
+
+2. **Expand to V3a + V3b (1982-2022, 41 years) — proposed.** Pro: maximum-extent paper coverage from first submission; cited DOI is final not incremental; the integrity principle is SATisfied because authoritative NCHS PDFs anchor V3b layout reconstruction (NOT reverse engineering). Con: +3-4 sessions of effort vs V3a-only; OCR pass required on bitmap-scanned 1980s PDFs (NCHS-published but image-scanned); L13-extension value-distribution discipline must be applied per-field on the new V3b layouts.
+
+3. **Hybrid: V3a + V3b 1988 only.** The Damian Clarke `fetl1988.dct` artifact (88 fields, 200-byte layout) plus the NCHS 1988 user guide is a single-year addition that minimizes OCR risk (1 PDF instead of 7). Adds +4 years total (1988-1991). Rejected as a stopping point — once OCR machinery exists for one year, the marginal cost of 6 more years is small; arbitrary cutoff at 1988 is unjustified.
+
+**Reason:** Step 0 reversed the prior session's empirical assumption ("V3b docs not at NCHS"). Wrong-filename probes by the 2026-05-12T03:50Z agent (used `Fetal82UG.pdf`, `fetal_death_inst.pdf`, NCHS series_04 paths, etc.; did NOT try `<YYYY>FetalUserGuide.pdf` despite that being the exact convention used by 2003-2022 files already on disk in this monorepo). This session's WebFetch on `cdc.gov/nchs/data_access/vitalstatsonline.htm` surfaced the canonical NCHS link list including all 7 V3b years and verified by HEAD probe. Sanity download of 1985 confirmed valid PDF + SHA recorded. The integrity-principle objection in 2026-05-12T04:00Z STATUS ("can't claim 100% correct without authoritative codebook") no longer applies: authoritative codebooks exist and are obtainable.
+
+**Source:**
+- WebFetch result for `https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm` showing per-year fetal-death documentation links 1982-1988.
+- `curl -sI -k <YYYY>FetalUserGuide.pdf` returning HTTP 200 with valid content-length for all 10 years 1982-1991.
+- `/tmp/v3b_hunt/1985FetalUserGuide.pdf` SHA-256 `f7342480302017caf622243510c7e32ea03b6083b9797768b59fa50954eb1ed5`; `file(1)` reports valid PDF v1.4.
+- GitHub `damiancclarke/nchs-fetaldata` `process/dicts/fetl1988.dct` 7,412 bytes (cross-check artifact, not authoritative; Damian Clarke 2014-07-02 Version 0.0.0 empty README).
+- KICKOFF.md Step 0 contingency clause (lines 47-55 of KICKOFF.md).
+
+**Verifiable by:**
+- This entry's HEAD probe results are repeatable via `curl -sI -k https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/<YYYY>FetalUserGuide.pdf` for any year 1982-1991.
+- The 1985 PDF SHA can be reproduced by `curl -s -k -o /tmp/check.pdf <url> && shasum -a 256 /tmp/check.pdf`.
+- STATUS.md 2026-05-12T04:30Z section is the canonical current-state record.
+
+**Reversible:** yes — if Task 7 V3b OCR proves intractable (e.g., the 1980s NCHS scan quality is too low for reliable layout-table OCR, or value-distribution verification surfaces unresolvable per-field semantics ambiguity), the user can direct a fall-back to V3a-only scope at Task 7 PRE-FLIGHT halt-and-ask moment. The proposal does not commit V3b irreversibly; it commits to *attempting* V3b with halt-condition discipline.
+
+**Residual risks:**
+- (a) **OCR quality on 2009-vintage NCHS bitmap scans is unknown.** Quality varies year-to-year (NCHS rescanned old paper docs in 2009-01-08 batch; some scans may be cleaner than others). Mitigation: a 20-min proof-of-concept OCR run on a few `1985FetalUserGuide.pdf` pages before committing to all 7 V3b years (was option 4 of this session's 4-option ask; user chose option 1 "update state files first").
+- (b) **L13-extension discipline overhead per year**: 7 V3b years × (per-field value-distribution verification + layout-CSV reconstruction from OCR'd text) may grow Task 7 V3b beyond the 3-4 session estimate if multiple fields surface semantic mismatches like the MAGER vs MAGER41 incident in V2.1.
+- (c) **Damian Clarke 1988.dct provenance gap**: the Clarke artifact's "Version 0.0.0" + empty README means it MAY itself be reverse-engineered or partially-incorrect. Treating it as a cross-check (not authority) preserves integrity; treating it as authority would be the L13-extension shape we explicitly avoid.
+- (d) **Manuscript timing**: pre-submission scope was already expanded once (2026-05-11T20:50Z) and again (2026-05-12T03:30Z); this is the third expansion in 3 days. User has accepted the trade-off pattern of "more sessions for final manuscript state" — but the absolute session count keeps growing. If V3b OCR surfaces a multi-session blocker, the user has the option to fall back without re-litigating the data-first-vs-submit-now choice from scratch.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+- This entry asserts "authoritative NCHS PDFs are obtainable" based on (i) HEAD probes returning HTTP 200, (ii) one sanity download verifying valid PDF + matching content-length. It does NOT verify the PDF's *content* is a usable codebook with readable byte-layout tables. The 1985 PDF is bitmap-scanned; if those scans are illegible or missing the layout-table appendix entirely (e.g., the PDF body is some unrelated NCHS report, not a public-use file codebook), this proposal's premise is wrong. Mitigation: Task 7 PRE-FLIGHT MUST include an L9 cheap-check (open one PDF, locate the byte-layout table by page) before downloading all 10 to the build dir and committing harmonization effort.
+- The 200-byte record length for 1982-1988 is verified by the prior session's `unzip` + byte-inspection (STATUS 2026-05-12T03:50Z); the layout table in the user guide MUST sum to 200 bytes to be consistent with the actual public-use file. Bond verification at Task 7 PRE-FLIGHT L9 step.
+
+---
+
 ## 2026-05-12T03:30:00Z — sequencing — Pull Task 7 (V3 1982-1991) and natality v2.8 rename INTO pre-submission scope
 
 **Choice:** Override the prior "out of pre-submission scope" status (KICKOFF.md, DECISION_LOG 2026-05-11T20:50Z) for both Task 7 fetal-death V3 backward extension AND natality v2.8 column rename. Both will be completed before manuscript submission. New pre-submission sequence:

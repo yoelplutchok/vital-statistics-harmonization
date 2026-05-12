@@ -17,6 +17,37 @@
 
 ---
 
+## 2026-05-12T04:30:00Z — task7_v3b_doc_hunt — L1/L12 — External-resource filename-variant probes should be sibling-derived, NOT hallucinated; prior session's V3b-not-found conclusion was an L1+L12 cascade
+
+**What happened:** The 2026-05-12T03:50:00Z agent probed for 1982-1991 NCHS fetal-death user guides at the NCHS canonical FTP path and reported (STATUS section): "probed `{1982-1991}FetalUserGuide.pdf` at the same FTP path — all returned HTTP 404. Probed alternate doc paths (`fetal_death_inst.pdf`, `Fetal82UG.pdf`, NCHS series_04 paths, `InstructionsManual/InstrFetalDeath.pdf`, etc.) — all HTTP 404. User guides for 1982-1991 are NOT available at the standard NCHS FTP location." That conclusion drove the 2026-05-12T04:00:00Z session to declare V3b "skipped pre-submission per integrity principle."
+
+The conclusion was wrong. This session (2026-05-12T04:30Z, KICKOFF Step 0 retry) probed `<YYYY>FetalUserGuide.pdf` at the canonical FTP path and got HTTP 200 for all 10 years 1982-1991. The naming convention `<YYYY>FetalUserGuide.pdf` is IDENTICAL to the 2003-2022 user guides already on disk in this monorepo (`raw_docs/fetal_death/2003FetalUserGuide.pdf` etc.) — a sibling-derived extrapolation would have tried this exact form first. The prior agent did not.
+
+The prior session's STATUS section labels its probe as `{1982-1991}FetalUserGuide.pdf` (curly-brace expansion in shell). If that was a literal `bash`/`zsh` brace expansion `{1982-1991}` instead of the integer-range syntax `{1982..1991}`, no real probes happened (curly-brace ranges in bash use `..` not `-`). The 404 "result" might have been a typo-mangled probe, not a real test. In any case, the result was reported as authoritative and propagated downstream.
+
+**Why the existing matrix didn't catch it:** Two existing rows are close:
+- **L1** (LLM hallucinated file path): the prior agent's `Fetal82UG.pdf`, `fetal_death_inst.pdf` variants were hallucinated filename forms with no sibling-file basis.
+- **L12** (LLM trusts its own grep / probe results without verification): the prior agent's 404 result was trusted enough to drive a session-end "V3b skipped" decision; no follow-up cheap-check (e.g., "try the same naming convention as the 2003-2022 files already on disk").
+
+Neither row explicitly names the *sibling-derivation* fix: when probing for analogous files in a known-pattern series, the FIRST candidate filename should be a direct sibling-extrapolation from a file in the series that is known to exist, NOT a fresh guess.
+
+**What worked (within this session):** WebFetch on `cdc.gov/nchs/data_access/vitalstatsonline.htm` — the authoritative NCHS data-access page — surfaced the per-year link list directly, with filename `<YYYY>FetalUserGuide.pdf` matching the sibling convention. Verification via `curl -sI -k` for all 10 years 1982-1991 returned HTTP 200 with valid content-length and last-modified.
+
+**Proposed matrix row addition (L1/L12-extension, or just a sharpening of L1):**
+
+> **L1-extension** — Filename-variant probes for analogous files in a known series MUST begin with sibling-extrapolation, NOT hallucinated guesses. If file `A.pdf` exists at `path/2003<NAME>.pdf` and the question is "does an analogous file for 1985 exist at the same path?", the FIRST probe is `path/1985<NAME>.pdf` — the exact sibling form. Hallucinated variants (`<YEAR>UG.pdf`, `<NAME>_inst.pdf`, etc.) are only tried if the sibling-form probe returns 404. A 404 on the sibling form is a strong signal; a 404 on a hallucinated form is a weak signal that proves nothing.
+>
+> **Caught at:** PRE-FLIGHT, before any session-end "X is not available" conclusion. Specific catch: every "X is not available externally" claim must be preceded by an explicit sibling-extrapolation probe, logged with the exact URL tried and the HTTP status code. If only hallucinated-variant probes were tried, the claim is "X is not available **via the variants I tried**," not "X is not available."
+
+**Backport scope:**
+
+- The 2026-05-12T03:30:00Z session's "Task 7 input availability" PRE-FLIGHT and the 2026-05-12T03:50:00Z session's user-guide search both surfaced this class of error. Both sessions' artifacts are not corrupted (no harmonization was done on V3b — V3b was correctly deferred, just for the wrong reason). The fix is to revisit the V3b scope decision (DECISION_LOG 2026-05-12T04:30Z proposes the expansion); no parquet rebuild is needed.
+- Generalizable to future sessions: when probing for "is X available externally," start with sibling-derived URLs from this monorepo's existing on-disk inventory. The monorepo already has 1992-2022 user guides; the naming convention is uniform; sibling extrapolation backward to 1982 was the obvious first probe.
+
+**Upstream lesson?** Yes. The upstream NHANES protocol's L1 row could be sharpened to add the sibling-extrapolation discipline. Same shape applies to NHANES-internal probing for analogous NHANES public-use documentation in adjacent cycles.
+
+---
+
 ## 2026-05-12T01:40:00Z — task3_v21_fetal_death — L13-extension — Layout CSV "anchor-field spot-check" round verifies byte POSITIONS but not field SEMANTICS; semantic mismatch (MAGER vs MAGER41) at identical byte position 89-90 went undetected until value-distribution inspection of harmonized output
 
 **What was discovered:** Task 3 DO step 1 (record_layout_2003.csv + record_layout_2004.csv reconstruction at commit `bb01eaa`, 2026-05-11) inherited bytes 1-797 from `record_layout_2006.csv` and verified anchor fields via "byte-position spot-checks against 2003 user guide pp 13-22 — VERSION, TABFLG, DOD_YY, OSTATE, MAGER, MRACEREC, F_HYSTERu all aligned." The "all aligned" claim verified that the field NAMES present in record_layout_2006.csv appeared at the same byte positions in the 2003 user guide. It did NOT verify that the field SEMANTICS at those positions match. The 2003 file at bytes 89-90 has `MAGER41` (41-category age recode); record_layout_2006.csv at bytes 89-90 has `MAGER` (single-year age). The byte position is identical; the field semantics differ. Because the anchor-spot-check matched on the string prefix `MAGER` (or didn't notice the `41` suffix), the mismatch persisted.
