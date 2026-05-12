@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "Harmonized U.S. Fetal Death Microdata, 1982-2022"
+title: "Harmonized U.S. Fetal Death Microdata, 1982-2024"
 message: "If you use this dataset, please cite it using the metadata in this file."
 type: dataset
 authors:
@@ -8,14 +8,14 @@ authors:
     email: yoelyehudaplutchok@gmail.com
 abstract: >-
   A modern, researcher-ready release of harmonized U.S. fetal death microdata
-  for cross-year stillbirth research. Spans 41 years (1982-2022) of NCHS
+  for cross-year stillbirth research. Spans 43 years (1982-2024) of NCHS
   public-use fetal death files reconciled into a single Parquet file with one
   stable schema. Three revisions of the Standard Report of Fetal Death (1978,
   1989, 2003) and staggered state adoption are bridged via documented
-  crosswalks. 2,352,011 total records (~1.99 million NVSR-comparable). Validation:
-  88 byte-exact checks against published NCHS/NVSR statistics (55 V1 + 23 V2/V3
-  counts + 10 V2/V2.1 rates); all 41 per-year counts and all 10 per-year rates
-  match exactly. Companion to the U.S. Natality Harmonization Project (Zenodo
+  crosswalks. 2,427,233 total records (~2.03 million NVSR-comparable). Validation:
+  90 byte-exact checks against published NCHS/NVSR statistics (55 V1 + 23 V2/V3
+  counts + 10 V2/V2.1 rates + 2 latest-year refresh control-count cells);
+  all 43 per-year counts and all 10 per-year rates match exactly. Companion to the U.S. Natality Harmonization Project (Zenodo
   concept DOI 10.5281/zenodo.19363074), which supplies the live-birth
   denominators needed for fetal mortality rate computation.
 keywords:
@@ -33,20 +33,20 @@ keywords:
   - epidemiology
   - United States
 license: CC-BY-4.0
-version: "2.3.0"
+version: "2.4.0"
 date-released: "2026-05-12"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.20031571"
-    description: "Zenodo concept DOI (latest version at v2.3.0)"
+    description: "Zenodo concept DOI (latest version at v2.4.0)"
 repository-code: "https://github.com/yoelplutchok/vital-statistics-harmonization"
 preferred-citation:
   type: dataset
-  title: "Harmonized U.S. Fetal Death Microdata, 1982-2022"
+  title: "Harmonized U.S. Fetal Death Microdata, 1982-2024"
   authors:
     - family-names: Plutchok
       given-names: Yoel
   year: 2026
-  version: "2.3.0"
+  version: "2.4.0"
   doi: "10.5281/zenodo.20031571"
   url: "https://github.com/yoelplutchok/vital-statistics-harmonization"

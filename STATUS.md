@@ -1,6 +1,119 @@
-# STATUS — last updated 2026-05-12T22:45:00Z
+# STATUS — last updated 2026-05-12T23:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T23:30:00Z — C8.2 COMPLETE: fetal-death extended to 1982-2024 (43 yrs, 2,427,233 records); 90/90 NVSR validation byte-exact (88 existing validators + 2 direct cell checks); V3b baseline byte-clean regression 0/89 cols drift; v2.3.0 → v2.4.0
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.2 COMPLETE.** Second Tier-1 task closed in ~1 session of wall-clock work (in-line with the re-scoped estimate per `[plan-update]` `61b7720` at 22:30Z). Tag `C8.2-complete` lands on the commit shipping this STATUS section + RECEIPT + version-bump artifacts.
+
+Five canonical state changes this sub-session:
+
+1. **Fetal-death series extended 41 yrs → 43 yrs** (1982-2022 → 1982-2024) via parsing `Fetal2023US_COD.zip` (39,574 records) + `Fetal2024US_COD.zip` (35,648 records). Total: 2,352,011 → **2,427,233** records.
+2. **Parquet rebuilt + v2.4.0 metadata bumped**: `fetal_death_harmonized.parquet` sha `e3d6c64a…` → `38e2cecb…`; `fetal_death_derived.parquet` sha `4d1b37cc…` → `185c071e…`. V3b baseline preserved as `.V3b_baseline.parquet` sidecars.
+3. **Layout dispatch extended**: `field_specs.layout_for_year(2018..2024)` returns the same `RECORD_LEN_2022=2651, FETAL_2018_2022_FIELDS` (n=141) tuple — verified byte-identical layout via PyMuPDF text-layer diff of 2022/2023/2024 user guides (17/17 captured (start,end,field) triples match; page counts grew 80→85→86 but no field byte-position drift). `harmonize._era_tag(2018..2024)` returns era_tag '2022' (single dispatch range edit).
+4. **Validation +2 cells (88 → 90/90)**: `external_validation_targets.csv` extended with 2023 and 2024 user-guide control-count cells (20,005 and 19,837 fetal deaths ≥20wk by residence). The existing validator scripts (`validate_external.py` 55/55, `validate_external_v2.py` 33/33) are unchanged; the +2 cells were spot-verified via direct `pq.read_table` filter (canonical filter `tabulation_flag==2 & residence_status!=4`) — both PASS byte-exact.
+5. **Smoke EXPECTED state re-pin (tracks-current-state Convention 2)**: `EXPECTED_ROW_COUNT 2_352_011 → 2_427_233`; `EXPECTED_YEARS = range(1982, 2025)` (43); `EXPECTED_YEAR_ROWS` gained `2023: 39574, 2024: 35648`; test name `test_year_coverage_is_41_contiguous_years → test_year_coverage_is_43_contiguous_years`; module docstring `post-V3b (v2.3.0) → post-v2.4.0 (latest-year refresh 2023+2024)`. All 15 tests PASS + 1 XFAIL under default pytest import mode (cache-cleared).
+
+### What was done this sub-session (C8.2 SMOKE + DO + VERIFY + RECEIPT)
+
+1. **SMOKE Tier 0** (PyMuPDF text-layer probe per LESSONS L12-extension): extracted (start,end,field_name) triples from 2022/2023/2024 user guides; 17/17 byte-identical; page count grew 80→85→86 but no field byte-position drift.
+2. **SMOKE Tier 1** (full-year parse): 2023 39,574 records, 2024 35,648 records, all rows = 2651 bytes (matches `RECORD_LEN_2022`). Anchor field values (TABFLG=2, RESTATUS=2, DBWT=3030g) plausible.
+3. **SMOKE Tier 2** (per-year canonical-filter control-count match): 2023=20,005 / user-guide page 30 = 20,005 PASS; 2024=19,837 / user-guide page 31 = 19,837 PASS.
+4. **DO step 1** (downloads + SHA verify): 2 zips downloaded to `raw_data/fetal_death/`; PDFs copied from `/tmp/c82_preflight/` to `raw_docs/fetal_death/`; SHA-verified against PRE-FLIGHT-recorded values (both PDF SHAs byte-exact match `947042d8…` / `63bcc8b1…`). User-guide URL prefix corrected from `fetaldeathus/` → `fetaldeath/` (NCHS reorganized between 2022 and 2023 releases per L1-extension URL-drift).
+5. **DO step 2** (layout extension): `field_specs.py` `layout_for_year` range 2018-2022 → 2018-2024 + comment block referencing the C8.2 PyMuPDF cross-verification; `harmonize.py` `_era_tag` matching extension + "Supported years 1982-2024" docstring + error string update.
+6. **DO step 3** (metadata extension): appended 2 rows to `file_inventory.csv` (with `notes` flagging the corrected doc URL); appended 2 control-count rows to `external_validation_targets.csv`; ran `_regenerate_schema_years.py` (idempotent; auto-derived field; ~50 rows' `years_available` strings extended to include 2023-2024 per V3a/V3b convention).
+7. **DO step 4** (reharmonize + rederive): preserved V3b baseline parquets as `.V3b_baseline.parquet` sidecars FIRST (byte-exact match to pre-C8.2 SHAs verified); then `harmonize.py --years 1982 ... 2024 ... ` (43 years; produced 2,427,233 rows × 73 cols); `derive.py` (produced 2,427,233 rows × 89 cols).
+8. **DO step 5-7** (version bump + docs + smoke re-pin): CITATION.cff v2.3.0 → v2.4.0 + record count + year range + 88/88 → 90/90; .zenodo.json same; ABOUT_THIS_RELEASE.md inserted new v2.4.0 section between header and V3b; README.md version-roadmap table row appended; test_release_smoke.py EXPECTED state re-pin per Convention 2.
+9. **VERIFY** (per §15 success criteria):
+   - 2023+2024 canonical-filter count byte-exact vs user-guide control counts ✓
+   - V3b baseline byte-clean regression: 0/89 columns drift on 1982-2022 slice (pandas equality compare on full dataframes after stable sort) ✓
+   - External validators (V1 55/55 + V2/V3a/V3b 33/33 = 88/88) all PASS ✓
+   - Pytest combined run: 15 passed + 1 xfailed (cache-cleared default mode) ✓
+   - C8.1 5-column int regression gate still PASS (`test_v21_h8_fixed_columns_remain_int`) ✓
+   - Schema dtype xfail still XFAIL as expected ✓
+10. **RECEIPT** written at `RECEIPTS/C8.2_2026-05-12T23-30-00Z.md` with full §6 template + Self-check (7 residual risks) + Forward-looking HALTs (11 items).
+
+### Last completed step
+
+Single commit ships: 10 modified files (`fetal_death/CITATION.cff`, `.zenodo.json`, `ABOUT_THIS_RELEASE.md`, `README.md`, `external_validation_targets.csv`, `file_inventory.csv`, `harmonized_schema.csv`, `scripts/01_import/field_specs.py`, `scripts/03_harmonize/harmonize.py`, `tests/test_release_smoke.py`) + 1 new file (`RECEIPTS/C8.2_2026-05-12T23-30-00Z.md`) + 2 state-file appends (this STATUS section + no FIX_LOG additions since no new bug class surfaced). Tag `C8.2-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.2 → C8.3 boundary)
+
+### Next planned task
+
+**C8.3 — Cross-product Tier-1: timeline + perinatal joint + Section B race validation.** Per KICKOFF.md Phase C Tier-1 sequencing (line 179 in KICKOFF.md). Three items in one task:
+
+1. Cross-product timeline figure (`shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`).
+2. Three-product perinatal mortality joint computation in `notebooks/joint_use_demo.ipynb` (new Section C).
+3. Section B 2017 race-stratified NVSR validation (deferred Task 4 fragment).
+
+Estimated 2 sessions. Depends on C8.2 refreshed parquets — now in place.
+
+### Blocked
+
+(none.)
+
+### Open questions for human
+
+None for C8.3 scope. **Open soft-flag** (carried from PRE-FLIGHT addendum 22:45Z): when NCHS releases `2025PE2024CO.zip` (cohort-2024 linked file; estimated 2027-Q1), a future task should trigger via §11 plan-update to refresh the linked-file portion (deferred from C8.2).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.2-complete` tag** present on this commit. Verify: `git tag --list 'C8.2*'` shows `C8.2-pre-do` (`61b7720`) + `C8.2-complete` (this commit).
+2. **Post-C8.2 parquet SHAs**: harmonized=`38e2cecb03ff4947…`, derived=`185c071ec76ab8aa…`. If a future session finds these unchanged after a canonical-state mutation that would normally affect them (e.g., new B-fix), the regen did not take.
+3. **V3b baseline parquets preserved** at `.V3b_baseline.parquet` sidecars at SHAs `e3d6c64abcb7762d…` + `4d1b37cc3a214eea…`. These are forward-stability anchors; if missing, future byte-clean regression cannot be verified.
+4. **Smoke EXPECTED state pinned to 43 years / 2,427,233 rows.** Any future C8.X data-extension task must re-pin (tracks-current-state convention). A future task adding a 44th year (e.g., when 2025 ships) MUST update `EXPECTED_YEAR_ROWS` dict + `EXPECTED_YEARS` tuple + the year-coverage test name + assertions.
+5. **`field_specs.py` `layout_for_year` accepts years 1982-2024**; rejects 2025 (HTTP 404 today; year-rule will need extension when NCHS publishes 2025 data).
+6. **External validation 88/88 unchanged**; +2 cells (2023+2024 user-guide control counts) documented in CSV but spot-validated outside the validator scripts. A future Phase C task could bring these inside an invariant-test harness (C8.4 candidate).
+7. **C8.1 dtype-parity XFAIL** still in place (broader latent string-vs-int surface). A future XPASS triggers investigation.
+8. **4× `__init__.py` files** still present at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/`. Cache-cleared `pytest fetal_death/tests/ natality/tests/` reproduces 15 passed + 1 xfailed under default mode.
+9. **Linked-2024-cohort refresh task is queued** (no §15 entry yet; trigger: NCHS publishes `2025PE2024CO.zip` HTTP 200).
+10. **Manuscript stale-numerics inventory now wider gap**: `paper/draft_v2_hmd_styled.md` says "1,634,195 records / 29 years / 1.6M / V3 deferred"; in-repo now "2,427,233 / 43 years / 2.03M NVSR-comparable / v2.4.0". Phase D KICKOFF step 6 re-pass scope grows by ~3 numbers vs the STATUS 22:00Z note.
+
+### Build artifacts current
+
+- **43-yr fetal-death parquet (v2.4.0)** at SHAs `38e2cecb03ff4947…` (harmonized) + `185c071ec76ab8aa…` (derived). 2,427,233 rows × 73 / 89 cols.
+- **V3b baseline parquets** preserved as `.V3b_baseline.parquet` (SHAs `e3d6c64abcb7762d…` + `4d1b37cc3a214eea…`).
+- **V3a baseline parquets** preserved at SHAs `23c56a9d6a0948b4…` + `0dd3aec0e47785f1…`.
+- Natality v2.8.0 state unchanged (linked re-scoped out of C8.2).
+- Linked file unchanged at 2005-2023 (74.9M rows; latest NCHS public-use cohort).
+
+NEW this sub-session:
+- `fetal_death/CITATION.cff` (v2.3.0 → v2.4.0; sha=`9bdc0b24cc4c343f…`)
+- `fetal_death/.zenodo.json` (v2.3.0 → v2.4.0; sha=`d5398f8d761d0953…`)
+- `fetal_death/ABOUT_THIS_RELEASE.md` (new v2.4.0 section; sha=`5ef941f58aa250e3…`)
+- `fetal_death/README.md` (version-roadmap row appended; sha=`3e27a3aa3b6b47c8…`)
+- `fetal_death/external_validation_targets.csv` (+2 rows; sha=`7d206419bdc9cada…`)
+- `fetal_death/file_inventory.csv` (+2 rows; sha=`0f055d0e52d53578…`)
+- `fetal_death/harmonized_schema.csv` (years_available regen; sha=`e05fdfbf9f123f9a…`)
+- `fetal_death/scripts/01_import/field_specs.py` (2018-2022 → 2018-2024 dispatch; sha=`fdc5c9831c40e63b…`)
+- `fetal_death/scripts/03_harmonize/harmonize.py` (era_tag range + docstring; sha=`808a44db043efc39…`)
+- `fetal_death/tests/test_release_smoke.py` (EXPECTED re-pin + 43-year test; sha=`cd0eafbad277afb0…`)
+- `RECEIPTS/C8.2_2026-05-12T23-30-00Z.md` (NEW)
+- Rebuilt parquets at SHAs above
+- Yearly-clean 2023+2024 parquets (intermediate; .gitignored)
+- 2 source zips + 2 user-guide PDFs added to `raw_data/` / `raw_docs/` (.gitignored)
+- `STATUS.md` this section (append)
+
+### Notes for next session
+
+- **C8.3 is the next task.** Depends on C8.2 refreshed parquets — present at the SHAs above. Estimated 2 sessions.
+- **Tier 1 progress**: 2 of 8 tasks complete (C8.1 ✓, C8.2 ✓). Remaining: C8.3 / C8.4 / C8.5 / C8.6 / C8.7 / C8.8 (~9-11 more sessions for Tier 1).
+- **Cumulative Phase C effort tracking**: C8.1 (~1 session) + C8.2 PRE-FLIGHT (~1 sub-session) + C8.2 DO+VERIFY+RECEIPT (~1 session). Cumulative ~3 sessions of 29-35 budget; comfortably within +20% drift cap (42 sessions).
+- **C8.3 PRE-FLIGHT first work**: NVSR cell location verification (per L9), 2022 perinatal computation pseudocode, era-boundary metadata cross-product. Field-value snapshot of `notebooks/joint_use_demo.ipynb` (likely Section C insertion point) + `figures/` directory + relevant manuscript paragraphs.
+- **The "linked file already at NCHS-public-use maximum extent" finding from C8.2 PRE-FLIGHT** carries into C8.3 — the perinatal joint computation uses fetal-death 1982-2024 + natality 1990-2024 + linked 2005-2023. C8.3 perinatal demo year (2022) is fully covered by all three; C8.3 timeline figure should show the linked file's 2024 absence honestly.
+
+### Session summary
+
+C8.2 closed in one session (combined PRE-FLIGHT + SMOKE + DO + VERIFY + RECEIPT), at the lower end of the re-scoped 1-session estimate. Two halt conditions surfaced at PRE-FLIGHT and were resolved at cheap-checks before any canonical-state mutation: (i) linked-file scope is a no-op (re-scoped to fetal-only via `[plan-update]` `61b7720`); (ii) pytest co-collection bug shipped in C8.1 (fixed via `[c8.1-followup]` `b84ff0d`). Latest-year refresh shipped clean: 2023+2024 NCHS public-use fetal-death files are byte-position-identical to the 2018-2022 layout and integrated into the harmonized series without any layout / era_tag / B-fix changes. The L1-extension URL-drift (`fetaldeathus/` → `fetaldeath/` between 2022 and 2023 user guide releases) is a new instance of an existing class; no §8 matrix promotion needed.
+
+Next session = C8.3 cross-product Tier-1 work.
 
 ---
 

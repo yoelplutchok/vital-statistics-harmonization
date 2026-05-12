@@ -83,3 +83,5 @@ year,metric,metric_detail,expected_value,source,notes
 2022,late_fetal_mortality_rate,Late rate (28+wk) per 1000,2.71,NVSR 73-09 Table 1,2022 specific
 2014,fetal_deaths_early_20_27wk,Early fetal deaths 20-27 weeks,12652,NVSR 73-09 Table 1,GA-specific count
 2014,fetal_deaths_late_28wk_plus,Late fetal deaths 28+ weeks,11328,NVSR 73-09 Table 1,GA-specific count
+2023,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,20005,2023 NCHS Fetal Death User Guide control block,"Residence-based count; user-guide page 30; C8.2 latest-year refresh"
+2024,fetal_deaths_gte20wk_resident,Fetal deaths >=20wk excluding foreign residents,19837,2024 NCHS Fetal Death User Guide control block,"Residence-based count; user-guide page 31; C8.2 latest-year refresh"

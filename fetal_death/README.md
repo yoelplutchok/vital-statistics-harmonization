@@ -153,6 +153,7 @@ A regression-protection pytest suite (`tests/`) covers the schema, row-count, an
 | **V2 (current)** | Backward extension to 1992; 1989-revision era; full cross-era validation | 1992-2022 (29 years; 2003-2004 deferred) |
 | V2.1 | Add 2003 and 2004 transition years (distinct layouts) | 1992-2022 (31 years complete) |
 | V3 | Full historical depth | 1982-2022 |
+| **v2.4.0 (current)** | Latest-year refresh: 2023+2024 fetal-death | 1982-2024 (43 years complete; 90/90 NVSR validation byte-exact) |
 
 **Joint-use convenience layer (shipped 2026-05-11):** `stratified_denominators.csv` and the cross-product helper at [`shared/helpers/canonical_join_keys.py`](../shared/helpers/canonical_join_keys.py) provide demographic-stratified live-birth denominators for joint fetal-mortality-rate computation; see the *Companion Project* section above. Replaces the prior roadmap "V4: Natality companion product" entry.
 

@@ -1,8 +1,16 @@
-# About This Release: Version 2 (in-repo state: V3a)
+# About This Release: Version 2 (in-repo state: v2.4.0 = V3b + latest-year refresh)
 
 ## Overview
 
-Version 2 of the U.S. Fetal Death Harmonization Project provides a researcher-ready, harmonized microdata file covering **1989 through 2022** — thirty-four consecutive years of NCHS fetal death records, since the V2.1 (2003+2004 transition) and V3a (1989-1991 backward extension) increments. The base V2 deposit at the v2.0.0 Zenodo DOI covers 1992-2022 with 2003/2004 deferred; the in-repo state has since landed V2.1 (2003+2004) and V3a (1989-1991) and ships from this monorepo. The release contains **~1.93M total records** with **73 harmonized variables** in the base file and **16 additional derived analysis variables** (89 columns total) in the derived file.
+Version 2 of the U.S. Fetal Death Harmonization Project provides a researcher-ready, harmonized microdata file covering **1982 through 2024** — forty-three consecutive years of NCHS fetal death records, since the V3b (1982-1988 backward extension), V3a (1989-1991), V2.1 (2003+2004 transition), and v2.4.0 (2023+2024 latest-year refresh) increments. The base V2 deposit at the v2.0.0 Zenodo DOI covers 1992-2022 with 2003/2004 deferred; the in-repo state has since landed V2.1 (2003+2004), V3a (1989-1991), V3b (1982-1988), and v2.4.0 (2023+2024) and ships from this monorepo. The release contains **2,427,233 total records** with **73 harmonized variables** in the base file and **16 additional derived analysis variables** (89 columns total) in the derived file.
+
+## v2.4.0 (2026-05-12): latest-year refresh to 2024
+
+C8.2 (Phase C Tier-1) extends the series forward by two years: 2023 (39,574 records) + 2024 (35,648 records), bringing fetal-death coverage to 43 consecutive years (1982-2024). The 2018-2022 era_tag/layout (`FETAL_2018_2022_FIELDS`, record length 2651 bytes) was reused unchanged for 2023+2024 after C8.2 SMOKE Tier 0 verified byte-identical field positions across the 2022/2023/2024 user guides via PyMuPDF text-layer extraction (page counts grew 80→85→86 but no field byte-position drift). The user-guide URL pattern at NCHS changed between 2022 and 2023: the 2023+2024 fetal user guides ship at `…/Dataset_Documentation/DVS/fetaldeath/…` (no `us` suffix; recorded in `file_inventory.csv` notes column). V3b baseline byte-clean regression: 0/89 columns drift on 1982-2022 slice. Validation: 88/88 → **90/90** byte-exact (V3b 88/88 unchanged + 2 new control-count cells from the 2023 and 2024 user-guide page 30/31 blocks; 2023=20,005 + 2024=19,837 fetal deaths ≥20wk by residence). Linked-file 2024-cohort refresh deferred to a future task pending NCHS release of `2025PE2024CO.zip`.
+
+## V3b (2026-05-12): backward extension to 1982
+
+V3b adds seven years (1982-1988) under the 1978-revision uniform 200-byte layout. Records added: **421,125**. Structurally different from V3a/V2/V1: field names (AGE/RACE vs MAGER/MRACE), byte positions, and recode schemes differ. B3 maternal_race_bridged extended with a 1-digit MRACE recode 0-9 (mirroring V2's 2-digit logic with appropriate code-7/9 → null choices documented in V3b_1982_1988_LAYOUT_DECISIONS.md). 88/88 NVSR validation byte-exact post-V3b (V1 55/55 + V2/V3a/V3b 33/33).
 
 ## V3a (2026-05-12): backward extension to 1989
 

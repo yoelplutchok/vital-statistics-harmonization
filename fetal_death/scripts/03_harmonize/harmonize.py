@@ -6,7 +6,7 @@ Reads yearly raw Parquet files (from 01_import), maps era-specific field names
 and positions to the common harmonized schema defined in harmonized_schema.csv,
 and writes a unified output.
 
-Supported years 1982-2022:
+Supported years 1982-2024:
   1982-1988 (V3b, 1978-revision, 200-byte records, 1-digit MRACE 0-9; no
     Hispanic origin field)
   1989-2002 (V2.0 + V3a backward extension, 1989-revision uniform, 360-byte
@@ -95,7 +95,10 @@ def _build_field_map() -> dict[str, dict[str, str]]:
 
 def _era_tag(year: int) -> str:
     """Return the era tag for a given data year."""
-    if 2018 <= year <= 2022:
+    if 2018 <= year <= 2024:
+        # C8.2 extension 2026-05-12: 2023+2024 reuse the 2018-2022 era_tag
+        # ("2022"); layout byte-positions byte-identical per PyMuPDF text-layer
+        # diff of 2022/2023/2024 user guides (see field_specs.py comment).
         return "2022"
     if 2014 <= year <= 2017:
         return "2014"
@@ -107,7 +110,7 @@ def _era_tag(year: int) -> str:
         return "1992"  # 1989-revision uniform era (V2.0 + V3a backward extension)
     if 1982 <= year <= 1988:
         return "1985"  # 1978-revision uniform era (V3b backward extension)
-    raise ValueError(f"Year {year} outside supported range (1982-2022)")
+    raise ValueError(f"Year {year} outside supported range (1982-2024)")
 
 
 # ---------------------------------------------------------------------------

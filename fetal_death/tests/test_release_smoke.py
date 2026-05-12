@@ -1,4 +1,4 @@
-"""DESIGN: tracks-current-state — fetal-death release smoke suite, post-V3b (v2.3.0).
+"""DESIGN: tracks-current-state — fetal-death release smoke suite, post-v2.4.0 (latest-year refresh 2023+2024).
 
 Nine tests that must pass before any vN.x.x release. Each guards an invariant
 that an audit or a previous regression specifically called out. Per Convention 1
@@ -6,11 +6,11 @@ that an audit or a previous regression specifically called out. Per Convention 1
 year-set pins are explicitly tracks-current-state (re-pin at every authorized
 data extension; do not treat as regression if the canonical state advanced).
 
-  1. Both parquet artifacts load and have the post-V3b advertised row count.
+  1. Both parquet artifacts load and have the post-v2.4.0 advertised row count.
   2. Schema CSV column set equals the harmonized parquet column set
      (the bug B-PUB-3 caught: schema declared 72 cols, parquet had 73).
-  3. Year coverage is exactly the 41 contiguous years documented in README.md
-     (1982-2022 after V3a + V3b + V2.1 extensions completed 2026-05-12).
+  3. Year coverage is exactly the 43 contiguous years documented in README.md
+     (1982-2024 after V3a + V3b + V2.1 + v2.4.0 latest-year-refresh extensions).
   4. data_year == int(delivery_year) holds row-by-row
      (the B-PUB-3 promise that data_year is a faithful int sibling).
   5. Every pre-2003 row (1982-2002) carries version_flag='S' — V3b, V3a and V2
@@ -53,20 +53,19 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 from _regenerate_schema_years import compute_years_available  # noqa: E402
 
-# Post-V3b state (2026-05-12; tag `task7_v3b-complete` at b0c8b4a + later
-# v2.3.0 polish). Re-pin at every authorized data extension per the DESIGN:
-# tracks-current-state contract.
-EXPECTED_ROW_COUNT = 2_352_011
-EXPECTED_HARMONIZED_COLS = 73  # SHAPE invariant; preserved through V2.1 + V3a + V3b
-EXPECTED_DERIVED_COLS = 89     # SHAPE invariant; preserved through V2.1 + V3a + V3b
-EXPECTED_YEARS = tuple(range(1982, 2023))  # 41 contiguous years 1982-2022
+# Post-v2.4.0 state (2026-05-12; tag `C8.2-complete`). Re-pin at every
+# authorized data extension per the DESIGN: tracks-current-state contract.
+EXPECTED_ROW_COUNT = 2_427_233
+EXPECTED_HARMONIZED_COLS = 73  # SHAPE invariant; preserved through V2.1 + V3a + V3b + v2.4.0
+EXPECTED_DERIVED_COLS = 89     # SHAPE invariant; preserved through V2.1 + V3a + V3b + v2.4.0
+EXPECTED_YEARS = tuple(range(1982, 2025))  # 43 contiguous years 1982-2024
 
 # Per-year row counts at current release. Drift +/-5% triggers test 7.
-# V3b (1982-1988): 421,125 records (62,352 + 60,584 + 59,863 + 59,690 + 59,343 + 59,358 + 59,935)
+# V3b (1982-1988): 421,125 records
 # V3a (1989-1991): 188,909 records
 # V2 (1992-2002): 700,704 records
 # V2.1 (2003-2004): 107,782 records
-# V1 (2005-2022): 933,491 records
+# V1 (2005-2024): 1,135,788 records (was 1,060,566 pre-v2.4.0; +39,574 for 2023 + +35,648 for 2024)
 EXPECTED_YEAR_ROWS = {
     1982: 62352, 1983: 60584, 1984: 59863, 1985: 59690, 1986: 59343,
     1987: 59358, 1988: 59935, 1989: 61295, 1990: 64349, 1991: 63265,
@@ -76,7 +75,7 @@ EXPECTED_YEAR_ROWS = {
     2007: 60973, 2008: 60154, 2009: 56685, 2010: 58079, 2011: 58361,
     2012: 56201, 2013: 54028, 2014: 52872, 2015: 51490, 2016: 51391,
     2017: 49170, 2018: 47676, 2019: 46007, 2020: 41816, 2021: 42428,
-    2022: 40113,
+    2022: 40113, 2023: 39574, 2024: 35648,
 }
 
 # 2010 NVSR-comparable anchor: tabulation_flag=='2' & residence_status!='4'.
@@ -107,14 +106,14 @@ def test_schema_csv_matches_harmonized_columns(schema_df, harmonized_path) -> No
     )
 
 
-def test_year_coverage_is_41_contiguous_years(harmonized_year_invariants: pd.DataFrame) -> None:
+def test_year_coverage_is_43_contiguous_years(harmonized_year_invariants: pd.DataFrame) -> None:
     years = tuple(sorted(harmonized_year_invariants["data_year"].unique().tolist()))
     assert years == EXPECTED_YEARS, f"unexpected year set: {years}"
-    # Contiguity invariant: every year 1982..2022 present (V2.1 added 2003-2004;
-    # V3a added 1989-1991; V3b added 1982-1988).
+    # Contiguity invariant: every year 1982..2024 present (V2.1 added 2003-2004;
+    # V3a added 1989-1991; V3b added 1982-1988; v2.4.0 added 2023-2024).
     assert years[0] == 1982
-    assert years[-1] == 2022
-    assert len(years) == 41
+    assert years[-1] == 2024
+    assert len(years) == 43
 
 
 def test_data_year_equals_int_delivery_year(harmonized_year_invariants: pd.DataFrame) -> None:

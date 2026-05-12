@@ -893,11 +893,17 @@ FETAL_2005_2006_FIELDS: list[tuple[str, int, int]] = [
 ]
 
 
-# --- 2018-2022 COD-only layout (record length 2651) ---
+# --- 2018-2024 COD-only layout (record length 2651) ---
 # PDF documents record length as 3150, but the actual data file has trailing
 # FILLER (positions 2652-3150) stripped. Last data field is F_ICOD at pos 2651.
 # All states on 2003 revision by 2018.
-# Source: 2022 Fetal Death User Guide
+# Source: 2022 Fetal Death User Guide (original); cross-verified at C8.2
+# PRE-FLIGHT 2026-05-12T22:30Z against 2023+2024 user guides via PyMuPDF
+# text-layer probe — 17/17 captured (start,end,field) triples byte-identical
+# across 2022/2023/2024. Record length 2651 confirmed via parsing
+# 39,574 (2023) + 35,648 (2024) records, all rows = 2651 bytes.
+# Page count grew from 80 (2022) to 85 (2023) to 86 (2024) but no field
+# byte-position drift.
 
 FETAL_2018_2022_FIELDS: list[tuple[str, int, int]] = [
     # Record identification
@@ -1328,7 +1334,10 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
     1992-2002 files); the reader must strip them before applying field
     positions.
     """
-    if 2018 <= year <= 2022:
+    if 2018 <= year <= 2024:
+        # C8.2 extension 2026-05-12: 2023+2024 reuse the 2018-2022 layout
+        # unchanged (record length 2651; field byte-positions byte-identical
+        # per PyMuPDF text-layer diff of 2022/2023/2024 user guides).
         return RECORD_LEN_2022, FETAL_2018_2022_FIELDS
     if 2014 <= year <= 2017:
         return RECORD_LEN_2014, FETAL_2014_2017_FIELDS
@@ -1365,5 +1374,5 @@ def layout_for_year(year: int) -> tuple[int, list[tuple[str, int, int]]]:
         # set as 2003. See fetal_death/record_layout_2004.csv.
         return RECORD_LEN_2004, FETAL_2005_2006_FIELDS
     raise ValueError(
-        f"Year {year} not configured. Currently supported: 1982-2022."
+        f"Year {year} not configured. Currently supported: 1982-2024."
     )
