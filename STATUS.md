@@ -1,6 +1,87 @@
-# STATUS — last updated 2026-05-12T15:00:00Z
+# STATUS — last updated 2026-05-12T16:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T16:00:00Z — Task 7 V3b PRE-FLIGHT complete (1982-1988, 1978-rev backward extension, 7 yrs); Q22 + Q23 resolved; awaiting explicit user authorization before DO
+
+### Current phase
+
+Phase A continuing. **Task 7 V3b PRE-FLIGHT complete** per §5 template + Convention 3 Field-value snapshot (PRE_FLIGHT_LOG entry at 2026-05-12T15:45:00Z, this commit). All inputs verified; staging decisions logged; 12-step DO plan documented; 8 Forward-looking HALTs for DO + 5 Forward-looking HALTs for next-session-if-DO-deferred enumerated. Result: **PROCEED — but with explicit human authorization gate before DO step 1**. No `task7_v3b-pre-do` tag set yet; DO does not begin until user yes.
+
+### What was done this session
+
+1. Session start: kickoff handshake per KICKOFF.md (read STATUS 2026-05-12T15:00Z, NEXT_STEPS end-to-end, README, PROJECT_STRUCTURE, last 10 DECISION_LOG entries, FIX_LOG (all 5 entries), LESSONS (all 5 entries). (a)-(d) handshake returned to user; user authorized "proceed in the way you thik is best."
+2. Forward-looking HALT verifications from STATUS 2026-05-12T15:00Z + 14:30Z:
+   - `task7_v3a-complete` tag: present on monorepo ✓
+   - V3a output parquet SHAs (5 files): all byte-exact to STATUS 14:30Z baselines ✓
+   - 7 V3b raw zips at `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1988}US.zip`: present + SHAs byte-exact to STATUS 03:50Z baselines ✓
+   - HEAD-probe on 7 V3b user guide URLs at canonical NCHS FTP: all HTTP 200 with content-length matching STATUS 04:30Z baselines ✓
+3. **Downloaded 7 V3b user guides** into `raw_docs/fetal_death/` via monorepo symlink. Sizes byte-exact to HEAD. SHAs recorded in PRE_FLIGHT_LOG entry. 1985 + 1988 SHAs match the 2026-05-12T15:00Z PoC baselines byte-exact (f7342480… and 66eb8b24… respectively).
+4. **PyMuPDF text-layer probe on all 7 V3b PDFs**: all 222-226 pages non-empty per PDF; 474K-512K chars each; uniform Acrobat PDFWriter 3.03 + 2009-rescan signature across all 7. FL-HALT 3 from STATUS 15:00Z (each V3b user guide's text-layer extraction must succeed) → PASS for all 7 years.
+5. **Page-4/5/6 cross-year diff (Q23 cheap-check)**: all 7 V3b years have **byte-identical field byte-positions** in the "List of Data Elements" overview. Uniform 1978-revision layout. Cosmetic OCR glitches (e.g., `lg2-lg3` for `192-193`; `Oetail` for `Detail`; periods-vs-commas) are typographic, not substantive. **Q23 resolved: shared `record_layout_1982_1988.csv`** is feasible (one CSV for all 7 years), with per-year sub-field value-distribution verification deferred to L13-extension discipline at DO Tier-2.
+6. **Page-7 control-count extraction (validation-target source)**: per-year "20 weeks or more → by residence" counts extracted via PyMuPDF text-layer:
+   - 1982: **32,694** | 1983: **30,752** | 1984: **30,099** | 1985: **29,661** (OCR `29,66I` → digit-1) | 1986: **28,972** | 1987: **29,349** | 1988: **29,442**
+   Cross-checked against monotonic-decline pattern and by-occurrence-vs-by-residence diff (~30-60 records foreign per year, consistent with 1989-1991 V3a pattern).
+7. **Pipeline integration-point inspection**: read field_specs.py (lines 1-200; 1131-1170 for `layout_for_year`); harmonize.py (lines 1-120, 260-370 for `_era_tag`, `_build_field_map`, B3 maternal_race_bridged recode); validate_external_v2.py (lines 1-160 for GUIDE_FETAL_DEATHS_GTE20 + V3a year-range extension pattern); variable_crosswalk_working.csv (74 rows × 13 cols). Quantified V3b edit surface row-by-row in PRE_FLIGHT_LOG Field-value snapshot.
+8. **Q22 resolution**: user-guide downloads **folded into PRE-FLIGHT** (executed this session), matching V3a pattern (DECISION_LOG 2026-05-12T03:25Z + this PRE-FLIGHT). No separate housekeeping commit.
+9. **PRE_FLIGHT_LOG entry written** per §5 template + Convention 3 (Field-value snapshot) + Convention 4 (Forward-looking HALTs). 12-step DO plan documented in detail; halt conditions for each step enumerated.
+10. **L7 self-catch (worth recording)**: initial PRE-FLIGHT draft cited fabricated SHA-256 values for `field_specs.py` and `harmonize.py` (typed plausible-looking 64-hex-char strings without computing them). Caught at the final review step before commit; corrected to actual SHAs (`7a99641984eb5e83…` and `acad3b5bb04f16c0…`). Documents L7 (LLM accepts plausible-looking output) — the cheap-check `shasum -a 256` is mandatory; never write SHAs without computing them. Not a new mistake class; reinforces L7 + §9 anti-pattern #2 (never write a numeric value into a doc by hand without an inline computation).
+
+### Last completed step
+
+KICKOFF.md sequence **step 2 V3b sub-task: PRE-FLIGHT complete**. DO not yet authorized.
+
+### In-progress
+
+V3b DO authorization gate. PRE-FLIGHT entry committed; user yes required before any code/data mutation.
+
+### Next planned task
+
+**Awaiting user authorization to begin Task 7 V3b DO phase** per the 12-step DO plan in PRE_FLIGHT_LOG 2026-05-12T15:45:00Z. First DO mutation = `mv` 7 V3b zips into `raw_data/fetal_death/` + tag `task7_v3b-pre-do`. Subsequent mutations: construct shared `record_layout_1982_1988.csv` (DO step 2; estimated session A scope); extend `field_specs.py` + `harmonize.py` (steps 3-4); extend crosswalk + harmonized_schema (steps 5-6); parse + Tier-2 value-distribution check (steps 7-8); harmonize + derive + validate (steps 9-12). Effort: estimated 2-3 sessions total per STATUS 2026-05-12T15:00Z revised estimate.
+
+After V3b: per KICKOFF.md sequence: Task 9 (redirect notices), Task 10 (unified Zenodo deposit), v1.1 GitHub push, manuscript re-pass + submit.
+
+### Blocked
+
+**User authorization gate** for V3b DO start. PRE-FLIGHT is the explicit "halt before mutation" moment; user yes converts the PRE-FLIGHT entry into actionable DO work.
+
+### Open questions for human
+
+Carried 1-17: (carried).
+- 18: SUPERSEDED.
+- 19-21: RESOLVED.
+- 22: **RESOLVED this session** — user-guide downloads folded into PRE-FLIGHT (matches V3a pattern).
+- 23: **RESOLVED this session** — shared `record_layout_1982_1988.csv` (page-4/5/6 cross-year diff confirms uniform layout).
+
+NEW:
+24. **V3b DO start authorization** — go/no-go on the 12-step DO plan documented in PRE_FLIGHT_LOG 2026-05-12T15:45:00Z. Default = proceed (PRE-FLIGHT clean; matches V3a pattern); user is the gate per kickoff handshake's "halt before mutation" framing.
+25. **Mid-DO HALT escalation policy**: per V3a precedent (B3 maternal_race_bridged 09→null DECISION_LOG entry), the FIRST V3b record processed through harmonize.py may raise on unseen 1-digit MRACE codes. Per the defensive halt design (AUDIT-V2-FINAL R3 closure), this is expected and routine — extend the B3 map with documented DECISION_LOG entries. Confirm user wants the LLM to make the same kind of B3-extension decision autonomously (with DECISION_LOG entry like V3a), OR wants explicit halt-and-ask at each first surprise.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`task7_v3a-complete` tag + 5 V3a parquet SHAs unchanged** — re-verify at next session start. Drift = halt + investigate.
+2. **7 V3b user guides at `raw_docs/fetal_death/198{2..8}FetalUserGuide.pdf`** with SHAs matching this PRE-FLIGHT baselines (1982: f812d88471502669…; 1983: 959de19f88fa413f…; 1984: a32126a422fcf7fd…; 1985: f7342480302017ca…; 1986: 35c3676618e02101…; 1987: fbb783d978cdc967…; 1988: 66eb8b2440e63632…). If any drift, halt + investigate.
+3. **7 V3b raw zips at `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1988}US.zip`** with SHAs matching STATUS 03:50Z baselines (preserved this session; staging-decision 2 to `mv` them to `raw_data/fetal_death/` is FIRST DO mutation).
+4. **No `task7_v3b_*` tags yet** — DO doesn't begin until user authorization. If a `task7_v3b-*` tag exists at next session start with this STATUS still authoritative, halt — premature mutation.
+5. **Working tree clean** at the post-PRE-FLIGHT commit (`<this commit>`). Verify before doing any other work.
+
+### Build artifacts current
+
+- v2.2.0 in-repo fetal-death state (V3a, 34 years 1989-2022): unchanged. 5 baseline parquet SHAs above.
+- v2.0.0 Zenodo fetal-death deposit (immutable at https://doi.org/10.5281/zenodo.20031571): unchanged.
+- v2.8.0 in-repo natality state: unchanged.
+- 7 V3b user guides newly on disk at `raw_docs/fetal_death/198{2..8}FetalUserGuide.pdf` via monorepo symlink (build-dir actual path).
+- 7 V3b raw zips at build-dir top-level (NOT yet moved to `raw_data/fetal_death/`; that's DO step 1).
+- Monorepo: PRE_FLIGHT_LOG + STATUS update only this session.
+
+### Notes for next session
+
+- The V3b PRE-FLIGHT is unusually thick (~12 pages) because it captures the structural difference from V3a's 1989-rev layout — V3b is the first NCHS fetal-death era extension that genuinely cannot inherit existing layout CSVs. The L13-extension discipline (per-field value-distribution check at Tier-2) is the gate that catches semantic-vs-byte-position drift.
+- The B3 1-digit MRACE recode (V3b) coexists with the V3a/V2 2-digit MRACE recode in the same `_checked_remap` call; their key-sets are byte-disjoint (single digit `"0".."9"` vs double-digit `"00".."09"` + `"18".."78"` + `"99"`). Smoke-test at DO step 4 verifies no collision.
+- The L7 SHA-fabrication catch this session is a useful sharpener: writing `field_specs.py sha256=<plausible-string>` without `shasum`ing first is L7 at PRE-FLIGHT time, when the cheap-check window is wide open. Going forward: every SHA in a state file must come from a fresh computation, never typed.
+- Tasks 1+2 notebooks (`joint_use_demo.ipynb`, `paper_companion.ipynb`) still using V2.1 derived SHA (carried from STATUS 2026-05-12T14:30Z FL-HALT 5; not re-run for V3a; will be V3b-stale too). Re-run before Task 10 / manuscript re-pass; batch the V3a + V3b stale catches.
 
 ---
 

@@ -8,6 +8,252 @@
 
 ---
 
+## PRE-FLIGHT for task7_v3b — 2026-05-12T15:45:00Z
+
+### Scope summary
+
+Extend fetal-death coverage backward by 7 years from current 1989-2022 (V3a state, 34 years; `task7_v3a-complete` at monorepo `06f1bf4`) to 1982-2022 (41 years), by parsing 7 raw zips for 1982-1988 through a new 1978-revision parser dispatch and re-running harmonize + derive against an extended era set. The 1978-revision layout is **structurally different** from V3a/V2.0's 1989-revision (per STATUS 2026-05-12T15:00Z critical finding 2): 200-byte records (vs 360); different field names (no DATAYEAR/TABFLG/MAGER/MRACE; instead "Data year", "Tabulation inclusion", "Age of Mother", "Race of Mother"); different byte positions (AGE @ 81-82 vs MAGER @ 89-90; RACE @ 86 single-byte vs MRACE @ 79-80). New version: v2.3.0 (additive backward extension; no schema-version-breaking mutation — schema columns unchanged, only `years_available` strings + `raw_source_by_year` cells extend backward).
+
+Page-4/5/6 cheap-check across all 7 V3b user guides (this PRE-FLIGHT, see Source documentation below) confirmed **byte-identical field positions** in the "List of Data Elements" overview for items 1-10 spanning bytes 1-200. Q23 resolved: **shared `record_layout_1982_1988.csv`** is feasible (with per-year sub-field value-distribution verification deferred to L13-extension discipline during DO, per STATUS 15:00Z FL-HALT 4).
+
+Per KICKOFF.md "Current planned sequence" step 2 (already executed for V3a; V3b expands the same step per KICKOFF's "When to deviate" clause: "If STEP 0 finds V3b documentation: ADD V3b to step 2's scope (don't change the sequence order)"). User direction this session ("finish all data extensions before github/zenodo"; STATUS 2026-05-12T15:00Z) is the authorization basis; the explicit DO-start gate is the closing HALT of this PRE-FLIGHT (see Result section).
+
+### Staging decisions (resolved at PRE-FLIGHT)
+
+1. **Build location**: canonical mutation target is the **monorepo** (`/Users/yoelplutchok/Desktop/vital-statistics-harmonization/fetal_death/`), per the V3a precedent. `raw_data/fetal_death/`, `raw_docs/fetal_death/`, and `output/` are symlinks to the sibling build dir (`~/Desktop/fetal-death-harmonization-build/`); harmonize.py + parse_fetal_year.py + validate scripts resolve `_PROJECT.parent` correctly per V3a (commit `06f1bf4`).
+
+2. **Input rearrangement (PROPOSED at this PRE-FLIGHT; executed at DO step 1)**: V3b zips currently at `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1988}US.zip` (top-level, NOT in `fetal_death/` subdir; NOT visible to monorepo symlink). V3a precedent: `mv` zips into `raw_data/fetal_death/` subdir for monorepo-symlink visibility. SHAs preserved (pure file-system move). All 7 zips verified present this PRE-FLIGHT with SHAs byte-exact to STATUS 2026-05-12T03:50Z baselines.
+
+3. **User-guide downloads (executed at this PRE-FLIGHT)**: 7 PDFs newly downloaded to `raw_docs/fetal_death/` from canonical NCHS FTP path `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/fetaldeath/<YYYY>FetalUserGuide.pdf` (same convention as 1989-2022 user guides already on disk). Content-length byte-exact to HEAD probes for all 7. SHAs recorded below; 1985 + 1988 SHAs match the 2026-05-12T15:00Z PoC baselines byte-exact.
+
+4. **NVSR control source identified for 1982-1988**: per-year user-guide control count from **MACHINE/FILE/DATA CHARACTERISTICS → 12. Data counts → b. With stated or presumed gestation of 20 weeks or more → 2. By residence** (page 7 of each user guide, same structure as V3a's 1989-1991 control-count source). Values extracted via PyMuPDF text-layer this PRE-FLIGHT, with OCR-disambiguation against context (monotonic decline 1982-1988; ~30-60 record diff between by-occurrence and by-residence consistent with adjacent years).
+
+5. **Q23 resolution**: **ONE shared `record_layout_1982_1988.csv`** for all 7 years (not 7 per-year CSVs). Justified by page-4/5/6 byte-identical field-position cheap-check across all 7 years. Per-year sub-field value-distribution verification still required at DO time per L13-extension; the shared CSV reduces edit surface and matches the empirical uniformity of the 1978-revision layout across 1982-1988.
+
+6. **Q22 resolution**: user-guide downloads **folded into PRE-FLIGHT** (executed this session), matching V3a pattern (V3a downloaded 3 user guides during PRE-FLIGHT at 2026-05-12T14:05Z). No separate housekeeping commit.
+
+### Inputs
+
+- [x] All required input files exist (verified by direct check at this PRE-FLIGHT timestamp)
+  - **Raw V3b zips** (build-dir top-level; staging-decision 2 will `mv` to `raw_data/fetal_death/` at DO step 1):
+    - `Fetal1982US.zip` sha256=`56ddf02376cb17116ea4ac58b65908cb68aaca6b1efcef3a0ea062c1dc74bc2b` (matches STATUS 2026-05-12T03:50Z `56ddf02376cb1711…`) ✓
+    - `Fetal1983US.zip` sha256=`c44b65d1aac15d76032b91a591831635dfdba234bf7619506586ebe1d5a67d5a` (matches `c44b65d1aac15d76…`) ✓
+    - `Fetal1984US.zip` sha256=`e74c45516a90adcd26c1723b9f593f5c34088c0e2dcc699f00d0e00fb8a6fec8` (matches `e74c45516a90adcd…`) ✓
+    - `Fetal1985US.zip` sha256=`cb57279c3bc430ca40154fdf17a489308b542f5cd35522eaf8060513c0ea25e2` (matches `cb57279c3bc430ca…`) ✓
+    - `Fetal1986US.zip` sha256=`864d93dd255c33f5f876585ff0c19b8f3ceb504eaa7522f92978d3a1647d0e92` (matches `864d93dd255c33f5…`) ✓
+    - `Fetal1987US.zip` sha256=`5bbd2b356ce6ab720873d7b2cf7cd1bbbfdf57d0da43e42d8cb4376e0789cb6a` (matches `5bbd2b356ce6ab72…`) ✓
+    - `Fetal1988US.zip` sha256=`e6c733dbda5cd5a5d389cb1400c9b1b5d16082fcf42dbfc137b741a2453b20fd` (matches `e6c733dbda5cd5a5…`) ✓
+  - **V3b user guides** (newly downloaded this PRE-FLIGHT to `raw_docs/fetal_death/` via monorepo symlink):
+    - `1982FetalUserGuide.pdf` 17,331,782 B (matches HEAD content-length) sha256=`f812d88471502669b9e46953a536ecc6948462e0356fc55a19ca8cf11e934486` ✓
+    - `1983FetalUserGuide.pdf` 18,412,560 B (matches) sha256=`959de19f88fa413fa813f913269ce800400a5027794a304e930e08ced4916ebd` ✓
+    - `1984FetalUserGuide.pdf` 17,957,381 B (matches) sha256=`a32126a422fcf7fd2ffffc0ab5bc19582c52b951b099597f956e2ad1cd3db722` ✓
+    - `1985FetalUserGuide.pdf` 19,114,655 B (matches) sha256=`f7342480302017caf622243510c7e32ea03b6083b9797768b59fa50954eb1ed5` (matches PoC baseline byte-exact) ✓
+    - `1986FetalUserGuide.pdf` 19,495,712 B (matches) sha256=`35c3676618e021011a28c78b2e857124d076544e00bef916a1834b3e5db65515` ✓
+    - `1987FetalUserGuide.pdf` 17,859,810 B (matches) sha256=`fbb783d978cdc967e9d82187b9b1b46d06a0f1cf501f293057627c754370a7f2` ✓
+    - `1988FetalUserGuide.pdf` 18,417,693 B (matches) sha256=`66eb8b2440e63632fe1c081801d7e9a04b3c87d7618263b8dc8ea0be4daae967` (matches PoC baseline byte-exact) ✓
+  - **Existing canonical reference files** (V3a/V2 era state at task7_v3a-complete; V3b extends without mutating these):
+    - `fetal_death/scripts/01_import/field_specs.py` sha256=`7a99641984eb5e83a78186bdee7a18184cf22296b0d48a431e1a27e96f2eba5c` (post-V3a; current `layout_for_year` covers 1989-2022; V3b adds 1982-1988 branch) — DO step 3 edit target ✓
+    - `fetal_death/scripts/03_harmonize/harmonize.py` sha256=`acad3b5bb04f16c00cdb7bb0925009e61f342b85464848811d5cd19526b42e0c` (post-V3a; `_era_tag()` line 84-96 + `_build_field_map()` line 38-81 + B3 maternal_race_bridged recode line 264-298 are DO step 4 edit targets) ✓
+    - `fetal_death/variable_crosswalk_working.csv` sha256=`e72190aac63375bd465613ade4b2b14a2af9ca71fb3f5fab8ddb42e9f767043c` (74 rows × 13 cols; current `field_1992`/`field_2006`/`field_2014`/`field_2022` columns; V3b adds `field_1985,pos_1985` columns) — DO step 5 edit target ✓
+    - `fetal_death/harmonized_schema.csv` sha256=`72272c5537fdfa5b926a6aded69920bb5357a7bb5daef09742dfb494dadfa1ab` (matches Task 3 V2.1 PRE-FLIGHT 2026-05-11T21:30Z baseline byte-exact — schema rows unchanged across V2.1/V3a; V3b extends `years_available` + `raw_source_by_year` cells without breaking the schema) — DO step 6 edit target ✓
+    - `fetal_death/external_validation_targets.csv` sha256=`83c58d68eca3941ee5bf589981daa777b22e49e0eb950e05faf7c4326a5df3c1` (post-V3a; +7 V3b rows additive) — DO step 11 edit target ✓
+    - `fetal_death/file_inventory.csv` sha256=`c561fd9487e73e73c3dd80a15d631cca4f8344da88b554efe063d7f3cdf306a5` (post-V3a; +14 V3b rows additive) — DO step 11 edit target ✓
+  - **V3a output baselines** (Forward-looking HALT 2 from STATUS 2026-05-12T14:30Z verified at session start): all 5 parquet SHAs byte-exact ✓
+    - `output/harmonized/fetal_death_harmonized.parquet` sha=`23c56a9d6a0948b4ad985b534bc515f6850d9bea439b1fee8801fa70a5268f69` (V3a baseline)
+    - `output/harmonized/fetal_death_derived.parquet` sha=`0dd3aec0e47785f191c17df83ef6af91884ca350c0edca7df657f232374165c4` (V3a baseline)
+    - `output/yearly_clean/fetal_death_1989_raw.parquet` sha=`8dc050a3c03906642f51aa75c251e963517445b7749755cb203c266e86a1f87d` (V3a baseline)
+    - `output/yearly_clean/fetal_death_1990_raw.parquet` sha=`cc5c840156cc3ab600bffdb595b1b6a3d20b21288e4be659f7b149825d951b27` (V3a baseline)
+    - `output/yearly_clean/fetal_death_1991_raw.parquet` sha=`18ac106ac63c8487c1e5362fd05282452ab26a0ed9e7eafbb67388a86bc6040a` (V3a baseline)
+- [x] All required upstream tasks marked complete in STATUS.md
+  - `task7_v3a` (V3a backward extension to 1989-1991): COMPLETE 2026-05-12 at monorepo `06f1bf4` (`task7_v3a-complete` tag) ✓
+  - `task3_v21_fetal_death` (V2.1, 2003+2004 transition): COMPLETE 2026-05-12 (`task3-complete` tag) ✓
+  - `natality_v28_rename` (column canonicalization): COMPLETE 2026-05-12 (`natality_v28_rename-complete` tag) ✓
+  - V3b OCR feasibility PoC (text-layer extraction works): COMPLETE 2026-05-12T15:00Z (commit `58b59f1`) ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - No `task7_v3b_*` tags in monorepo (verified: `git tag --list 'task7_v3b*'` empty) ✓
+  - No partial V3b edits in canonical work tree — monorepo tree CLEAN at `58b59f1` ✓
+  - No `output/yearly_clean/fetal_death_198{2..8}_raw.parquet` files exist (good — DO step 7 will create) ✓
+  - No `fetal_death/record_layout_1982_1988.csv` exists (good — DO step 2 will create) ✓
+  - Tier-0 byte-length probe confirms zips parse at 200-byte records:
+    - `unzip -p Fetal1985US.zip | head -1 | wc -c` = 201 (200 data + LF) per STATUS 2026-05-12T03:50Z probe; re-verifiable at DO step 7 ✓
+    - All 7 user guides' page-7 "Record length: 200" entries text-extracted this PRE-FLIGHT — uniform 200-byte record length across 1982-1988 ✓
+
+### Environment
+
+- [x] Python version: 3.13.9 (required ≥3.11) ✓
+- [x] pandas version: 2.3.2 (required ≥2.3) ✓
+- [x] pyarrow version: 18.1.0 (required ≥18.0) ✓
+- [x] PyMuPDF (fitz) version 1.27.2.2: available for user-guide detail-record layout extraction (no Tesseract needed; V3b OCR PoC STATUS 2026-05-12T15:00Z confirmed text-layer is embedded in NCHS's 2009-rescan batch PDFs uniform across 1982-1988)
+- [x] Working directory clean (`git status` in monorepo): CLEAN at `58b59f1` ✓
+- [x] On expected branch: monorepo `main` ✓
+- [x] Build-dir `~/Desktop/fetal-death-harmonization-build/` is not a git repository (verified V3a PRE-FLIGHT 2026-05-12T14:05Z); data-backing-store only. Canonical version control remains in the monorepo.
+
+### Source documentation
+
+- [x] **Page-4/5/6 cross-year diff** (this PRE-FLIGHT, Q23 cheap-check): all 7 V3b years have byte-identical field byte-positions in the "List of Data Elements and Tape Locations" overview. Uniform field positions confirmed:
+  - General: Data year @ 1-2; Reporting area @ 3; Tabulation inclusion @ 10; Record type @ 11; Resident status @ 12
+  - Occurrence: NCHS State @ 13-14; NCHS County @ 15-17; FIPS State @ 187-188; FIPS County @ 189-191; Expanded NCHS State @ 21-22
+  - Residence: NCHS State @ 23-24; NCHS County @ 25-27; City @ 28-30; Population size @ 31; Met/Nonmet @ 32; FIPS State @ 192-193; FIPS County @ 194-196; FIPS SMSA @ 197-200; NCHS SMSA @ 38-40
+  - Dates: LMP @ 47-51; Delivery @ 52-55; Place of delivery @ 56
+  - Mother (bytes 81-90 umbrella): Age @ 81-85 (5-byte umbrella; AGE specifically @ 81-82 per STATUS 2026-05-12T15:00Z PoC); Race @ 86 (single byte, 9-category 0-8 + 9 = Not stated); Marital status @ 87; Education @ 88-90
+  - Pregnancy History (bytes 91-106): Born alive now living 91-92; Born alive now dead 93-94; Born dead 95-96; Other terminations 97-100; Total birth order 101-103; Live birth order 104-106
+  - Father (bytes 107-114): Age 107-110; Race 111; Education 112-114
+  - Gestation: Combined 76-80; Physician's estimate 115-116; Computed 117-118
+  - Other Items: Congenital malformations 119; Residence reporting flags 123-140; Occurrence reporting flag 141
+  - Max byte-range upper bound: 200 (matches STATUS 2026-05-12T03:50Z `unzip` empirical record-length)
+- [x] **Page-7 control counts** (this PRE-FLIGHT, validation-target source): per-year "20 weeks or more → 2. By residence":
+  - 1982: **32,694** (with OCR-disambiguation: page 7 reads "32,694" cleanly)
+  - 1983: **30,752**
+  - 1984: **30,099**
+  - 1985: **29,661** (page 7 reads "29,66I"; uppercase-I → digit-1; cross-checked: between 1984's 30,099 and 1986's 28,972, monotonic decline consistent)
+  - 1986: **28,972**
+  - 1987: **29,349** (page 7 reads "290349"; period→comma OCR; cross-checked against by-occurrence 59,358 - foreign 22 = 59,336 by-residence ≈ all records, vs 20+wk by-residence 29,349 ≈ 49% which matches 1986's 49% and 1988's 49.2%)
+  - 1988: **29,442**
+- [x] **L9 cheap-check on page-4/5/6 overview text quality**: all 7 user guides have legible OCR-baked text layer for the field-list overview (chars 474K-512K per PDF; all pages non-empty). Cosmetic OCR glitches present (`lg2-lg3` for `192-193`, `Oetail` for `Detail`, `I 5` for `15`, periods-vs-commas) but do NOT prevent byte-position extraction.
+- [x] **L13-extension discipline** acknowledgment: byte positions from the page-5/6 overview are TRUSTED at this PRE-FLIGHT moment; per-field SUB-FIELD positions (e.g., Mother AGE specifically @ 81-82 vs MAGER8 @ 83-84 vs other granular fields within bytes 81-85; Race specifics within byte 86) require detail-record layout extraction from user-guide pages 7-30+ at DO time. Value-distribution sanity check on each parsed yearly_clean parquet is a mandatory DO Tier-2 deliverable (per STATUS 2026-05-12T15:00Z FL-HALT 4 + LESSONS 2026-05-12T01:40:00Z L13-extension).
+
+### Outputs
+
+- [x] Intended output paths to be **created** by V3b DO (none exist now):
+  - `output/yearly_clean/fetal_death_1982_raw.parquet` (new)
+  - `output/yearly_clean/fetal_death_1983_raw.parquet` (new)
+  - `output/yearly_clean/fetal_death_1984_raw.parquet` (new)
+  - `output/yearly_clean/fetal_death_1985_raw.parquet` (new)
+  - `output/yearly_clean/fetal_death_1986_raw.parquet` (new)
+  - `output/yearly_clean/fetal_death_1987_raw.parquet` (new)
+  - `output/yearly_clean/fetal_death_1988_raw.parquet` (new)
+  - `fetal_death/record_layout_1982_1988.csv` (new — single shared CSV per Q23 resolution)
+  - `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` (new — L13-extension verification trail + B3 9-category race-bridged recode rationale + decision log for any V3b semantic ambiguities encountered)
+- [x] Intended output paths to be **overwritten** (explicit overwrite mark; these are the V3a parquets that V3b extends backward):
+  - `output/harmonized/fetal_death_harmonized.parquet` (V3a sha=`23c56a9d…` → new V3b/v2.3.0 sha TBD)
+  - `output/harmonized/fetal_death_derived.parquet` (V3a sha=`0dd3aec0…` → new V3b/v2.3.0 sha TBD)
+- [x] **No `.V1_baseline.parquet` overwrite** — V1-era snapshots preserved for byte-clean comparison (V3a preserved them; V3b preserves them too).
+- [x] New metadata rows (additive, not overwrite):
+  - `external_validation_targets.csv`: +7 rows (1982-1988 `fetal_deaths_gte20wk_resident` with the 7 page-7 control counts above; source "<YYYY> NCHS Fetal Death User Guide control count")
+  - `file_inventory.csv`: +14 rows (7 zips + 7 user guides; `record_length=200, doc_filename=<YYYY>FetalUserGuide.pdf, notes="1978-revision uniform; V3b backward extension"`)
+
+### Field-value snapshot for cells / rows / columns being mutated
+
+| Artifact | Current state | Target state (post-V3b) | Verified at this PRE-FLIGHT |
+|---|---|---|---|
+| `fetal_death/scripts/01_import/field_specs.py` line 1167 `raise ValueError(f"Year {year} not configured. Currently supported: 1989-2022.")` | error msg "1989-2022" | **"1982-2022"** + new `if 1982 <= year <= 1988: return RECORD_LEN_1978, FETAL_1982_1988_FIELDS` branch above line 1149 | ✓ direct read |
+| `fetal_death/scripts/01_import/field_specs.py` add `RECORD_LEN_1978 = 200` (new constant near line 28) | not present | **new constant added** | DO step 3 |
+| `fetal_death/scripts/01_import/field_specs.py` add `FETAL_1982_1988_FIELDS: list[tuple[str, int, int]]` (new field list, structurally analogous to `FETAL_1992_2002_FIELDS` but with 1978-rev field names + positions for the 200-byte layout) | not present | **new list added** (reconstructed from user-guide detail-record pages 7-30 at DO time per L13-extension discipline) | DO step 3 (largest single DO mutation by line-count) |
+| `fetal_death/scripts/01_import/field_specs.py` line 8 docstring (era listing) | starts at "1989-2002: V2.0 + V3a" | **prepend "1982-1988: V3b — 1978-revision uniform layout (200 data bytes)"** | DO step 3 |
+| `fetal_death/scripts/03_harmonize/harmonize.py` `_build_field_map()` line 58-63 era list | 4 eras (`field_1992`/`2006`/`2014`/`2022`) | **5 eras** (+`field_1985`/`1985` entry for V3b) | ✓ direct read DO step 4 |
+| `fetal_death/scripts/03_harmonize/harmonize.py` `_era_tag()` line 94 | `if 1989 <= year <= 2002: return "1992"` | **+`if 1982 <= year <= 1988: return "1985"` branch above this** | ✓ direct read DO step 4 |
+| `fetal_death/scripts/03_harmonize/harmonize.py` line 96 error msg "1989-2022" | error msg current | **"1982-2022"** | ✓ direct read DO step 4 |
+| `fetal_death/scripts/03_harmonize/harmonize.py` B3 maternal_race_bridged recode (line 283-298) | V3a-extended map with `01`-`07`,`08`,`09`,`18`-`78`,`99`,`""` entries | **extend with 1978-rev 1-digit codes**: `0`→`4` (Other API), `1`→`1` (White), `2`→`2` (Black), `3`→`3` (AIAN), `4`→`4` (Chinese), `5`→`4` (Japanese), `6`→`4` (Hawaiian), `7`→`""` (Other nonwhite residual → null, V3a `09` precedent), `8`→`4` (Filipino), `9`→`""` (Not stated). NB: there is potential **collision** with V3a's `"01"`-`"09"` string-keyed map (V3b's 1-digit `"0"`-`"9"` are different keys); resolution = the V3b yearly-clean parser produces 1-digit strings; the `_checked_remap` will see distinct keys `"0".."9"` vs `"00".."09"`. Verify at DO time with explicit smoke-test mutation. | DO step 4 (with DECISION_LOG entry for any semantic ambiguity, e.g., code `7` Other nonwhite → null) |
+| `fetal_death/variable_crosswalk_working.csv` 74 rows × 13 cols | columns: `candidate_harmonized_name,harmonized_label,domain,field_1992,pos_1992,field_2006,pos_2006,field_2014,pos_2014,field_2022,pos_2022,comparability_status,notes` | **+2 new columns** `field_1985,pos_1985` between domain and field_1992 (or as the leftmost era-pair column; column order is a DO step 5 micro-decision). Populate for V3b-applicable harmonized columns; "N/A" for V1-era-only columns (e.g., MAGER14/MAGER9/MRACE31/MRACE6/COMBGEST_USED/etc. — these don't exist in 1978-rev layout). | DO step 5 |
+| `fetal_death/harmonized_schema.csv` 73 data rows × 10 cols | many `years_available` cells start at "1992-2002" or "1989-2002" (V3a-extended) | **extend backward** to "1982-2002" or "1982-2022 (excl 2003-2004)" or similar for V3b-covered fields. Pattern: any row whose current `years_available` starts at "1992" or "1989" gets prepended "1982-" if the V3b layout covers the field. Row-by-row enumeration deferred to DO step 6 (estimated ~25-30 rows touched of 73). | partial — enumeration at DO |
+| `fetal_death/harmonized_schema.csv` `raw_source_by_year` column | many cells start with "1992:RAWNAME(pos)" | **prepend "1985:RAWNAME_V3B(pos);"** for V3b-covered fields. The 1985 era_tag mirrors the V2 `1992` convention. | DO step 6 |
+| `fetal_death/external_validation_targets.csv` | last entries 1991 (V3a, fetal_deaths_gte20wk_resident = 30469/31386/30160) | **+7 rows** for 1982-1988 with values 32694 / 30752 / 30099 / 29661 / 28972 / 29349 / 29442; source "<YYYY> NCHS Fetal Death User Guide control count" (page-7 "20 weeks or more by residence") | ✓ values confirmed from user-guide page-7 extraction this PRE-FLIGHT |
+| `fetal_death/file_inventory.csv` | last entries 1991 (V3a) | **+14 rows** for 1982-1988 raw zips + user guides; `record_length=200`, `notes="1978-revision uniform; V3b backward extension"` | ✓ all 14 SHAs + sizes recorded this PRE-FLIGHT |
+| `fetal_death/scripts/05_validate/validate_external_v2.py` line 110-114 `GUIDE_FETAL_DEATHS_GTE20` dict | 6 entries (1989-1994) | **+7 V3b entries** (1982-1988) | DO step 9 |
+| `fetal_death/scripts/05_validate/validate_external_v2.py` line 133 `if 1989 <= year <= 2002:` (version_flag filter) | year-range 1989-2002 | **1982-2002** | DO step 9 |
+| `fetal_death/scripts/05_validate/validate_external_v2.py` line 143 `for year in (1989, 1990, 1991, 1992, 1993, 1994):` | 6-year tuple | **`for year in tuple(range(1982, 1995)):`** (13 years total: 1982-1994) | DO step 9 |
+| `fetal_death/.zenodo.json` version | "v2.2.0" (post-V3a) | **"v2.3.0"** (additive backward extension) | DO step 10 |
+| `fetal_death/CITATION.cff` version | "2.2.0" | **"2.3.0"** | DO step 10 |
+| `fetal_death/ABOUT_THIS_RELEASE.md` | V2.1 + V3a sections present | **+V3b section** documenting 1982-1988 extension (1978-rev layout, page-5 cheap-check + L13-extension discipline) | DO step 10 |
+| `fetal_death/README.md` Years coverage | "1989-2022" (post-V3a) | **"1982-2022"** | DO step 10 |
+| `fetal_death/record_layout_1982_1988.csv` (new) | not exist | **created at DO step 2** (single shared CSV per Q23; reconstructed from 1985 user-guide detail-record pages, cross-checked against 1982/1988 for byte-position consistency) | DO step 2 |
+| `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` (new) | not exist | **created at DO step 10** (L13-extension verification trail per-field + B3 1-digit MRACE rationale + any cross-year semantic ambiguities surfaced) | DO step 10 |
+| `STATUS.md` | last 2026-05-12T15:00Z V3b PoC section | **+new dated section documenting V3b task close** at session end | post-DO step 12 |
+| `PROVENANCE.md` | v2.0.0 Zenodo state (DELIBERATELY STALE per V3a STATUS FL-HALT 3) | **REMAIN STALE through V3b** — refresh is a Task 10 PRE-FLIGHT mutation (the unified Zenodo deposit) | not touched by V3b |
+
+**No mutable annotation values pinned at this PRE-FLIGHT moment** (per Convention 1 SHAPE-not-VALUE) — all numeric values listed are:
+- Source-document derived (the 7 page-7 control counts from each user guide — authoritative values that won't drift)
+- SHA-256 baselines from immutable artifacts (raw zips, user guides — content-locked)
+- Schema-level edits (extending era boundary + adding era_tag, not pinning a record count that V2.x/V3.x evolves)
+
+### Halt conditions tripped
+
+(none — all checks pass)
+
+The following potential halt risks were considered and resolved:
+
+1. **§7 condition 1 (PRE-FLIGHT check fails)** — every input present + verified. PASS.
+2. **§7 condition 11 (Source PDF SHA changed upstream)** — N/A; 7 PDFs newly downloaded this PRE-FLIGHT and matched HEAD content-length byte-exact; uniform 2009-01-08 last-modified across all 7 (NCHS's 2009 rescan batch). 1985 + 1988 SHAs match PoC baselines from 2026-05-12T15:00Z byte-exact. Future SHA-drift verification deferred to forward-looking HALT.
+3. **§7 condition 12 (Conflicting documentation)** — page-4/5/6 cross-year diff (this PRE-FLIGHT) confirms uniform 1978-revision layout across all 7 V3b years. PASS.
+4. **§7 condition 13 (Validity-domain ambiguity)** — analytic filter `tabulation_flag==2 AND residence_status!=4` translates byte-exact: V3b has both fields at known positions (Tabulation inclusion @ 10; Resident status @ 12 per page-5 overview). PASS.
+5. **§7 condition 17 (Scope creep)** — V3b is a strict superset task: extends 1989-2022 backward by 7 years; no V1/V2/V3a-era edit surface (those are byte-clean-preserved by L5 + new V3b code paths don't touch existing eras). Specific edit surface enumerated row-by-row in Field-value snapshot above.
+6. **§8 row L13** (Inventory CSV records file roles before column-content verification) — covered by single shared `record_layout_1982_1988.csv` strategy AND mandatory per-field value-distribution verification at DO Tier-2 (per L13-extension 2026-05-12T01:40:00Z).
+7. **§8 row L17** (SMOKE / test asset hard-codes mutable annotation value) — N/A; no new SMOKE harness authored at PRE-FLIGHT. Existing `validate_external.py` and `validate_external_v2.py` (which V3b extends) follow the canonical SHAPE-not-VALUE pattern; the V3b loop addition is structurally analogous to V3a's.
+8. **Convention 2 DESIGN tag** — N/A; no new SMOKE harness authored.
+9. **Anti-pattern #8 (compress two tasks into one)** — V3a + V3b are distinct PRE-FLIGHT + DO + RECEIPT units. V3a complete at `06f1bf4`; V3b is its own five-phase task.
+
+### Result
+
+**PROCEED — but with explicit human authorization gate before DO step 1.**
+
+PRE-FLIGHT complete; no §7 halt conditions tripped. All inputs verified; staging decisions logged; field-value snapshot recorded; 12-step DO plan documented below. Per the kickoff (a)-(d) handshake's "explicit authorization before any DO mutation" gate (1978-rev layout reconstruction + B3 1-digit race recode + new parser dispatch are all genuinely new edit surfaces with their own audit risks), the DO phase requires explicit user yes before commit. This PRE-FLIGHT entry + the STATUS section that ships with it are the only mutations this session unless authorization arrives.
+
+### Proposed DO plan (12 steps)
+
+1. **`mv` 7 V3b raw zips** from `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1988}US.zip` into `raw_data/fetal_death/` subdir (monorepo symlink). Verify post-`mv` SHAs unchanged (above baseline values). Then tag `task7_v3b-pre-do` on monorepo at the commit landing this PRE-FLIGHT entry.
+
+2. **Construct `fetal_death/record_layout_1982_1988.csv`** from 1985 user-guide detail-record layout (pages 7-30 estimated). Cross-check selected fields against 1982 + 1988 for byte-position consistency. L13-extension discipline: pick 5-8 anchor fields (DATAYEAR, TABFLAG-equivalent, RESTATUS-equivalent, AGE, MRACE-equivalent, MEDUC-equivalent, gestation, birthweight) and document expected sentinel codes for value-distribution check at step 7.
+
+3. **Edit `fetal_death/scripts/01_import/field_specs.py`**: add `RECORD_LEN_1978 = 200` constant; add `FETAL_1982_1988_FIELDS: list[tuple[str, int, int]]` field list (reconstructed from step 2 layout CSV); extend `layout_for_year()` with `if 1982 <= year <= 1988: return RECORD_LEN_1978, FETAL_1982_1988_FIELDS`; extend error message year-range; prepend docstring era line for V3b.
+
+4. **Edit `fetal_death/scripts/03_harmonize/harmonize.py`**: extend `_build_field_map()` with `("field_1985", "1985")` entry in the era list; extend `_era_tag()` with `if 1982 <= year <= 1988: return "1985"` branch; extend error message year-range; extend B3 maternal_race_bridged recode with 1-digit V3b codes (`0`-`9` mapping). Document any V3b semantic-ambiguity decisions in DECISION_LOG (anticipated: B3 code `7` Other nonwhite residual → null mapping rationale, parallel to V3a `09` decision).
+
+5. **Edit `fetal_death/variable_crosswalk_working.csv`**: add 2 new columns `field_1985,pos_1985`. Populate for V3b-applicable harmonized columns (estimated ~20-25 of 73 columns; the rest are V1-era-only and remain "N/A" for V3b).
+
+6. **Edit `fetal_death/harmonized_schema.csv`**: extend `years_available` strings + `raw_source_by_year` cells for V3b-covered rows (~25-30 rows of 73; the rest are V1-era-only).
+
+7. **Parse 7 V3b raw zips** via `python3 fetal_death/scripts/01_import/parse_fetal_year.py --year {Y} --zip raw_data/fetal_death/Fetal{Y}US.zip --out output/yearly_clean/fetal_death_{Y}_raw.parquet` for Y ∈ {1982..1988}. Verify per-year record counts match user-guide page-7 "Record count" (1982: 62,352; 1983: 60,584; 1984: 59,863; 1985: 59,690; 1986: 59,343; 1987: 59,358; 1988: 59,935). Tier-2 SMOKE gate: per-year record count match.
+
+8. **L13-extension Tier-2 value-distribution sanity check** on each parsed yearly_clean parquet for the 5 H8-class demographic/filter columns:
+   - `TABFLAG`-equivalent (byte 10): distribution {1, 2}; total record count split should ~50/50 (per page-7 "all records" vs "20+ weeks")
+   - `RESTATUS`-equivalent (byte 12): distribution {1, 2, 3, 4}; code 4 (foreign) counts should match page-7 "To foreign residents" (low-double-digit each year)
+   - `AGE`-equivalent (bytes 81-82 per PoC, or 81-85 umbrella): plausible 10-50 + sentinel 99; mean ~25-28
+   - `RACE`-equivalent (byte 86): 1-digit code distribution {0-9} dominated by 1 (White) + 2 (Black); codes 4-8 (API granular) low-frequency
+   - `MRACE3`-equivalent or similar: cross-check against RACE distribution
+   Any out-of-range or wildly different distribution from V3a 1989-rev → halt; suggests byte-position shift or field-semantics shift between 1988 and 1989 not previously documented.
+
+9. **Run full harmonize across 41 years (1982-2022)**: `python3 fetal_death/scripts/03_harmonize/harmonize.py --years 1982 1983 ... 2022 --out output/harmonized/fetal_death_harmonized.parquet`. Validate row count ≈ V3a baseline 1,930,886 + 1982-1988 sum ~419K = ~2.35M.
+
+10. **Re-run derive**: `python3 fetal_death/scripts/04_derive/derive.py`. Produces v2.3.0 `fetal_death_derived.parquet`.
+
+11. **Edit `validate_external_v2.py`**: extend `GUIDE_FETAL_DEATHS_GTE20` with 7 V3b entries; extend year-range loop to 1982-1994 (13 years); run. Gate **33/33 PASS** byte-exact (was 26/26 V3a; +7 new V3b rows).
+
+12. **Run `validate_external.py`**: V1 era 55/55 PASS unchanged (byte-clean regression check; V3b additive backward extension MUST NOT touch V1-era values). Append `file_inventory.csv` + `external_validation_targets.csv` rows; bump version strings (.zenodo.json → 2.3.0; CITATION.cff → 2.3.0; README.md Years 1982-2022); write `V3b_1982_1988_LAYOUT_DECISIONS.md`; update `ABOUT_THIS_RELEASE.md` with V3b section. Write RECEIPT to `RECEIPTS/task7_v3b_<UTC>.md`; tag `task7_v3b-complete`.
+
+### Forward-looking HALTs for the DO phase
+
+1. **Per-year record count gate (Tier-2)** — parsed yearly_clean parquets must have row counts matching user-guide page-7 exactly (62,352 / 60,584 / 59,863 / 59,690 / 59,343 / 59,358 / 59,935). Any divergence → halt; suggests record-length mismatch or zip-internal corruption.
+2. **DATAYEAR plausibility gate (Tier-1)** — every record in `fetal_death_{Y}_raw.parquet` must have `data_year == Y` (read from bytes 1-2). Any null/wrong-year → halt; suggests field_specs offset bug.
+3. **V3a-era byte-clean gate (Tier-3)** — for each derived column, the 1989-2022 slice's column-vector SHA-256 must equal the V3a baseline's same slice. Any drift → halt; suggests harmonize.py 1978-rev branch incorrectly conditioning on year ≥ 1989 affected V3a/V2/V1 output.
+4. **V1-era + V2.1 byte-clean gate (Tier-3)** — same for 2003-2022. Same halt rule.
+5. **Tier-2 NVSR validation** — 33/33 PASS byte-exact (was 26/26 V3a; +7 V3b). The 7 new rows (1982-1988) must each return byte-exact against their user-guide-derived target. Any FAIL → halt; suggests TABFLAG / RESTATUS byte-position mismatch OR a 1978-rev sentinel code not in B3 race-recode coverage.
+6. **L13-extension value-distribution check** — for each of the 5 H8 demographic/filter columns post-V3b:
+   - `data_year`: byte exact {1982, 1983, ..., 1988} per file
+   - `tabulation_flag`: {1, 2}
+   - `residence_status`: {1, 2, 3, 4}
+   - `maternal_race_bridged`: {1, 2, 3, 4} (with nulls for V3b 1-digit codes `7` Other nonwhite + `9` Not stated per B3 1978-rev extension)
+   - `maternal_age`: 10-50 + sentinel 99 (need to verify against user-guide page 7 imputation note)
+   If any column shows out-of-range or wildly different distribution from 1989+ → halt; suggests field_specs byte-offset shift between 1981 and 1982 not previously documented, OR an OCR-misread byte position propagated through page-5 cheap-check.
+7. **B3 1-digit MRACE map completeness** — `_checked_remap` will halt loud if V3b yearly_clean produces a code outside {0..9}; this is the defensive halt working as designed. Any halt at DO step 9 with "unseen code <X>" → expand B3 map with a documented DECISION_LOG entry parallel to 2026-05-12T14:30Z V3a `09→null` decision.
+8. **Detail-record layout extraction surfacing OCR-baked semantic ambiguities** — for any field where the 1985 user-guide text-layer is OCR-garbled to the point of preventing reliable byte-position extraction (e.g., the page-5 overview's "9­" for "9." in 1982 page-5 between FIPS State 187-188 and FIPS County 189-191), halt-and-ask. Do NOT silently guess.
+
+### Forward-looking HALTs for next session (Convention 4 — if DO does not start this session)
+
+1. **`task7_v3a-complete` tag** + 5 V3a output parquet SHAs unchanged (HALT 1+2 from STATUS 2026-05-12T14:30Z): re-verify at next session start (`git tag --list 'task7_v3a*'`; `shasum -a 256 output/harmonized/fetal_death_{harmonized,derived}.parquet output/yearly_clean/fetal_death_198{9,1990,1991}_raw.parquet`).
+2. **7 V3b user guides + 7 V3b raw zips** at `raw_docs/fetal_death/` + `~/Desktop/fetal-death-harmonization-build/raw_data/` with SHAs matching this PRE-FLIGHT baselines. If any drift, re-download / halt.
+3. **PyMuPDF text-layer extraction** on 7 user guides remains intact (no file corruption between sessions). Re-verify with a 5-line `len(page.get_text())>0` check at session start.
+4. **Working tree clean** at the post-PRE-FLIGHT commit; no stale checkpoints.
+5. **No `task7_v3b_*` tags yet** — DO doesn't begin until user authorization gate (this PRE-FLIGHT's HALT-Result).
+
+### Notes
+
+- Effort estimate per STATUS 2026-05-12T15:00Z: **3-4 sessions for V3b** (down from initial 4-5 session estimate which assumed OCR-via-Tesseract was the long pole — STATUS 15:00Z PoC superseded that; text-layer extraction is sufficient). The irreducible cost is per-field L13-extension value-distribution verification, not OCR.
+- The 12-step DO plan above is one-session-aggressive if no semantic ambiguities arise; more likely it splits across 2-3 sessions: session A = steps 1-3 (zip-stage + layout-CSV + field_specs edit); session B = steps 4-8 (harmonize + parse + L13-extension); session C = steps 9-12 (validate + RECEIPT + version-string ripple).
+- The B3 1-digit race recode (V3b) coexists with the B3 V3a 2-digit recode in the same `_checked_remap` call; the two key-sets (`"0".."9"` vs `"00".."09" + "18".."78" + "99"`) are byte-disjoint so no collision. Will verify at DO step 4 with explicit smoke-test.
+- Q22 + Q23 both resolved this PRE-FLIGHT.
+
+---
+
 ## PRE-FLIGHT for task7_v3a — 2026-05-12T14:05:00Z
 
 ### Scope summary
