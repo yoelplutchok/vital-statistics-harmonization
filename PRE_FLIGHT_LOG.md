@@ -8,6 +8,94 @@
 
 ---
 
+## PRE-FLIGHT for natality_v28_rename — 2026-05-12T05:30:00Z
+
+### Scope summary
+
+Rename four natality harmonized columns from v2.7.0 names to canonical cross-product names: `year → data_year`, `restatus → residence_status`, `maternal_race_bridged4 → maternal_race_bridged`, `maternal_hispanic_origin → hispanic_origin`. Output: new natality v2.8.0 deposit (breaking change; v2.7.0 stays immutable at its DOI). Per KICKOFF.md "Current planned sequence" step 1 (data-first pre-submission scope per DECISION_LOG 2026-05-12T03:30:00Z). 14-step DO plan canonical in DECISION_LOG 2026-05-12T03:25:00Z. Mutation lives in standalone build dir `/Users/yoelplutchok/Desktop/natality-harmonization/` (HEAD `dcabd8c`); monorepo's `natality/` subdir is a mirror that re-syncs AFTER v2.8 ships.
+
+### Staging decisions (resolved at PRE-FLIGHT)
+
+1. **Build-dir `M README.md` pre-existing diff** (per STATUS 2026-05-12T05:10Z Forward-looking HALT 1): one-line cosmetic removal of "(for a new researcher or LLM)" from a section header — pre-existing, not this task's. RESOLUTION: stash before v2.8 work so v2.8's first commit doesn't pick it up; user can decide whether to commit/discard separately.
+2. **v2.7.0 parquets on disk** (per STATUS 2026-05-12T05:10Z Forward-looking HALT 3): the prior session reported `output/*.parquet` not present; in fact parquets DO exist at `output/harmonized/*.parquet` and `output/yearly_clean/*.parquet` (prior glob missed subdir layout). No re-derive needed for current state; v2.8 re-derive will overwrite `output/harmonized/`.
+3. **Tag location**: build-dir `natality_v28_rename-pre-do` tags the build repo's pre-DO commit (where the actual mutations happen). Monorepo will also get tagged at the corresponding state-file commit per Task 3 convention.
+
+### Inputs
+
+- [x] All required input files exist (verified by direct read)
+  - `/Users/yoelplutchok/Desktop/natality-harmonization/metadata/harmonized_schema.csv`: present, 95 rows (94 data + 1 header). 4 rename-target rows verified at row positions 1 (year), 2 (restatus), 3 (maternal_hispanic_origin), 4 (maternal_race_bridged4). ✓
+  - `output/harmonized/natality_v2_harmonized_derived.parquet`: present, 138,819,655 rows × 84 cols, sha256=`9f917a43474eb9e3ed23aa95c714209421c25c29937376651149d22fab934ef0` ✓ (matches Forward-looking HALT 1 from DECISION_LOG 2026-05-12T03:30Z exactly)
+  - `output/harmonized/natality_v3_linked_harmonized_derived.parquet`: present, 74,943,824 rows × 94 cols, sha256=`46c169b59b040028d9830546fad71f30d0c6364f10fbc1676b56ae6ee993eb16` (no prior baseline SHA recorded — record this one now for HALT verification at re-derive) ✓
+  - 36 raw NCHS zips in `raw_data/` (1990-2024 + linked-cohort files) — present for full re-derive if needed ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - task3_v21_fetal_death: complete 2026-05-12 at `8ca5bf9` (`task3-complete` tag in monorepo) ✓
+  - public-repo v1.0 push: complete 2026-05-12 at `a18ca3a` (https://github.com/yoelplutchok/vital-statistics-harmonization) ✓
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - No `natality_v28_*` tags in build dir or monorepo ✓
+  - No partial v2.8 edits — build dir's only working-tree diff is the pre-existing `M README.md` (resolved via stash at staging decision 1) ✓
+
+### Environment
+
+- [x] Python version: 3.13.9 (required ≥3.11) ✓
+- [x] pandas version: 2.3.2 (required ≥2.3) ✓
+- [x] pyarrow version: 18.1.0 (required ≥18.0) ✓
+- [x] Build-dir working tree CLEAN post-stash (verified at DO step 0); monorepo working tree clean at session start (`ad5ff1f`) ✓
+- [x] On expected branch: build dir `main` tracking `origin/main`; monorepo `main` ✓
+
+### Source documentation
+
+No external NCHS PDFs consumed by this task (v2.8 is a column rename, not a content change). The aliasing-helper `shared/helpers/canonical_join_keys.py` `NATALITY_TO_CANONICAL` dict (lines 20-25 in the monorepo, 4 entries verified) is the documentation that this rename satisfies; after v2.8 the dict becomes empty + deprecation note.
+
+### Outputs
+
+- [x] Intended output paths exist as v2.7.0 artifacts — will be **overwritten** by v2.8 re-derive (this is the explicit overwrite mark):
+  - `output/harmonized/natality_v2_harmonized_derived.parquet` (v2.7.0 SHA `9f917a43...` → new v2.8 SHA TBD)
+  - `output/harmonized/natality_v3_linked_harmonized_derived.parquet` (v2.7.0 SHA `46c169b5...` → new v2.8 SHA TBD)
+  - `output/harmonized/natality_v2_harmonized.parquet` (pre-derive intermediate)
+  - `output/harmonized/natality_v3_linked_harmonized.parquet` (pre-derive intermediate)
+- [x] Convenience subsets in `output/convenience/` will be regenerated downstream of harmonize step.
+- [x] No NEW output paths introduced by this task — all are v2.7.0 paths overwritten in-place under the new schema.
+
+### Field-value snapshot for cells / rows / columns being mutated
+
+Cross-checked against DECISION_LOG 2026-05-12T03:25:00Z Field-value snapshot at this PRE-FLIGHT. State unchanged from that snapshot:
+
+| Artifact | Current (v2.7.0) | Target (v2.8) | Verified at this PRE-FLIGHT |
+|---|---|---|---|
+| `metadata/harmonized_schema.csv` row 1 | `year,Birth year,int16,1990-2024,...` | `data_year,Birth year,int16,1990-2024,...` | ✓ direct grep |
+| `metadata/harmonized_schema.csv` row 2 | `restatus,Resident status (NCHS),int8,1\|2\|3\|4,...` | `residence_status,Residence status,int8,1\|2\|3\|4,...` | ✓ direct grep |
+| `metadata/harmonized_schema.csv` row 3 | `maternal_hispanic_origin,Mother's Hispanic origin recode,int8,...` | `hispanic_origin,...` | ✓ direct grep |
+| `metadata/harmonized_schema.csv` row 4 | `maternal_race_bridged4,Mother's bridged race (4 categories),int8,...` | `maternal_race_bridged,...` | ✓ direct grep |
+| natality v2 parquet | columns `year`, `restatus`, `maternal_hispanic_origin`, `maternal_race_bridged4` present | renamed to canonical | ✓ pyarrow schema read |
+| linked v3 parquet | same 4 columns present | renamed to canonical | ✓ pyarrow schema read |
+| `shared/helpers/canonical_join_keys.py` `NATALITY_TO_CANONICAL` | 4 entries (year→data_year, restatus→residence_status, maternal_race_bridged4→maternal_race_bridged, maternal_hispanic_origin→hispanic_origin) | empty dict + deprecation note | ✓ direct grep (monorepo helper) |
+
+**String-literal reference counts** (the edit surface, scoped to build-dir `scripts/` + `metadata/` + `docs/`; output/ excluded):
+
+| Pattern | Count | DECISION_LOG predicted |
+|---|---:|---:|
+| `"year"` | 46 | 48 |
+| `'year'` | 2 | (combined) |
+| `"restatus"` | 3 | 3 |
+| `'restatus'` | 0 | (combined) |
+| `"maternal_race_bridged4"` | 6 | 6 |
+| `'maternal_race_bridged4'` | 0 | (combined) |
+| `"maternal_hispanic_origin"` | 4 | 4 |
+| `'maternal_hispanic_origin'` | 0 | (combined) |
+| **TOTAL** | **61** | **61** |
+
+Match with DECISION_LOG 2026-05-12T03:25Z is exact (61=61). The "48" predicted for "year" split as 46+2 here (double-quote vs single-quote) — total identical. **No staleness drift.**
+
+### Halt conditions tripped
+
+(none — all checks pass)
+
+### Result
+
+**PROCEED.** PRE-FLIGHT complete; no §7 halt conditions tripped. DO phase authorized to begin per the 14-step plan in DECISION_LOG 2026-05-12T03:25:00Z. Forward-looking HALT 6 from STATUS 2026-05-12T03:30Z (string-literal rename must be scoped via `s|"year"|"data_year"|g` and `s|'year'|'data_year'|g`, NOT bare-word replacement) is binding for every DO sed/Edit operation. Re-derive budget ~5-10 minutes wall-clock; 183 NVSR validation + 33/35-linked validation are gates 7-8 of the DO plan.
+
+---
+
 ## PRE-FLIGHT for task3_v21_fetal_death — 2026-05-11T21:30:00Z
 
 ### Scope summary
