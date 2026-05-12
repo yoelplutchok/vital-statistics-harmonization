@@ -1,6 +1,134 @@
-# STATUS — last updated 2026-05-11T20:50:00Z
+# STATUS — last updated 2026-05-11T22:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-11T22:30:00Z — Task 3 mid-DO checkpoint: layout reconstruction + parse + row-count validation complete (4/12 sub-steps); pausing before harmonize
+
+### Current phase
+
+Phase A continuing. Task 3 (V2.1 fetal-death) is **partially DO-complete** at commit `f596c24`. Per the Layout-reconstruction-round + parse-and-row-count plan agreed at session start, 4 of 12 DO sub-steps are done. The remaining 8 sub-steps (harmonize.py extension with B7 TABFLG fix + H8 int dtype cast, derive, validate, doc updates, version bump, receipt write) are deferred to the next session.
+
+**Task 3 is paused mid-DO with `task3-pre-do` tag set, no `task3-complete` tag yet.** Tree clean.
+
+### What was done this session
+
+PRE-FLIGHT (committed `9caca62`, tagged `task3-pre-do`):
+1. Inputs verified at sibling build dir (`~/Desktop/fetal-death-harmonization-build/`); symlinked into monorepo via `raw_data/`, `raw_docs/`, `output/` (and `output/` added to `.gitignore`).
+2. SHAs gathered for 2003 + 2004 zips + `fetaldeath0304problems.pdf` + 2003/2004 user-guide PDFs.
+3. L9 cheap-check on record lengths: §15's 1351-byte (2003) / 1501-byte (2004) numbers are empirically correct; the user guides' `LRECL=3350` is a SAS-side maximum, not the data byte length.
+4. A/S byte at position 7 verified empirically: 2003 = 53,503 S + 994 A = 1.8% A; 2004 = 51,321 S + 1,964 A = 3.7% A. Most records are 1989-revision (S); 2003-revision (A) state adoption is small in 2003-2004.
+5. B7 normalization surfaced from problems PDF: NCHS-side TABFLG-at-position-9 error in 2003/2004 (records with COMBGEST=99 in a 42-state list misclassified as <20wk).
+6. H8 dtype snapshot for 5 columns confirmed (string in v2.0.0 parquet vs int declared in schema CSV).
+7. Three staging decisions resolved at PRE-FLIGHT per Convention 3 (symlink, yearly-clean reuse, halt-and-ask policy).
+
+DO step 1 — record layout CSV construction (committed `bb01eaa`):
+1. `record_layout_2003.csv` shipped: 281 data rows, bytes 1-1350, sha=`a88e1fa30f6951278924b0b75d319a4d8dee397e692641e385b92b6b06285635`.
+2. `record_layout_2004.csv` shipped: 281 data rows, bytes 1-1500, sha=`f4ad74cacabe45cdfc75bd21a557784d6600cef36530344e27b35a565e277630`.
+3. Structure: bytes 1-797 inherited unchanged from `record_layout_2006.csv` (251 rows; anchor fields spot-checked against 2003 user guide pp 13-22 — VERSION, TABFLG, DOD_YY, OSTATE, MAGER, MRACEREC, F_HYSTERu all aligned). Bytes 798-801 inherited from 2006. Bytes 802-832 = BLANK filler. Bytes 833-847 = 15 new MRACE1-15 race-checkbox rows (version="A"). Bytes 833-836 OVERLAY = MRACE_LEGACY_S placeholder for S records (semantics TBD, L13 follow-up). Bytes 848-1087 = BLANK. Bytes 1088-1111 = 8 new MRACE1E-8E rows (version="A"; empty in public-use file). Bytes 1112-1350 (2003) / 1112-1500 (2004) = BLANK trailing filler.
+4. Halt-and-ask decision: A/S byte-level overlay represented as DUAL ROWS in one CSV with `version` column tag, matching the existing 2006 CSV convention (93 A-only + 21 S-only rows in 2006 CSV).
+
+DO steps 3-4 — parser extension + row-count check (committed `f596c24`):
+1. `field_specs.py`: added `RECORD_LEN_2003 = 1350` + `RECORD_LEN_2004 = 1500` constants; updated `layout_for_year(year)` to dispatch both years to `FETAL_2005_2006_FIELDS` (bytes 1-797 fields are shared, A/S overlay is documentation-only and not parsed); updated docstring era list. Three surgical edits, no new functions or new field lists.
+2. Parsed 2003: 54,497 records → `output/yearly_clean/fetal_death_2003_raw.parquet`. TABFLG distribution: 25,683 (TABFLG=2 ≥20wk) + 28,814 (TABFLG=1 <20wk).
+3. Parsed 2004: 53,285 records → `output/yearly_clean/fetal_death_2004_raw.parquet`. TABFLG distribution: 25,706 + 27,579.
+4. Canonical filter (TABFLG='2' AND RESTATUS!='4') byte-exact match against NVSR 57-08 originally-reported targets:
+   - 2003: 25,653 ✓ byte-exact (excluded 30 foreign-resident RESTATUS=4 records)
+   - 2004: 25,655 ✓ byte-exact (excluded 51 foreign-resident records)
+5. `LESSONS.md` L13 entry filed: `record_layout_2006.csv` likely incomplete (declares bytes 802-3351 as one "BLANK" row but 2003 user guide documents race fields there). Out-of-scope for Task 3; post-submission audit prompt.
+
+### Last completed step
+
+**Task 3 DO step 4 (parse + row-count check)** at `f596c24` 2026-05-11T22:00:00Z. Canonical filter byte-exact for both transition years.
+
+### In-progress
+
+(none; task is paused at a clean boundary)
+
+### Blocked
+
+(none)
+
+### Next planned task
+
+**Resume Task 3 DO at sub-step 5: extend `harmonize.py`.** Per `KICKOFF.md` data-first sequence; remaining sub-steps:
+
+| # | Sub-step | Detail |
+|---|---|---|
+| 5 | `harmonize.py` extension | (a) add 2003+2004 to year set; (b) **B7 TABFLG normalization**: for records where COMBGEST='99' AND OSTATE in 42-state list (see `fetaldeath0304problems.pdf` page 1 SAS code), set TABFLG='2'; (c) **H8 int dtype cast**: convert `tabulation_flag`, `residence_status`, `maternal_age`, `maternal_race_bridged`, `hispanic_origin` from string to nullable int |
+| 6 | Re-derive parquets | Run `harmonize.py` and `derive.py` against all 31 yearly_clean parquets (29 existing + 2 new). Sha-verify new `fetal_death_derived.parquet`. |
+| 7 | Validate | Append 2003+2004 rows to `external_validation_targets.csv` (corrected NVSR 57-08 figures: count 26,004 + 26,001; rate per-1000-live-births+fetal-deaths). Re-run `validate_external_v2.py`. **Gate**: 31/31 count + 28/28 rate byte-exact (was 29/29 + 26/26); V1 era (2005-2022) 0/73 + 0/89 byte-clean regression. |
+| 8 | Downstream joint-use code | Update 5 files for int literals: `docs/JOINT_USE_GUIDE.md`, `notebooks/joint_use_demo.ipynb`, `notebooks/_build_joint_use_demo.py`, `notebooks/paper_companion.ipynb`, `notebooks/_build_paper_companion.py`. Re-run `_build_joint_use_demo.py` and `_build_paper_companion.py`; verify 8/8 NVSR-cell match in joint-use demo. |
+| 9 | Version bump | v2.0.0 → v2.1.0 in `fetal_death/{.zenodo.json, CITATION.cff, ABOUT_THIS_RELEASE.md, README.md, COMPARABILITY.md, FAQ.md, PROVENANCE.md}`. New `fetal_death/V2_1_2003_2004_LAYOUT_DECISIONS.md` doc analogous to existing `V2_1992_LAYOUT_DECISIONS.md` documenting the layout reconstruction + B7 normalization + A/S overlay handling + L13 audit follow-up. |
+| 10 | Metadata appends | 2 new rows in `file_inventory.csv` (2003 + 2004); ~4 new rows in `external_validation_targets.csv` (2003 corrected count + rate; 2004 corrected count + rate); 2 new rows in `live_births_by_year.csv` (need to source 2003+2004 live births — likely from natality denominators using `shared/helpers/build_stratified_denominators.py`). |
+| 11 | FIX_LOG + DECISION_LOG | FIX_LOG entry closing the 2026-05-11 H8 entry (H8 reconciled in v2.1.0 parquet). DECISION_LOG entry recording the H8-bundling-into-Task-3 choice (already informally committed; needs formal entry). DECISION_LOG entry for the B7 normalization (new normalization class beyond v2.0.0's B1-B6 set). |
+| 12 | Receipt | `RECEIPTS/task3_v21_fetal_death_<UTC>.md` per §6 template. Self-check, Forward-looking HALTs. Tag `task3-complete`. New STATUS section. |
+
+### Open questions for human
+
+Carried forward from `5577c87` STATUS section (all deferred per data-first sequence; none block Task 3 resumption):
+
+1. ~~Push monorepo to GitHub~~ — sequenced after Task 3 completion.
+2. **Natality v2.8 schema rename** — DEFERRED post-submission.
+3. ~~H8 bundling into Task 3~~ — RESOLVED; implementation in DO sub-step 5.
+4. ~~`[plan-update]` candidate for §15 Task 2 wording~~ — resolved 2026-05-11 by `89ddc77`.
+5. **Section B 2017 race-stratified NVSR validation** — DEFERRED post-submission.
+6. **§15 Task 4 wording `[plan-update]` candidate** — DEFERRED.
+7. **§15 Task 5 wording `[plan-update]` candidate** — DEFERRED.
+8. **AI-tool disclosure wording in Task 5's admin draft** — human-gated; resolved at manuscript re-pass (step 5 of data-first sequence).
+9. NEW: **MRACE_LEGACY_S semantics** (bytes 833-836 in S-revision 2003/2004 records) — DEFERRED to post-submission L13 audit pass; not used by V2.1 harmonization (race comes from MRACEREC@byte-143 for both A and S).
+10. NEW: **`record_layout_2006.csv` completeness** (declares bytes 802-3351 as one BLANK row; 2003 user guide documents race-checkbox fields at 833-847 + 1088-1111 within that range) — DEFERRED to post-submission L13 audit pass per `LESSONS.md` entry 2026-05-11T21:50:00Z.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+The next session's PRE-FLIGHT for **resuming Task 3 sub-step 5** must verify:
+
+1. **Working tree state**: clean on `main` at `f596c24` (or a later post-checkpoint commit); `task3-pre-do` tag exists; `task3-complete` does NOT yet exist. Tree dirty → halt; investigate before resuming DO.
+
+2. **Symlinks intact**: `raw_data/fetal_death`, `raw_docs/fetal_death`, `output/yearly_clean`, `output/harmonized`, `output/validation` all resolve to `~/Desktop/fetal-death-harmonization-build/`. If any symlink is broken (e.g., sibling dir moved), halt and re-stage.
+
+3. **Yearly_clean parquets for 2003 + 2004 present and bit-stable**: `output/yearly_clean/fetal_death_{2003,2004}_raw.parquet` exist; re-running `parse_fetal_year.py` against the same zips produces bit-identical output. If not bit-stable, halt — parser non-determinism is a regression.
+
+4. **Layout CSV SHAs unchanged**: `record_layout_2003.csv` sha=`a88e1fa30f6951278924b0b75d319a4d8dee397e692641e385b92b6b06285635`; `record_layout_2004.csv` sha=`f4ad74cacabe45cdfc75bd21a557784d6600cef36530344e27b35a565e277630`. Drift means someone hand-edited; halt and investigate.
+
+5. **B7 normalization 42-state list**: extract from `raw_docs/fetal_death/fetaldeath0304problems.pdf` page 1. The list as published is: `('AL', 'AK', 'AZ', 'CA', 'CT', 'DE', 'DC', 'FL', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NC', 'ND', 'OH', 'OK', 'OR', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'WA', 'WI', 'WV', 'WY')` — that's 43 codes. Halt-and-ask if recount in the PDF disagrees with this list (the PDF page 1 text I read had `'NH' 'NJ' 'NM'` without commas, suggesting the list spans 42 or 43 entries; cheap-check verify the count before encoding into harmonize.py). Use XOSTATE field at bytes 32-33 for the state code (not OSTATE at 30-31, since the SAS code in the problems PDF names `XOSTATE`).
+
+6. **B7 corrected count gate**: after B7 applies, the TABFLG=2 count for 2003 must rise from 25,683 (raw) → 26,004 (corrected per problems PDF Table 1); for 2004 from 25,706 → 26,001. These are the corrected NVSR validation targets. After RESTATUS!=4 canonical filter, the count should be 26,004 - excluded_foreign (need to verify excluded_foreign distribution under corrected TABFLG). Halt if the corrected count is off by more than ±5 records.
+
+7. **H8 int dtype cast must be NaN-aware**: empty strings in source data must become null (not int 0); sentinel values like maternal_age='99' must stay int 99; tabulation_flag and residence_status are mandatory and must not have blanks in valid records. Verify with a per-column null rate report after harmonize.py runs.
+
+8. **V1-era byte-clean regression**: after harmonize re-derives the full 1992-2022 parquet, compare 2005-2022 slice's 73 harmonized + 89 derived columns vs the v2.0.0 baselines (`90af89b9...` for derived). EXPECTED CHANGE for the 5 H8 columns (string→int); ALL OTHER columns must be byte-identical. Halt if any non-H8 column drifts.
+
+9. **Downstream joint-use code update timing**: the 5 files (JOINT_USE_GUIDE.md + 4 notebooks/builders) must be updated AFTER the new parquet is shipped (DO step 8). Re-running `_build_joint_use_demo.py` should produce 8/8 NVSR-cell match; `_build_paper_companion.py` synthesis CSV will change because Task 3 changes fetal-death record count (1,634,195 → ~1,742,000) and validation counts (29/29 → 31/31, 26/26 → 28/28). The companion CSV's new sha is expected and NOT a regression signal; document the change in the receipt.
+
+10. **Task 5 manuscript HALTs remain informational**: paper sha unchanged at `0685fe9c…1bddd1`; 3 `<!-- YP: review -->` markers present. Manuscript re-pass happens in step 5 of the data-first sequence AFTER Task 3 + Task 9 + Task 10. Task 3 does NOT touch the manuscript.
+
+### Build artifacts current
+
+- `natality/`: unchanged from 2026-05-11T20:50Z (v2.7.0 mirror).
+- `fetal_death/`: 
+  - `record_layout_2003.csv` **NEW** (a88e1fa3…); `record_layout_2004.csv` **NEW** (f4ad74ca…).
+  - `scripts/01_import/field_specs.py` **EDITED** (RECORD_LEN_2003/2004 added; layout_for_year dispatch; era docstring).
+  - `harmonized_schema.csv` **UNCHANGED** at `72272c5537…` (per anti-pattern #6, schema not edited in this task).
+  - Shipped v2.0.0 parquets at `output/harmonized/fetal_death_derived.parquet` sha=`90af89b9…f0afdd` **UNCHANGED** (will be regenerated in DO sub-step 6).
+- `output/yearly_clean/fetal_death_{2003,2004}_raw.parquet` **NEW** (gitignored; symlinked outputs).
+- `shared/helpers/`: unchanged.
+- `paper/`: unchanged from 2026-05-11T20:30Z (sha `0685fe9c…1bddd1` for `draft_v2_hmd_styled.md`).
+- `notebooks/`: unchanged (joint_use_demo.ipynb, paper_companion.ipynb unchanged; CSV synthesis at `7891809c…`).
+- `LESSONS.md` **EDITED** (new L13 entry).
+- `STATUS.md` **EDITED** (this section).
+- `FIX_LOG.md`, `DECISION_LOG.md`: unchanged (entries deferred to receipt/post-DO).
+- `.gitignore` **EDITED** (added `output/` line in PRE-FLIGHT).
+- `PRE_FLIGHT_LOG.md` **EDITED** (Task 3 PRE-FLIGHT entry, 2026-05-11T21:30:00Z).
+
+### Notes for next session
+
+- All 12 DO sub-steps were enumerated upfront in the PRE-FLIGHT "Next steps" subsection (per §4.1 / L10 guidance: multi-sub-step tasks need either one upfront PRE-FLIGHT enumerating every sub-step OR a per-sub-step PRE-FLIGHT). The single-upfront-PRE-FLIGHT path was chosen; no back-fill PRE-FLIGHT is needed when resuming.
+- Convention 5 (commit-message brevity) followed: 3 task commits this session, each with ~5-line summary.
+- Convention 1 (SHAPE-not-VALUE for new SMOKE harnesses) — Task 3 didn't author a new SMOKE harness yet (the SMOKE for sub-step 6+ will be the validate scripts; existing harnesses inherit). When DO sub-step 5-6 lands, any new SMOKE that pins the v2.1.0 record count must use `DESIGN: frozen-at-task3_v21` (FROZEN, since v2.1.0 is a snapshot release) NOT `DESIGN: tracks-current-state` (V3 will change the count again per §15 Task 7).
+- The B7 42-state list extraction is the single biggest L9 risk left in Task 3. The problems PDF page 1 SAS code is the canonical source. Convention 3 Field-value snapshot at next PRE-FLIGHT must include the 42-state list verified against the PDF text.
+- The v2.0.0 PROVENANCE record cleanly preserves the pre-Task-3 baseline. Re-running the full pipeline from yearly_clean (the path `--skip-parse` enables) should produce the v2.1.0 parquet in ~5 minutes; total Task 3 DO sub-steps 5-12 estimated 1 session of focused work.
 
 ---
 
