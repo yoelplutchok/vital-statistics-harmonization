@@ -17,6 +17,33 @@
 
 ---
 
+## 2026-05-12T15:00:00Z — task7_v3b_ocr_poc — L12-extension — Bitmap-image inspection of a PDF is not a complete text-extractability probe; PDFs can carry an embedded text layer beneath visible bitmap content
+
+**What happened:** The 2026-05-12T04:30:00Z STATUS section asserted, after a sanity download of `1985FetalUserGuide.pdf`: "**fully bitmap-scanned PDF** (CCITTFaxDecode images at ~2400-2500 px width × ~3300 px height, ~300dpi paper scans). Only the first-page cover sheet has TrueType Arial text; body pages are image scans of paper. The 1982-1988 guides almost certainly follow the same scanned-bitmap pattern given the uniform 2009-01-08 bulk upload date." That finding drove an effort-estimate inflation: "OCR pass on bitmap-scanned 1980s NCHS PDFs is the long-pole effort for V3b. A 20-minute proof-of-concept OCR run on a few pages of `1985FetalUserGuide.pdf` is a reasonable first step."
+
+This session's V3b OCR feasibility PoC (2026-05-12T15:00:00Z STATUS) ran PyMuPDF `page.get_text()` on the same 1985 PDF and got **504,134 chars across all 223 pages, every page non-empty**, with field byte-position tables (Data year @ 1-2, Tabulation inclusion @ 10, Resident status @ 12, AGE @ 81-82, etc.) and code-outline tables extracting cleanly. PDF metadata: `producer="Acrobat PDFWriter 3.03 for Windows"`, `creationDate=2000-01-31`, `modDate=2008-12-09`. The PDF carries BOTH the CCITTFaxDecode bitmap (visible page imagery, what the prior session inspected) AND an embedded text layer (invisible to a `pdfimages` or `mutool show xref` inspection focused on Form XObjects; visible to `get_text()`). The two coexist by design — modern OCR-during-scanning workflows produce exactly this pattern: bitmap for visual fidelity, text layer for search/select.
+
+The cost of the wrong framing: a 20-minute PoC was scheduled to run OCR via tesseract (which isn't even installed on this machine — would have added env-setup overhead) when the actual cheap-check was `page.get_text()` (one-line PyMuPDF call, already available). The effort-estimate inflation drove a less-aggressive V3b scope option in the 2026-05-12T04:30Z DECISION_LOG entry. Net cost to date: ~1 session of decision-making latency.
+
+**Why the existing matrix didn't catch it:** **L12** (LLM trusts its own grep / probe results without verification) is the closest existing class — the prior session's claim about "image scans of paper" came from inspecting the PDF's Form XObject stream (bitmap content) and was extrapolated to "no text content" without testing the cheaper text-extraction path. The L12 row names "LLM says 'no other references to X' without verification" — the analog here is "LLM says 'no extractable text in this PDF' without trying `get_text()`." The matrix doesn't explicitly name the PDF-bitmap-vs-text-layer case but the underlying pattern is identical: a partial probe was extrapolated to a complete probe.
+
+**What worked:** This session's PyMuPDF probe — the simplest possible test ("can `page.get_text()` return non-empty for at least one body page?") — answered the question in 5 seconds. Sibling-year cross-check (downloading + probing the 1988 user guide) verified the pattern generalizes; both PDFs have the identical Acrobat PDFWriter 3.03 + 2009-reprocessing signature, so all 1982-1988 PDFs (uniform 2009-01-08 batch) presumptively share the embedded text layer.
+
+**Proposed matrix row addition (L12-extension, sharpening L12 rather than a new row):**
+
+> **L12-extension** — "PDF lacks extractable text" claims must be backed by an explicit `get_text()` (or equivalent text-extraction call) probe returning empty, NOT by visual/bitmap-stream inspection alone. PDFs commonly carry BOTH bitmap content (for visual rendering) AND an embedded text layer (for search/select); these are independent and can coexist. A `pdfimages` / Form-XObject inspection that finds bitmap content proves the PDF has bitmaps; it does NOT prove the PDF lacks text. Conversely, an OCR-resistant PDF must be confirmed by an explicit `get_text()` returning empty across multiple body pages, not just by visual inspection.
+>
+> **Caught at:** PRE-FLIGHT / cheap-check. Specific catch: every "PDF X needs OCR / lacks extractable text" claim must cite the `get_text()` (or `pdftotext` / equivalent) probe output, with the per-page char count.
+
+**Backport scope:**
+
+- 2026-05-12T04:30:00Z STATUS section's V3b OCR framing → SUPERSEDED by 2026-05-12T15:00:00Z STATUS. No build artifacts to revert (the prior framing affected only effort estimation and DECISION_LOG narrative; no code or data changed under the wrong assumption).
+- Future external-PDF probes: always run text-layer extraction as the first step BEFORE inspecting bitmap content. If text layer is empty, then probe bitmap content + plan OCR. If text layer is non-empty, OCR is unnecessary and the bitmap content can be ignored.
+
+**Upstream lesson?** Yes. The upstream NHANES protocol's L12 row could be sharpened to add the PDF-text-layer-vs-bitmap distinction. The same shape applies to any external-document probe where multiple representations of the content coexist within a single file (e.g., Microsoft Office docs with embedded objects, EPUB files with both XHTML text and pre-rendered page images, etc.) — always probe the cheapest text-extraction path before assuming the document is image-only.
+
+---
+
 ## 2026-05-12T04:30:00Z — task7_v3b_doc_hunt — L1/L12 — External-resource filename-variant probes should be sibling-derived, NOT hallucinated; prior session's V3b-not-found conclusion was an L1+L12 cascade
 
 **What happened:** The 2026-05-12T03:50:00Z agent probed for 1982-1991 NCHS fetal-death user guides at the NCHS canonical FTP path and reported (STATUS section): "probed `{1982-1991}FetalUserGuide.pdf` at the same FTP path — all returned HTTP 404. Probed alternate doc paths (`fetal_death_inst.pdf`, `Fetal82UG.pdf`, NCHS series_04 paths, `InstructionsManual/InstrFetalDeath.pdf`, etc.) — all HTTP 404. User guides for 1982-1991 are NOT available at the standard NCHS FTP location." That conclusion drove the 2026-05-12T04:00:00Z session to declare V3b "skipped pre-submission per integrity principle."
