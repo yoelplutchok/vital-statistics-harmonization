@@ -103,6 +103,15 @@ Carried + (none new this session):
 - The 2-session estimate is on track. Next session is the close-out: sync + notebooks + RECEIPT.
 - Q19/Q20 should be answered before next session ends; once v2.8 close-out lands, Task 7 PRE-FLIGHT starts.
 
+### Post-section-write correction (HEAD update)
+
+After this STATUS section was first drafted and committed (monorepo `018f84e`), two additional commits landed in the build dir during the same session: the doc-backtick second-pass edits (CODEBOOK/COMPARABILITY/ABOUT/VALIDATION + FAQ/GETTING_STARTED backtick refs) and the auto-regenerated validation output CSVs were committed together as build-dir `9be73dd`. So:
+
+- **Build-dir HEAD final: `9be73dd`** (NOT `9fbc5b0` as the body of this section says above). Update Forward-looking HALT 3 mentally to: "build dir HEAD at `9be73dd`; monorepo HEAD at this STATUS section's commit (one above the prior `018f84e`)."
+- The 4 v2.8 parquet SHAs recorded above are unchanged by `9be73dd` (no re-derive happened between commits; only doc edits + validation-output regeneration which are read-only with respect to the parquets).
+- The 6 doc edits in `9be73dd` are the backtick-column-name and bare-word-column-name renames in the 4 docs that the first commit `9fbc5b0` missed plus second-pass cleanups on FAQ/GETTING_STARTED. No CODE changes in `9be73dd`.
+- Validation CSVs in `9be73dd` are regenerated outputs reflecting the v2.8 schema (header `data_year` instead of `year`; notes text `residence_status != 4` instead of `restatus != 4`). The pass/fail rates are unchanged from v2.7.0 — V1 183/183, V3 33+2.
+
 ---
 
 ## 2026-05-12T05:10:00Z — Kickoff handshake; prior-session state-file edits committed; natality v2.8 build-dir read-only snapshot taken; Q19/Q20 still gate next DO
