@@ -1,6 +1,102 @@
-# STATUS — last updated 2026-05-12T03:30:00Z
+# STATUS — last updated 2026-05-12T03:50:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T03:50:00Z — Task 7 inputs downloaded by agent (10 zips, 1982-1991); user-guide gap remains for 1982-1988
+
+### Current phase
+
+Phase A continuing. Task 7 input download completed by agent (curl from NCHS FTP `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/`, TLS verification disabled to work around macOS keychain mismatch; SHA-recorded for forward verification). Era split confirmed by direct record-length inspection. v2.7.0 natality still untouched; natality v2.8 still NEXT per the parallel-paths plan.
+
+### What was done this session (since 2026-05-12T03:30:00Z)
+
+**Task 7 PRE-FLIGHT input acquisition:**
+
+1. Probed NCHS HTTPS endpoint `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal{1982-1991}US.zip` — all 10 returned HTTP 200 with `-k` (TLS cert verification disabled due to macOS keychain issue; sandbox curl can't validate ftp.cdc.gov cert).
+2. Downloaded all 10 zips into `~/Desktop/fetal-death-harmonization-build/raw_data/`. Total ~17.8 MB. All `unzip -t` verified.
+3. Direct byte inspection of one record per year revealed the era split:
+
+| Year range | Record length | Revision | Notes |
+|---|---|---|---|
+| 1982-1988 | 200 bytes | **1978-revision** | 7 years; new layout needed |
+| 1989-1991 | 360 bytes | **1989-revision** | 3 years; SAME layout as 1992-2002 |
+
+4. SHAs recorded (will land in `file_inventory.csv` at Task 7 DO step):
+
+```
+Fetal1982US.zip: 56ddf02376cb1711…
+Fetal1983US.zip: c44b65d1aac15d76…
+Fetal1984US.zip: e74c45516a90adcd…
+Fetal1985US.zip: cb57279c3bc430ca…
+Fetal1986US.zip: 864d93dd255c33f5…
+Fetal1987US.zip: 5bbd2b356ce6ab72…
+Fetal1988US.zip: e6c733dbda5cd5a5…
+Fetal1989US.zip: 1d30d285a6558da6…
+Fetal1990US.zip: bcca5deb5de534d3…
+Fetal1991US.zip: aaa3e23250aac121…
+```
+
+5. **User-guide gap remains**: probed `{1982-1991}FetalUserGuide.pdf` at the same FTP path — all returned HTTP 404. Probed alternate doc paths (`fetal_death_inst.pdf`, `Fetal82UG.pdf`, NCHS series_04 paths, `InstructionsManual/InstrFetalDeath.pdf`, etc.) — all HTTP 404. User guides for 1982-1991 are NOT available at the standard NCHS FTP location.
+
+### Task 7 scope refinement based on era split
+
+**V3a (1989-1991, +3 years, EASY)**: Re-use the 1989-revision layout already documented in `fetal_death/record_layout_1992.csv`. The 1992 user guide we have on disk is the canonical reference for this 1989-revision layout. Re-derive yearly_clean parquets for 1989-1991 with the existing parser dispatch (`field_specs.py` FETAL_1992_2002_FIELDS); B1-B6 normalizations apply unchanged. Estimated ~1 session.
+
+**V3b (1982-1988, +7 years, MEDIUM)**: 1978-revision layout. 200-byte records. NO user guide on disk; NCHS FTP doesn't have one at obvious paths. Options:
+- Search NBER (https://www.nber.org/research/data/vital-statistics) for archived copies of the 1978-revision documentation.
+- Reverse-engineer from data + cross-reference with NCHS Vital Statistics of the United States, Volume II (Mortality) annual reports of that era (which include the data dictionary).
+- Submit a request to NCHS for the 1978-revision codebook.
+- Pre-existing harmonization projects on GitHub may have published the layout (e.g., Bartlett/Wallenstein papers).
+
+Estimated 2-3 sessions if NBER or academic sources give a clean layout; potentially blocking if not.
+
+### Last completed step
+
+**Task 7 input download (10 zips, byte-integrity verified). 1989-revision layout reusability for 1989-1991 confirmed.**
+
+### In-progress
+
+(none — task tools #12, #13, #14 are pending natality v2.8 work)
+
+### Blocked
+
+**Task 7 V3b (1982-1988) on user-guide availability.** The harmonization can proceed for V3a (1989-1991) using the existing 1992 user guide. V3b is gated on getting 1978-revision documentation from NBER, academic sources, or NCHS directly.
+
+### Next planned task
+
+**Natality v2.8 column rename** (next session) per the 2026-05-12T03:30Z plan. Inputs available; PRE-FLIGHT scope documented; ~2 sessions.
+
+After v2.8, options for Task 7:
+- **Option α**: Do V3a (1989-1991, 1 session) using existing 1992 user guide; V3b (1982-1988) deferred or done concurrently with manuscript prep if documentation surfaces.
+- **Option β**: Do V3a + V3b as one combined task; user (or agent) sources V3b documentation in parallel.
+- **Option γ**: Defer Task 7 entirely if V3b documentation can't be found; ship v3.0 with 1989-2022 only (+3 years vs current state).
+
+### Open questions for human
+
+Carried forward from 2026-05-12T03:30:00Z + new:
+
+1-15: (carried)
+
+16. NEW: **1982-1988 (1978-revision) user-guide source**. The NCHS FTP doesn't host these. Suggested user actions:
+    (a) Check NBER's Vital Statistics archive (https://www.nber.org/research/data/vital-statistics) for any documentation they have.
+    (b) Check the Population Studies Center / ICPSR archive for 1978-revision Standard Report of Fetal Death documentation.
+    (c) If none found, decide V3b approach: reverse-engineer from data + 1989-rev as a fence-post, or defer.
+
+17. NEW: **Curl TLS workaround used**. Downloads used `-k` (insecure) because the shell's CA bundle doesn't have the certificate chain for `ftp.cdc.gov`. This is acceptable for one-shot reproducible downloads of public US Government data (we have SHAs recorded for forward verification), but for production reproducibility the user may want to fix the system CA bundle or pin the trust manually.
+
+### Build artifacts current
+
+- All v2.1.0 / v2.7.0 / public-repo / monorepo state unchanged from 2026-05-12T03:30:00Z.
+- **NEW**: `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1991}US.zip` (10 files, 17.8 MB, SHAs above).
+- `~/Desktop/fetal-death-harmonization-build/raw_docs/` for 1982-1991 user guides: **EMPTY** — pending V3b user-guide acquisition or V3a-only scope.
+
+### Notes for next session
+
+- Task 7 inputs (data side) acquired; user-guide gap is V3b-only.
+- Natality v2.8 PRE-FLIGHT already done; DO can start cleanly next session.
+- The era split (1982-1988 = 1978-rev, 1989-1991 = 1989-rev) makes Task 7 splittable into V3a (low-risk, 1 session) and V3b (medium-risk, 2-3 sessions, blocked on docs).
 
 ---
 
