@@ -1,6 +1,91 @@
-# STATUS — last updated 2026-05-12T03:50:00Z
+# STATUS — last updated 2026-05-12T04:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T04:00:00Z — Task 7 firmed to V3a only (1989-1991 +3 yrs); V3b (1982-1988) skipped pre-submission per integrity principle
+
+### Current phase
+
+User refined the integrity principle: "100% correct or skip; no integrity-compromising reverse engineering." Agent then probed for V3b (1982-1988) authoritative documentation across NCHS HTTPS, NBER, alternate paths — found:
+
+- **NBER has `fetaldeath1982.dct` in their listing** (`https://data.nber.org/nvss/fetaldeath/programs/dct/`) BUT the file returns HTTP 403 (per-file ACL; not retrievable from this sandbox). Other NBER fetaldeath .dct files exist only for 2018-2023.
+- **NBER does have `natality1980-1989.dct`** (sister 1978-revision documents). All 10 retrieved (saved at `~/Desktop/fetal-death-harmonization-build/raw_docs/reference/` as adjacent reference). These are SHARED-CONCEPT layouts (state codes, demographics, RESTATUS) — NOT fetal-death-specific layouts (no gestation, no fetal mortality fields). Insufficient as standalone authoritative source for fetal-death V3b layout.
+- **All other probed paths** (NCHS series_04 specific PDFs, Documentation/ subdirs, alternate filename conventions) returned 404.
+
+Per integrity principle: **V3b skipped pre-submission.** Reverse-engineering 7 years of 200-byte records without an authoritative codebook can't be claimed "100% correct."
+
+**V3a (1989-1991, +3 years) firmed as Task 7 scope.** 1989-revision layout, identical to 1992-2002; existing `record_layout_1992.csv` + `1992FetalUserGuide.pdf` are the authoritative reference; ~1 session.
+
+### Final fetal-death coverage target (pre-submission)
+
+**1989-2022 (34 consecutive years).** Net gain over Task 3 V2.1's 1992-2022 (31 years) = +3 years. V3b (1982-1988) is a clean post-submission task once you obtain the 1978-revision codebook from NCHS direct request, ICPSR, or academic-archive routes.
+
+### What was downloaded this session
+
+| Path | Contents |
+|---|---|
+| `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1991}US.zip` | 10 fetal-death zips, ~17.8 MB total, SHA-recorded |
+| `~/Desktop/fetal-death-harmonization-build/raw_docs/reference/natality{1980..1989}.dct` | 10 NBER natality Stata data dictionaries (1978-rev sister docs, adjacent reference) |
+| `~/Desktop/fetal-death-harmonization-build/raw_docs/reference/fetaldeath2020.dct` | NBER format-confirmation sample |
+
+### Next planned task
+
+**Natality v2.8 column rename** (next session). Inputs available; PRE-FLIGHT scope captured in DECISION_LOG 2026-05-12T03:25:00Z; ~2 sessions.
+
+Then **Task 7 V3a only** (1989-1991): re-use 1989-revision parser dispatch; extend year set; re-derive; validate against NVSR 28-08 (or earlier NVSR fetal-death tables). ~1 session.
+
+Then Task 9 (redirects), Task 10 (Zenodo), v1.1 GitHub push, manuscript re-pass, submit.
+
+### V3b doc-hunt directives for the next session's agent (if user asks to revisit)
+
+If V3b documentation acquisition is re-attempted in a future session:
+
+1. **NBER fetaldeath1982.dct retry strategies** (the file EXISTS at `https://data.nber.org/nvss/fetaldeath/programs/dct/fetaldeath1982.dct` but returns 403 from this sandbox):
+    (a) try from a different network egress (residential IP vs sandbox)
+    (b) try with an authenticated session (NBER sometimes gates older datasets)
+    (c) email NBER's data team (`data@nber.org` per their .dct file headers) to request access
+    (d) check the NBER GitHub for the dct generation code (might give us the layout structure even if the .dct itself is gated)
+
+2. **NCHS direct request channels**:
+    (a) https://www.cdc.gov/nchs/data_access/data_requests.htm
+    (b) https://wonder.cdc.gov/ — older fetal-death tables may link to underlying layout docs
+    (c) NCHS Vital Statistics Cooperative Program archives
+    (d) NCHS Series 4 (Documents and Committee Reports) — older publications may include the 1978-revision Standard Report of Fetal Death codebook
+
+3. **Academic / ICPSR sources**:
+    (a) ICPSR vital-statistics archive (search "fetal death" or "NCHS fetal mortality")
+    (b) Existing harmonization projects — e.g., search Google Scholar for "fetal death harmonization 1982" + "byte" + "layout"
+    (c) Papers citing 1982-1988 fetal-death data may have the layout in supplementary materials
+
+4. **Adjacent reference already on disk**:
+    `raw_docs/fetal_death/reference/natality1982.dct` (1978-revision natality layout) — gives byte positions for the SHARED concept fields between live births and fetal deaths in that era. Not authoritative for fetal-death-specific fields (gestation, fetal mortality) but provides cross-validation for shared fields.
+
+### Open questions for human
+
+Carried + new:
+
+1-17: (carried)
+
+18. NEW: **V3b post-submission resolution path**. If V3b is to ship in a v1.2 release: which acquisition route should be pursued first? (NBER email, NCHS data request, ICPSR, academic search). Estimated agent-time once docs are in hand: 2-3 sessions.
+
+### Build artifacts current
+
+(unchanged from 2026-05-12T03:30:00Z) + NEW:
+- `raw_data/Fetal{1982..1991}US.zip` (10 files)
+- `raw_docs/reference/natality{1980..1989}.dct` (10 NBER files, adjacent reference)
+- `raw_docs/reference/fetaldeath2020.dct` (NBER format-confirmation sample)
+
+### Notes for next session
+
+Two pre-submission tasks remain:
+- **Natality v2.8** (next session start; PRE-FLIGHT done 2026-05-12T03:25:00Z; ~2 sessions for DO).
+- **Task 7 V3a** (1989-1991 only; ~1 session; happens after v2.8).
+
+Post-submission backlog:
+- **Task 7 V3b** (1982-1988) — needs documentation acquisition first.
+- **Various polish** (file_inventory + external_validation_targets + live_births_by_year metadata appends for 2003+2004; version-string bumps in CITATION/README/ABOUT_THIS_RELEASE/FAQ/COMPARABILITY; PROVENANCE SHA refresh).
 
 ---
 
