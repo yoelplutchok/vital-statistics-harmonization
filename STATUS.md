@@ -1,6 +1,107 @@
-# STATUS — last updated 2026-05-12T05:10:00Z
+# STATUS — last updated 2026-05-12T06:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T06:30:00Z — Natality v2.8.0 DATA-side complete: all 4 columns renamed, 4 parquets re-derived, both NVSR gates PASS (183/183 + 33/35+2-diff); monorepo sync + RECEIPT remain for next session
+
+### Current phase
+
+Phase A continuing. **Natality v2.8.0 data-side work (KICKOFF.md sequence step 1) is COMPLETE this session.** 4 columns canonically renamed in the natality build dir (`/Users/yoelplutchok/Desktop/natality-harmonization/`, commit `9fbc5b0`); all 4 parquets re-derived with new column names; both NVSR validation gates pass byte-exact. Task is NOT yet end-to-end complete: monorepo sync (step 12), version-string ripple (step 13 partial), and formal RECEIPT (step 14) remain for the next session. No `natality_v28_rename-complete` tag yet.
+
+Q19/Q20 (Task 7 scope expansion to V3a+V3b) remain unanswered. They do not gate v2.8 itself but gate the NEXT task (Task 7) after v2.8 finishes.
+
+### What was done this session
+
+1. Session start: full §1 read of STATUS (2026-05-12T05:10Z section), NEXT_STEPS, README, PROJECT_STRUCTURE, DECISION_LOG (last 10), FIX_LOG (all 4), LESSONS (all 4). Handshake (a-d) returned to user; user authorized "proceed as you think best."
+2. PRE-FLIGHT for `natality_v28_rename` per §5 template, committed to `PRE_FLIGHT_LOG.md` as `f2c5b34` (2026-05-12T05:30Z timestamp; PROCEED, no §7 halt). Field-value snapshot reconfirmed exact 61 string-literal references = DECISION_LOG 2026-05-12T03:25Z prediction.
+3. Build-dir staging: stashed pre-existing cosmetic `M README.md` diff (one-line scrub removing "(for a new researcher or LLM)" from section header); tagged `natality_v28_rename-pre-do` in both monorepo (at `f2c5b34`) and build dir (at `dcabd8c`).
+4. Build-dir edits (16 files, 74 ins / 74 dels, all pure renames) committed at `9fbc5b0`:
+    - `metadata/harmonized_schema.csv`: 4 row renames + 5 cascading derivation_rule/raw_source_by_year cross-references.
+    - `metadata/external_validation_targets_v1.csv` + `_v3_linked.csv`: column header `year`→`data_year` + notes-text `restatus`→`residence_status`.
+    - `scripts/03_harmonize/harmonize_v1_core.py` + `harmonize_linked_v3.py`: output schema field names (lines 463, 464, 472, 474 and 243, 244, 252, 254). Parser-side `_get_col(batch, "year")` reads from yearly_clean (still has "year") — DELIBERATELY UNTOUCHED.
+    - `scripts/04_derive/derive_v1_core.py`: required-columns list.
+    - 5 validate scripts: `validate_v1_invariants.py`, `compare_external_targets_v1.py`, `compare_external_targets_v3_linked.py`, `harmonized_missingness.py`, `key_rates_from_derived_core.py`. (3 yearly_clean readers + 1 NCHS-CSV reader UNTOUCHED: `qa_yearly_core_parquet.py`, `validate_linked_parquets.py`, `validate_row_counts_vs_nchs.py`.)
+    - `scripts/06_convenience/write_residents_only.py`, `scripts/07_figures/generate_paper_figures.py`.
+    - 6 docs (`CODEBOOK`, `COMPARABILITY`, `ABOUT_THIS_RELEASE`, `VALIDATION`, `FAQ`, `GETTING_STARTED`): backtick column references + bare-word references.
+    - `.zenodo.json`: version `v2.7.0` → `v2.8.0` (satisfies anti-pattern #6 schema-version bump requirement).
+5. SMOKE Tier 0 (import sanity) + Tier 2 (year 2022 harmonize to scratch path): PASSED. New column names present, old names absent on smoke output.
+6. Tier 3 full re-derive (4 parquets, ~16 min total wall):
+    - V1 harmonize 1990-2024: 7:05 wall, 138,819,655 rows × 71 cols.
+    - V1 derive (background-paralleled with C): 5:26 wall → 138,819,655 rows × **84** cols.
+    - V3 linked harmonize 2005-2023 (background-paralleled with B): 5:46 wall, 74,943,824 rows.
+    - V3 linked derive: 3:01 wall → 74,943,824 rows × **94** cols.
+    - All 4 parquets verified: new names present, old names absent; row + col counts unchanged from v2.7.0.
+
+### v2.8.0 parquet SHA-256 (record for PROVENANCE; CHANGED from v2.7.0 as expected)
+
+```
+v2_harmonized.parquet            230efed2ac34c794638aceaa777a31e62abffb6e8e6af94ed215970933ccebac
+v2_harmonized_derived.parquet    e16ad5323d68e28d401518f1ff56b12c09e43883e76022a9823d51a677c41d44
+v3_linked_harmonized.parquet     e1795ac615a6ee40b0d5813ac6f6c072692bc30808b746b3c3efb06cf5f357e7
+v3_linked_harmonized_derived.parquet  9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777
+```
+
+v2.7.0 (immutable on Zenodo at concept DOI 10.5281/zenodo.19363074) parquet SHAs:
+- v2 derived `9f917a43474eb9e3ed23aa95c714209421c25c29937376651149d22fab934ef0` (recorded at DECISION_LOG 2026-05-12T03:30Z)
+- v3 linked derived `46c169b59b040028d9830546fad71f30d0c6364f10fbc1676b56ae6ee993eb16` (PRE-FLIGHT this session)
+
+### Validation gate results (Plan steps 7-8)
+
+- **V1 NVSR** (`compare_external_targets_v1.py`): **183/183 PASS byte-exact**, 0 FAIL, 0 MISSING. Identical to v2.7.0.
+- **V3 linked NVSR** (`compare_external_targets_v3_linked.py`): **35 PASS** in tolerance-aware framing; Diff breakdown is **33 byte-exact (Diff=0 or Diff=0.00) + 2 Diff=1 cells** at `(unweighted_infant_deaths, 2015)` 23326→23327 and `(postneonatal_deaths, 2015)` 7772→7773. Matches Task 6 canonical framing (DECISION_LOG 2026-05-11T17:30Z) EXACTLY — same 2 cells, same Diff direction. Rename is value-preserving.
+
+### Last completed step
+
+Plan step 8 of 14 (V3 linked NVSR validation, all PASS).
+
+### In-progress
+
+(none — clean checkpoint at end-of-data-side)
+
+### Next planned task
+
+**Continue natality v2.8.0 rollout** (next session): Plan steps 9 (any straggler doc edits), 10 (monorepo aliasing helper `shared/helpers/canonical_join_keys.py` — currently forward-compatible no-op for v2.8 inputs; add deprecation note when monorepo notebooks confirmed working), 11 (re-run monorepo `notebooks/joint_use_demo.ipynb` + `paper_companion.ipynb` against v2.8 parquets), 12 (sync renamed `metadata/` + `scripts/` + `docs/` from build dir to monorepo's `natality/` subdir), 13 (version-string ripple in `README.md` lines 28+154, FAQ/ABOUT/etc. once new Zenodo DOI reserved at Task 10), 14 (write RECEIPT to `RECEIPTS/natality_v28_rename_<UTC>.md`, tag `natality_v28_rename-complete` in both repos, append entries to FIX_LOG + DECISION_LOG).
+
+After v2.8 fully completes: Task 7 (V3a-only or V3a+V3b, pending Q19/Q20).
+
+### Blocked
+
+- **Q19/Q20** still gate Task 7 (post-v2.8). Not asked yet this session because v2.8 is in-progress and they don't block the v2.8 finish-up.
+- **Monorepo notebook re-run** (plan step 11): cheap-check exists that aliasing helper is forward-compatible (gated by `if k in df.columns` so v2.8's `data_year` columns pass through; `"year" not in df.columns` for v2.8 input, helper becomes effective no-op). But this needs empirical confirmation by actually running the notebooks against v2.8 parquets. If they fail unexpectedly, the helper neuter or notebooks need investigating.
+
+### Open questions for human
+
+Carried + (none new this session):
+1-17: (carried)
+18: ~~V3b post-submission resolution path~~ — SUPERSEDED at 2026-05-12T04:30Z.
+19: Task 7 scope expansion (V3a-only vs V3a+V3b). UNANSWERED.
+20: Task ordering after v2.8 (KICKOFF as-is vs pull Task 7 forward). UNANSWERED.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **Build-dir `M README.md` is stashed** (`git stash list` shows "pre-v2.8 cosmetic README scrub diff (pre-existing, not v2.8)" — `stash@{0}` on natality build-dir). Decide whether to commit it standalone, drop it, or leave it stashed before doing more build-dir mutations.
+2. **The new v2.8.0 parquet SHAs above MUST be unchanged at next-session start.** If `output/harmonized/*.parquet` SHAs drift (someone re-ran a script), halt and investigate before sync.
+3. **Build-dir HEAD is at `9fbc5b0`** (post-v2.8.0 rename commit). Monorepo HEAD is at the post-PRE-FLIGHT commit `f2c5b34` plus this STATUS update.
+4. **Monorepo aliasing helper `shared/helpers/canonical_join_keys.py`** — DO NOT empty `NATALITY_TO_CANONICAL` dict until BOTH monorepo notebooks have been re-run against v2.8 parquets and confirmed PASS. Premature neuter breaks any code path that still depends on the rename for v2.7.0 input (e.g., users reading the v2.7.0 Zenodo parquet against the monorepo helper).
+5. **Schema-version bump location**: `.zenodo.json` (done). Other natality version strings (`README.md` lines 28, 154 reference v2.7.0 + concept DOI 10.5281/zenodo.19363074 / latest 10.5281/zenodo.19868835). These need to be updated when the new v2.8.0 Zenodo deposit is created (Task 10). Until then, leave them at v2.7.0 (so a reader cloning the build-dir repo can still find the existing Zenodo deposit) OR add a "v2.8.0 not yet deposited" note. Decide at next session.
+6. **The 4 v2.8 parquet SHAs (above) become the new v2.7.0-replacement baselines.** Re-derive determinism not yet verified (would need a second re-run; the v2.7.0 byte-stability was verified at each prior natality release — bit-stability should hold but is currently unverified for v2.8 specifically).
+7. **`natality_v28_rename-complete` tag** does NOT exist yet (the task is not complete). Do not tag until plan steps 9-14 done.
+
+### Build artifacts current
+
+- v2.7.0 natality parquets: **OVERWRITTEN locally** with v2.8.0 at the build dir (the immutable v2.7.0 still exists at https://doi.org/10.5281/zenodo.19868835 — re-download if needed).
+- v2.8.0 natality parquets (new state on disk): SHAs above. Not yet deposited to Zenodo (Task 10 will do that).
+- Monorepo `shared/helpers/canonical_join_keys.py`: unchanged from prior state; forward-compatible no-op for v2.8 inputs by design.
+- Monorepo `natality/` subdir: STILL at v2.7.0 schema (its `harmonized_schema.csv` differs from build dir's by the 4 renames + cascading edits; identified by direct `diff -q`).
+- Monorepo notebooks (`joint_use_demo.ipynb`, `paper_companion.ipynb`): unchanged; pending step 11 re-run.
+
+### Notes for next session
+
+- The v2.8 data side is solid: schema renamed, parquets re-derived, both NVSR gates PASS byte-exact (or per the V3 documented tolerance). The remaining work is documentation, monorepo sync, and the formal RECEIPT.
+- The 2-session estimate is on track. Next session is the close-out: sync + notebooks + RECEIPT.
+- Q19/Q20 should be answered before next session ends; once v2.8 close-out lands, Task 7 PRE-FLIGHT starts.
 
 ---
 
