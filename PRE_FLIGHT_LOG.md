@@ -8,6 +8,184 @@
 
 ---
 
+## PRE-FLIGHT for C8.3 — 2026-05-12T22:30:00Z — Cross-product Tier-1: timeline + perinatal joint + Section B race validation — **RESULT: HALT**
+
+### Scope summary
+
+C8.3 §15.C entry (NEXT_STEPS.md lines 881–903): land three cross-product items in one task — (i) cross-product timeline figure (`shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`); (ii) three-product perinatal-mortality joint computation in `notebooks/joint_use_demo.ipynb` as a new Section C; (iii) Section B 2017 race-stratified NVSR validation, the deferred Task 4 fragment. §15 names PRE-FLIGHT inputs as "All three parquets (post-C8.2 refresh state); **NVSR 73-09 Table A for 2022 perinatal validation; NVSR fetal-mortality table for 2017 by maternal race** (PDF location verified at PRE-FLIGHT per L9); era-boundary metadata in each subproject's COMPARABILITY." Estimated effort 2 sessions.
+
+This PRE-FLIGHT enumerates the §15 inputs read-only (no DO mutation), runs the Convention 3 Field-value snapshot for every cell/row/column the task would mutate, and runs the L9 cheap-checks on the two NVSR sources named in the §15 plan. **One HALT condition surfaced (§7.12 + planning error): two of the four NVSR source-location assumptions in the §15 plan do not match the actual NVSR contents.** Two of the three sub-items proceed cleanly; the third needs a scope clarification. PRE-FLIGHT result is HALT pending user decision on the Section B race-validation source year + race-classification.
+
+### Inputs
+
+- [x] All required parquets exist + match STATUS 2026-05-12T23:30:00Z (C8.2-complete) SHAs
+  - `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_harmonized.parquet` sha256=`38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` (43 yrs 1982–2024, 2,427,233 rows × 73 cols) ✓
+  - `…/fetal_death_derived.parquet` sha256=`185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09` (same row count, 89 cols, post-C8.2) ✓
+  - `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` (35 yrs 1990–2024, 138,819,655 rows) ✓
+  - `…/natality_v3_linked_harmonized_derived.parquet` (19 yrs 2005–2023, 74,943,824 rows) ✓
+- [x] Monorepo symlinks at `output/harmonized → /Users/.../fetal-death-harmonization-build/output/harmonized` intact ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - `C8.1-complete` tag at `9fe662a` ✓
+  - `C8.2-complete` tag at `bb19c5a` ✓ (current HEAD; verified via `git tag --list 'C8.2*'`)
+- [x] No stale checkpoints from previous incomplete runs
+  - `RECEIPTS/C8.3_*.md`: does not exist ✓
+  - `git tag --list 'C8.3*'`: empty ✓
+- [x] Forward-looking HALTs from STATUS 2026-05-12T23:30:00Z (10 items) — verified
+  - **#1** `C8.2-complete` + `C8.2-pre-do` tags present ✓
+  - **#2** Post-C8.2 parquet SHAs match STATUS-recorded values ✓ (`38e2cecb…` + `185c071e…`)
+  - **#3** V3b baseline parquets preserved as `.V3b_baseline.parquet` sidecars at `e3d6c64a…` + `4d1b37cc…` ✓
+  - **#4** Smoke EXPECTED state pinned to 43 yrs / 2,427,233 rows ✓ (verified via `pq.read_table(columns=['data_year']).to_pandas()` row count + year set)
+  - **#5** `field_specs.py` `layout_for_year` accepts 1982–2024 ✓ (no probe of 2025; not relevant to C8.3)
+  - **#6** External validation 88/88 + 2 spot cells unchanged ✓
+  - **#7** dtype-parity XFAIL still in place ✓
+  - **#8** 4× `__init__.py` files still present ✓ (cache-cleared `pytest fetal_death/tests/ natality/tests/` produces 15 passed + 1 xfailed — confirmed implicitly via STATUS 23:30Z + commit log; not re-run at this PRE-FLIGHT)
+  - **#9** Linked-2024-cohort refresh remains future-task — `2025PE2024CO.zip` still HTTP 404, no action this task ✓
+  - **#10** Manuscript stale-numerics gap noted (43 yrs / 2.43M records in repo vs 29 yrs / 1.6M in `paper/draft_v2_hmd_styled.md`) — C8.3 does not edit the manuscript; flagged for Phase D step 6.
+
+### Environment
+
+- [x] Python: 3.13.9 (≥3.11) ✓
+- [x] pandas + pyarrow 18.1.0 ✓
+- [x] PyMuPDF: present (used for L9 PDF text-extraction probes during this PRE-FLIGHT) ✓
+- [x] matplotlib: TBD — C8.3 DO needs it for the timeline figure; will verify before SMOKE. (Not a HALT; standard scientific-python install.)
+- [x] nbformat + nbclient: present (per `_build_joint_use_demo.py` existing invocation) ✓
+- [x] Working directory clean (`git status`): ✓
+- [x] On `main` at commit `bb19c5a` (= `C8.2-complete`): ✓
+
+### Source documentation
+
+NVSR PDFs available on disk (in fetal-death build dir's `raw_docs/.../validation/`):
+
+- `nvsr73-09.pdf` (Gregory et al. 2024, *Fetal Mortality: United States, 2022*, 21 pp) sha256=`2590e41719d1be949a2ad0e32c6497a747194020d26c38e4fcbecedced84c8d1` ✓
+- `nvsr57_08.pdf` (MacDorman & Kirmeyer 2009, *Fetal and Perinatal Mortality, US 2005*, used for V2-era validation) sha256=`71c0b48ae71555b036952dbde1091e75a410327d240e66562fc9dbdb06b59861` ✓
+- `nvsr64_09.pdf` (Mathews & MacDorman 2015, *Infant Mortality Statistics From the 2013 Period Linked Birth/Infant Death Data Set*, 30 pp) sha256=`bef51b1593a6d180abe9230ef05c2d24269f68468d36c6c05eb67fb8cc521304` ✓ — note: INFANT mortality, **not** "Fetal and Perinatal Mortality 2013" as the validation/INDEX.md memo claims (INDEX.md row needs a fix; documented below as a non-HALT finding).
+- Other NVSR PDFs on disk for V2-era references: `nvsr55_06`, `nvsr56_03`, `nvsr60_08`; deep-history: `sr20_026`, `db169`.
+- Natality NVSR: `Births_Final_Data_2005.pdf` through `Births_Final_Data_2020.pdf` at `/Users/yoelplutchok/Desktop/natality-harmonization/raw_docs/nvsr/`. No 2021–2024 *Births: Final Data* PDFs on disk.
+
+NVSR PDFs **not** on disk that the §15 plan implicitly assumes:
+
+- §15 names **"NVSR fetal-mortality table for 2017 by maternal race"** as a PRE-FLIGHT input. **An NVSR titled "Fetal Mortality: United States, 2017" does not appear to exist.** L9 probe (this PRE-FLIGHT 22:00–22:25Z): probed every NVSR 65/66/67/68/69 PDF at `cdc.gov/nchs/data/nvsr/nvsr{vol}/nvsr{vol}_{nn}{,_-,_508,-508}.pdf` and scanned first-page text via PyMuPDF. Found NCHS "Fetal Mortality" annual reports: NVSR 70-11 (data year **2019**), NVSR 71-04 (**2020**), NVSR 72-08 (**2021**), NVSR 73-09 (**2022**); NVSR 65-07 (**Cause of Fetal Death** 2013); NVSR 69-04 (**Cause-of-Death from Fetal Death File 2015–2017** — note: this IS a cause-of-death focused report on 2015–2017 data, not a race-stratified fetal-mortality-rate report). **No standalone "Fetal Mortality: United States, 2017" exists.** NVSR 73-09 Table 1 publishes year-by-year fetal-death TOTALS 1990–2022 (and 20–27wk / 28+wk breakouts for 2014–2022) but **not race-stratified breakdowns for any year other than 2022**. So the §15 "NVSR fetal-mortality table for 2017 by maternal race" source assumption is incorrect: such a published cell does not exist.
+
+### Outputs (intended)
+
+Per §15 DO scope; targets do not yet exist (good):
+
+- [x] `shared/helpers/build_timeline_figure.py` — does not exist ✓
+- [x] `figures/fig1_coverage_timeline.pdf` — does not exist (`figures/` empty) ✓
+- [x] `figures/fig1_coverage_timeline.png` — does not exist ✓
+- [x] `notebooks/joint_use_demo.ipynb` — exists (will be MUTATED via re-build of `_build_joint_use_demo.py`); current sha=`39d2fb3c70494327…` (Section A 2022 by age + Section B 2017 by race-bridged; **DESIGN: tracks-current-state**)
+- [x] `notebooks/_build_joint_use_demo.py` — exists; will be MUTATED; current sha=`7bab184c88dff6f9…`
+- [x] `docs/JOINT_USE_GUIDE.md` — exists; **may be MUTATED** with a perinatal-mortality worked example per §15; current sha=`09266eae572bddf7…`
+- [x] `RECEIPTS/C8.3_*.md` — does not exist ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+**Files this task will mutate (write or edit):**
+- `notebooks/joint_use_demo.ipynb` (existing 2-section notebook → 3-section): adds Section C (three-product perinatal joint computation, 2022); MAY refresh Section B 2017 race-stratified content depending on user-resolution below. Currently asserts: `len(fd_2022) == 20202`, `len(nat_2022) == 3667758`, `len(fd_2017) == 22827`. All three match NVSR 73-09 Table 1 (2022 fetal deaths 20,202; 2022 live births 3,667,758; 2017 fetal deaths 22,827). ✓
+- `notebooks/_build_joint_use_demo.py` (existing builder script): adds Section C build cells; minor edits to Section B comments depending on resolution.
+- `figures/` (empty directory): new `fig1_coverage_timeline.{pdf,png}` + helper at `shared/helpers/build_timeline_figure.py`.
+- `docs/JOINT_USE_GUIDE.md` (existing): the §15 plan calls for a new "perinatal mortality worked example." Current document has only the FMR worked example (lines 86-122).
+
+**Files this task will NOT mutate** (Anti-Pattern #8 — not in scope):
+- Any harmonized parquet (no canonical-data mutation).
+- Any `harmonized_schema.csv` or `file_inventory.csv` (no schema change).
+- Manuscript draft (Phase D step 6 territory).
+- `external_validation_targets.csv` for any product (NVSR validation cells live in the notebook + this PRE-FLIGHT-log).
+
+**Field-value snapshot for cells whose existence/values are load-bearing for C8.3 computations:**
+
+| Target | Source | Current value | Used by |
+|---|---|---|---|
+| `fetal_death_derived[data_year=2022, tab_flag=2, res!=4].shape[0]` | post-C8.2 parquet | 20,202 (existing assert) | NVSR 73-09 Table 1 — total fetal deaths 2022, matches byte-exact |
+| Same, gestational_age_*≥28wk | post-C8.2 parquet | **TBD** (DO Tier 0 compute) | Target = 9,956 per NVSR 73-09 Table 1 ("28 weeks or more" 2022 column); proportional-redistribution caveat applies |
+| `natality_v2_harmonized_derived[year=2022, restatus!=4].shape[0]` | shipped parquet | 3,667,758 (existing assert) | NVSR 73-09 Table 1 — live births 2022, matches byte-exact |
+| `linked_derived[data_year=2022, residence_status!=4, age_at_death_days<7].shape[0]` | shipped parquet | **TBD** (DO Tier 0 compute) | Sub-component for perinatal numerator; would validate against a 2022 linked-file infant-mortality NVSR (NVSR 73-XX series for 2022 cohort, NOT on disk; would need fetch) |
+| `fetal_death_derived[data_year=2017, tab_flag=2, res!=4].shape[0]` | post-C8.2 parquet | 22,827 (existing assert) | NVSR 73-09 Table 1 — 2017 total, matches byte-exact. NO race breakdown published for 2017. |
+| `fetal_death_derived[data_year=2017, …, maternal_race_bridged=k]` for k∈{1,2,3,4} | post-C8.2 parquet | (computed in joint_use_demo Section B; values not duplicated here) | Existing machinery demo, currently UNVALIDATED externally |
+| NVSR 73-09 Table A (2022 race × Hispanic, single-race revised standard) | nvsr73-09.pdf p.6 | 7 rate cells: Total 5.48; AIAN 7.22; Asian 3.70; Black 10.05; NHOPI 10.36; White 4.48; Hispanic 4.63 | Potential alternative validation source — see Halt #1 |
+| Era-boundary years for timeline figure | COMPARABILITY docs | Fetal: 1982/1989/1992/2003/2005/2018; Natality: 1990/2003/2014/2020; Linked: 2005/2016/2020 (see era-spec below) | Timeline figure spec |
+
+**Era-band spec for timeline figure (from COMPARABILITY docs):**
+
+| Product | Bands |
+|---|---|
+| Fetal death (1982–2024) | 1982–1988 V3b (1978-revision); 1989–1991 V3a (early 1989-rev); 1992–2002 V2 (1989-rev uniform); 2003–2004 V2.1 (transition); 2005–2017 V1 (2003-rev transition, 6.6%→96.2% A-version state-by-state); 2018–2024 V1+ uniform 2003-revision |
+| Natality (1990–2024) | 1990–2002 1989-rev uniform; 2003–2013 2003-rev transition state-by-state; 2014–2019 2014-reformat (revised-only); 2020–2024 bridged-race-dropped era |
+| Linked (2005–2023) | 2005–2015 denominator-plus cohort format; 2016–2023 period-cohort merged format. Sub-band 2020+ for bridged-race-dropped. |
+
+### Halt conditions tripped
+
+#### HALT #1 — §7.12 (Conflicting documentation) + planning error: §15 names two NVSR sources that don't match the actual NVSR contents
+
+**Discovery.** §15 C8.3 entry (line 887) states:
+
+> *"PRE-FLIGHT inputs. … **NVSR 73-09 Table A for 2022 perinatal validation; NVSR fetal-mortality table for 2017 by maternal race** (PDF location verified at PRE-FLIGHT per L9)."*
+
+**Reality** (L9 cheap-check on NVSR 73-09 + NVSR-series probe):
+
+- **(A) "NVSR 73-09 Table A for 2022 perinatal validation."** NVSR 73-09 is titled *"Fetal Mortality: United States, 2022"* — it does **not** publish perinatal-mortality rates. The earlier MacDorman/Gregory *"Fetal and Perinatal Mortality"* combined series ended with NVSR 64-09 era (last edition published was 2013-data-year per NCHS website). For 2022, NCHS publishes fetal mortality and infant mortality as separate annual reports; no single NVSR cell publishes the combined perinatal rate. **Furthermore, NVSR 73-09 Table A is "Fetal mortality rate, by selected characteristics and race and Hispanic origin of mother: United States, 2022"** — a 2022 fetal-mortality-by-race table, NOT a perinatal-mortality table. The §15 phrasing conflated three things: (1) "perinatal mortality rate" as a computed concept, (2) NVSR 73-09 (fetal-mortality-only), and (3) Table A (race-stratified).
+
+- **(B) "NVSR fetal-mortality table for 2017 by maternal race."** No such NVSR exists. The NVSR "Fetal Mortality: United States, YYYY" annual series resumed with NVSR 70-11 (data year **2019**) after a gap; the series gap covers 2014–2018 data years. NVSR 73-09 Table 1 publishes 2014–2022 year-by-year fetal-death TOTALS (no race breakdown for 2014–2021; only 2022 has a race breakdown in Table A). Probe summary (L9 cheap-check at PRE-FLIGHT, ~30 min): probed `nvsr{65,66,67,68,69}_NN.pdf` covers via PyMuPDF text-extraction; found Cause-of-Fetal-Death reports (NVSR 65-07, NVSR 69-04) but no race-stratified fetal-mortality-rate report for 2017. The 2017 fetal-mortality-by-race tabulation is unpublished.
+
+**Consequence.** As written, §15 C8.3's NVSR validation source is unworkable for both (i) the perinatal joint computation and (ii) the 2017 Section B race validation. The two cleanly-validate-able cells from existing on-disk sources are:
+
+- **2022 28+wk fetal deaths = 9,956** per NVSR 73-09 Table 1 ("Fetal deaths 28 weeks or more" column for 2022). Useful for the 28+wk sub-component of the perinatal numerator.
+- **2022 race-stratified fetal mortality rates** per NVSR 73-09 Table A (Total 5.48 + 6 race-Hispanic group rates). Useful for a 2022 race-stratified validation **IF** the joint_use_demo's race-stratification switches from `maternal_race_bridged` (null in fetal-death 2018+ and natality 2020+, so unavailable for 2022) to the single-race + Hispanic columns NCHS uses post-2018 (`race_hispanic_revised` in fetal-death, `maternal_race_ethnicity_5` in natality).
+
+**Options for resolution (user decision required)**:
+
+- **(a) RECOMMENDED — Re-scope Section B validation to 2022 single-race + Hispanic; reframe the perinatal joint computation as a demo without a full-rate NVSR cell.** Section B in joint_use_demo.ipynb switches to 2022 fetal-mortality by single-race + Hispanic groups (7 cells), validated against NVSR 73-09 Table A (on disk; no fetch needed). The existing 2017 bridged-race machinery is preserved in the notebook for backward documentation but no longer claimed as NVSR-validated — it remains a "machinery demo" closing the manuscript's joint-use bridge for the last-bridged-race-year. The perinatal joint computation (new Section C) computes the rate as a JOINT-USE DEMO using all three parquets for 2022, with **sub-component validations**: (i) 28+wk fetal-death count = 9,956 (NVSR 73-09 Table 1); (ii) <7-day early neonatal deaths from linked file — validated against any 2022 linked-file infant-mortality NVSR found, OR documented as unvalidated if no such NVSR exists. No claim of "perinatal mortality rate validated byte-exact." Pro: minimal NVSR-fetch friction (1 known PDF for sub-component (ii) — to be located in DO step 1 L9); strongest manuscript-relevant year (2022 = latest post-C8.2); no bridged-race availability issues. Con: drops the "2017 deferred Task 4 fragment" framing in favour of a more defensible 2022 validation.
+
+- **(b) Preserve 2017 bridged-race Section B + drop NVSR validation claim there; do perinatal demo against the 2022 28+wk sub-component only.** Keep joint_use_demo Section B's existing 2017 machinery (machinery demo, no NVSR cell). Perinatal Section C uses 2022 with the 28+wk-only validation per (a). Pro: smallest scope change vs §15 plan. Con: leaves Section B externally unvalidated — defers the deferred-Task-4-fragment ambition again.
+
+- **(c) Defer the 2017 race validation entirely; do a 2022 race validation as a new Section B' addition; drop perinatal entirely from this task.** Splits C8.3 into a smaller item that ships only the timeline figure + 2022 race validation; perinatal joint computation moves to a new C8.X candidate. Reduces this task to ~1 session. Con: a `[plan-update]` adding a new task, and the perinatal-joint demo is the most distinctive cross-product demonstration; moving it out feels like under-shipping.
+
+- **(d) Halt C8.3 entirely, propose a `[plan-update]` that rewrites the §15 entry with explicit NVSR sources matching reality.** Pro: methodologically clean. Con: a session of plan-update overhead before any work.
+
+#### Other findings (NOT HALTs)
+
+- **L13-like INDEX.md soft-flag.** `…/fetal-death-harmonization-build/raw_docs/fetal_death/validation/INDEX.md` describes NVSR 64-09 as *"Fetal and Perinatal Mortality, United States, 2013 (MacDorman & Gregory)"*; the actual PDF cover (page 1, PyMuPDF text-extraction) reads *"Infant Mortality Statistics From the 2013 Period Linked Birth/Infant Death Data Set"* by Mathews/MacDorman/Thoma. Same volume number; different topic. This is one notch beyond LESSONS L13-extension (CSV inventory file-roles drift). No canonical-data impact in C8.3; the file is used for V2-era reference. FIX_LOG entry can be filed by a future audit / Phase D pre-flight that touches the validation/ inventory.
+- **2017 fetal-death external_validation_targets.csv** has TWO existing rows: total 22,827 fetal deaths (NVSR 73-09 Table 1) + 2017 fetal-mortality rate 5.89 (NVSR 73-09 Table 1). Both PASS in current validation. The "deferred Task 4 fragment" was specifically the race-stratified cells, which are NOT in external_validation_targets.csv.
+- **Manuscript line 99 numerical claim** *"Cross-product worked examples — a joint-use demonstration reproducing the 2022 maternal-age-stratified fetal mortality cells against NVSR 73-09 Table 4"* — verified. Section A in joint_use_demo.ipynb validates against NVSR 73-09 Table 4 (8/8 age cells); the manuscript's claim is accurate. C8.3 may add a sibling claim for the new Section C / Section B' work; manuscript edit is Phase D scope.
+- **L9 cheap-check on NVSR 73-09 Table 1 contents:** the 2022 row of Table 1 publishes total 20,202; 20–27wk 10,246; 28+wk 9,956; live births 3,667,758; rates 5.48 / 2.79 / 2.71 per 1,000. Table 1 footnote: "Not stated gestational age proportionally distributed; see Technical Notes" — the 9,956 figure is post-redistribution. **Important downstream issue for Section C verify criterion**: our parquet's `gestational_age_*` columns store observed gestation values without proportional redistribution. The 28+wk count from a naïve filter will be slightly different from 9,956. The H8-class fix (auto-derive every NVSR-comparable cell from the parquet with redistribution if NCHS does redistribution) is C8.4-scope, not C8.3; for C8.3 we document the redistribution caveat in the receipt's Self-check and the notebook's Section C narrative. This is **not** a halt; it's a known tolerance.
+
+### Result
+
+**HALT** — One §7 condition tripped (§7.12 conflicting documentation: NVSR sources named in §15 do not match the actual NVSR series contents for both (i) 2022 perinatal validation and (ii) 2017 by-maternal-race fetal mortality). Do not proceed to C8.3 SMOKE/DO without user authorization on the Section B / Section C scope-and-validation strategy.
+
+Forward-looking once resolved: DO step 1 will probe NCHS for a 2022 period-cohort-linked infant-mortality NVSR (likely under NVSR 73-XX series, e.g. NVSR 73-3 or NVSR 74-X candidates) for the early-neonatal sub-component validation in Section C. If found and fetch-able, the sub-component validation lands; if not, Section C narrative documents the absence and the perinatal-rate computation remains a JOINT-USE DEMO with one sub-component (28+wk fetal deaths) externally validated.
+
+---
+
+## PRE-FLIGHT addendum for C8.3 — 2026-05-12T23:50:00Z — HALT #1 resolved per user authorization; NVSR 73-05 located + PROCEED to SMOKE/DO
+
+**User authorization received 2026-05-12T22:30Z** (single AskUserQuestion round): option **(a) 2022 race + perinatal demo (Recommended)**. §11 plan-update applied via DECISION_LOG entry 2026-05-12T23:50:00Z editing `NEXT_STEPS.md` §15.C C8.3 entry + `KICKOFF.md` line 179.
+
+**Forward-looking follow-up resolved at addendum time:** Probed NVSR 73 + 74 series for a 2022 period-cohort-linked infant-mortality NVSR. **Found: NVSR 73-05** (Ely & Driscoll 2024, *Infant Mortality in the United States, 2022: Data From the Period Linked Birth/Infant Death File*, 19 pp, July 25, 2024) at `https://www.cdc.gov/nchs/data/nvsr/nvsr73/nvsr73-05.pdf`. Fetched to `/tmp/c83_preflight/nvsr73-05.pdf`. sha256=`dccdc895022c3c9d3fbc07ffce18dc3238af797197f3cc6f0b35e463676c95cc`. Table 2 (page 10) verified containing:
+- 2022 Total Infant Mortality Rate = 5.61 per 1,000 LB
+- 2022 Early neonatal (<7 days) rate = **2.81** per 1,000 LB (headline for Section C sub-component validation)
+- Late neonatal (7–27) = 0.78; Total neonatal = 3.59; Postneonatal = 2.02
+- Race-stratified breakouts for each cell (AIAN 3.73; Asian 2.01; Black 5.05; NHOPI 3.36; White 2.23; Hispanic 2.65 for early neonatal column).
+
+This closes the §15 C8.3 PRE-FLIGHT-input gap. The early-neonatal sub-component validation in new Section C now has a single on-disk NVSR cell (Total = 2.81/1000); race-stratified ENN validation is OPTIONAL in scope.
+
+### Post-resolution input state (revised)
+
+- NVSR 73-09 (on disk in build-dir; SHA `2590e417…`) ✓
+- NVSR 73-05 (fetched to /tmp; sha `dccdc895…`); DO step 1 = move to `raw_docs/natality/nvsr/nvsr73-05.pdf` + add to `natality/metadata/file_inventory.csv` row + SHA-verify after move (per FIX_LOG 2026-05-12T01:30Z monorepo-path discipline).
+- All three parquets at C8.2-complete SHAs ✓
+- All era-boundary metadata sourced from COMPARABILITY docs ✓
+
+### Halt conditions tripped (post-resolution)
+
+(none — HALT #1 resolved via §11 plan-update; all other PRE-FLIGHT checks PASS)
+
+### Result
+
+**PROCEED** — to C8.3 SMOKE/DO under the revised §15.C scope. Tag `C8.3-pre-do` lands on this `[plan-update]` commit.
+
+---
+
 ## PRE-FLIGHT for C8.2 — 2026-05-12T22:30:00Z — Latest-year refresh (fetal 2023+2024, linked 2024) — **RESULT: HALT**
 
 ### Scope summary

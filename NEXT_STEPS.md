@@ -878,29 +878,53 @@ Both are sibling-layout extensions of the post-2017 V1-era COD layout already pa
 
 ---
 
-### Task C8.3 — Cross-product Tier-1: timeline + perinatal joint + Section B race validation
+### Task C8.3 — Cross-product Tier-1: timeline + perinatal joint + 2022 race validation
 
-**Goal.** Land three cross-product items in one task: (i) cross-product timeline figure (NEXT_STEPS §15 Task 8 — pulled in here since D.3 is Tier-1 must-have); (ii) three-product perinatal mortality joint computation (`EXPLORATION_REPORT.md` §D.1); (iii) Section B 2017 race-stratified NVSR validation (§D.2 — closes the deferred Task 4 fragment).
+**Re-scoped 2026-05-12T23:50:00Z at PRE-FLIGHT.** Original §15 entry (DECISION_LOG 2026-05-12T21:00:00Z) named "NVSR 73-09 Table A for 2022 perinatal validation" and "NVSR fetal-mortality table for 2017 by maternal race" as PRE-FLIGHT sources. C8.3 PRE-FLIGHT L9 cheap-check discovered: (a) NVSR 73-09 is fetal-mortality-only, not perinatal; Table A is 2022 fetal-mortality by single-race + Hispanic, not a perinatal table — NCHS no longer publishes a combined perinatal-mortality rate per year (the MacDorman *Fetal and Perinatal Mortality* series stopped after 2013 data); (b) no NVSR titled "Fetal Mortality: United States, 2017" exists — the NCHS annual fetal-mortality NVSR series gaps 2014–2018 data years (resumes at NVSR 70-11 = 2019). User authorized re-scope to **(a) 2022 race + perinatal demo** at 2026-05-12T22:30Z (DECISION_LOG 2026-05-12T23:50:00Z files the [plan-update]).
 
-**Why this matters.** Manuscript's "designed for joint use" central claim is currently demoed only as single-product fetal mortality. The perinatal-mortality rate formula `(FD ≥28wk + ENN <7d) / (live_births + FD ≥28wk) × 1000` requires all three products simultaneously — this is the *unique* HVS capability. D.3 timeline plausibly becomes manuscript Figure 1.
+**Goal.** Land three cross-product items in one task: (i) cross-product timeline figure (`shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`); (ii) three-product perinatal-mortality joint computation as a JOINT-USE DEMO in `notebooks/joint_use_demo.ipynb` Section C, with two sub-component validations against on-disk NVSR cells; (iii) Section B refactor to 2022 single-race + Hispanic fetal-mortality validation against NVSR 73-09 Table A (7 cells) — preserves the existing 2017 bridged-race machinery as a documented "machinery demo" for the last-bridged-race-year, but the NVSR-validated cells move to 2022.
 
-**PRE-FLIGHT inputs.** All three parquets (post-C8.2 refresh state). NVSR 73-09 Table A for 2022 perinatal validation; NVSR fetal-mortality table for 2017 by maternal race (PDF location verified at PRE-FLIGHT per L9). Era-boundary metadata in each subproject's COMPARABILITY.
+**Why this matters.** Manuscript's "designed for joint use" central claim is currently demoed only as single-product fetal mortality. The perinatal-mortality rate formula `(FD ≥28wk + ENN <7d) / (live_births + FD ≥28wk) × 1000` requires all three products simultaneously — this is the *unique* HVS capability. The new Section C surfaces it; the timeline figure plausibly becomes manuscript Figure 1.
 
-**SMOKE plan.** Tier 0: render 1-row timeline test; verify era bands at correct years. Tier 1: 2022 perinatal computation on a 100-record sample; manual sanity check. Tier 4: full 2022 cross-product perinatal computation; compare to NVSR Table A.
+**PRE-FLIGHT inputs.**
+- All three parquets (post-C8.2 refresh state): fetal-death v2.4.0 (43 yrs); natality v2.8.0 (35 yrs); linked v3 (19 yrs). SHAs recorded in PRE-FLIGHT 2026-05-12T22:30:00Z.
+- **NVSR 73-09 Table 1** (on disk at `/Users/.../fetal-death-harmonization-build/raw_docs/fetal_death/validation/nvsr73-09.pdf` sha=`2590e417…`): 2022 row publishes total 20,202; 20–27wk 10,246; **28+wk 9,956**; live births 3,667,758. Footnote: gestational age proportionally redistributed.
+- **NVSR 73-09 Table A** (same PDF, page 6): 2022 fetal mortality rates by single-race + Hispanic — Total 5.48; AIAN 7.22; Asian 3.70; Black 10.05; NHOPI 10.36; White 4.48; Hispanic 4.63.
+- **NVSR 73-05** (Ely & Driscoll 2024, *Infant Mortality in the United States, 2022: Data From the Period Linked Birth/Infant Death File*, sha=`dccdc895022c3c9d…`): Table 2 publishes 2022 **early neonatal (<7 days) rate = 2.81 per 1,000 live births**, with race-stratified breakouts (AIAN 3.73; Asian 2.01; Black 5.05; NHOPI 3.36; White 2.23; Hispanic 2.65). To be fetched into `raw_docs/natality/nvsr/` at DO step 1 (or referenced read-only from CDC URL with SHA pinned).
+- Era-boundary metadata: `fetal_death/COMPARABILITY.md` §"Era Structure" + STATUS for 2003-rev transition + V3a/V3b ranges; `natality/docs/COMPARABILITY.md` §"Known structural breaks" + linked-file format-transition + bridged-race-dropped; the era-band spec is summarized in the C8.3 PRE-FLIGHT log entry.
+
+**SMOKE plan.**
+- Tier 0 (timeline): render a 1-row prototype timeline figure with just fetal-death bars; verify era bands hit the right years (1982/1989/1992/2003/2005/2018) and the certificate-revision boundaries (1989/2003/2014) render as expected.
+- Tier 0 (perinatal joint): compute 2022 perinatal numerator on a 100-record sample of each product; manual sanity check of the gestational-age filter + age-at-death filter.
+- Tier 0 (Section B 2022): compute fetal-mortality rates for the 7 NVSR 73-09 Table A groups on a 100-record fixture; verify cell-count alignment.
+- Tier 1 (full): notebook end-to-end execute via `nbclient` (existing builder pattern in `_build_joint_use_demo.py`); cells must produce values matching NVSR within rounding tolerance.
 
 **DO scope.**
-- `shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`.
-- Extend `notebooks/joint_use_demo.ipynb` with a new Section C: three-product perinatal mortality 2022 by race.
-- Append a Section B race-validation block to `notebooks/joint_use_demo.ipynb` (or backfill its 2017 race-stratified cells).
-- Update `docs/JOINT_USE_GUIDE.md` with the perinatal-mortality worked example.
+1. Fetch NVSR 73-05 to `raw_docs/natality/nvsr/nvsr73-05.pdf` with SHA-verify against the PRE-FLIGHT-recorded value (`dccdc895022c3c9d…`).
+2. Author `shared/helpers/build_timeline_figure.py` producing `figures/fig1_coverage_timeline.{pdf,png}`. Render three horizontal bars (fetal-death 1982–2024; natality 1990–2024; linked 2005–2023) with era-band coloring + vertical revision-boundary guidelines + legend.
+3. Author new Section B + new Section C content in `notebooks/_build_joint_use_demo.py`. Section B → 7 NVSR 73-09 Table A cells (2022 single-race + Hispanic fetal mortality, using `race_hispanic_revised` in fetal-death and `maternal_race_ethnicity_5` in natality); preserve existing 2017 bridged-race cells as machinery demo with a "no NVSR cell published for 2017 by maternal race" caveat. Section C → 2022 perinatal joint computation with sub-component validations.
+4. Re-build `notebooks/joint_use_demo.ipynb` deterministically via `python notebooks/_build_joint_use_demo.py`. Confirm Section A 2022-by-age cells (existing) remain byte-exact.
+5. Update `docs/JOINT_USE_GUIDE.md` adding the perinatal-mortality worked example and a pointer to the timeline figure.
 
-**VERIFY criteria.** Timeline era bands match COMPARABILITY docs. Perinatal rate matches NVSR 73-09 Table A within rounding. 2017 race-stratified cells match NVSR fetal-mortality table.
+**VERIFY criteria.**
+- Timeline figure era bands match COMPARABILITY docs cell-by-cell (visual + a programmatic check that band-start/end years match a small fixture dict in the helper).
+- Section B 7/7 NVSR 73-09 Table A 2022 cells match within rounding (rate cells, 2 decimal places).
+- Section C 28+wk fetal-death count matches NVSR 73-09 Table 1 9,956 within proportional-redistribution tolerance (~50 records due to "not stated gestation" handling).
+- Section C early-neonatal rate from linked-file 2022 matches NVSR 73-05 Table 2 Total = 2.81 per 1,000 within rounding.
+- Section C perinatal rate sanity-checks against published sub-components (computed = 28+wk-FMR + ENN-rate where the denominators reconcile).
+- `pytest fetal_death/tests/ natality/tests/` 15 passed + 1 xfailed still holds (C8.3 does not touch parquets).
+- All Section A 2022 NVSR 73-09 Table 4 age cells remain byte-exact (regression gate).
 
 **Estimated effort.** 2 sessions.
 
-**Dependencies.** C8.2 (run on refreshed parquets to avoid re-render after refresh).
+**Dependencies.** C8.2 (post-refresh parquets — present at SHAs in PRE-FLIGHT).
 
-**Halt-condition flags.** F1, F2, F4 (cross-product join + canonical filter on both sides), H9, L9 (NVSR cell location).
+**Halt-condition flags.** F1, F2, F4 (cross-product join + canonical filter on both sides), H9, L9 (NVSR cell location resolved at PRE-FLIGHT for 2022 sources; NVSR 73-05 still to fetch at DO step 1). Convention 1 SHAPE-not-VALUE for any new test in C8.4 territory (none in C8.3). Convention 3 Field-value snapshot recorded in PRE-FLIGHT 2026-05-12T22:30:00Z.
+
+**Notes for next session.**
+- The 2017 deferred-Task-4-fragment commitment is reframed: NVSR cell-validation moves to 2022 (cleanly publishable); the 2017 bridged-race machinery in Section B is preserved as a documented "machinery demo." Manuscript line 99's existing claim ("the 2022 maternal-age-stratified fetal mortality cells against NVSR 73-09 Table 4") is unaffected and a sibling claim for Section B (2022 race) + Section C (perinatal demo) is candidate manuscript-edit scope for Phase D step 6.
+- The early-neonatal sub-component validation uses NVSR 73-05's Table 2 total = 2.81 per 1,000. The race-stratified breakouts (AIAN 3.73; Asian 2.01; …) are available if Section C needs deeper validation; a "single cell" total-validation is sufficient for the headline JOINT-USE DEMO claim.
+- The H8-class "proportional redistribution of unknown gestation" caveat (NVSR 73-09 Table 1's 9,956 is post-redistribution; our parquet stores observed gestation) is documented in the Section C narrative + RECEIPT Self-check; closing this drift is C8.4-scope (canonical-filter invariant tests), not C8.3.
 
 ---
 

@@ -23,6 +23,77 @@
 
 ---
 
+## 2026-05-12T23:50:00Z — [plan-update] C8.3 — Re-scope Section B race validation to 2022 single-race + Hispanic (vs NVSR 73-09 Table A); reframe perinatal joint as JOINT-USE DEMO with two sub-component validations (28+wk FD vs NVSR 73-09 Table 1; ENN <7d vs NVSR 73-05 Table 2)
+
+**Choice (user-authorized at PRE-FLIGHT halt-and-ask 2026-05-12T22:30Z, option `(a) 2022 race + perinatal demo (Recommended)`):** Apply a §11 plan-update rewriting `NEXT_STEPS.md` §15.C C8.3 entry's PRE-FLIGHT inputs + DO scope + VERIFY criteria, and `KICKOFF.md` line 179, to reflect actual NVSR contents instead of the original §15 wording's source-location errors.
+
+The two source-location errors in the original entry (DECISION_LOG 2026-05-12T21:00:00Z, written at phase-c-authorized time without L9 PDF cheap-check):
+
+- (A) "NVSR 73-09 Table A for 2022 perinatal validation" — NVSR 73-09 is *Fetal Mortality: United States, 2022* by Gregory et al., not a perinatal-mortality report; Table A is by single-race + Hispanic fetal mortality for 2022. NCHS no longer publishes a combined perinatal-mortality rate per year (the MacDorman/Gregory "Fetal and Perinatal Mortality" combined series stopped after 2013 data per NCHS website; the two strands are now separate annual NVSR series). C8.3 PRE-FLIGHT L9 cheap-check (text-extracted NVSR 73-09 via PyMuPDF; verified every table heading 2026-05-12T22:00Z).
+- (B) "NVSR fetal-mortality table for 2017 by maternal race" — no such NVSR exists. C8.3 PRE-FLIGHT (~30 min L9 cheap-check 2026-05-12T22:05–22:25Z): probed `cdc.gov/nchs/data/nvsr/nvsr{65..72}/nvsr{vol}_{nn}{,_,-,-508,_508}.pdf` covers via PyMuPDF; found NCHS annual Fetal Mortality NVSR series resumes at **NVSR 70-11 (2019 data)** after a 2014–2018 gap. The 2017 by-maternal-race fetal mortality tabulation is unpublished.
+
+**Plan-update applied (this commit):**
+
+1. **`NEXT_STEPS.md` §15.C C8.3 entry rewritten:**
+   - Title: "timeline + perinatal joint + 2022 race validation" (was "+ Section B race validation").
+   - PRE-FLIGHT inputs: cite **NVSR 73-09 Table 1** (28+wk fetal-death = 9,956 for 2022; on-disk PDF sha=`2590e417…`); **NVSR 73-09 Table A** (7 cells for 2022 single-race + Hispanic fetal-mortality rates; same on-disk PDF); **NVSR 73-05** (Ely & Driscoll 2024, *Infant Mortality 2022*, sha=`dccdc895…`, Table 2 = early-neonatal <7-day rate 2.81/1000 + 6 race-stratified breakouts; to be fetched at DO step 1 + recorded in PROVENANCE).
+   - DO scope: explicit re-spec — (i) timeline figure; (ii) Section B refactor to 2022 single-race + Hispanic (using `race_hispanic_revised` in fetal-death + `maternal_race_ethnicity_5` in natality); existing 2017 bridged-race cells preserved as documented "machinery demo" closing the manuscript's joint-use bridge for the last-bridged-race-year (no NVSR-validation claim); (iii) Section C perinatal joint computation as JOINT-USE DEMO with sub-component validations (28+wk FD vs NVSR 73-09 Table 1; ENN <7d vs NVSR 73-05 Table 2).
+   - VERIFY criteria: explicit per-cell tolerance + regression gate on Section A.
+
+2. **`KICKOFF.md` line 179 edit:** "C8.3 — Cross-product Tier-1: timeline + perinatal joint" → "C8.3 — Cross-product Tier-1: timeline + perinatal joint + 2022 race".
+
+3. **PRE-FLIGHT log addendum** at 2026-05-12T23:50:00Z marks **PROCEED** post-resolution; original HALT entry preserved per append-only convention.
+
+4. **This DECISION_LOG entry** records the §11 plan-update.
+
+**Alternatives considered (per the PRE-FLIGHT AskUserQuestion 2026-05-12T22:30Z):**
+
+1. **(a) 2022 race + perinatal demo (chosen).** Pro: uses on-disk NVSR 73-09 + a single freshly-fetched NVSR 73-05 PDF; latest-year (post-C8.2 refreshed envelope) validation; cleanly aligns with manuscript's joint-use claim; no bridged-race availability issue since 2022 uses the post-2018 single-race standard NCHS publishes for. Preserves the 2017 machinery as documented bridge to the last-bridged-race-year. Con: drops the "2017 deferred Task 4 fragment closes here" framing in favour of a more defensible 2022 validation; manuscript line 99 may need a sibling claim in Phase D step 6.
+2. **(b) Keep 2017 machinery + smaller perinatal claim.** Pro: smallest change vs original §15 plan. Con: Section B remains externally unvalidated; defers the deferred-Task-4-fragment ambition again.
+3. **(c) Split: timeline + 2022 race only; perinatal becomes new C8.X.** Pro: smaller task (~1 session vs 2). Con: adds plan-update overhead + defers the most distinctive cross-product demo.
+4. **(d) Halt + [plan-update] rewriting §15 entry (no DO this session).** Pro: methodologically cleanest. Con: another session of plan-update-only overhead before any DO work.
+
+**Reason:** §11 plan-update process specifically accommodates scope corrections surfaced during PRE-FLIGHT verification of plan-vs-reality alignment (Convention 3 Field-value snapshot caught the NVSR-source mismatch at the right moment — exactly what cheap-checks are for). Option (a) maximizes manuscript-relevance per-NVSR-fetch effort and avoids re-litigating the 2017 deferred-Task-4 framing without dropping it — the 2017 machinery stays in the notebook with a clear "machinery demo" caveat, so the closeable threads stay closed.
+
+Three protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — discovering the NVSR-source mismatch at PRE-FLIGHT saves ~1 session of rework after a DO-time NVSR cell that doesn't exist surfaces a halt mid-task; (ii) §11 plan-update is the canonical path for in-Phase-C scope adjustments per Q42 (>1 session candidates require [plan-update]; this scope change replaces ~0.5 sessions of original 2017 work with ~0.5 sessions of 2022 work + adds NVSR 73-05 fetch + Section B refactor — net effort unchanged at 2 sessions); (iii) §10 self-check encourages the LLM to surface "what could I have gotten wrong that VERIFY wouldn't catch" — in this case, planning errors masquerading as data-availability questions.
+
+**Source:**
+- `PRE_FLIGHT_LOG.md` 2026-05-12T22:30:00Z entry documenting the HALT discovery (Halt #1 §7.12 conflicting documentation).
+- `EXPLORATION_REPORT.md` §D.1 (perinatal computation candidate) + §D.2 (Section B 2017 race validation candidate; framing inherited the original §15 source assumption — the same fact-error existed at Phase B exploration time but wasn't surfaced as a PRE-FLIGHT-class L9 cheap-check would have).
+- On-disk NVSR 73-09 PDF text-extraction (PyMuPDF) confirms Table A topic + Table 1 cell values.
+- NVSR series probe 2026-05-12T22:00–22:25Z confirms NVSR 70-11 = Fetal Mortality 2019; gap 2014–2018.
+- WebSearch + URL probing at `cdc.gov/nchs/data/nvsr/nvsr73/nvsr73-05.pdf` returned HTTP 200 + Table 2 verified containing 2022 early-neonatal rates by race/Hispanic (Total 2.81; AIAN 3.73; Asian 2.01; Black 5.05; NHOPI 3.36; White 2.23; Hispanic 2.65).
+- User authorization chat 2026-05-12T22:30Z: option `(a) 2022 race + perinatal demo (Recommended)`.
+
+**Verifiable by:**
+- This `[plan-update]` commit's diff shows `NEXT_STEPS.md` §15.C C8.3 entry rewritten + `KICKOFF.md` line 179 edit + this DECISION_LOG entry + `PRE_FLIGHT_LOG.md` addendum + `STATUS.md` new section (next sub-session).
+- Tag `C8.3-pre-do` lands on this `[plan-update]` commit.
+- Future re-scope of the perinatal validation: triggers a new `[plan-update]` if NCHS resumes publishing a combined perinatal-mortality rate or if a new linked-file NVSR adds cells that close the redistribution-handling gap.
+
+**Reversible:** yes — `git revert <this commit>` restores the original §15 C8.3 entry (which would re-introduce the source-location errors). The 2017 bridged-race Section B machinery in `notebooks/_build_joint_use_demo.py` is preserved in this plan-update; only its NVSR-validation framing changes. The Section A 2022-by-age cells (existing) are not touched at all.
+
+**Residual risks:**
+
+- (a) **NVSR 73-09 Table 1's "28+wk = 9,956" is post-proportional-redistribution** (footnote 2); our parquet stores observed gestational age without redistribution. The C8.3 VERIFY tolerance allows ~50 records of slop; the canonical fix is C8.4-scope (invariant tests for canonical-filter + redistribution-handling). Mitigation: document the tolerance in Section C narrative + RECEIPT Self-check.
+
+- (b) **NVSR 73-05 Table 2's race-stratified early-neonatal rates** use the post-2018 single-race standard. Our linked-file parquet covers 2005–2023 and has both bridged and single-race columns; for 2022 the single-race columns are authoritative. The race-stratified ENN validation is OPTIONAL in C8.3 scope (headline = Total = 2.81 single cell); the per-race cells are deferred to C8.4 invariant-test territory if desired.
+
+- (c) **Section B's 2017 bridged-race "machinery demo" framing in the notebook** may read as a defensive caveat. Mitigation: the notebook prose explicitly frames it as documentation-of-the-machinery-on-the-last-bridged-race-year, with the 2022 single-race Section B' as the headline NVSR-validated demonstration. The Phase D manuscript pass (step 6) reframes the joint-use paragraph to cite both.
+
+- (d) **The L9 cheap-check that found no 2017 fetal-mortality NVSR is "absence of evidence"** — a future search may surface a non-NVSR NCHS publication (e.g., a Data Brief) that publishes 2017 fetal-mortality-by-maternal-race cells. Mitigation: if such a source surfaces, a Phase C / D `[plan-update]` adds a 2017-race validation cell to `external_validation_targets.csv` and the notebook; the current scope-shift does not preclude that.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- This entry assumes user authorization for the §11 plan-update via AskUserQuestion's option (a) selection. The selection was a single-question response; the LLM did NOT re-confirm via a second AskUserQuestion before applying. Risk: user may have intended a slight variant (e.g., "preserve the 2017 machinery only as a comment, don't keep the executed cells"). Mitigation: this entry's framing is reversible via a per-section edit if the user surfaces a disagreement post-fact.
+
+- The NVSR 73-05 fetch + SHA-verify at DO step 1 is the first irreversibility boundary for canonical-state mutation in C8.3. If the on-disk SHA differs from PRE-FLIGHT's `dccdc895…`, the file has been re-released; HALT at DO step 1 per §7.11. Defense: PRE-FLIGHT explicitly records the SHA at fetch time + DO step 1 re-verifies.
+
+- The "machinery demo" framing for the 2017 bridged-race cells may surface as "we shipped cells but didn't validate them" in a reviewer-skeptical reading. Mitigation: the joint_use_demo.ipynb pass/fail summary explicitly marks the 2017 cells as machinery-demo + cites this DECISION_LOG entry; the receipt's Self-check enumerates the risk.
+
+**Backport scope (per §11.4):** None directly. C8.1 + C8.2 receipts unaffected. C8.3 ships forward under the revised scope.
+
+---
+
 ## 2026-05-12T22:30:00Z — [plan-update] C8.2 — Re-scope to fetal-only; linked-2024-cohort deferred (no NCHS public-use file exists yet); C8.1 test-infra bug fixed as a followup commit
 
 **Choice (user-authorized at PRE-FLIGHT halt-and-ask 2026-05-12T22:30Z):** Apply two resolutions to two HALT conditions surfaced at C8.2 PRE-FLIGHT.
