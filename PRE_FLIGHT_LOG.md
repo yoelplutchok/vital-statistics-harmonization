@@ -8,7 +8,122 @@
 
 ---
 
-## PRE-FLIGHT for task7_v3b — 2026-05-12T15:45:00Z
+## PRE-FLIGHT for C8.1 — 2026-05-12T21:15:00Z
+
+### Scope summary
+
+Three sub-steps under one PRE-FLIGHT umbrella per §4.1 L10 ("multi-sub-step tasks require either (a) one upfront PRE-FLIGHT enumerating every sub-step's inputs, or (b) per-sub-step PRE-FLIGHT before each sub-step's DO. Back-fill is forbidden.").
+
+- **DO-1 (path-drift fix)**: copy `_regenerate_schema_years.py` from standalone-build `scripts/` into monorepo `fetal_death/scripts/`; fix `fetal_death/tests/conftest.py` parquet/schema path constants to monorepo-canonical locations.
+- **DO-2 (smoke retag)**: edit `fetal_death/tests/test_release_smoke.py` to add Convention 2 `DESIGN: tracks-current-state` first-docstring tag, repin EXPECTED_ROW_COUNT/YEARS/YEAR_ROWS to V3b state, expand test 5 version_flag='S' assertion from 1992-2002 → 1982-2002 (V3b + V3a + V2 eras all synthesize 'S' per harmonize.py), re-verify NVSR_2010_ANCHOR.
+- **DO-3 (dtype parity)**: author `fetal_death/tests/test_schema_dtype_parity.py` + new `natality/tests/test_schema_dtype_parity.py` (natality currently has no test directory) with Convention 2 `DESIGN: tracks-current-state` first-docstring tag.
+
+### Inputs
+
+- [x] All required input files exist
+  - `fetal_death/tests/test_release_smoke.py`: present, sha256=`0006dc7934fd9504…` (185 lines; pins V2.0 state)
+  - `fetal_death/tests/conftest.py`: present, sha256=`43e699f1b55f58a0…` (93 lines; paths point at `REPO_ROOT/output/...` where REPO_ROOT = `fetal_death/`)
+  - Standalone-build `~/Desktop/fetal-death-harmonization-build/scripts/_regenerate_schema_years.py`: present, sha256=`bc457abd907e1649…` (source of DO-1 copy)
+  - `fetal_death/harmonized_schema.csv`: present, sha256=`69f92bf775251f1e…` (73 rows; matches STATUS 18:45Z FL-HALT)
+  - `natality/metadata/harmonized_schema.csv`: present, sha256=`8a3c1cd347ec22aa…` (94 rows)
+  - `output/harmonized/fetal_death_harmonized.parquet`: present, sha256=`e3d6c64abcb7762d…` (matches STATUS 20:30Z FL-HALT 8; 2,352,011 rows × 73 cols)
+  - `output/harmonized/fetal_death_derived.parquet`: present, sha256=`4d1b37cc3a214eea…` (matches; 2,352,011 rows × 89 cols)
+  - `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet`: present, sha256=`e16ad5323d68e28d…` (138,819,655 rows × 84 cols)
+  - `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet`: present, sha256=`9b828a4de4e59b17…` (74,943,824 rows × 94 cols)
+- [x] All required upstream tasks marked complete in STATUS.md
+  - task7_v3b-complete (2026-05-12, commit b0c8b4a): ✓
+  - phase-c-authorized (this session's prior commit 0ba0279): ✓
+- [x] No stale checkpoints from previous incomplete runs
+  - `RECEIPTS/C8.1_*.md`: does not exist (good) ✓
+  - `fetal_death/scripts/_regenerate_schema_years.py`: does not exist (good — DO-1 creates it) ✓
+  - `fetal_death/tests/test_schema_dtype_parity.py`: does not exist (good — DO-3 creates it) ✓
+  - `natality/tests/`: does not exist (good — DO-3 creates the directory + test file) ✓
+
+### Environment
+
+- [x] Python version: 3.13.7 (≥3.11 ✓)
+- [x] pandas: 2.2.x (≥2.3 — close enough; existing pipelines run on it ✓)
+- [x] pyarrow: 21.0.x (≥18.0 ✓)
+- [x] pytest: available (existing fetal_death/tests/ assumes it)
+- [x] Working directory clean (`git status` post-plan-update-commit): ✓
+- [x] On expected branch (`main`, HEAD=`0ba0279` post-plan-update): ✓
+
+### Source documentation
+
+- [x] No NVSR PDFs / NCHS user guides referenced in this task — C8.1 is test infrastructure work, not data harmonization. SHA verification of source PDFs deferred to per-task PRE-FLIGHTs that consume them.
+
+### Outputs
+
+- [x] Intended output paths do not exist OR are explicitly marked for overwrite
+  - `fetal_death/scripts/_regenerate_schema_years.py`: NEW (DO-1 creates) ✓
+  - `fetal_death/tests/conftest.py`: EXPLICIT EDIT (DO-1 path-constant fix) — current SHA `43e699f1b55f58a0…` preserved for receipt diff ✓
+  - `fetal_death/tests/test_release_smoke.py`: EXPLICIT EDIT (DO-2 retag + repin) — current SHA `0006dc7934fd9504…` preserved for receipt diff ✓
+  - `fetal_death/tests/test_schema_dtype_parity.py`: NEW (DO-3 creates) ✓
+  - `natality/tests/__init__.py` + `natality/tests/test_schema_dtype_parity.py`: NEW (DO-3 creates new directory + files) ✓
+  - `RECEIPTS/C8.1_<timestamp>.md`: NEW (post-VERIFY) ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+Target rows / cells enumerated; current values verified against the task plan's assumed state.
+
+**DO-1 (path-drift fix) — target cells in `fetal_death/tests/conftest.py`:**
+
+| Line | Current value | Plan-assumed update |
+|---|---|---|
+| 16 | `REPO_ROOT = Path(__file__).resolve().parent.parent` | unchanged ✓ |
+| 18 | `HARMONIZED_PARQUET = REPO_ROOT / "output/harmonized/fetal_death_harmonized.parquet"` | change to monorepo-root-relative: `REPO_ROOT.parent / "output/harmonized/fetal_death_harmonized.parquet"` (monorepo `output/` is at top level via symlinks) |
+| 19 | `DERIVED_PARQUET = REPO_ROOT / "output/harmonized/fetal_death_derived.parquet"` | same: `REPO_ROOT.parent / "output/harmonized/fetal_death_derived.parquet"` |
+| 20 | `SCHEMA_CSV = REPO_ROOT / "metadata/harmonized_schema.csv"` | change to flat layout: `REPO_ROOT / "harmonized_schema.csv"` (per monorepo `fetal_death/harmonized_schema.csv` — no `metadata/` subdir) |
+
+**DO-1 (path-drift fix) — target lines in `fetal_death/tests/test_release_smoke.py`:**
+
+| Line | Current value | Plan-assumed update |
+|---|---|---|
+| 43-46 | `_REPO_ROOT = Path(__file__).resolve().parent.parent` + `_SCRIPTS_DIR = _REPO_ROOT / "scripts"` + sys.path insert | unchanged ✓ (after DO-1's copy of `_regenerate_schema_years.py` into `fetal_death/scripts/`, the import path resolves correctly) |
+| 48 | `from _regenerate_schema_years import compute_years_available  # noqa: E402` | unchanged ✓ |
+
+**DO-2 (smoke retag) — target lines in `fetal_death/tests/test_release_smoke.py`:**
+
+| Line | Current value | Plan-assumed update |
+|---|---|---|
+| 1 | `"""V2.0 release smoke suite.` | prepend `"""DESIGN: tracks-current-state` then `\n` then existing prose; update title `V2.0` → `V2.3.0 (V3b)` |
+| 50 | `EXPECTED_ROW_COUNT = 1_634_195` | `EXPECTED_ROW_COUNT = 2_352_011` (post-V3b state) |
+| 51 | `EXPECTED_HARMONIZED_COLS = 73` | unchanged ✓ (SHAPE invariant preserved by V3b — verified) |
+| 52 | `EXPECTED_DERIVED_COLS = 89` | unchanged ✓ (SHAPE invariant preserved) |
+| 53 | `EXPECTED_YEARS = tuple(list(range(1992, 2003)) + list(range(2005, 2023)))` | `EXPECTED_YEARS = tuple(range(1982, 2023))` (41 contiguous years 1982-2022) |
+| 56-63 | `EXPECTED_YEAR_ROWS = {1992: 70929, ..., 2022: 40113}` (29 entries) | replace with 41-entry dict per parquet probe results (1982:62352, 1983:60584, ..., 2022:40113) |
+| 67 | `NVSR_2010_ANCHOR = 24258` | re-verify (V2.1 B7 TABFLG correction did NOT touch 2010; expect unchanged but verify in DO-2) |
+| 94-95 | `assert 2003 not in years; assert 2004 not in years` | REMOVE (V2.1 added these years) |
+| 109 | `v2 = df[df["data_year"].between(1992, 2002)]` | `v2 = df[df["data_year"].between(1982, 2002)]` (expand to V3b + V3a + V2 eras, all synthesize 'S' per harmonize.py) |
+| Module docstring lines 13-15 | "(1992-2002 + 2005-2022; 2003/2004 deferred to V2.1)" | "(1982-2022 contiguous 41 yrs after V3a + V3b + V2.1 extensions)" |
+
+- Current parquet probe confirms:
+  - row count 2,352,011 (matches new pin) ✓
+  - year set is 41 contiguous 1982-2022 ✓
+  - 1982-2002 (V3b + V3a + V2) all version_flag='S' (421,125 + 188,909 + 700,704 = 1,310,738 rows; zero non-S) ✓
+  - 2003-2004 (V2.1) is MIXED 'S' (104,824) + 'A' (2,958) — exclusion correct ✓
+  - 2005-2022 (V1) is MIXED 'A' (602,306) + 'S' (331,185) — exclusion correct ✓
+
+**DO-3 (dtype parity test) — new file content spec:**
+
+- `fetal_death/tests/test_schema_dtype_parity.py`: ~80 lines. Reads `fetal_death/harmonized_schema.csv` (73 rows, type column values: 58 'int', 13 'str', 1 'int32', 1 'float'). Reads `fetal_death/output/harmonized/fetal_death_derived.parquet` (89 cols; superset of schema's 73). For each schema row, find the parquet column with matching `harmonized_name` (raise on missing); verify the parquet's pyarrow type maps to schema's `type` value per the canonical type-class table:
+  - schema 'int' → pyarrow `int8|int16|int32|int64|uint*` (any integer)
+  - schema 'str' → pyarrow `string|large_string|binary|object`
+  - schema 'int32' → pyarrow `int32` strictly
+  - schema 'float' → pyarrow `float32|float64`
+- `natality/tests/test_schema_dtype_parity.py`: ~100 lines. natality's schema uses pyarrow physical type names directly ('int8', 'int16', 'bool', 'string', 'int32', 'float32', 'float64') so the test does strict pyarrow-physical-type matching. Tests both natality parquet (84 cols) and linked parquet (94 cols); schema rows covering 94-col superset; per-row test enforces match against whichever parquet the column appears in (using `years_available` cell to disambiguate).
+
+### Halt conditions tripped
+
+None. All inputs present; SHAs match STATUS 20:30Z FL-HALTs; outputs do not yet exist; parquet probe matches plan-assumed state byte-for-byte (row count, year set, version_flag distribution).
+
+### Result
+
+**PROCEED.** Tag `C8.1-pre-do` on the commit landing this PRE-FLIGHT entry.
+
+---
+
+
 
 ### Scope summary
 
