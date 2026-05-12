@@ -1,6 +1,116 @@
-# STATUS — last updated 2026-05-12T16:00:00Z
+# STATUS — last updated 2026-05-12T16:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-12T16:45:00Z — Task 7 V3b DO steps 1-2 complete: zips moved + task7_v3b-pre-do tagged + record_layout_1982_1988.csv constructed (87 rows, 200 bytes covered, empirical anchor-field spot-check PASS)
+
+### Current phase
+
+Phase A continuing. **Task 7 V3b DO step 1-2 boundary checkpoint** per the 12-step DO plan in PRE_FLIGHT_LOG 2026-05-12T15:45:00Z. User authorized "do whatever you think is the best move" on both Q24 (DO start) and Q25 (B3 ambiguity policy). LLM chose: proceed with DO steps 1-2 + clean checkpoint commit + halt for user review before pipeline edits (steps 3-12). Autonomous B3 extension with DECISION_LOG entries chosen for Q25 (V3a precedent).
+
+### What was done this session (DO steps 1-2)
+
+1. **DO step 1: zip rearrangement + task7_v3b-pre-do tag**
+   - `mv` 7 V3b raw zips from `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1988}US.zip` (build-dir top-level) into `raw_data/fetal_death/` subdir (monorepo-symlink-visible).
+   - Post-mv SHAs byte-exact to pre-mv baselines (pure file-system move; all 7 SHAs unchanged: 1982: `56ddf02376cb1711…`; 1983: `c44b65d1aac15d76…`; 1984: `e74c45516a90adcd…`; 1985: `cb57279c3bc430ca…`; 1986: `864d93dd255c33f5…`; 1987: `5bbd2b356ce6ab72…`; 1988: `e6c733dbda5cd5a5…`).
+   - Tag `task7_v3b-pre-do` set on monorepo commit `39652b5` (the post-PRE-FLIGHT commit).
+
+2. **DO step 2: construct shared `record_layout_1982_1988.csv`**
+   - Extracted detail-record layout text from 1985 user-guide pages 8-26 via PyMuPDF (19 pages, 27K chars of byte-position table text). Cosmetic OCR glitches present but readable (`Oetail`/`Detail`, `lg2-lg3`/`192-193`, `i5`/`15`, periods-vs-commas).
+   - Constructed **87-row layout CSV** covering all 200 bytes; column schema matches existing `record_layout_1992.csv` convention (`position_start,position_end,length,field_name,description,version,values_summary,notes`); `version` set to "1978" per 1978-revision birth/fetal-death certificate.
+   - **Byte-coverage verification (Python)**: 87 rows; 200/200 bytes covered; no gaps; no overlaps; all declared `length` values match `position_end - position_start + 1`. SHA-256 `431fd7ac72135afc8b84939b721638e5d933a1a22082086c11daaadaa122c3ea`.
+   - **Field naming**: re-uses V2 1989-rev names (`DATAYEAR`, `TABFLAG`, `RECTYPE`, `RESTATUS`, `STATEOCC`, `CNTYOCC`, `STFETEXP`, `STATERES`, `CNTYRES`, `LMPMON`, `LMPDAY`, `DELMON`, `PLDEL`, `MONPRE`, `NPREVIST`, `FSEX`, `DBIRWT`, `BIRWT14`, `DGESTAT`, `GESTAT12`, `GESTAT5`, `DMAGE`, `MAGE12`, `MAGE8`, `MRACE`, `DMAR`, `DMEDUC`, `MEDUC6`, `NLBNL`, `NLBND`, `DTOTORD`, `TOTORD9`, `DLIVORD`, `DFAGE`, `FRACE`, `DFEDUC`, `FEDUC6`, `CLINGEST`, `STOCCFIP`, `CNTOCFIP`, `STRESFIP`, `CNTYRFIP`, `SMSARFIP`) where the harmonized concept matches. V3b-specific names (`REPAREA`, `LMPYR` 1-byte relative-year code, `DELDAY`, `MPRE6`, `NPREV9`, `BIRWT3`, `COMPGEST`, `NBD`, `NOTBEF20`, `NOTAFT20`, `LIVORD10` 10-cat, `FAGE12` 12-cat-vs-V2's-FAGE11-11-cat, `CONGEN` umbrella vs V2's 22 individual anomaly flags, `RACEF` 1-digit, etc.) introduced with `notes` documenting the V2 cross-reference.
+   - **L13-extension flagging in `notes`**: each row whose V3b semantic/coding differs from V2 carries an explicit cross-reference note (e.g., DATAYEAR notes "V3b 1978-rev encodes data year as 2 digits (vs V2 1989-rev DELYR @ 190-193 which is 4 digits). Harmonize.py must expand: int(raw)+1900."; MRACE notes the 1-digit 0-9 scheme + B3 extension requirement + the 7=null parallel to V3a's 09=null choice).
+   - **Empirical anchor-field spot-check** on 1982/1983/1985/1988 raw zips (first 3 records each + bytes-per-line):
+     - DATAYEAR bytes 1-2 = "82"/"83"/"85"/"88" matching filename ✓
+     - REPAREA byte 3 = "0" (All other areas; the most common case) ✓
+     - CERTNUM bytes 4-9 = "      " (6 blanks per user-guide p8) ✓
+     - TABFLAG byte 10 = {1, 2} observed ✓
+     - RECTYPE byte 11 = {1, 2} observed ✓
+     - RESTATUS byte 12 = {1, 2} observed ✓
+     - STATEOCC bytes 13-14 = "01" (Alabama, alphabetical first) ✓
+     - Record length = 202 bytes/line (= 200 data + CR+LF), matches user-guide page-7 "Record length: 200" entries for all 7 V3b years ✓
+   - **Q23 resolution verified**: the cross-year byte-identical layout assumption holds at the first-record-byte level for the 4 sampled years (1982/1983/1985/1988).
+
+3. **Build-dir state**: `~/Desktop/fetal-death-harmonization-build/raw_data/` no longer contains the 7 V3b zips (now in the `fetal_death/` subdir of the same path). Per-zip SHAs preserved.
+
+### Forward-looking HALTs to verify at this commit's `task7_v3b-pre-do` tag
+
+(verified at this STATUS write)
+
+- 7 V3b zips at `raw_data/fetal_death/Fetal{1982..1988}US.zip` (visible via monorepo symlink) with SHAs unchanged from STATUS 2026-05-12T03:50Z baselines ✓
+- 7 V3b user guides at `raw_docs/fetal_death/198{2..8}FetalUserGuide.pdf` with SHAs unchanged from PRE-FLIGHT 2026-05-12T15:45Z baselines ✓
+- `task7_v3b-pre-do` tag exists on monorepo at `39652b5` ✓
+- `record_layout_1982_1988.csv` SHA `431fd7ac72135afc…` (recorded above for forward-stability verification)
+- No other working-tree mutations this session besides the layout CSV + the STATUS section being written ✓
+
+### Last completed step
+
+DO step 2 (shared layout CSV construction + empirical byte-position spot-check). DO steps 3-12 deferred to next session per the LLM's deliberate halt-and-review checkpoint choice.
+
+### In-progress
+
+(none — clean checkpoint at DO step 2 boundary)
+
+### Next planned task
+
+**DO step 3: edit `fetal_death/scripts/01_import/field_specs.py`**: add `RECORD_LEN_1978 = 200` constant; add `FETAL_1982_1988_FIELDS: list[tuple[str, int, int]]` field list (translated from the new layout CSV's 87 rows — each non-FILLER row becomes one tuple); extend `layout_for_year()` with the 1978-rev branch; update docstring + error-message year-range. This is the largest single-file edit in V3b (estimated ~70 line additions to field_specs.py).
+
+Then steps 4-12 per PRE-FLIGHT 12-step plan: harmonize.py edits (era_tag + field_map + B3 1-digit recode); crosswalk extension (+`field_1985,pos_1985` columns); harmonized_schema cell extensions; parse 7 V3b raw zips; Tier-2 value-distribution L13-extension verification; harmonize + derive; validate (33/33 PASS gate + V1/V2/V3a byte-clean regression check); RECEIPT + version bumps + V3b_LAYOUT_DECISIONS.md + tag `task7_v3b-complete`.
+
+### Blocked
+
+(none — clean halt at user-review checkpoint; not technically blocked)
+
+### Open questions for human
+
+Carried + Q24/Q25 (both answered "do whatever you think is best" → LLM chose split at DO step 2 + autonomous B3 extension w/ DECISION_LOG).
+
+NEW:
+26. **DO step 3+ continuation authorization** — go/no-go on resuming with the field_specs.py edit and the rest of the 12-step plan. Default = proceed (DO step 2 clean; layout CSV empirically validated at anchor fields). The cheap-check window for the layout CSV is OPEN at this halt: user can inspect `fetal_death/record_layout_1982_1988.csv` (87 rows, 200 bytes covered, no gaps/overlaps, V2-cross-reference notes throughout) before authorizing DO step 3.
+27. **Detail-record sub-field rows in the layout CSV** — the current 87-row CSV documents leaf fields (`DMAGE @ 81-82`, `MAGE12 @ 83-84`, `MAGE8 @ 85`) but does NOT document the user-guide-level umbrella rows (`MOTHER 81-90`, `RACE 65-67`, `PREGNANCY HISTORY 91-106`, `FATHER 107-114`, `MOTHER AGE 81-85`, `EDUCATION 88-90`, etc.). This matches the V2 `record_layout_1992.csv` convention (no umbrella rows). User confirmation appreciated; if a different convention is wanted (e.g., umbrella rows for documentation purposes), DO step 3 is the natural amendment moment.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`task7_v3b-pre-do` tag** must exist at `39652b5` (this commit's parent before DO mutations begin). Verify: `git tag --list 'task7_v3b*'` should show both `task7_v3b-pre-do` (at 39652b5) and no `task7_v3b-complete` yet.
+2. **`fetal_death/record_layout_1982_1988.csv` SHA `431fd7ac72135afc…`** unchanged. Any drift = halt + investigate (the layout CSV is the gold reference for DO step 3 `FETAL_1982_1988_FIELDS` translation).
+3. **7 V3b zips at `raw_data/fetal_death/`** with SHAs above. Drift = halt + re-investigate (build-dir is not version-controlled; nothing should accidentally rewrite the zips, but verify).
+4. **7 V3b user guides at `raw_docs/fetal_death/`** with SHAs above (1982: f812d88471502669…; 1985: f7342480302017ca…; 1988: 66eb8b2440e63632…; others recorded in PRE-FLIGHT 15:45Z). Drift = halt + investigate.
+5. **V3a baselines** (5 parquet SHAs from STATUS 14:30Z) unchanged. Drift = halt.
+6. **harmonize.py + field_specs.py SHAs unchanged from PRE-FLIGHT 15:45Z** (`7a99641984eb5e83…` and `acad3b5bb04f16c0…` respectively). Drift = halt (would mean a stale checkpoint or accidental edit between PRE-FLIGHT and DO step 3).
+
+### Build artifacts current
+
+- 7 V3b raw zips now at `raw_data/fetal_death/` (monorepo-symlink-visible). Pre-mv build-dir top-level location empty.
+- 7 V3b user guides at `raw_docs/fetal_death/` unchanged.
+- `fetal_death/record_layout_1982_1988.csv` newly created (87 rows × 8 cols; SHA above). The ONLY canonical-state mutation this session.
+- V3a state (34 years 1989-2022): all 5 parquet SHAs unchanged.
+- v2.8.0 natality state: unchanged.
+
+### Notes for next session
+
+- **DO step 2 boundary checkpoint rationale**: the LLM's choice to halt here (rather than barrel through steps 3-12) lets the user inspect the V3b layout CSV before committing pipeline edits. The layout CSV is the foundation of every subsequent DO step; an error here cascades into harmonize.py, the crosswalk, parsed yearly_clean parquets, harmonized output, and the V3b validation gate. A 20-minute user review of the 87-row CSV catches anything DO step 3+ couldn't.
+- **B3 ambiguity policy (Q25 = autonomous extension)**: at DO step 4, the harmonize.py B3 recode extension will add 1-digit MRACE codes 0-9 mapping. The proposed mapping (per the layout CSV `MRACE` row's `notes`):
+  - 0 (Other API) → 4 (API)
+  - 1 (White) → 1
+  - 2 (Black) → 2
+  - 3 (AIAN) → 3
+  - 4 (Chinese) → 4 (API)
+  - 5 (Japanese) → 4 (API)
+  - 6 (Hawaiian) → 4 (API)
+  - 7 (Other nonwhite) → null (parallels V3a's 09 → null residual-catch-all decision)
+  - 8 (Filipino) → 4 (API)
+  - 9 (Not stated) → null
+  This is documentable as a single DECISION_LOG entry at DO step 4 close. The choice for code 7 has the same rationale as V3a's code 09 choice (DECISION_LOG 2026-05-12T14:30Z): the residual "Other nonwhite" cannot be mapped into the 4-cat bridged scheme without false categorization.
+- **L13-extension Tier-2 verification (DO step 8)**: after parsing each yearly_clean parquet, compare value distributions against the layout CSV's `values_summary` field. Specifically: DMAGE distribution should be 10-49 single-year + no 99 sentinel (per user-guide p18); MRACE distribution should be dominated by 1 (White) + 2 (Black); CONGEN distribution should be 0/1 binary. Any out-of-range value triggers halt + DECISION_LOG investigation parallel to V3a's first encounter with MRACE code 08+09.
+- **Total fetal-death record count projection after V3b** (per page-7 user-guide control counts):
+  - V3b (1982-1988 unfiltered): 62352 + 60584 + 59863 + 59690 + 59343 + 59358 + 59935 = **421,125** records
+  - V3b (1982-1988 NVSR-comparable, residence + 20+ weeks): 32694 + 30752 + 30099 + 29661 + 28972 + 29349 + 29442 = **210,969** records
+  - V3a baseline (1989-2022, 34 yrs): 1,930,886 / 1,778,215 NVSR-comparable
+  - V3b+V3a total: ~2,352,011 / ~1,989,184 NVSR-comparable
+- **Manuscript "1.74M" stale**: now would be 2.35M unfiltered or 1.99M NVSR-comparable post-V3b. Task 11 re-pass updates both.
 
 ---
 
