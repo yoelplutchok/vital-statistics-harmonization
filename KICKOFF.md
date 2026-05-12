@@ -38,26 +38,50 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-11, post-Task-5)
+## Current planned sequence (as of 2026-05-12, post-Task-3-V2.1 + post-v1.0-push)
 
-Task 5 (manuscript trim) is complete at `9aaa702`; the §17 readiness checklist has 0 critical-path items remaining. The human has chosen a **data-first sequence** for the remaining work so the manuscript cites the latest coverage and the unified Zenodo DOI from day one (rather than the two old subproject DOIs). The next sessions should execute, in this order:
+Task 3 V2.1 fetal-death (2003+2004 + H8 + data_year + monorepo-path-drift bundle) shipped 2026-05-12 (`task3-complete` at commit `8ca5bf9`). Public v1.0 GitHub repo pushed to https://github.com/yoelplutchok/vital-statistics-harmonization (commit `a18ca3a`). User has **expanded pre-submission scope** to include Task 7 (fetal-death V3 backward extension) AND natality v2.8 rename — both formerly post-submission, now pulled in (DECISION_LOG 2026-05-12T03:30:00Z). Integrity principle reaffirmed: **100% correct or skip; no reverse-engineering that compromises integrity.**
 
-1. **Task 3 — V2.1 fetal-death** (`NEXT_STEPS.md` §15). Adds 2003 + 2004 transition years; brings fetal-death coverage to 31 consecutive years 1992–2022. **Bundle the H8 schema-doc reconciliation** from `FIX_LOG.md` 2026-05-11 (parquet gets re-derived anyway, so the int-vs-string dtype drift on `tabulation_flag`/`residence_status`/`maternal_age`/`maternal_race_bridged`/`hispanic_origin` can be fixed without an extra schema-version bump). New fetal-death v2.1.0 Zenodo deposit. Estimated 1–2 sessions; risk: 2003 + 2004 record-layout reconstruction from NCHS user guides could surface ambiguities.
-2. **Push monorepo to GitHub** (~15 min, human-driven). Unblocks #3 and #4 and the Companion-paper-sentence URL injection in the manuscript.
-3. **Task 9 — Redirect notices** on the two old GitHub repos (~15–30 min).
-4. **Task 10 — Unified Zenodo deposit** (1 session + upload time). Reserve the unified concept DOI before manuscript submission per §15 Task 10 spec; v1.0 of the unified deposit reflects the post-Task-3 state.
-5. **Manuscript re-pass + submit** (~½ session). Update affected numbers: fetal-death record count ~1.6M → ~1.7M, Table 1 fetal-death rows (currently 3, becomes 4 or 5 to show 2003 + 2004), validation counts 29/29 → 31/31 and 26/26 → 28/28, deferred-2003/2004 caveats removed. Inject the unified concept DOI and GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers. Reformat references to IJE style. Submit.
+The next sessions should execute, in this order:
 
-**Out of pre-submission scope (post-submission or low priority):**
+0. **STEP 0 — V3b documentation acquisition retry (time-boxed: at most 45 min of agent time).** The prior session (2026-05-12) probed for 1982-1988 fetal-death 1978-revision codebook documentation and failed: NBER's `fetaldeath1982.dct` returned 403 (per-file ACL on data.nber.org from the sandbox); NCHS standard FTP paths returned 404; no obvious alternate URL surfaced. **Try with tools the prior agent did not use:** `WebSearch` for academic papers / GitHub repos / IPUMS pages that may have published the byte layout; `WebFetch` against archive.org Wayback Machine for older NCHS pages; ICPSR study-finder for NCHS fetal mortality 1982-1988. Specific targets to probe:
+    - https://web.archive.org/web/*/ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/
+    - https://www.icpsr.umich.edu/web/ICPSR/search/studies?q=fetal+death+NCHS+1982-1988
+    - https://usa.ipums.org/ — IPUMS sometimes has 1978-revision documentation
+    - https://www.nber.org/research/data — NBER's general data catalog may link to 1978-revision PDF directly
+    - Google Scholar search: "fetal death" + "1982" + "byte layout" / "data dictionary" / "record layout"
+    - GitHub search: `fetaldeath1982` or `1978 fetal death` layout repos
+   - If V3b authoritative docs found → expand Task 7 scope to 1982-2022 (41 years total) and proceed with V3a + V3b.
+   - If NOT found within the time budget → proceed with V3a-only scope (1989-2022, 34 years). Document the search trail in `STATUS.md`. Do NOT reverse-engineer V3b layouts per integrity principle.
 
-- Task 7 — V3 fetal-death backward extension to 1982. Explicitly post-submission per §17. 2–4 sessions; OCR risk on older user guides.
-- Natality v2.8 column rename. Breaking change for downstream natality-only users (the `multiple-gestation-linked-imr` and `lbw-imr-divergence` projects on the human's Desktop). Aliasing helper in `shared/helpers/canonical_join_keys.py` covers the cross-product case in the meantime. Bundle with V3 or do as a dedicated breaking-change release.
+1. **Natality v2.8 column rename** (next task; was deferred post-submission until 2026-05-12 override). 4 column renames per the aliasing helper at `shared/helpers/canonical_join_keys.py`: `year → data_year`, `restatus → residence_status`, `maternal_race_bridged4 → maternal_race_bridged`, `maternal_hispanic_origin → hispanic_origin`. PRE-FLIGHT done 2026-05-12T03:25:00Z (see DECISION_LOG); 61-string-literal rename surface across 18 files; ~2 sessions for DO + receipt. Aliasing helper becomes a no-op after rename. New natality v2.8.0 Zenodo deposit (breaking change; v2.7.0 stays at its DOI for backward compat).
+
+2. **Task 7 — V3a fetal-death (1989-1991, +3 yrs)**. Re-uses 1989-revision layout identical to 1992 (existing `record_layout_1992.csv` + `1992FetalUserGuide.pdf` are the authoritative reference). All 10 raw zips already downloaded by agent 2026-05-12 to `~/Desktop/fetal-death-harmonization-build/raw_data/Fetal{1982..1991}US.zip` (SHAs in STATUS.md 2026-05-12T03:50:00Z). Extend parser dispatch + harmonize.py year set; re-derive; validate against NVSR (any pre-NVSR-57-08 sources for 1989-1991 control counts). ~1 session. **If STEP 0 succeeded, expand to include V3b (1982-1988, 1978-revision); ~3 additional sessions.**
+
+3. **Task 9 — Redirect notices** on the two old GitHub repos (`yoelplutchok/natality-harmonization`, `yoelplutchok/fetal-death-harmonization`). ~15-30 min, human-driven.
+
+4. **Task 10 — Unified Zenodo deposit + v2.1.0 patch to old fetal-death deposit + v2.8.0 patch to natality deposit** (1 session + upload time). User chose 2026-05-12: (i) new unified deposit (concept DOI for HVS), (ii) upload v2.1.0 (+ V3a if shipped) to existing fetal-death concept DOI 10.5281/zenodo.20031571, (iii) upload v2.8.0 to existing natality concept DOI 10.5281/zenodo.19363074, (iv) description-only redirect notes on both old deposits pointing to the unified one.
+
+5. **Sync to public staging dir + push v1.1 to GitHub.** Re-rsync the monorepo to `~/Desktop/vital-statistics-harmonization-public/`, re-scrub (same exclude list + 4 LLM-mention scrub edits as 2026-05-12), commit + push to overwrite v1.0 with v1.1 in the existing repo at https://github.com/yoelplutchok/vital-statistics-harmonization. Excludes: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `RECEIPTS/`, `.claude/`, `paper/`, `notebooks/_build_*.py`.
+
+6. **Manuscript re-pass + submit** (~½ session). Update affected numbers: fetal-death record count from 1.74M to whatever V3a (+V3b if found) brings it to; coverage `1992-2022 (excl 2003-2004)` → `1989-2022 (34 yrs)` or `1982-2022 (41 yrs)` if V3b ships; validation counts 31/31→34/34 (or 41/41); deferred-2003/2004 caveats removed. Inject the unified concept DOI and the public GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers (Author contributions, AI-tool disclosure, Funding) — these stay in the published manuscript per journal AI-disclosure requirements but were excluded from the public repo. Reformat references to IJE style. Submit.
+
+**Out of pre-submission scope (clean post-submission backlog):**
+
+- Task 7 V3b (1982-1988) — if STEP 0 above couldn't find authoritative documentation. Defer until 1978-revision codebook obtainable from NCHS direct request, ICPSR, or academic source.
 - Section B 2017 race-stratified NVSR validation. Small future task; requires NVSR-2017 fetal-mortality PDF and L9 cheap-check on table/page citation.
-- `[plan-update]` candidates for §15 Task 4 + Task 5 stale wording (analogous to the `89ddc77` Task 2 breadcrumb pattern).
+- `tests/test_schema_dtype_parity.py` (durable defense against H8-class drift; recommended in FIX_LOG 2026-05-11T18:50Z).
+- `record_layout_2003/2004.csv` rebuild from user guides (current CSVs are inherited-from-2006 with documentation imprecisions; harmonized parquet is correct, only the CSV is doc-imprecise; LESSONS L13-extension 2026-05-12T01:40:00Z).
+- Monorepo path-drift sweep on `parse_fetal_year.py`, `derive.py`, `run_pipeline.py`, `tests/conftest.py` (3 scripts fixed in Task 3 V2.1; others not inspected).
+- File-inventory + external_validation_targets + live_births_by_year metadata appends for 2003+2004 (bundle with Task 10 Zenodo prep).
 
-**When to deviate from this sequence:** if Task 3 hits a multi-session blocker (e.g., 2003-revision layout ambiguity that the NCHS docs don't resolve), halt and ask whether to skip Task 3 and submit at the current v2.0 fetal-death state. Don't silently switch order.
+**When to deviate from this sequence:**
 
-**Source for this sequence:** 2026-05-11 chat at end of Task 5 session; DECISION_LOG entry 2026-05-11T20:50:00Z. STATUS.md's most recent section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
+- If STEP 0 finds V3b documentation: ADD V3b to step 2's scope (don't change the sequence order).
+- If natality v2.8 surfaces an unexpected blocker (e.g., NVSR 183 validation drift after rename): halt and ask. Do NOT silently work around — the v2.8 rename is supposed to be value-preserving.
+- If V3a layout reconstruction surfaces a 1989-1991 vs 1992 difference (we don't expect any; both are 1989-revision): halt and ask, similar to 2026-05-11/12's MAGER vs MAGER41 episode.
+
+**Source for this sequence:** 2026-05-11 + 2026-05-12 chat sessions; DECISION_LOG entries 2026-05-11T20:50Z, 2026-05-12T01:35Z, 2026-05-12T03:30Z. STATUS.md's 2026-05-12T04:00:00Z section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
 
 ---
 
