@@ -1,6 +1,132 @@
-# STATUS — last updated 2026-05-13T03:00:00Z
+# STATUS — last updated 2026-05-13T05:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T05:00:00Z — C8.5a COMPLETE: pyproject.toml + uv.lock + .python-version pinning Python 3.13 + 38 packages; cache-cleared pytest under uv-managed `.venv` returns 56 PASS + 1 XFAIL (143s); zero canonical-data mutation; C8.5b (Dockerfile) DEFERRED per §11 plan-update
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.5a COMPLETE; C8.5b DEFERRED.** Fifth Tier-1 task closed in ~1 session (PRE-FLIGHT + §11 plan-update + DO + SMOKE + VERIFY + RECEIPT). C8.5 originally bundled lockfile + Dockerfile in one task; PRE-FLIGHT halt-and-ask 2026-05-13T04:00:00Z split into C8.5a (lockfile, this session) + C8.5b (Dockerfile, DEFERRED until docker available OR C8.6 CI ships). Tag `C8.5a-complete` lands on the commit shipping this STATUS section + receipt. Tier 1 progress: 5 of 8 tasks complete (C8.1, C8.2, C8.3, C8.4, C8.5a). Cumulative Phase C effort ~5 sessions of 29–35 budget.
+
+Three §7 HALT conditions surfaced at C8.5 PRE-FLIGHT (zero downstream artifacts affected):
+
+1. **§7.2 — `docker` not installed** → split C8.5 → C8.5a (this session) + C8.5b (DEFERRED).
+2. **§7.12 — §15 entry Python pin `3.11-slim` conflicted with build env (3.13.9)** → revise §15 to `3.13-slim`; pin `requires-python = ">=3.13,<3.14"`.
+3. **§7.17 — §15 VERIFY criterion referenced monorepo-root `scripts/run_pipeline.py` that doesn't exist** → revise C8.5a VERIFY to env-resolution + test-suite passes; pipeline-rebuild VERIFY moves to C8.7's responsibility.
+
+All three resolved via single `[plan-update]` commit `6fe8dcd` per user authorization 2026-05-13T04:15:00Z (all 3 = option (a)).
+
+Six canonical-state changes this session (zero parquet mutation):
+
+1. **`[plan-update]` commit `6fe8dcd`** at 04:30Z: NEXT_STEPS.md §15 C8.5 rewritten into C8.5a (lockfile) + C8.5b (Dockerfile, DEFERRED); KICKOFF.md Tier 1 list (line 181) split into 2 rows; KICKOFF.md sequencing note (line 202) revised; PRE_FLIGHT_LOG addendum; DECISION_LOG entry 2026-05-13T04:30:00Z. Tag `C8.5-pre-do` placed.
+2. **`pyproject.toml`** (NEW; sha=`c8826a61…`). PEP 621 metadata; `requires-python = ">=3.13,<3.14"`; 6 runtime deps + 2 dev deps; `[tool.uv] package = false`.
+3. **`uv.lock`** (NEW; sha=`ab627034…`). 38 packages resolved deterministically against Python 3.13.9. Deterministic (run twice → bit-identical).
+4. **`.python-version`** (NEW; sha=`02e735b3…`). Single line `3.13`.
+5. **`README.md`** (MODIFIED; sha=`694fdd35…`). Appended "Pinned environment via `uv` lockfile" subsection to the existing "## Reproducibility" section.
+6. **`RECEIPTS/C8.5a_2026-05-13T05-00-00Z.md`** (NEW). Full §6 template incl. Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+
+### What was done this session (C8.5 PRE-FLIGHT + §11 plan-update + C8.5a DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed with C8.5 PRE-FLIGHT".
+2. **C8.5 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T04:00:00Z): verified all C8.4 forward-looking HALTs (parquet SHAs, tags, test infra); probed env (`uv` 0.11.10 ✓, `docker` NOT installed ✗, Python 3.13.9, all 6 numeric+notebook deps present); identified 3 §7 conditions; documented Field-value snapshot for dependency-version state; result **HALT**.
+3. **AskUserQuestion 2026-05-13T04:15:00Z**: 3 multi-option questions covering HALT #1 / #2 / #3. User authorized all 3 = option (a).
+4. **§11 plan-update commit `6fe8dcd`** at 04:30Z: NEXT_STEPS §15 C8.5 split + KICKOFF edits + PRE_FLIGHT_LOG addendum + DECISION_LOG entry. Tag `C8.5-pre-do`.
+5. **DO step 1**: authored `pyproject.toml` with PEP 621 + 6 runtime + 2 dev deps + `[tool.uv] package = false`.
+6. **DO step 2**: `uv lock` → 38 packages resolved in 714ms; produced `uv.lock`.
+7. **DO step 3**: authored `.python-version` (single line `3.13`).
+8. **DO step 4**: appended README "Pinned environment via `uv` lockfile" subsection.
+9. **SMOKE Tier 0** (lockfile determinism): `uv lock` run twice; `diff -q /tmp/uv.lock.run1 ./uv.lock` exit 0 ✓.
+10. **SMOKE Tier 0** (lockfile consistency): `uv lock --check` exit 0 ("Resolved 38 packages in 9ms") ✓.
+11. **DO step 5**: `uv sync` created `.venv/` with 38 packages installed.
+12. **VERIFY**: cache-cleared `.venv/bin/python -m pytest fetal_death/tests/ natality/tests/ tests/` returns `56 passed, 1 xfailed in 143.05s` (57 items) ✓; all 4 parquet SHAs unchanged ✓; all 3 requirements.txt SHAs unchanged ✓.
+13. **RECEIPT** at `RECEIPTS/C8.5a_2026-05-13T05-00-00Z.md` with full §6 template incl. Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+
+### Last completed step
+
+Single commit ships: 4 new files (`pyproject.toml`, `uv.lock`, `.python-version`, `RECEIPTS/C8.5a_*.md`) + 1 modified file (`README.md`) + 1 STATUS append. Tag `C8.5a-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.5a → C8.6 boundary)
+
+### Next planned task
+
+**C8.6 — CI: GitHub Actions wiring (B.9).** Per KICKOFF.md Phase C Tier-1 sequencing (line 182) + NEXT_STEPS.md §15.C C8.6 entry. Author `.github/workflows/ci.yml` running C8.1 smoke + C8.4 invariant tests on every push to main. Depends on C8.5a lockfile (now present); pinned env via `uv sync --frozen` consuming `uv.lock` (`ab627034…`). Estimated 1 session.
+
+C8.5a surfaced one candidate consideration for C8.6:
+- Python version matrix (single-version 3.13.x per `requires-python`, OR matrix of {3.13} for forward compat — single suffices given the narrow Python pin).
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED.** Resumption trigger (OR-coupled): `docker` runtime available on build machine OR C8.6 GitHub Actions CI ships and validates `docker build` remotely. Future PRE-FLIGHT for C8.5b verifies `uv.lock` sha=`ab627034…` (unchanged) + `docker` availability + monorepo-root pipeline orchestrator (post-C8.7) before authoring the Dockerfile.
+
+### Open questions for human
+
+None for C8.6 scope.
+
+**Open soft-flags (carried forward):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+
+**New open soft-flags (C8.5a):**
+- (a) `requirements.txt` at 3 locations declares `jupyter>=1.0` but the metapackage is NOT actually installed in the build env; the lockfile reflects build-env reality (only `nbformat` + `nbclient` + `jupyter_core`). End-users wanting full Jupyter interactive notebook running may need `uv pip install jupyter`. Phase D step 6 may reconcile.
+- (b) Cross-platform lockfile resolution untested locally (macOS arm64 build); C8.6 CI on `ubuntu-latest` is the durable test. If a "no wheel for platform" error surfaces, the lockfile may need a `--platform` extension via `uv lock --python-version 3.13 --python-platform linux`.
+- (c) `requirements.txt` files preserved as discovery pointers but the 3 files have inconsistent dependency lists (monorepo+natality declare jupyter+nbformat; fetal_death omits both). Reconciliation is a future polish item; possibly C8.5b or a separate C8.X.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.5a-complete` tag** present on this commit. Verify: `git tag --list 'C8.5*'` shows `C8.5-pre-do` (`6fe8dcd`) + `C8.5a-complete` (this commit). `C8.5b-pre-do` does NOT yet exist.
+2. **`pyproject.toml` sha=`c8826a61…`; `uv.lock` sha=`ab627034…`; `.python-version` sha=`02e735b3…`; `README.md` post-edit sha=`694fdd35…`.** Any future task changing pinned versions MUST re-run `uv lock` + update lockfile sha + bump receipt forward-looking HALT.
+3. **All four parquet SHAs unchanged post-C8.5a** (metadata-only task): fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+4. **`uv` version requirement: 0.11.x or later** (for `[dependency-groups]` PEP 735 support). C8.6 CI workflow should pin `uv-version: 0.11.x` or pull latest stable.
+5. **Python pin: 3.13.x.** `requires-python = ">=3.13,<3.14"`. A future 3.14 migration is a §11 plan-update event.
+6. **Cache-cleared `uv run pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL** (57 items collected). This is now C8.6's CI gating baseline.
+7. **`.venv/`** lives at monorepo root (gitignored). C8.5b Dockerfile MUST add `.venv/` to `.dockerignore`. C8.6 CI operates on fresh checkouts where `.venv` doesn't exist; `uv sync` is the install step.
+8. **`requirements.txt` at 3 locations preserved**; `uv.lock` is canonical. A future task fully retiring `requirements.txt` must reconcile per-subproject discovery-pointer references + jupyter-metapackage soft-flag.
+9. **C8.5b (Dockerfile) is DEFERRED.** Resumption trigger: docker available OR C8.6 CI ships. Future PRE-FLIGHT verifies `uv.lock` sha=`ab627034…` unchanged.
+10. **The §15-vs-build-env Python-version mismatch caught at C8.5 PRE-FLIGHT** is an L9 instance the existing matrix anticipates. A possible L9-extension ("plan-text version pins must cite the build-env probe that verified the pin") is a candidate for LESSONS authoring — but the existing process (§11 plan-update at PRE-FLIGHT halt-and-ask) caught it cleanly.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.2).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged).
+- `tests/__init__.py` + `tests/conftest.py` + 3 invariant-test harnesses (unchanged from C8.4-complete).
+
+NEW this session:
+- `pyproject.toml` (sha=`c8826a61…`)
+- `uv.lock` (sha=`ab627034…`)
+- `.python-version` (sha=`02e735b3…`)
+- `RECEIPTS/C8.5a_2026-05-13T05-00-00Z.md`
+- `.venv/` (gitignored; 38 packages installed)
+- `STATUS.md` this section (append)
+
+MODIFIED this session:
+- `README.md` (sha=`694fdd35…`; was unmodified at C8.4-complete)
+- `NEXT_STEPS.md` (sha post-`[plan-update]` `6fe8dcd`)
+- `KICKOFF.md` (sha post-`[plan-update]` `6fe8dcd`)
+- `PRE_FLIGHT_LOG.md` (added PRE-FLIGHT entry + addendum at 04:00Z + 04:30Z)
+- `DECISION_LOG.md` (added entry 2026-05-13T04:30:00Z)
+
+### Notes for next session
+
+- **C8.6 — CI: GitHub Actions wiring** is the next task. PRE-FLIGHT should consider: (i) Python version pin (3.13 from `.python-version`); (ii) uv version pin (0.11.x or `latest`); (iii) workflow events (push on `main`, pull_request); (iv) test directories (`fetal_death/tests/`, `natality/tests/`, `tests/`); (v) optional `uv lock --check` step gating PRs that mutate `pyproject.toml` without re-locking; (vi) cache key for uv's package cache (~/.cache/uv).
+- **C8.5b (Dockerfile) is DEFERRED** pending docker availability OR C8.6 CI ship. C8.6 may bundle a `docker build` step natively on `ubuntu-latest` runner if useful — but C8.5b's full DO is a separate task.
+- **Tier 1 progress: 5 of 8 tasks complete** (C8.1, C8.2, C8.3, C8.4, C8.5a). Remaining: C8.5b (DEFERRED), C8.6, C8.7, C8.8 (~4 sessions + 1-2 for C8.5b when resumed).
+- **Cumulative Phase C effort: ~5 sessions of 29-35 budget.** C8.5a estimated 0.5-1 session; closed in ~1 session (PRE-FLIGHT halt-and-ask + plan-update + DO + VERIFY + RECEIPT all combined). The §11 plan-update overhead was offset by the simpler post-split DO scope.
+- **C8.6 CI is the durable cross-platform test** for the C8.5a lockfile. If `ubuntu-latest` runner fails to `uv sync --frozen` due to a missing wheel, the lockfile needs a `--python-platform linux` re-lock — surface this as a §11 plan-update if it happens.
+- **No new mistake class** surfaced from C8.5a itself. The §15-vs-build-env Python-version mismatch is an L9 instance the existing matrix anticipates (and the existing §11 process caught it cleanly at PRE-FLIGHT). The deferred-C8.5b pattern is a sibling of C8.2's deferred linked-2024-cohort task — both are explicit-deferral cases with documented resumption triggers.
+
+### Session summary
+
+C8.5 was originally a single 1.5-3 session task bundling lockfile + Dockerfile. PRE-FLIGHT halt-and-ask 2026-05-13T04:00:00Z surfaced 3 §7 conditions (docker not installed; §15 Python pin conflicted with build env; VERIFY criterion referenced non-existent orchestrator). User authorization 04:15Z applied a single `[plan-update]` commit `6fe8dcd` splitting the task into C8.5a (lockfile, this session) + C8.5b (Dockerfile, DEFERRED). C8.5a DO + SMOKE + VERIFY + RECEIPT all closed in ~1 session: `pyproject.toml` + `uv.lock` (38 packages) + `.python-version` + README "Pinned environment" subsection. Cache-cleared pytest under `.venv` returns 56 PASS + 1 XFAIL (143s) — the C8.4 baseline preserved. Zero canonical-data mutation; all 4 parquet SHAs preserved byte-exact. C8.5b is queued with explicit resumption trigger (docker available OR C8.6 CI ships).
+
+Next session = C8.6 GitHub Actions CI wiring (1 session estimated).
 
 ---
 

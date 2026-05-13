@@ -1,0 +1,33 @@
+[project]
+name = "vital-statistics-harmonization"
+version = "0.1.0"
+description = "U.S. Harmonized Vital Statistics — pinned env for natality, linked birth-infant death, and fetal death microdata harmonization"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+
+# Runtime dependencies. Exact-pin versions match the canonical build env
+# (Python 3.13.9, miniconda 2026-05-02 baseline) used to produce natality
+# v2.7.0 / v2.8.0 + fetal_death V2.0 / v2.4.0 + linked v3 parquet artifacts.
+# Per-subproject requirements.txt files are preserved as discovery pointers
+# for users without `uv`; uv.lock is the canonical pinned env.
+dependencies = [
+    "pandas==2.3.2",
+    "pyarrow==18.1.0",
+    "numpy==2.3.1",
+    "matplotlib==3.10.5",
+    "nbformat==5.10.4",
+    "nbclient==0.10.4",
+]
+
+# Dev dependencies. Used by tests/ harnesses and PRE-FLIGHT cheap-checks
+# (PyMuPDF text-layer probes per LESSONS L12-extension 2026-05-12T15:00Z).
+[dependency-groups]
+dev = [
+    "pytest==9.0.2",
+    "pymupdf==1.27.2.2",
+]
+
+# Not a packageable project — env spec only. Prevents `uv sync` from trying
+# to build the monorepo as a wheel.
+[tool.uv]
+package = false
