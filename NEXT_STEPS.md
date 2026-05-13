@@ -1000,23 +1000,37 @@ Both are sibling-layout extensions of the post-2017 V1-era COD layout already pa
 
 ### Task C8.6 — CI: GitHub Actions wiring (B.9)
 
-**Goal.** Author `.github/workflows/ci.yml` running C8.1 smoke + C8.4 invariant tests on every push to main. Includes dtype-parity (C8.1), invariant tests (C8.4), and a basic linting step.
+**Note: §15 entry revised at C8.6 PRE-FLIGHT 2026-05-13T05:30:00Z** (DECISION_LOG entry of same timestamp; user-authorized at AskUserQuestion 2026-05-13T05:30:00Z with "do what you think is the best move" = Option A "ship workflow now, live-VERIFY at Phase D step 3"). The §11 plan-update resolves two §7-class HALTs surfaced at PRE-FLIGHT: (i) §7.17 + §7.12-shape — this monorepo has no `origin` remote (it is the dev workspace; the public repo at `yoelplutchok/vital-statistics-harmonization` is at v1.0 commit `a18ca3a` and lacks Tier-1 outputs); a live remote push from here would expose all state files; the canonical mechanism for moving Tier-1 outputs to the public repo is Phase D step 3 (staging-dir rsync + scrub + push). (ii) §7.12 — original DO scope's "matrix on Python 3.11 + 3.12" predates C8.5a's `requires-python = ">=3.13,<3.14"` pin; single-version 3.13 is the correct target.
 
-**Why this matters.** No automated test runs today; regressions discovered post-hoc. CI is the cheapest single signal of project health for external reviewers (`EXPLORATION_REPORT.md` §B.9). Public-repo CI minutes are free at this scale.
+**Goal.** Author `.github/workflows/ci.yml` running C8.1 dtype-parity (`fetal_death/tests/test_schema_dtype_parity.py`) + C8.4 invariant tests (`tests/test_canonical_filter_invariants.py`, `tests/test_row_count_conservation.py`, `tests/test_cross_product_join_parity.py`) + the existing C8.1-retagged release-smoke (`fetal_death/tests/test_release_smoke.py`, `natality/tests/test_schema_dtype_parity.py`) on every push to main and on pull requests. Workflow installs the pinned env via `uv sync --frozen` (consuming C8.5a's `uv.lock`). The workflow file is the canonical artifact shipped this task; the live-CI green-check VERIFY closes at Phase D step 3's first public-repo sync.
 
-**PRE-FLIGHT inputs.** Existing tests (C8.1 + C8.4); pinned env (C8.5 lockfile); GitHub repo (already public at https://github.com/yoelplutchok/vital-statistics-harmonization).
+**Why this matters.** No automated test runs today; regressions discovered post-hoc. CI is the cheapest single signal of project health for external reviewers (`EXPLORATION_REPORT.md` §B.9). Public-repo CI minutes are free at this scale. Authoring the workflow file ahead of Phase D ensures the first public sync ships a runnable CI scaffold, not a workflow-less repo.
 
-**SMOKE plan.** Tier 0: workflow file validates against GitHub Actions schema. Tier 1: trigger a test commit; CI runs; expect green.
+**PRE-FLIGHT inputs.** Existing tests (C8.1 + C8.4); pinned env (C8.5a lockfile `uv.lock` sha=`ab627034…`; `pyproject.toml` sha=`c8826a61…`; `.python-version` sha=`02e735b3…`); public GitHub repo at `https://github.com/yoelplutchok/vital-statistics-harmonization` (v1.0 commit `a18ca3a`; will receive the workflow at Phase D step 3 first sync); `uv 0.11.10` on build machine; `.venv/` ready for local-emulation VERIFY.
 
-**DO scope.** Workflow: matrix on Python 3.11 + 3.12 if both supported per uv.lock; install via `uv sync --frozen`; run `pytest fetal_death/tests/ natality/tests/ tests/`. Optional: post-test artifact upload of any FIX_LOG-relevant outputs.
+**SMOKE plan.** Tier 0: workflow YAML validates structurally via `python -c "import yaml; yaml.safe_load(open(...))"` round-trip + dict-key assertions on top-level (`name`, `on`, `jobs`, `concurrency`), per-job (`runs-on`, `steps`), per-step (`uses` or `run` set; pinned action versions); fallback to `actionlint` if available (not installed locally — yaml.safe_load + structural assertions is the durable check).
 
-**VERIFY criteria.** Green check on the test commit. Subsequent PRs gate on CI.
+**DO scope.** Single-job workflow targeting `ubuntu-latest` with Python pinned to **3.13** sourced from `.python-version` (no version matrix; `requires-python = ">=3.13,<3.14"` excludes 3.11 / 3.12 / 3.14 by design). Triggers: `push` on `main`, `pull_request` on `main`, `workflow_dispatch` (manual). Steps:
+1. `actions/checkout@v5`
+2. `astral-sh/setup-uv@v6` with `version: "0.11.x"`, `enable-cache: true`, `cache-dependency-glob: "**/uv.lock"` (Python auto-resolved by uv from `.python-version` + `pyproject.toml`; no separate `actions/setup-python` step).
+3. `uv lock --check` (gates against `pyproject.toml` ↔ `uv.lock` drift).
+4. `uv sync --frozen` (installs the pinned env).
+5. `uv run pytest fetal_death/tests/ natality/tests/ tests/ -v` (expected 56 PASS + 1 XFAIL when parquets are present; under a clean checkout with no parquets, the conftest `_require()` skip-if-missing protocol will cleanly skip parquet-dependent tests — this is the parquet-skip-in-CI concern documented as a Forward-looking HALT routed to C8.13 for future resolution via GitHub release artifacts).
 
-**Estimated effort.** 1 session.
+Concurrency control: `group: ci-${{ github.ref }}`, `cancel-in-progress: true`.
 
-**Dependencies.** C8.1, C8.4, C8.5.
+**VERIFY criteria.** (Revised per §11 plan-update 2026-05-13T05:45:00Z.)
+1. **YAML structurally valid** — `python -c "import yaml; d = yaml.safe_load(open('.github/workflows/ci.yml'))"` raises no exception; top-level keys present (`name`, `on`, `jobs`, `concurrency`); jobs.test has `runs-on` + `steps`; each step has `uses` or `run`.
+2. **Locally-emulated workflow steps produce the C8.5a baseline** under `.venv`: cache-cleared (`find . -name __pycache__ -type d -exec rm -rf {} +`) + `uv lock --check` exit 0 + `uv sync --check` "Would make no changes" + `.venv/bin/python -m pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL.
+3. **All four parquet SHAs unchanged** (this is a workflow-file-only task; no data mutation).
+4. **All four C8.5a file SHAs unchanged** (workflow file is additive; no edits to pyproject.toml / uv.lock / .python-version / README.md).
+5. **Forward-looking VERIFY (closes at Phase D step 3 first sync)**: First push to public repo containing `.github/workflows/ci.yml` triggers a workflow run on `ubuntu-latest`; the run completes successfully (parquet-dependent tests may skip cleanly per conftest `_require()` — that's expected pending C8.13). If the first remote run is red, the Phase D session must halt + surface failure modes; if green, the live-CI VERIFY closes.
 
-**Halt-condition flags.** None unique.
+**Estimated effort.** 1 session (unchanged from original §15 estimate; the deferred live-CI VERIFY is a forward-looking step, not added effort).
+
+**Dependencies.** C8.1 (test inventory), C8.4 (invariant tests + `tests/` directory + 4× `__init__.py`), C8.5a (`uv.lock` + `pyproject.toml` + `.python-version`). C8.5b (Dockerfile, DEFERRED) is NOT a dependency per the C8.5 plan-update's dependency narrowing. Live-CI VERIFY depends on Phase D step 3 (staging-dir sync + push).
+
+**Halt-condition flags.** None unique. L11 (stale roadmap claim) and L17-extension (test-infra invariants) are sibling defenses; the workflow's `uv lock --check` + `uv sync --frozen` + cache-cleared `pytest` ladder is the durable defense against both.
 
 ---
 

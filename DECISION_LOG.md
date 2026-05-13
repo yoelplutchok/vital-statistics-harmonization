@@ -23,6 +23,94 @@
 
 ---
 
+## 2026-05-13T05:45:00Z — [plan-update] C8.6 — Ship workflow file in monorepo + defer live-CI green-check VERIFY to Phase D step 3 first sync; revise §15 C8.6 DO scope (single-version Python 3.13, not 3.11+3.12 matrix) + VERIFY criterion (YAML structurally valid + locally-emulated test command runs green + forward-looking live-CI VERIFY at Phase D)
+
+**Choice (user-authorized at C8.6 PRE-FLIGHT halt-and-ask 2026-05-13T05:30:00Z, AskUserQuestion response "do what you think is the best move" interpreted as Option A "Ship workflow now, live-VERIFY at Phase D" per the agent's stated recommendation in the question preamble):** Apply a single `[plan-update]` commit resolving two §7-class HALTs surfaced at C8.6 PRE-FLIGHT:
+
+1. **HALT #1 resolution (§7.17 + §7.12-shape, dev/public separation) — ship workflow in monorepo + defer live-CI VERIFY to Phase D step 3.** This monorepo has no `git remote` configured (verified PRE-FLIGHT: `git remote -v` returns empty). The public repo `yoelplutchok/vital-statistics-harmonization` is at v1.0 commit `a18ca3a` (2026-05-12T03:20:06Z; verified via `gh api repos/.../commits/main`) with no `.github/workflows/` directory (verified via `gh api repos/.../contents/.github/workflows` → HTTP 404) and lacks all Tier-1 outputs (no `pyproject.toml`, `uv.lock`, `.python-version`, `tests/`, the four C8.1-followup `__init__.py` files, the C8.1 dtype-parity test). Per KICKOFF Phase D step 3 (line 235), the canonical mechanism for moving Tier-1 outputs to the public repo is a complete staging-dir sync from `~/Desktop/vital-statistics-harmonization-public/` (verified to exist, currently at the v1.0 state, no `.github/`) + scrub + push. A live-CI VERIFY from this session would require either (i) configuring an `origin` remote here + pushing — but this monorepo's HEAD includes all state files (STATUS.md, DECISION_LOG.md, FIX_LOG.md, LESSONS.md, NEXT_STEPS.md, KICKOFF.md, PRE_FLIGHT_LOG.md, RECEIPTS/, EXPLORATION_REPORT.md, paper/) that the Phase D exclude list deliberately scrubs, so a direct push would leak them; (ii) a surgical sync to the staging dir + push from there — which is partial-Phase-D-step-3 ahead of schedule and forward-syncs questions that aren't ready (Task 9 redirect notices, manuscript admin-section markers, etc.). Option A ships the workflow file in this monorepo as canonical state; the file moves to the public repo at Phase D step 3 along with all other Tier-1 outputs; the live-CI green-check VERIFY closes on that first sync.
+
+2. **HALT #2 resolution (§7.12, Python pin) — single-version 3.13.** §15 C8.6 DO scope (pre-revision line 1011) specified "matrix on Python 3.11 + 3.12 if both supported per uv.lock." This text predates C8.5a (which pinned `requires-python = ">=3.13,<3.14"` + `.python-version = 3.13`). Neither 3.11 nor 3.12 is supported under the canonical env; a matrix would either resolve to zero supported versions or be silently misleading. STATUS 2026-05-13T05:00:00Z line 118 already flagged this as a candidate consideration for C8.6 PRE-FLIGHT. Revised DO scope: single-job, `runs-on: ubuntu-latest`, Python auto-resolved from `.python-version` via `astral-sh/setup-uv@v6` (no explicit matrix needed).
+
+**Plan-update applied (this commit):**
+
+1. **`NEXT_STEPS.md` §15.C C8.6 entry rewritten** (lines 1001–1019 pre-revision):
+   - Header note added documenting the 2026-05-13T05:30:00Z PRE-FLIGHT revision + §7 HALTs resolved.
+   - Goal expanded to enumerate the specific test files (`test_schema_dtype_parity.py`, `test_canonical_filter_invariants.py`, `test_row_count_conservation.py`, `test_cross_product_join_parity.py`, `test_release_smoke.py`) being gated.
+   - Why-this-matters narrative extended to note authoring-ahead-of-Phase-D rationale.
+   - PRE-FLIGHT inputs extended to enumerate exact C8.5a SHAs being depended on.
+   - SMOKE plan rewritten: Tier 0 `yaml.safe_load` + structural-key assertions (actionlint not installed locally; fallback documented).
+   - DO scope rewritten: 5-step workflow specified (checkout, setup-uv, uv lock --check, uv sync --frozen, pytest); concurrency control noted.
+   - VERIFY criteria rewritten as 5 numbered items: (1) YAML structurally valid; (2) locally-emulated steps reproduce 56 PASS + 1 XFAIL baseline; (3) parquet SHAs unchanged; (4) C8.5a file SHAs unchanged; (5) **forward-looking live-CI VERIFY closes at Phase D step 3 first sync**.
+   - Dependencies extended to clarify C8.5b is NOT a dependency (per C8.5 plan-update narrowing); live-CI VERIFY depends on Phase D step 3.
+
+2. **`KICKOFF.md`** — no edits needed; Phase C Tier-1 sequencing (line 184) names C8.6 as the next task with no implicit "remote push happens at C8.6" claim that conflicts with this plan-update.
+
+3. **`PRE_FLIGHT_LOG.md`** — PRE-FLIGHT entry at 2026-05-13T05:30:00Z (RESULT: HALT) + addendum at 2026-05-13T05:45:00Z (RESULT: PROCEED post-resolution) document the two HALTs + this plan-update.
+
+4. **This DECISION_LOG entry** records the §11 plan-update + Option A rationale.
+
+**Alternatives considered (per AskUserQuestion 2026-05-13T05:30:00Z):**
+
+For HALT #1:
+
+1. **(A) Ship workflow now, live-VERIFY at Phase D (chosen).** Pro: smallest scope; matches existing dev/public architecture cleanly; workflow IS canonical state that belongs in the public repo; one-session cost; locally-emulated VERIFY gives high-confidence signal (uv sync --frozen + pytest works under the same Python pin + same lockfile that CI will use); aligns with KICKOFF's Phase D step 3 as the canonical sync mechanism. Con: "live CI green check" doesn't close until Phase D step 3; parquet-skip-in-CI deferred to C8.13 (acceptable separate matter).
+
+2. **(B) Surgical sync to staging dir + live push now.** Pro: live CI green check closes this session; forward-syncs Tier-1 to public; reduces Phase D step 3 burden. Con: ~45-60 min overhead; jumps Phase D step 3 ahead of schedule, partially; brings forward questions that aren't ready (Task 9 redirect notice content, manuscript admin-section markers, EXPLORATION_REPORT exclude question, paper/ exclude question, etc.); Phase D step 3 was deliberately designed as a single sweep — partial sweeps create more state to track; **violates Anti-Pattern #8** ("Never compress two tasks into one because they go together"). Rejected.
+
+3. **(C) Re-order Tier-1: C8.7 + C8.8 first, C8.6 last.** Pro: C8.6 ships alongside Phase D step 3 (cleanest live-CI VERIFY). Con: defers C8.6 indefinitely (Phase D start is conditional on Tier-1 + Tier-2 completion — many sessions out); doesn't address the structural issue, just defers it; KICKOFF.md sequencing note revision is plan-update overhead; loses the "early CI scaffolding" benefit (`EXPLORATION_REPORT.md` §B.9 cites this as the value of C8.6 specifically). Rejected.
+
+For HALT #2:
+
+1. **(A) Single-version Python 3.13 (chosen).** Pro: matches `.python-version` + `requires-python` literally; cleanest workflow; no dead-matrix-cell complexity. Con: forward-compat extension (e.g., 3.14 migration) requires a workflow edit — acceptable since 3.14 migration is itself a §11 plan-update event per C8.5a forward-looking HALT #5.
+
+2. **(B) Keep matrix wording but with values 3.13 only.** Pro: forward-compat-shape preserved. Con: zero current benefit; complicates the workflow file. Rejected.
+
+3. **(C) Keep 3.11+3.12 matrix as-written and let CI fail.** Pro: follows §15 literally. Con: would produce a CI workflow that cannot run (uv won't install Python 3.11 or 3.12 because of `requires-python = ">=3.13,<3.14"`); breaks any "Live CI green check" VERIFY. **Rejected (would violate §2 principle 2 "fail closed" — knowingly authoring a broken workflow).**
+
+**Reason:** §11 plan-update process is the canonical path for in-Phase-C scope adjustments surfaced during PRE-FLIGHT verification of plan-vs-reality alignment (per Q42 self-resolution + Convention 3 Field-value snapshot). Both HALTs were caught at the cheap-check moment before any DO mutation — exactly what PRE-FLIGHT cheap-checks are for. The Option A choice + Python pin resolution preserve every original C8.6 design intent (workflow file, dependency on lockfile, pytest invocation, gating on push events) while aligning the immediate-session scope with what's locally verifiable + deferring the live-CI surface to its natural home at Phase D step 3.
+
+Three protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — discovering the dev/public-separation + Python-pin misalignments at PRE-FLIGHT saves ~30-60 min of rework that would have surfaced mid-DO if I'd attempted a direct push or authored a 3.11+3.12 matrix workflow. (ii) §11 plan-update process is the canonical path for in-Phase-C scope adjustments per Q42 (>1-session candidates trigger plan-update; the deferred live-CI VERIFY is ~5 minutes of Phase D step 3 work but the architectural shift in VERIFY criterion is plan-update-shape; sibling of C8.5's plan-update precedent). (iii) §10 self-check encourages the LLM to surface "what could I have gotten wrong that VERIFY wouldn't catch" — in this case, two ground-truth-unverified §15 PRE-FLIGHT-input assumptions (remote configured; 3.11+3.12 supported) that L9 cheap-checks at PRE-FLIGHT caught.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T05:30:00Z entry documenting the two HALTs (HALT #1 §7.17 + §7.12-shape, HALT #2 §7.12).
+- `NEXT_STEPS.md` §15.C C8.6 entry pre-revision text (lines 1001–1019 at commit `e9cd08e`; full text preserved in git history).
+- `git remote -v` → empty (verified PRE-FLIGHT).
+- `gh api repos/yoelplutchok/vital-statistics-harmonization/commits/main --jq '.sha'` → `a18ca3acdc5b3c6012511aab99de2f9da7508840` (v1.0 commit, 2026-05-12T03:20:06Z).
+- `gh api repos/yoelplutchok/vital-statistics-harmonization/contents/.github/workflows` → HTTP 404 (no workflows dir in public repo).
+- `ls -la ~/Desktop/vital-statistics-harmonization-public/.github` → "No such file or directory" (staging dir also has no workflows; consistent with v1.0 state).
+- C8.5a outputs: `pyproject.toml` sha=`c8826a61…`; `uv.lock` sha=`ab627034…`; `.python-version` sha=`02e735b3…`; content `requires-python = ">=3.13,<3.14"` (verified).
+- STATUS 2026-05-13T05:00:00Z line 118 ("C8.5a surfaced one candidate consideration for C8.6: Python version matrix (single-version 3.13.x per `requires-python`, OR matrix of {3.13} for forward compat — single suffices given the narrow Python pin).") confirms HALT #2 was foreseen.
+- KICKOFF.md Phase D step 3 (line 235) "Re-rsync `~/Desktop/vital-statistics-harmonization-public/`, re-scrub (same exclude list + LLM-mention scrub edits as 2026-05-12 v1.0 push)" — the canonical sync mechanism.
+- User authorization chat 2026-05-13T05:30:00Z: "do what you think is the best move" — interpreted as Option A per the agent's recommendation in the AskUserQuestion preamble.
+
+**Verifiable by:**
+
+- This `[plan-update]` commit's diff shows `NEXT_STEPS.md` §15.C C8.6 entry rewritten + `DECISION_LOG.md` this entry + `PRE_FLIGHT_LOG.md` PRE-FLIGHT entry + addendum.
+- Tag `C8.6-pre-do` lands on this `[plan-update]` commit (PRE-FLIGHT now PROCEEDS to C8.6 DO post-resolution; mirrors C8.2 / C8.3 / C8.5 plan-update precedent).
+- C8.6 DO ships in a sibling commit tagged `C8.6-complete` containing `.github/workflows/ci.yml` + RECEIPT + STATUS append.
+- Phase D step 3 first sync: a future session's RECEIPT records the first remote workflow-run URL + green/red status. If green, the live-CI VERIFY closes; if red, the §15 C8.6 VERIFY criterion #5 triggers a halt.
+
+**Reversible:** yes — `git revert <this commit>` restores the original §15 C8.6 entry. The deferred live-CI VERIFY claim is per-task; reverting affects only C8.6's scope, not C8.5a's outputs or the dev/public separation pattern itself.
+
+**Residual risks:**
+
+- (a) **The Phase D step 3 first sync may surface workflow-on-runner failure modes not caught by local emulation.** E.g., `astral-sh/setup-uv@v6` on `ubuntu-latest` may resolve to a different uv build than the local `0.11.10 (aarch64-apple-darwin)`. Mitigation: the workflow pins `version: "0.11.x"` which constrains the major-minor; first sync's Forward-looking HALT explicitly requires verification of green CI before claiming closure. If the first remote run is red, the Phase D session halts + surfaces.
+- (b) **The parquet-skip-in-CI concern weakens the CI signal**. On a clean Ubuntu runner with no parquets, the conftest `_require()` skip-if-missing protocol will cleanly skip parquet-dependent tests; CI reports "N passed + M skipped" instead of the local "56 PASS + 1 XFAIL." Mitigation: routed to C8.13 (Performance + GitHub release artifacts) for resolution via parquet-fetch-step or GitHub release artifact attachment. Documented as a Forward-looking HALT.
+- (c) **The §15 entry's "Python matrix" wording (now revised)** may resurface in a future plan-update if 3.14 / 3.15 migration is desired. Mitigation: C8.5a forward-looking HALT #5 ("Python pin: 3.13.x. `requires-python = ">=3.13,<3.14"`. A future 3.14 migration is a §11 plan-update event") names the migration trigger explicitly.
+- (d) **Cross-platform lockfile resolution untested locally (macOS arm64 build).** First CI run on `ubuntu-latest` (x86_64) is the durable cross-platform test. If `uv sync --frozen` fails due to a missing wheel for a transitive dep on linux-x86_64, the lockfile may need a `--python-platform linux` re-lock. Mitigation: this is C8.5a's open soft-flag (b); surfaces at first CI run, which is Phase D step 3.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- The locally-emulated VERIFY runs `uv sync --frozen` + `pytest` under macOS arm64 (`aarch64-apple-darwin`); the workflow will run on linux-x86_64. Wheel-availability for all 38 packages on linux-x86_64 is not directly tested by local emulation. The first Phase D step 3 push is the durable test. Risk: if a linux-x86_64-specific wheel is missing, CI fails immediately — and we won't know until Phase D. Mitigation: defer to Phase D first-run + surface as Forward-looking HALT.
+- The workflow's concurrency control (`group: ci-${{ github.ref }}`, `cancel-in-progress: true`) is appropriate for single-contributor + main-branch + PR-from-fork patterns; it may cancel useful in-flight runs on rapid pushes. Acceptable trade-off; not VERIFY-blocking.
+- The single-job design assumes all tests pass under a single env. If a future test requires e.g. R interop, the workflow will need restructuring. Acceptable for current scope.
+- The locally-emulated `uv sync --check` returns "Would make no changes" today; that's environment-consistent confirmation. If a different machine produces a different result on the same lockfile, that's a uv-internal-state bug — not a workflow bug.
+
+**Backport scope (per §11.4):** None directly. C8.1 / C8.2 / C8.3 / C8.4 / C8.5a receipts unaffected. C8.6 ships forward under the revised scope; C8.7 / C8.8 / Phase D step 3 inherit the Forward-looking HALT lineage.
+
+---
+
 ## 2026-05-13T04:30:00Z — [plan-update] C8.5 — Split task into C8.5a (lockfile, this session) + C8.5b (Dockerfile, DEFERRED); revise Python pin from 3.11-slim to 3.13-slim; revise VERIFY scope from pipeline-rebuild to env-resolution + test-suite
 
 **Choice (user-authorized at C8.5 PRE-FLIGHT halt-and-ask 2026-05-13T04:15:00Z; all three options (a)):** Apply a single §11 [plan-update] commit resolving three §7-class HALT conditions surfaced at C8.5 PRE-FLIGHT:

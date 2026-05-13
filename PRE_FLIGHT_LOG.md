@@ -8,6 +8,142 @@
 
 ---
 
+## PRE-FLIGHT for C8.6 — 2026-05-13T05:30:00Z — CI: GitHub Actions wiring (B.9) — **RESULT: HALT**
+
+### Scope summary
+
+C8.6 §15.C entry (NEXT_STEPS.md lines 1001–1019, pre-revision): author `.github/workflows/ci.yml` running C8.1 dtype-parity + C8.4 invariant tests on every push to main, gated on the C8.5a-pinned env. §15 names PRE-FLIGHT inputs as "Existing tests (C8.1 + C8.4); pinned env (C8.5 lockfile); GitHub repo (already public at https://github.com/yoelplutchok/vital-statistics-harmonization)." §15 DO scope picks "matrix on Python 3.11 + 3.12 if both supported per uv.lock; install via `uv sync --frozen`; run `pytest fetal_death/tests/ natality/tests/ tests/`." §15 VERIFY: "Green check on the test commit. Subsequent PRs gate on CI." Estimated effort 1 session.
+
+### Inputs
+
+- [x] **`pyproject.toml` (monorepo root) sha=`c8826a61…` ✓** (C8.5a output, unchanged).
+- [x] **`uv.lock` (monorepo root) sha=`ab627034…` ✓** (C8.5a output, unchanged).
+- [x] **`.python-version` (monorepo root) sha=`02e735b3…` ✓** content `3.13` (single line).
+- [x] **README.md (monorepo root) sha=`694fdd35…` ✓** (C8.5a-revised; "Pinned environment via `uv` lockfile" subsection present).
+- [x] `fetal_death/tests/test_schema_dtype_parity.py` (C8.1 output) present; `fetal_death/tests/test_release_smoke.py` (C8.1 retag) present.
+- [x] `tests/__init__.py` + `tests/conftest.py` + `tests/test_canonical_filter_invariants.py` + `tests/test_row_count_conservation.py` + `tests/test_cross_product_join_parity.py` (C8.4 outputs) present.
+- [x] 4× `__init__.py` files (fetal_death + fetal_death/tests + natality + natality/tests) present per C8.1 followup commit `b84ff0d`.
+- [x] All four parquet SHAs unchanged from C8.5a-complete state (this task is workflow-file-only; MUST NOT mutate any data parquet): fd_harm=`38e2cecb…` ✓, fd_der=`185c071e…` ✓, nat_der=`e16ad53…` (via natality build-dir symlink), linked_der=`9b828a4d…` (via natality build-dir symlink).
+- [x] All upstream Tier-1 tasks marked complete: `C8.1-complete`, `C8.2-complete`, `C8.3-complete`, `C8.4-complete`, `C8.5a-complete` (`e9cd08e` = HEAD). §15 names C8.1, C8.4, C8.5 as upstream dependencies — all present (C8.5a satisfies C8.6's `uv.lock` need; C8.5b Dockerfile DEFERRED but not blocking C8.6 per the C8.5 plan-update's narrowing of C8.6's dependency).
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/C8.6_*.md`: does not exist ✓
+  - `.github/`: does not exist ✓
+  - `.github/workflows/ci.yml`: does not exist ✓
+
+### Environment
+
+- [x] Python interpreter: `/opt/miniconda3/bin/python3` = **3.13.9** ✓ (miniconda; matches `.python-version` pin).
+- [x] **uv: 0.11.10** ✓ at `/opt/miniconda3/bin/uv` — workflow will pin `astral-sh/setup-uv@v6` with `version: "0.11.x"`.
+- [x] `.venv/` at monorepo root: present; `uv sync --check` returns "Resolved 38 packages in 25ms / Checked 34 packages in 12ms / Would make no changes" ✓ (lockfile reproduces against the build-machine env).
+- [x] **gh: 2.87.3** ✓ at `/opt/homebrew/bin/gh` — available for remote-state probing.
+- [ ] **actionlint: NOT INSTALLED** ✗ (`which actionlint` returns nothing). Mitigation: SMOKE Tier 0 falls back to `python -c "import yaml; yaml.safe_load(...)"` + structural assertions on the parsed dict (top-level keys `name`/`on`/`jobs`; per-job keys `runs-on`/`steps`; per-step keys `uses` or `run`; valid event triggers under `on:`). Acceptable; actionlint is a nice-to-have, not blocking.
+- [x] Working directory clean (`git status --short` empty); on `main`, HEAD=`e9cd08e` (`C8.5a-complete`).
+
+### Source documentation
+
+- [x] Not applicable — C8.6 consumes no external PDFs.
+
+### Outputs
+
+- Intended outputs:
+  - `.github/workflows/ci.yml` — NEW ✓ (canonical workflow definition).
+  - `NEXT_STEPS.md` — MODIFIED (§15 C8.6 entry revised per §11 plan-update; see HALT #1 + HALT #2 below).
+  - `DECISION_LOG.md` — append new entry recording the §11 plan-update.
+  - `PRE_FLIGHT_LOG.md` — append addendum (this entry's resolution).
+  - `RECEIPTS/C8.6_<UTC>.md` — NEW ✓.
+  - `STATUS.md` — append new section.
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+For each canonical artifact this task will mutate, snapshot the **current** value vs the task plan's assumed value:
+
+| Artifact | Field | Current value (verified PRE-FLIGHT) | Plan's assumed value | Match? |
+|---|---|---|---|---|
+| `NEXT_STEPS.md` §15 C8.6 DO scope | "matrix on Python 3.11 + 3.12 if both supported per uv.lock" | as written | Python 3.13 (per C8.5a `requires-python = ">=3.13,<3.14"`) | ✗ — §15 text predates C8.5a; **HALT #2** |
+| `NEXT_STEPS.md` §15 C8.6 VERIFY criterion | "Green check on the test commit" | as written | Live CI green check (assumes remote-push works) | ✗ — assumes a remote that doesn't exist in this monorepo; **HALT #1** |
+| `git remote -v` | (output) | empty (no remotes) | "origin → public repo" implicit in §15 PRE-FLIGHT inputs | ✗ — **HALT #1** |
+| Public repo `yoelplutchok/vital-statistics-harmonization` HEAD | commit sha | `a18ca3a` (v1.0, 2026-05-12) | Plan assumes the public repo has Tier-1 outputs (pyproject/uv.lock/tests/) already pushed | ✗ — public repo lacks C8.1/C8.4/C8.5a outputs; **HALT #1** |
+| Public repo `.github/workflows/` | (directory) | does not exist (HTTP 404) | — | (consistent with workflow-file-being-newly-authored; not itself a HALT) |
+| `~/Desktop/vital-statistics-harmonization-public/.github/` | (directory) | does not exist | — | (consistent; staging dir has not yet seen a Phase D step 3 sync that would include a workflow) |
+| `.github/` (this monorepo) | (directory) | does not exist | NEW dir to author | ✓ |
+| 4× C8.5a file SHAs | content | `c8826a61…` / `ab627034…` / `02e735b3…` / `694fdd35…` | matches C8.5a STATUS forward-looking HALT #2 | ✓ |
+| Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` | combined result | 56 PASS + 1 XFAIL (per C8.5a VERIFY) | matches | (verified at C8.5a; will re-verify under .venv at VERIFY phase) ✓ |
+
+### Halt conditions tripped
+
+**HALT #1 — §7.17 (scope creep / plan vs reality) + §7.12-shape (conflicting documentation):**
+- `git remote -v` empty: this monorepo has no `origin`. The public repo (`yoelplutchok/vital-statistics-harmonization`, last commit `a18ca3a` = v1.0, 2026-05-12T03:20Z) has no `.github/workflows/` directory and lacks all Tier-1 outputs (no `pyproject.toml`, `uv.lock`, `.python-version`, `tests/`, C8.1 dtype-parity test, the four `__init__.py` files). Per KICKOFF Phase D step 3, the canonical mechanism for moving these forward to the public repo is the staging dir `~/Desktop/vital-statistics-harmonization-public/` re-rsync + scrub + push. §15 C8.6 PRE-FLIGHT inputs assume the public repo is the working CI surface ("GitHub repo already public") but the live-CI VERIFY criterion ("green check on the test commit") cannot close from this monorepo without a sync-and-push step.
+- Three resolution paths considered (see AskUserQuestion 2026-05-13T05:30:00Z): (a) Ship workflow now, live-VERIFY at Phase D step 3 sync; (b) Surgical sync to staging dir + live push; (c) Re-order Tier-1 to ship C8.6 last, immediately before Phase D step 3.
+- User authorization 2026-05-13T05:30:00Z chat: "do what you think is the best move" — interpreted as Option (a) per the agent's stated recommendation in the AskUserQuestion preamble (minimal scope; matches dev/public separation; clean §11 plan-update revising VERIFY criterion).
+
+**HALT #2 — §7.12 (conflicting documentation):**
+- §15 C8.6 DO scope (line 1011, written before C8.5a) specifies "matrix on Python 3.11 + 3.12 if both supported per uv.lock." C8.5a pinned `requires-python = ">=3.13,<3.14"` and `.python-version = 3.13`, so neither 3.11 nor 3.12 is supported under the canonical env. STATUS 2026-05-13T05:00:00Z line 118 already flagged this as a "candidate consideration for C8.6." Resolution: single-version Python 3.13 (or no explicit matrix), tracking `.python-version`. §11 plan-update revises §15 line 1011 text.
+
+### Halt severity and resolution path
+
+Both HALTs caught at the cheap-check moment; zero canonical-state mutation has occurred. Resolution: single `[plan-update]` commit revising §15 C8.6 entry per Option (a) above + this PRE-FLIGHT addendum at the resolution moment + DECISION_LOG entry documenting the §11 plan-update + dev/public deferral rationale. Tag `C8.6-pre-do` lands on the `[plan-update]` commit. C8.6 DO then proceeds to author `.github/workflows/ci.yml`.
+
+The parquet-skip-in-CI concern (CI runners will find no parquets via the conftest `_require()` skip-if-missing protocol; CI green-check signal weakened) is acknowledged but routed to **C8.13 (Performance + GitHub release artifacts)** as a separate architectural matter. The C8.6 workflow file is designed so that adding a parquet-fetch step later (e.g., `actions/download-artifact` or `curl` from a release URL) is a single new step before the `pytest` step — no rewrite needed.
+
+### Result
+
+**HALT.** Resolution path: §11 plan-update + Option (a) per user authorization 2026-05-13T05:30:00Z. Resolution addendum below.
+
+---
+
+## PRE-FLIGHT addendum for C8.6 — 2026-05-13T05:45:00Z — Both HALTs resolved per user authorization (Option A: ship workflow now, live-VERIFY at Phase D step 3); PROCEED to C8.6 DO
+
+### Resolutions per user authorization (AskUserQuestion 2026-05-13T05:30:00Z, user response "do what you think is the best move")
+
+- **HALT #1 (§7.17 + §7.12-shape, dev/public separation) → Option (a) "Ship workflow now, live-VERIFY at Phase D"**: Author `.github/workflows/ci.yml` in monorepo; emulate workflow steps locally under `.venv` (cache-cleared `uv sync --frozen` + `uv lock --check` + `uv run pytest fetal_death/tests/ natality/tests/ tests/` → 56 PASS + 1 XFAIL). §11 plan-update revises §15 C8.6 VERIFY criterion from "Green check on the test commit" to "YAML structurally valid + locally-emulated test-suite command runs green; live-CI green-check VERIFY closes at Phase D step 3 first sync." Forward-looking HALT in receipt: Phase D step 3 first sync MUST verify CI green on first run; if red, halt and surface failure modes. Parquet-skip-in-CI documented as Forward-looking HALT routed to C8.13 (GitHub release artifacts).
+- **HALT #2 (§7.12, Python pin) → option (a)**: Single-version Python 3.13 per `.python-version` (no matrix needed given `requires-python = ">=3.13,<3.14"`). §11 plan-update revises §15 C8.6 DO scope line 1011.
+
+### §11 plan-update applied this commit
+
+- `NEXT_STEPS.md` §15.C C8.6 entry rewritten:
+  - DO scope line 1011: replaced "matrix on Python 3.11 + 3.12 if both supported per uv.lock" with single-version Python 3.13 sourced from `.python-version`.
+  - VERIFY criteria (line 1013): replaced "Green check on the test commit. Subsequent PRs gate on CI." with "YAML structurally valid (yaml.safe_load round-trip + structural-key assertions); cache-cleared locally-emulated test-suite command (`uv sync --frozen` + `uv lock --check` + `uv run pytest fetal_death/tests/ natality/tests/ tests/`) returns 56 PASS + 1 XFAIL preserved from C8.5a-complete baseline; live-CI green-check VERIFY closes at Phase D step 3 first sync (Forward-looking HALT in receipt; if red on first remote run, halt + surface)."
+  - PRE-FLIGHT inputs (line 1007): unchanged in literal text; the implicit "remote push will happen this session" assumption is now superseded by the dev/public-separation discipline documented above + DECISION_LOG entry.
+  - Why-this-matters narrative unchanged. Estimated effort 1 session unchanged (the live-CI green-check is forward-deferred, not effort-extended).
+- `KICKOFF.md` — no edits needed; Phase C Tier-1 sequencing (line 184) names C8.6 as the next task with no implicit "remote push happens at C8.6" claim.
+- This PRE-FLIGHT addendum records the resolution + the §11 plan-update.
+- `DECISION_LOG.md` 2026-05-13T05:45:00Z entry records the §11 plan-update + Option A rationale.
+
+### Post-resolution input state for C8.6
+
+- [x] All four C8.5a file SHAs unchanged (verified above) ✓
+- [x] All four parquet SHAs unchanged ✓
+- [x] Test inventory complete: 16 tests in `fetal_death/tests/` + 3 tests in `natality/tests/` + 41 tests in `tests/` = 57 items; expected: 56 PASS + 1 XFAIL (post-C8.4 baseline; reproduced at C8.5a-complete).
+- [x] `uv 0.11.10` ✓; `python3.13.9` ✓; `.venv/` ready.
+- [x] Workflow design choices for DO phase:
+  - Trigger events: `push` (branches: `main`), `pull_request` (branches: `main`), `workflow_dispatch` (manual).
+  - Single job: `test`, `runs-on: ubuntu-latest`.
+  - Step 1: `actions/checkout@v5`.
+  - Step 2: `astral-sh/setup-uv@v6` with `version: "0.11.x"`, `enable-cache: true`, `cache-dependency-glob: "**/uv.lock"`. Python is auto-resolved from `.python-version` + `pyproject.toml` `requires-python` by uv (no separate `actions/setup-python` step needed since uv 0.6+ handles Python installation natively).
+  - Step 3: `uv lock --check` (gating against drift between `pyproject.toml` and `uv.lock`).
+  - Step 4: `uv sync --frozen` (installs the pinned env).
+  - Step 5: `uv run pytest fetal_death/tests/ natality/tests/ tests/ -v` (expected 56 PASS + 1 XFAIL under clean-checkout cache-cleared discipline).
+  - Concurrency control: `group: ci-${{ github.ref }}`, `cancel-in-progress: true` (cancel in-flight runs on rapid pushes).
+
+### Outputs (intended) for C8.6
+
+- `.github/workflows/ci.yml` (NEW; canonical workflow per design above).
+- `NEXT_STEPS.md` (MODIFIED; §15 C8.6 entry revised per the §11 plan-update).
+- `DECISION_LOG.md` (append; 2026-05-13T05:45:00Z entry).
+- This PRE-FLIGHT addendum (PRE_FLIGHT_LOG.md append).
+- `RECEIPTS/C8.6_<UTC>.md` (NEW; at task close).
+- `STATUS.md` (append; new section at task close).
+
+### Halt conditions tripped (post-resolution)
+
+None. Both HALTs resolved via §11 plan-update + Option A user authorization. C8.6 is fully locally verifiable; live-CI VERIFY is forward-deferred to Phase D step 3 (documented as a Forward-looking HALT in the receipt).
+
+### Result
+
+**PROCEED to C8.6 DO.** Tag `C8.6-pre-do` lands on the `[plan-update]` commit. DO authors `.github/workflows/ci.yml` per the design above; VERIFY runs the locally-emulated workflow steps under `.venv`; RECEIPT at `RECEIPTS/C8.6_<UTC>.md`.
+
+---
+
 ## PRE-FLIGHT for C8.5 — 2026-05-13T04:00:00Z — Distribution: uv/poetry lockfile + Dockerfile (F.2 + F.3) — **RESULT: HALT**
 
 ### Scope summary
