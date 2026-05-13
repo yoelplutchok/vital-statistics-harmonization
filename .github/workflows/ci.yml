@@ -1,0 +1,50 @@
+# CI: pytest under the uv-managed pinned env (Python 3.13, lockfile uv.lock).
+#
+# Authored by C8.6 (2026-05-13). The locally-emulated VERIFY runs on
+# macOS arm64 against the same lockfile; live-CI runs on linux-x86_64.
+# First push to public repo containing this workflow triggers the first
+# live run; that closes the §15 C8.6 forward-looking VERIFY criterion #5.
+#
+# Parquet-skip-in-CI note: shipped parquets are NOT in the repository
+# (gitignored sidecars to the local build dirs). On a clean Ubuntu
+# runner the conftest `_require()` skip-if-missing protocol skips
+# parquet-dependent tests cleanly. Closing this gap (e.g., via GitHub
+# release artifacts or download-on-CI) is C8.13's scope.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest (uv-managed Python 3.13)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up uv (with cache)
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.x"
+          enable-cache: true
+          cache-dependency-glob: "**/uv.lock"
+
+      - name: Verify uv.lock consistency
+        run: uv lock --check
+
+      - name: Install pinned dependencies
+        run: uv sync --frozen
+
+      - name: Run pytest (fetal_death + natality + tests)
+        run: uv run pytest fetal_death/tests/ natality/tests/ tests/ -v

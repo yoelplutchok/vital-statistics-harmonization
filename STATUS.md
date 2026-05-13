@@ -1,6 +1,131 @@
-# STATUS — last updated 2026-05-13T05:00:00Z
+# STATUS — last updated 2026-05-13T06:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T06:30:00Z — C8.6 COMPLETE: `.github/workflows/ci.yml` shipped (single-job ubuntu-latest, Python 3.13, `uv lock --check` + `uv sync --frozen` + cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`); 2 §7 HALTs resolved at PRE-FLIGHT via §11 plan-update commit `7bd9a05`; locally-emulated workflow reproduces 56 PASS + 1 XFAIL baseline in 108.81s; live-CI green-check VERIFY DEFERRED to Phase D step 3 first sync (Forward-looking HALT #1); zero canonical-data mutation
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.6 COMPLETE.** Sixth Tier-1 task closed in ~1 session matching the §15 estimate exactly (PRE-FLIGHT + §11 plan-update + SMOKE + DO + VERIFY + RECEIPT). Two §7-class HALTs surfaced at PRE-FLIGHT (dev/public separation + §15 Python-matrix stale text) and were resolved via single `[plan-update]` commit `7bd9a05`. Tag `C8.6-complete` lands on the commit shipping this STATUS section + receipt. Tier 1 progress: 6 of 8 tasks complete (C8.1, C8.2, C8.3, C8.4, C8.5a, C8.6). Cumulative Phase C effort ~6 sessions of 29–35 budget.
+
+Two §7 HALT conditions surfaced at C8.6 PRE-FLIGHT (zero downstream artifacts affected):
+
+1. **§7.17 + §7.12-shape — dev/public separation**: monorepo has no `git remote`; public repo at `yoelplutchok/vital-statistics-harmonization` is at v1.0 commit `a18ca3a` (2026-05-12) with no `.github/workflows/` directory and lacks all Tier-1 outputs (`pyproject.toml`, `uv.lock`, `.python-version`, `tests/`, C8.1 dtype-parity test, 4× `__init__.py`). KICKOFF Phase D step 3 (line 235) is the canonical sync path. Resolution per Option A: ship workflow in monorepo; locally-emulate VERIFY; live-CI green-check VERIFY closes at Phase D step 3 first sync.
+2. **§7.12 — §15 wording predates C8.5a**: §15 C8.6 DO scope "matrix on Python 3.11 + 3.12" excluded by C8.5a's `requires-python = ">=3.13,<3.14"`. Resolution: single-version 3.13 sourced from `.python-version` via `astral-sh/setup-uv@v6`.
+
+Both resolved via single `[plan-update]` commit `7bd9a05` per user authorization 2026-05-13T05:30:00Z ("do what you think is the best move" = Option A per the AskUserQuestion preamble recommendation).
+
+Five canonical-state changes this session (zero parquet mutation):
+
+1. **`[plan-update]` commit `7bd9a05`** at 05:45Z: NEXT_STEPS.md §15.C C8.6 entry rewritten (Goal + PRE-FLIGHT inputs + SMOKE + DO scope + 5-item VERIFY criteria + Dependencies); PRE_FLIGHT_LOG.md PRE-FLIGHT entry (HALT) + addendum (PROCEED); DECISION_LOG.md entry 2026-05-13T05:45:00Z. Tag `C8.6-pre-do` placed.
+2. **`.github/workflows/ci.yml`** (NEW; sha=`c248cf51159f907b…`). Single-job workflow: `actions/checkout@v5` → `astral-sh/setup-uv@v6 (version: 0.11.x, enable-cache: true)` → `uv lock --check` → `uv sync --frozen` → `uv run pytest fetal_death/tests/ natality/tests/ tests/ -v`. Triggers: push on main + pull_request on main + workflow_dispatch. Concurrency control cancels in-flight runs on rapid pushes.
+3. **`RECEIPTS/C8.6_2026-05-13T06-30-00Z.md`** (NEW). Full §6 template incl. Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+4. **`STATUS.md`** this section (append).
+5. **(via `[plan-update]` commit `7bd9a05`)** — NEXT_STEPS.md §15 C8.6 + PRE_FLIGHT_LOG + DECISION_LOG modified.
+
+### What was done this session (C8.6 PRE-FLIGHT + §11 plan-update + DO + SMOKE + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed in the way you think is best."
+2. **C8.6 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T05:30:00Z): verified all 10 C8.5a Forward-looking HALTs (tag presence, 4 file SHAs, 4 parquet SHAs, `.venv` ready, `uv 0.11.10`, Python 3.13.9, `uv sync --check` clean); Field-value snapshot enumerated dev/public-separation state + §15 stale wording; identified 2 §7 conditions; result **HALT**.
+3. **AskUserQuestion 2026-05-13T05:30:00Z**: 1 question with 3 options covering the dev/public-separation + Python-matrix HALTs. User response "do what you think is the best move" → Option A (ship workflow now, live-VERIFY at Phase D).
+4. **§11 plan-update commit `7bd9a05`** at 05:45Z: NEXT_STEPS §15 C8.6 rewritten + PRE_FLIGHT_LOG addendum 05:45Z (PROCEED) + DECISION_LOG entry. Tag `C8.6-pre-do`.
+5. **DO step 1**: `mkdir -p .github/workflows`.
+6. **DO step 2**: authored `.github/workflows/ci.yml` with 5 steps + concurrency block + 3 event triggers (push/pull_request/workflow_dispatch).
+7. **SMOKE Tier 0**: `yaml.safe_load` round-trip + 15 dict-key/per-step structural assertions PASS. Top-level keys present; event triggers correct; runs-on=ubuntu-latest; 5 steps; pinned action refs (`actions/checkout@v5` + `astral-sh/setup-uv@v6` with `version: "0.11.x"`); run-step commands match `uv lock --check` / `uv sync --frozen` / `uv run pytest fetal_death/tests/ natality/tests/ tests/`; concurrency block has `cancel-in-progress: true`.
+8. **VERIFY** (locally-emulated workflow under `.venv`):
+   - Step 1 (cache clear): `find . -name __pycache__ -type d -not -path "./.venv/*" -not -path "./.git/*" -exec rm -rf {} +` ✓
+   - Step 2 (`uv lock --check`): "Resolved 38 packages in 19ms" exit 0 ✓
+   - Step 3 (`uv sync --check`): "Would make no changes" exit 0 ✓
+   - Step 4 (`.venv/bin/python -m pytest fetal_death/tests/ natality/tests/ tests/`): `56 passed, 1 xfailed in 108.81s` (57 items) ✓
+   - All 4 parquet SHAs unchanged ✓
+   - All 4 C8.5a file SHAs unchanged ✓
+9. **RECEIPT** at `RECEIPTS/C8.6_2026-05-13T06-30-00Z.md` with full §6 template incl. Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+
+### Last completed step
+
+Single commit ships: 1 new file (`.github/workflows/ci.yml`) + 1 new receipt + 1 STATUS append. Tag `C8.6-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.6 → C8.7 boundary)
+
+### Next planned task
+
+**C8.7 — End-to-end pipeline smoke from monorepo root (B.10).** Per KICKOFF.md Phase C Tier-1 sequencing (line 185) + NEXT_STEPS.md §15.C C8.7 entry. Run `scripts/run_pipeline.py` (or equivalent per-script chain) from monorepo root end-to-end (raw zips → yearly_clean → harmonized → derived → validate) and fix any path-drift findings as L13-style "fix on contact" patches. Verify final parquet SHAs match current shipped SHAs (byte-identical re-derive). Estimated 1 session.
+
+C8.6 surfaced one candidate consideration for C8.7:
+- C8.7's PRE-FLIGHT should verify `.github/workflows/ci.yml` sha=`c248cf51…` unchanged + all 4 C8.5a file SHAs unchanged + all 4 parquet SHAs unchanged before re-running the pipeline.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger now partially satisfied.** Original trigger (OR-coupled): "docker available OR C8.6 CI ships." C8.6 has now shipped (workflow + locally-VERIFY; live-CI VERIFY pending Phase D step 3). The "C8.6 CI ships" branch of the trigger is satisfied for the workflow-file-present sense; the live-Dockerfile-build VERIFY can use GitHub Actions hosted runner's native docker via a new workflow job. Recommended ordering: complete Tier 1 (C8.7 + C8.8) first; then attempt C8.5b with the CI surface available.
+
+### Open questions for human
+
+None for C8.7 scope.
+
+**Open soft-flags (carried forward):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+- (C8.5a-a) `requirements.txt` declares `jupyter>=1.0` but metapackage NOT installed in lockfile env; end-users may need `uv pip install jupyter`. Phase D step 6 may reconcile.
+- (C8.5a-b) Cross-platform lockfile resolution untested locally (macOS arm64 build); C8.6 CI on `ubuntu-latest` is the durable test — **closes at Phase D step 3 first sync.**
+- (C8.5a-c) `requirements.txt` files at 3 locations have inconsistent dependency lists; reconciliation is a future polish item.
+
+**New open soft-flags (C8.6):**
+- (a) **Parquet-skip-in-CI weakens green-check signal.** On a clean Ubuntu runner with no parquets, the conftest `_require()` skip-if-missing protocol cleanly skips parquet-dependent tests. CI reports "N passed + M skipped" rather than the local "56 PASS + 1 XFAIL." Routed to **C8.13** (Performance + GitHub release artifacts) for resolution via parquet-fetch step or GitHub release artifact attachment.
+- (b) **Locally-emulated VERIFY runs on macOS arm64; live CI runs on linux-x86_64.** Cross-platform wheel availability untested until Phase D step 3 first sync. If a transitive dep has no linux-x86_64 wheel, `uv sync --frozen` will fail at first CI run; fallback is `uv lock --python-platform linux` re-lock.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **First Phase D step 3 sync MUST verify live-CI green check.** The sync brings `.github/workflows/ci.yml` + `pyproject.toml` + `uv.lock` + `.python-version` + `tests/` + 4× `__init__.py` + C8.1 dtype-parity test + (anything C8.7 + C8.8 ship before then) to the public repo. The first push triggers the first workflow run. If RED, halt and surface failure modes. If GREEN, the §15 C8.6 VERIFY criterion #5 closes.
+2. **`C8.6-complete` tag** present on this commit. Verify: `git tag --list 'C8.6*'` shows `C8.6-pre-do` (`7bd9a05`) + `C8.6-complete` (this commit).
+3. **`.github/workflows/ci.yml` sha=`c248cf51159f907b…`.** Any future edit MUST update the receipt's recorded SHA and re-verify SMOKE Tier 0 + locally-emulated VERIFY.
+4. **All four C8.5a file SHAs unchanged post-C8.6** (workflow-only task): pyproject.toml=`c8826a61…`, uv.lock=`ab627034…`, .python-version=`02e735b3…`, README.md=`694fdd35…`.
+5. **All four parquet SHAs unchanged post-C8.6** (workflow-only task): fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+6. **All public-repo pushes must go through Phase D step 3's rsync + scrub mechanism.** A manual `git push` from this monorepo would leak state files (STATUS.md, DECISION_LOG.md, etc.) that the Phase D exclude list deliberately scrubs.
+7. **Parquet-skip-in-CI is the C8.13 trigger.** When C8.13 lands, the CI workflow should add a parquet-fetch step before pytest.
+8. **C8.7 is the next task** per KICKOFF.md Tier-1 sequencing (line 185). PRE-FLIGHT verifies (i) `uv.lock` sha unchanged; (ii) `.github/workflows/ci.yml` sha=`c248cf51…` unchanged; (iii) all 4 parquet SHAs unchanged.
+9. **`uv` ecosystem may evolve.** If `uv 0.11.x` deprecates `--frozen` or `--check`, the workflow needs updating.
+10. **L11 / L17 defense status preserved.** The §15 C8.6 entry now references the workflow's actual structure (5 steps, single Python version, `astral-sh/setup-uv@v6 0.11.x`). If a future edit changes the workflow without updating §15 C8.6, that's an L11 stale-claim caught at the next PRE-FLIGHT.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.5a).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged).
+- `tests/__init__.py` + `tests/conftest.py` + 3 invariant-test harnesses (unchanged from C8.4-complete).
+- `pyproject.toml` + `uv.lock` + `.python-version` + README "Pinned environment" subsection (unchanged from C8.5a-complete).
+
+NEW this session:
+- `.github/workflows/ci.yml` (sha=`c248cf51…`)
+- `RECEIPTS/C8.6_2026-05-13T06-30-00Z.md`
+- `STATUS.md` this section (append)
+
+MODIFIED this session (via `[plan-update]` commit `7bd9a05`):
+- `NEXT_STEPS.md` (§15 C8.6 entry rewritten)
+- `PRE_FLIGHT_LOG.md` (added PRE-FLIGHT entry + addendum at 05:30Z + 05:45Z)
+- `DECISION_LOG.md` (added entry 2026-05-13T05:45:00Z)
+
+### Notes for next session
+
+- **C8.7 — End-to-end pipeline smoke from monorepo root** is the next task. PRE-FLIGHT should consider: (i) which pipeline scripts to chain (fetal_death has `scripts/run_pipeline.py`; natality has no current orchestrator — C8.7 may need to author one or wire the existing per-step scripts); (ii) raw-zip inventory verification per `file_inventory.csv`; (iii) end-to-end re-derive byte-exact match against current parquet SHAs (per H10 fail-on-drift).
+- **C8.5b (Dockerfile) is DEFERRED but resumption-trigger partially satisfied.** C8.6 has shipped the workflow file; C8.6 CI ships when Phase D step 3 syncs. Recommended: complete Tier 1 (C8.7 + C8.8) first; then attempt C8.5b with GitHub Actions docker available.
+- **Tier 1 progress: 6 of 8 tasks complete** (C8.1, C8.2, C8.3, C8.4, C8.5a, C8.6). Remaining: C8.5b (DEFERRED), C8.7, C8.8 (~2 sessions + 1-2 for C8.5b when resumed).
+- **Cumulative Phase C effort: ~6 sessions of 29-35 budget.** Comfortably within +20% drift cap (42 sessions).
+- **C8.6 effort matches §15 estimate exactly** (1 session) — first Tier-1 task that matched estimate rather than undershooting. The PRE-FLIGHT halt-and-ask overhead was offset by the cleanly-scoped DO.
+- **The parquet-skip-in-CI question** is the only remaining substantive C8.6 follow-up. Resolution path: C8.13 (Performance + GitHub release artifacts) attaches parquets to a GitHub Release; CI downloads them before `pytest`. Alternative: a single-year synthetic-fixture test suite that runs without parquets and exercises the canonical-filter + invariant-test logic on toy data.
+- **No new mistake class** surfaced from C8.6 itself. The dev/public-separation HALT is an L9-extension instance the existing matrix anticipates (and the existing §11 process caught it cleanly via L9 cheap-check on `git remote -v` + `gh api`).
+
+### Session summary
+
+C8.6 closed in ~1 session matching the §15 estimate exactly. Two §7-class halts surfaced at PRE-FLIGHT (dev/public separation + §15 Python-matrix stale text) and were resolved cleanly via §11 plan-update + user authorization 2026-05-13T05:30:00Z (Option A: ship workflow now, live-VERIFY at Phase D step 3). The workflow file (`.github/workflows/ci.yml`, sha=`c248cf51…`) is canonical state shipped in the monorepo; it moves to the public repo at Phase D step 3's first sync. Locally-emulated workflow steps under `.venv` reproduce the C8.5a baseline: 56 PASS + 1 XFAIL in 108.81s. Zero canonical-data mutation; all 4 parquet SHAs preserved byte-exact; all 4 C8.5a file SHAs preserved byte-exact. Forward-looking HALT #1 routes live-CI VERIFY closure to the next Phase D session.
+
+Next session = C8.7 end-to-end pipeline smoke from monorepo root (1 session estimated).
 
 ---
 
