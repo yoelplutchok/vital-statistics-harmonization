@@ -950,25 +950,51 @@ Both are sibling-layout extensions of the post-2017 V1-era COD layout already pa
 
 ---
 
-### Task C8.5 — Distribution: uv/poetry lockfile + Dockerfile (F.2 + F.3)
+### Task C8.5a — Distribution: pyproject.toml + uv.lock (F.3)
 
-**Goal.** (F.3) Author `uv.lock` (or `poetry.lock`) pinning exact versions for Python + pandas + pyarrow + every dependency. Replace `requirements.txt` `>=` semantics. (F.2) Author `Dockerfile` that produces a runnable image rebuilding every parquet end-to-end.
+**Note: Originally bundled with C8.5b Dockerfile work as one task C8.5.** Split into C8.5a + C8.5b at C8.5 PRE-FLIGHT 2026-05-13T04:00:00Z (DECISION_LOG entry of same timestamp) after PRE-FLIGHT discovered (i) `docker` not installed on build machine; (ii) §15 Python pin (`3.11-slim`) conflicts with actual build env (3.13.9); (iii) §15 VERIFY criterion references monorepo-root `scripts/run_pipeline.py` that does not exist (C8.7 scope). The §11 plan-update preserves all original C8.5 work but separates the locally-verifiable lockfile portion (C8.5a, this entry) from the docker-dependent Dockerfile portion (C8.5b, follows).
 
-**Why this matters.** Manuscript Reproducibility Strengths claim is currently advertised without a pinned env or one-command rebuild. Closes the gap per `EXPLORATION_REPORT.md` §F.2 + §F.3.
+**Goal.** Author `pyproject.toml` (PEP 621 metadata + `requires-python = ">=3.13,<3.14"`) and `uv.lock` pinning exact versions for Python 3.13.x + pandas + pyarrow + numpy + matplotlib + jupyter + nbformat + pytest + nbclient + any other runtime dep. Replace `requirements.txt` `>=` semantics with the lockfile as the canonical pinned env; `requirements.txt` files preserved as discovery-pointers for users without `uv`.
 
-**PRE-FLIGHT inputs.** Existing `requirements.txt`; current Python version on build machine; raw zip inventory (Dockerfile needs to know where to fetch them — initial choice: bind-mount `raw_data/` into the container rather than baking 5+ GB of raw zips into the image).
+**Why this matters.** Manuscript Reproducibility Strengths claim is currently advertised without a pinned env. Closes the F.3 gap per `EXPLORATION_REPORT.md`. Unblocks C8.6 (CI) which needs `uv sync --frozen` for deterministic GitHub Actions runs.
 
-**SMOKE plan.** Tier 0: `uv lock` (or `poetry lock`) on the existing requirements; verify lock-file resolves. Tier 1: `docker build` on a clean checkout; verify the image builds. Tier 2: `docker run` invokes `scripts/run_pipeline.py` end-to-end; verify outputs match expected SHAs.
+**PRE-FLIGHT inputs.** Existing `requirements.txt` (monorepo root + 2 subprojects); current Python version on build machine (3.13.9 per natality v2.7.0 + fetal_death V2.0 build notes); `uv` available (verified 0.11.10 at PRE-FLIGHT).
 
-**DO scope.** Choose `uv` (faster than poetry, simpler conventions). Author `pyproject.toml` + `uv.lock`. Author `Dockerfile` (multi-stage: base python:3.11-slim → deps install → script copy → entrypoint). Author `docker-compose.yml` if bind-mount complexity warrants. README section "Reproducibility via Docker."
+**SMOKE plan.** Tier 0: `uv lock` resolves; `uv sync --check` reports the env matches the lock; `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL under the lockfile-defined env.
 
-**VERIFY criteria.** `uv sync` + `python scripts/run_pipeline.py` produces parquets with current SHAs. `docker build && docker run` produces same.
+**DO scope.** Choose `uv` (faster than poetry, simpler conventions). Author `pyproject.toml` at monorepo root: PEP 621 metadata block (`name = "vital-statistics-harmonization"`, version mirrors per-product version conventions but lives at monorepo root for env-only purposes), `requires-python = ">=3.13,<3.14"`, `dependencies = [...]` listing every runtime dep with `==` pins matching currently-installed versions, `[tool.uv.dev-dependencies] = [...]` for pytest + nbclient + pymupdf (if used for L9 cheap-checks). Run `uv lock` to produce `uv.lock`. Author `.python-version` (single-line `3.13`). Append README section "Reproducibility via uv lockfile" (~5-10 lines) describing `uv sync` workflow.
 
-**Estimated effort.** 1.5-3 sessions.
+**VERIFY criteria.** (revised per §11 plan-update 2026-05-13T04:00:00Z): (i) `uv lock` produces a deterministic lock; running `uv lock` twice produces bit-identical output. (ii) `uv sync --check` reports env-OK. (iii) Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` under the lockfile-defined env returns 56 PASS + 1 XFAIL (the C8.4 baseline). (iv) All four parquet SHAs unchanged (C8.5a is metadata-only). (v) `requirements.txt` content survives unchanged at all 3 locations; only the lockfile becomes the new pinned canonical env. — The original §15 VERIFY criterion (pipeline-rebuild via `scripts/run_pipeline.py`) moves to C8.7's responsibility; C8.5a relies on C8.7 for end-to-end pipeline-rebuild closure.
 
-**Dependencies.** None upstream. C8.6 (CI) depends on this.
+**Estimated effort.** 0.5–1 session.
 
-**Halt-condition flags.** None unique (H10 covered by SHA cross-check).
+**Dependencies.** None upstream. C8.6 (CI) depends on this. C8.5b (Dockerfile) depends on this.
+
+**Halt-condition flags.** None unique. Soft-flag: if `uv lock` cannot resolve (e.g., a transitive dep doesn't support Python 3.13), the §11 plan-update may need to revise the version pin or drop a dep.
+
+---
+
+### Task C8.5b — Distribution: Dockerfile (F.2) [DEFERRED]
+
+**Status: DEFERRED at C8.5 PRE-FLIGHT 2026-05-13T04:00:00Z** per user authorization (DECISION_LOG entry of same timestamp). Originally bundled with C8.5a as a single C8.5 task. Deferred because (i) `docker` is not installed on the build machine, so the Tier 1 + Tier 2 SMOKE steps (`docker build` + `docker run`) cannot run locally; (ii) the §15 VERIFY-via-pipeline-rebuild criterion requires C8.7's monorepo-root orchestrator to land first for a non-fetal-only verification. Trigger for resumption: user installs Docker Desktop / OrbStack / colima OR C8.6 CI ships and validates remotely via GitHub Actions' hosted-runner `docker build`.
+
+**Goal.** Author `Dockerfile` + `.dockerignore` at monorepo root producing a runnable image that rebuilds every parquet end-to-end. Base image `python:3.13-slim` (revised from §15's original `3.11-slim` text per §11 plan-update 2026-05-13T04:00:00Z to match the canonical build env). Multi-stage: base → `uv sync --frozen` (consuming C8.5a's lockfile) → script copy → entrypoint. Bind-mount `raw_data/` rather than baking 5+ GB of raw zips into the image. README section "Reproducibility via Docker."
+
+**Why this matters.** Manuscript Reproducibility Strengths claim is currently advertised without a one-command rebuild. Closes the F.2 gap. Provides a portable env for users without `uv`.
+
+**PRE-FLIGHT inputs (when resumed).** C8.5a-complete (`uv.lock` present, sha-recorded); `docker` (or compatible runtime: `podman`, `colima` + `docker` CLI) available on build machine; C8.7-complete OR scoped acceptance that the Dockerfile rebuild VERIFY is partial (fetal-death only).
+
+**SMOKE plan (when resumed).** Tier 0: Dockerfile syntax lints clean. Tier 1: `docker build .` on a clean checkout; verify the image builds. Tier 2: `docker run` invokes `scripts/run_pipeline.py` (post-C8.7) end-to-end; verify outputs match expected parquet SHAs.
+
+**DO scope (when resumed).** Author `Dockerfile` (multi-stage: `python:3.13-slim` base → `uv sync --frozen` → script copy → CMD/ENTRYPOINT pointing at monorepo-root pipeline orchestrator). Author `.dockerignore` excluding `output/`, `raw_data/`, `raw_docs/`, `.git/`, `__pycache__/`, `.venv/`, parquet artifacts, large PDFs. README section update.
+
+**VERIFY criteria (when resumed).** `docker build .` produces an image. `docker run --rm -v $(pwd)/raw_data:/app/raw_data -v $(pwd)/output:/app/output <image>` rebuilds parquets to SHAs matching the canonical build (C8.7's smoke baseline).
+
+**Estimated effort.** 1–2 sessions (when resumed; depends on whether bind-mount complexity drives `docker-compose.yml` authoring).
+
+**Dependencies.** C8.5a (lockfile); C8.7 (pipeline orchestrator) for full-rebuild VERIFY; `docker` runtime on build machine.
+
+**Halt-condition flags.** None unique (H10 covered by SHA cross-check at Tier 2).
 
 ---
 

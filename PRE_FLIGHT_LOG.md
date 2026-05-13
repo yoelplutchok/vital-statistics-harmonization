@@ -8,6 +8,183 @@
 
 ---
 
+## PRE-FLIGHT for C8.5 — 2026-05-13T04:00:00Z — Distribution: uv/poetry lockfile + Dockerfile (F.2 + F.3) — **RESULT: HALT**
+
+### Scope summary
+
+C8.5 §15.C entry (NEXT_STEPS.md lines 953–971): two artifacts in one task — (i) **F.3** `uv.lock` (or `poetry.lock`) pinning exact versions for Python + every runtime dep, replacing `requirements.txt` `>=` semantics; (ii) **F.2** `Dockerfile` producing a runnable image that rebuilds every parquet end-to-end via `scripts/run_pipeline.py`. §15 names PRE-FLIGHT inputs as "existing `requirements.txt`; current Python version on build machine; raw zip inventory (Dockerfile needs to know where to fetch them — initial choice: bind-mount `raw_data/` into the container rather than baking 5+ GB of raw zips into the image)." §15 DO scope picks `uv` over `poetry`; multi-stage Dockerfile based on `python:3.11-slim`; README "Reproducibility via Docker" section. §15 VERIFY criteria: `uv sync + python scripts/run_pipeline.py` produces parquets with current SHAs; `docker build && docker run` produces same. Estimated effort 1.5–3 sessions.
+
+### Inputs
+
+- [x] `requirements.txt` (monorepo root) present, sha-stable, content reviewed: 4 pinned-lower-bound deps (pandas≥2.3.2, pyarrow≥18.1.0, numpy≥2.3.1, matplotlib≥3.10.5) + 2 notebook deps (jupyter≥1.0, nbformat≥5.9). Uses `>=` semantics throughout (the gap C8.5 closes).
+- [x] `natality/requirements.txt` (subproject) present: same 4 numeric deps + same notebook deps.
+- [x] `fetal_death/requirements.txt` (subproject) present: only 3 deps (pandas≥2.3.0, pyarrow≥18.0.0, numpy≥2.0.0; no matplotlib, no notebook deps). Note: "Pinned to lower bounds matching the versions used to produce V2.0 (Python 3.13.9, 2026-05-02)" — explicit Python-version reference in source-of-truth doc.
+- [x] All four parquet SHAs unchanged from C8.4-complete forward-looking HALT #4 (this task is metadata-only, MUST NOT mutate any data parquet): fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+- [x] All upstream Tier-1 tasks marked complete: `C8.1-complete` (`9fe662a`), `C8.2-complete` (`bb19c5a`), `C8.3-complete` (`ffbb4da`), `C8.4-complete` (`4b78dd0` — HEAD). C8.5 has no §15-named upstream Tier-1 dependency.
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `RECEIPTS/C8.5_*.md`: does not exist ✓
+  - `pyproject.toml` (monorepo root): does not exist ✓
+  - `uv.lock` (monorepo root): does not exist ✓
+  - `Dockerfile` (monorepo root): does not exist ✓
+  - `.python-version` (monorepo root): does not exist ✓
+
+### Environment
+
+- [x] Python interpreter: `/opt/miniconda3/bin/python3` = **3.13.9** (miniconda) ✓
+- [x] pandas: 2.3.2 ✓ (≥ requirements.txt lower bound)
+- [x] pyarrow: 18.1.0 ✓
+- [x] numpy: 2.3.1 ✓
+- [x] matplotlib: 3.10.5 ✓
+- [x] pytest: 9.0.2 ✓
+- [x] nbclient: 0.10.4 ✓
+- [x] **uv: 0.11.10 ✓** at `/opt/miniconda3/bin/uv` — lockfile authoring tool available.
+- [ ] **docker: NOT INSTALLED** ✗ (`docker` not found; `which docker` exit 1; `docker --version` command-not-found).
+- [ ] poetry: not installed (✓ acceptable since §15 picks `uv` not `poetry`).
+- [x] Working directory clean (`git status --short` empty); on `main`, HEAD=`4b78dd0` (`C8.4-complete`).
+
+### Source documentation
+
+- [x] Not applicable — C8.5 consumes no external PDFs.
+
+### Outputs
+
+- Intended outputs (NEW files at monorepo root):
+  - `pyproject.toml` — NEW ✓
+  - `uv.lock` — NEW ✓
+  - `Dockerfile` — NEW ✓
+  - `.dockerignore` — NEW ✓
+  - `.python-version` — NEW (or recorded via pyproject `requires-python`) ✓
+  - README section update (existing file, append-only insert) ✓
+  - `RECEIPTS/C8.5_<UTC>.md` — NEW ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.5 mutates **zero canonical data**; it adds packaging metadata. The "cells being mutated" are (a) the dependency-version pins the lockfile will encode and (b) the §15 entry's Python-version pin assumption.
+
+#### Current dependency-version state (verified via `python3 -c "import X; print(X.__version__)"`)
+
+| Package | Installed version | requirements.txt declares | Lockfile pin (target) |
+|---|---|---|---|
+| Python | 3.13.9 (CPython, miniconda) | implicit | 3.13.x (see HALT #2) |
+| pandas | 2.3.2 | ≥2.3.2 | ==2.3.2 |
+| pyarrow | 18.1.0 | ≥18.1.0 | ==18.1.0 |
+| numpy | 2.3.1 | ≥2.3.1 | ==2.3.1 |
+| matplotlib | 3.10.5 | ≥3.10.5 | ==3.10.5 |
+| pytest | 9.0.2 | not declared in requirements.txt; used by `tests/` + `fetal_death/tests/` + `natality/tests/` | ==9.0.2 (dev dep) |
+| nbclient | 0.10.4 | not declared; used by `notebooks/_build_joint_use_demo.py` to execute the notebook | ==0.10.4 (dev dep or runtime — see §11 sub-question) |
+| nbformat | (not probed; ≥5.9 in req.txt) | ≥5.9 | TBD |
+| jupyter | (not probed; ≥1.0 in req.txt — meta-package) | ≥1.0 | TBD |
+| pymupdf (fitz) | used by C8.3 PRE-FLIGHT L9 cheap-check; not in requirements.txt | NOT declared | TBD (likely dev-only) |
+
+These pins are the values the lockfile will encode at C8.5 DO step 1. The PRE-FLIGHT records them so a future auditor can verify the lockfile was generated against the actual installed env, not a stale assumption.
+
+#### §15 entry text vs reality — three divergences
+
+1. **§15 says base image `python:3.11-slim`** (line 963). Build env is Python **3.13.9** (miniconda). natality v2.7.0 + fetal_death V2.0 build notes both name Python 3.13.9 as the build-time interpreter. → HALT #2 (§7.12 conflicting documentation).
+2. **§15 VERIFY says `python scripts/run_pipeline.py` at monorepo root** (line 965). No monorepo-root `scripts/` directory exists (`ls /Users/yoelplutchok/Desktop/vital-statistics-harmonization/scripts/` → No such file or directory). Only `fetal_death/scripts/run_pipeline.py` exists; it rebuilds the fetal-death parquet only (29 years of the now-43-year coverage; the V2.1/V3a/V3b extension-era code path is in the build-dir scripts, not yet promoted to the monorepo subdir). Natality has no `scripts/run_pipeline.py` — the natality pipeline runs from the natality-harmonization build dir's scripts. → HALT #3 (§7.17 scope creep / dependency missing: VERIFY criterion as written cannot complete without authoring a monorepo-root orchestrator, which is C8.7's scope).
+3. **§15 SMOKE Tier 1+2 require `docker build` + `docker run`.** docker not installed on this machine. → HALT #1 (§7.2 SMOKE cannot run; defense-in-depth `docker build`+`docker run` verification not locally possible).
+
+### Halt conditions tripped
+
+#### HALT #1 — §7.2 — `docker` not installed; Tier 1+2 SMOKE for the Dockerfile cannot run locally.
+
+`which docker` → exit 1. macOS without Docker Desktop / OrbStack / colima. C8.5 SMOKE plan (§15): "Tier 1: `docker build` on a clean checkout; verify the image builds. Tier 2: `docker run` invokes `scripts/run_pipeline.py` end-to-end; verify outputs match expected SHAs." Neither tier is runnable without docker.
+
+Options to surface to user:
+
+- (a) **Defer Dockerfile to C8.6 CI run + ship lockfile only this session.** Pro: cleanly unblocks C8.5a (lockfile) with full SMOKE+VERIFY; defers Dockerfile to a session where docker is available (user installs Docker Desktop OR C8.6 GitHub Actions runs `docker build` on its hosted-runner natively). Con: ships Dockerfile authored but un-validated locally; needs explicit "validated remotely via CI" framing. Or: defer the entire Dockerfile to a separate task ID after C8.6.
+- (b) **Author Dockerfile + dockerignore based on best-practice template + defer `docker build`/`docker run` verification to C8.6.** Same as (a) but Dockerfile lands in this session, validated via syntax-only (`hadolint` if installable, or careful authoring with §15 entry text as the template) + CI-driven `docker build` at C8.6 SMOKE.
+- (c) **Halt C8.5 entirely until docker is available** (user installs Docker Desktop or OrbStack; ~5-15 min for Docker Desktop install). Pro: fully verifies SMOKE locally before tagging C8.5-complete. Con: introduces an out-of-band human step; delays C8.5 indefinitely if user defers install.
+- (d) **Split C8.5 → C8.5a (lockfile, this session) + C8.5b (Dockerfile, later session).** Pro: surgical; preserves Tier-1 progress; clean §11 plan-update. Con: bookkeeping overhead (2 RECEIPTS, 2 tags); §11 plan-update commit before any DO mutation.
+
+Recommendation: **(d) split + §11 plan-update** OR **(b) author Dockerfile this session, defer docker-runtime SMOKE to C8.6 CI**. The two are operationally similar; (d) is more conservative because it doesn't ship un-locally-SMOKE'd canonical state.
+
+#### HALT #2 — §7.12 — Conflicting documentation: §15 entry text says `python:3.11-slim` base; current build env is Python 3.13.9.
+
+§15 line 963 explicitly names `python:3.11-slim` as the Dockerfile base, but the natality v2.7.0 + fetal-death V2.0 + the in-session-running interpreter are all Python 3.13.9. Two consequences:
+
+- The lockfile's `requires-python` pin: should be `>=3.13` (matches build env) or `>=3.11` (matches §15 plan literal)?
+- The Dockerfile's base: `python:3.13-slim` (matches build env) or `python:3.11-slim` (matches §15)?
+
+The conservative choice is to pin to 3.13.x (matches every actual build event in this monorepo's history), and apply a §11 [plan-update] to revise the §15 entry's line 963 text. The §15 text's "3.11-slim" appears to be a EXPLORATION_REPORT §F.2 carryover (§F.2 doesn't name a specific Python version; the §15 wording inserted "3.11-slim" as an example without ground-truth check).
+
+Options:
+
+- (a) **§11 [plan-update]: revise §15 line 963 from `python:3.11-slim` to `python:3.13-slim`** matching the build env. Pro: aligns plan with reality; lockfile pins reproduce documented builds. Con: §11 plan-update commit before tagging C8.5-pre-do (mirrors C8.2 + C8.3 PRE-FLIGHT plan-update flow).
+- (b) **Pin to 3.11-slim per §15 literal text; downgrade-test all deps work on 3.11.** Pro: follows §15 as-written. Con: lockfile becomes a hypothetical-env pin (no actual 3.11 build event in this repo's history); may surface dep version conflicts (pandas 2.3.2 + numpy 2.3.1 both still support 3.11, but the resolution might prefer different versions on 3.11 vs 3.13); breaks reproducibility of every existing build.
+- (c) **Range-pin `requires-python = ">=3.11,<3.14"`** (or similar) — broadest compatibility. Pro: future-flexible. Con: lockfile still resolves against one specific Python version (whichever `uv` picks at lock time); the range doesn't actually give resolver flexibility — it constrains downstream-consumer Python.
+
+Recommendation: **(a) §11 plan-update to revise the §15 entry to `python:3.13-slim`** and pin `requires-python = "==3.13.*"` (or `>=3.13,<3.14`) in `pyproject.toml`. Matches every existing build event.
+
+#### HALT #3 — §7.17 — Scope creep / dependency missing: §15 VERIFY criterion references `scripts/run_pipeline.py` at monorepo root; only `fetal_death/scripts/run_pipeline.py` exists.
+
+§15 line 965 VERIFY: "`uv sync` + `python scripts/run_pipeline.py` produces parquets with current SHAs." Reality:
+
+- `/Users/yoelplutchok/Desktop/vital-statistics-harmonization/scripts/run_pipeline.py` — does not exist.
+- `/Users/yoelplutchok/Desktop/vital-statistics-harmonization/fetal_death/scripts/run_pipeline.py` — exists; rebuilds the V2.0 (29 years, 1.6M records) fetal-death parquet only. Does not orchestrate V2.1 / V3a / V3b / 2023-2024 extensions; does not orchestrate the natality or linked pipelines.
+- The natality + linked pipelines run from `/Users/yoelplutchok/Desktop/natality-harmonization/` (a separate sibling repo) — their scripts/build-dir code is not in the monorepo.
+
+The §15 VERIFY criterion presupposes a monorepo-root pipeline orchestrator. That orchestrator is **C8.7's scope** ("end-to-end pipeline smoke from monorepo root") per KICKOFF.md Tier 1 sequencing. C8.5 cannot satisfy its §15-named VERIFY without C8.7 first.
+
+Options:
+
+- (a) **§11 [plan-update]: revise §15 C8.5 VERIFY to use `uv sync` env-resolution check only** (no pipeline rebuild). Add a separate verifier: `uv sync && python -c "import pandas, pyarrow, numpy, matplotlib, pytest, nbclient" && pytest fetal_death/tests/ natality/tests/ tests/` (= "the env is sufficient to run the full test suite"). The pipeline-rebuild verification moves to C8.7 (which already plans to do this). Pro: aligns C8.5 scope with what's locally verifiable; C8.7 explicitly takes the pipeline-rebuild VERIFY responsibility. Con: weakens C8.5 VERIFY; relies on C8.7 for end-to-end closure.
+- (b) **Author a stub monorepo-root `scripts/run_pipeline.py` that calls per-subproject pipelines** (scope creep into C8.7). Pro: C8.5 VERIFY closes per §15 literal. Con: scope creep (~0.5-1 session of work that belongs in C8.7); duplicates C8.7's intent.
+- (c) **Use the per-subproject `fetal_death/scripts/run_pipeline.py` as the VERIFY witness.** Pro: minimal scope. Con: covers fetal-death only; doesn't address natality + linked; partial verification.
+- (d) **Defer C8.5 to after C8.7.** Pro: VERIFY criterion fully satisfied per §15. Con: re-orders Tier 1 sequencing (§15/KICKOFF say C8.5 before C8.6; C8.7 is positioned after C8.6).
+
+Recommendation: **(a) §11 [plan-update]: revise §15 VERIFY to "env-resolution check + test suite passes"** + explicitly leave the pipeline-rebuild VERIFY to C8.7. Mirrors the C8.6 entry which already has "CI gates on real invariant tests" as its VERIFY (test-suite-based, not pipeline-rebuild-based).
+
+### Result
+
+**HALT.** Three §7 conditions tripped (§7.2 docker missing; §7.12 Python version conflict; §7.17 VERIFY scope vs missing dependency). All three are PRE-FLIGHT-class — caught at cheap-check before any DO mutation. None are blockers to the eventual completion of C8.5; all are resolvable via user authorization at this PRE-FLIGHT halt-and-ask + a single combined `[plan-update]` commit revising §15 line 963 + line 965 + KICKOFF.md Tier 1 line 181 commentary (if needed). Tag `C8.5-pre-do` is **NOT yet placed** — it lands on the `[plan-update]` commit after user authorization, per the C8.2/C8.3 precedent.
+
+A PRE-FLIGHT addendum will follow once user resolves the three halts; tag `C8.5-pre-do` lands on the `[plan-update]` commit and DO begins.
+
+---
+
+## PRE-FLIGHT addendum for C8.5 — 2026-05-13T04:30:00Z — All 3 HALTs resolved per user authorization; task split C8.5 → C8.5a + C8.5b; PROCEED to C8.5a DO
+
+### Resolutions per user authorization (AskUserQuestion 2026-05-13T04:15:00Z)
+
+- **HALT #1 (§7.2 docker missing) → option (a)**: Split C8.5 → **C8.5a** (lockfile, this session, fully verifiable) + **C8.5b** (Dockerfile, DEFERRED until docker available OR C8.6 CI ships). §11 [plan-update] commit ships the split.
+- **HALT #2 (§7.12 Python version conflict) → option (a)**: Pin to **3.13.x** (matches build env). §15 line 963 revised from `python:3.11-slim` to `python:3.13-slim` (C8.5b entry); `pyproject.toml` `requires-python = ">=3.13,<3.14"`.
+- **HALT #3 (§7.17 VERIFY scope) → option (a)**: Revise C8.5a VERIFY to **env-resolution + test-suite passes**. Pipeline-rebuild VERIFY moves to C8.7's responsibility. §15 C8.5a entry rewritten.
+
+### §11 plan-update applied this commit
+
+- `NEXT_STEPS.md` §15.C C8.5 entry rewritten into two entries: C8.5a (lockfile, this session) + C8.5b (Dockerfile, DEFERRED with resumption trigger documented).
+- `KICKOFF.md` Tier 1 task list (line 181) split: `C8.5a` + `C8.5b` entries replace the single `C8.5`.
+- `KICKOFF.md` sequencing note (line 202): `C8.5 + C8.6 paired` revised to `C8.5a + C8.6 paired` (C8.6 depends on lockfile only, not Dockerfile).
+- This PRE-FLIGHT addendum records the resolution.
+- `DECISION_LOG.md` 2026-05-13T04:30:00Z entry records the §11 plan-update.
+
+### Post-resolution input state for C8.5a
+
+- [x] `uv 0.11.10` ✓ at `/opt/miniconda3/bin/uv` (verified PRE-FLIGHT 04:00Z).
+- [x] Python 3.13.9 (CPython, miniconda) — target lockfile pin.
+- [x] Installed package versions enumerated at PRE-FLIGHT 04:00Z (pandas 2.3.2, pyarrow 18.1.0, numpy 2.3.1, matplotlib 3.10.5, pytest 9.0.2, nbclient 0.10.4).
+- [x] `requirements.txt` (monorepo root + 2 subprojects) all present; will be preserved post-DO as discovery-pointers.
+- [x] All four parquet SHAs unchanged from C8.4-complete state (must remain so post-C8.5a; this task is metadata-only).
+
+### Outputs (intended) for C8.5a
+
+- `pyproject.toml` (monorepo root, NEW) — PEP 621 metadata + `requires-python = ">=3.13,<3.14"` + exact-pin dependencies + dev-dependencies.
+- `uv.lock` (monorepo root, NEW) — deterministic lock generated by `uv lock`.
+- `.python-version` (monorepo root, NEW) — single-line `3.13`.
+- `README.md` (existing, edit) — append section "Reproducibility via uv lockfile" describing the `uv sync` workflow.
+- `RECEIPTS/C8.5a_<UTC>.md` — receipt at task close.
+
+### Halt conditions tripped (post-resolution)
+
+None. All three HALTs resolved via §11 plan-update + user authorization. C8.5a is fully locally verifiable.
+
+### Result
+
+**PROCEED to C8.5a DO.** Tag `C8.5-pre-do` (preserving the original C8.5 task ID for git-tag continuity with the C8.5 lineage; future C8.5b PRE-FLIGHT will tag `C8.5b-pre-do`) lands on this `[plan-update]` commit. DO step 1 authors `pyproject.toml` + runs `uv lock` to produce `uv.lock`; DO step 2 authors `.python-version` + README section; VERIFY runs the test-suite under the lockfile-defined env; RECEIPT at `RECEIPTS/C8.5a_<UTC>.md`.
+
+---
+
 ## PRE-FLIGHT for C8.4 — 2026-05-13T01:30:00Z — Invariant tests: canonical-filter + row-count conservation + cross-product join parity — **RESULT: PROCEED**
 
 ### Scope summary

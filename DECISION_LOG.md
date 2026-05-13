@@ -23,6 +23,89 @@
 
 ---
 
+## 2026-05-13T04:30:00Z — [plan-update] C8.5 — Split task into C8.5a (lockfile, this session) + C8.5b (Dockerfile, DEFERRED); revise Python pin from 3.11-slim to 3.13-slim; revise VERIFY scope from pipeline-rebuild to env-resolution + test-suite
+
+**Choice (user-authorized at C8.5 PRE-FLIGHT halt-and-ask 2026-05-13T04:15:00Z; all three options (a)):** Apply a single §11 [plan-update] commit resolving three §7-class HALT conditions surfaced at C8.5 PRE-FLIGHT:
+
+1. **HALT #1 resolution — split C8.5 → C8.5a + C8.5b.** `docker` is not installed on the build machine (PRE-FLIGHT verified via `which docker` → exit 1; `docker --version` → command-not-found). C8.5 SMOKE Tier 1 (`docker build`) and Tier 2 (`docker run`) cannot run locally. Split the task: **C8.5a** = lockfile-only (fully locally verifiable; this session); **C8.5b** = Dockerfile (DEFERRED until docker available on build machine OR C8.6 CI ships and validates remotely via GitHub Actions' hosted-runner `docker build`). C8.6 dependency narrows: C8.6 depends on C8.5a's lockfile only (not on C8.5b).
+
+2. **HALT #2 resolution — Python pin to 3.13.x.** §15 line 963 originally specified `python:3.11-slim` base, but every actual build event in this repo's history uses Python 3.13.9 (natality v2.7.0 + fetal-death V2.0 build notes both name Python 3.13.9 explicitly; current build interpreter is 3.13.9 via miniconda). §15's `3.11-slim` appears to be a EXPLORATION_REPORT §F.2 carryover wording without ground-truth check. Plan-update revises §15 C8.5b entry to `python:3.13-slim`; `pyproject.toml` `requires-python = ">=3.13,<3.14"`; `.python-version` = `3.13`.
+
+3. **HALT #3 resolution — C8.5a VERIFY revised to env-resolution + test-suite passes.** §15 line 965 originally specified `python scripts/run_pipeline.py` at monorepo root as the VERIFY witness. No monorepo-root `scripts/run_pipeline.py` exists; the only pipeline orchestrator is `fetal_death/scripts/run_pipeline.py` (rebuilds fetal-death V2.0 era only — 29 of the 43 years now covered). A monorepo-root orchestrator is C8.7's explicit scope per KICKOFF Tier-1 sequencing. Plan-update revises C8.5a VERIFY to: (i) `uv lock` deterministic (running twice produces bit-identical output); (ii) `uv sync --check` reports env-OK; (iii) cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL (the C8.4 baseline); (iv) all four parquet SHAs unchanged. Pipeline-rebuild VERIFY moves to C8.7.
+
+**Plan-update applied (this commit):**
+
+1. **`NEXT_STEPS.md` §15.C C8.5 entry rewritten into two entries:**
+   - C8.5a (lockfile) — Goal/Why/PRE-FLIGHT inputs/SMOKE/DO/VERIFY all revised per the three resolutions. Effort revised 1.5–3 sessions → 0.5–1 session.
+   - C8.5b (Dockerfile, DEFERRED) — preserves all original §15 C8.5 Dockerfile language with revisions: `3.11-slim` → `3.13-slim`; explicit "DEFERRED at C8.5 PRE-FLIGHT 2026-05-13T04:00:00Z"; resumption trigger documented; dependency on C8.5a (lockfile) + C8.7 (orchestrator) for full-rebuild VERIFY.
+
+2. **`KICKOFF.md` Tier 1 task list (line 181)**: single `C8.5` row split into two rows (C8.5a `0.5-1 session`, C8.5b `1-2 sessions [DEFERRED]`).
+
+3. **`KICKOFF.md` sequencing note (line 202)**: `C8.5 + C8.6 paired` revised to `C8.5a + C8.6 paired` with Dockerfile deferral note.
+
+4. **`PRE_FLIGHT_LOG.md`** PRE-FLIGHT addendum at 2026-05-13T04:30:00Z records the resolution + PROCEED-to-C8.5a-DO.
+
+5. **This DECISION_LOG entry** records the §11 plan-update.
+
+**Alternatives considered (per AskUserQuestion 2026-05-13T04:15:00Z):**
+
+For HALT #1:
+1. **(a) Split into C8.5a + C8.5b (chosen).** Pro: surgical; preserves Tier-1 progress; clean tag boundary; lockfile lands this session with full SMOKE+VERIFY; Dockerfile resumption trigger explicit. Con: 2 RECEIPTS + 2 tags instead of 1.
+2. **(b) Author Dockerfile now, defer docker SMOKE to C8.6 CI.** Pro: ships Dockerfile artifact in same session. Con: Dockerfile lands un-locally-validated; C8.6 CI is the implicit acceptance gate but it doesn't exist yet either. Rejected for same-session-ship-without-local-SMOKE concern.
+3. **(c) Halt C8.5 entirely until docker installed.** Pro: full local SMOKE. Con: introduces out-of-band human step (Docker Desktop install ~5-15 min); delays C8.5a indefinitely; the lockfile portion is independently shippable so blocking it on docker is over-conservative. Rejected.
+4. **(d) Lockfile-only this session; no Dockerfile commitment.** Pro: simplest. Con: loses the C8.5b follow-up tracking; future agent may not surface the deferred Dockerfile as a clear future task without explicit §15 entry. Rejected in favor of (a)'s explicit C8.5b stub.
+
+For HALT #2:
+1. **(a) Pin to 3.13.x; §11 plan-update (chosen).** Pro: matches every actual build event in repo history; lockfile reproduces documented builds byte-exact. Con: requires §11 plan-update commit (which is happening anyway for HALT #1).
+2. **(b) Pin to 3.11.x per §15 literal.** Pro: follows §15 as-written. Con: lockfile becomes a hypothetical-env pin; no actual 3.11 build event in repo's history; resolver may pick different versions on 3.11 vs 3.13 (pandas 2.3.2 + numpy 2.3.1 both still support 3.11 but the resolution flag may differ); breaks reproducibility of every existing build. Rejected.
+3. **(c) Range pin `>=3.11,<3.14`.** Pro: broader downstream-consumer compat. Con: lockfile still resolves against one specific Python at lock time; the range constrains downstream consumers, not the resolver; gives the illusion of multi-version support without actually testing it. Rejected.
+
+For HALT #3:
+1. **(a) Env-resolution + test-suite VERIFY; pipeline-rebuild moves to C8.7 (chosen).** Pro: aligns C8.5a scope with what's locally verifiable; C8.7 explicitly takes the pipeline-rebuild VERIFY responsibility per its KICKOFF Tier-1 entry. Con: weakens C8.5a VERIFY; relies on C8.7 for end-to-end closure (acceptable since C8.7 is the next-after-C8.6 Tier-1 task).
+2. **(b) Author stub `scripts/run_pipeline.py` at monorepo root.** Pro: closes §15 VERIFY per literal. Con: scope creep (~0.5-1 session that belongs in C8.7); duplicates C8.7's intent. Rejected.
+3. **(c) Use `fetal_death/scripts/run_pipeline.py` as partial witness.** Pro: minimal scope. Con: covers fetal-death only (29 V2 years, not the 43-year v2.4.0 envelope); doesn't address natality or linked. Rejected as partial verification.
+4. **(d) Defer C8.5 to after C8.7.** Pro: §15 VERIFY satisfied per literal. Con: re-orders Tier 1 sequencing (§15/KICKOFF say C8.5 before C8.6, C8.6 before C8.7); C8.6 depends on the lockfile, which is C8.5a's deliverable — deferring C8.5a means deferring C8.6 too. Rejected.
+
+**Reason:** §11 plan-update process is the canonical path for in-Phase-C scope adjustments surfaced during PRE-FLIGHT (per Q42 self-resolution + Convention 3 Field-value snapshot). All three HALTs were caught at the cheap-check moment before any DO mutation — exactly what PRE-FLIGHT cheap-checks are for. The split + Python pin + VERIFY revision preserve every original C8.5 design intent (lockfile + Dockerfile + reproducibility-via-pinned-env) while aligning the immediate-session scope with what's locally verifiable.
+
+Three protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — discovering the docker/Python/VERIFY misalignments at PRE-FLIGHT saves ~1 session of rework after a DO-time docker invocation would have surfaced a halt mid-task; (ii) §11 plan-update process is the canonical path for in-Phase-C scope adjustments per Q42 (>1 session candidates require [plan-update]; the deferral of C8.5b is ~1-2 sessions of work; well past the §11 threshold); (iii) §10 self-check encourages the LLM to surface "what could I have gotten wrong that VERIFY wouldn't catch" — in this case, the §15 entry's `python:3.11-slim` text + the assumed monorepo-root pipeline orchestrator were both ground-truth-unverified at plan-write time. The L9 cheap-check at PRE-FLIGHT caught both.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T04:00:00Z entry documenting the three HALTs (Halt #1 §7.2, Halt #2 §7.12, Halt #3 §7.17).
+- §15.C C8.5 entry pre-revision text (NEXT_STEPS.md lines 953–971 at commit `4b78dd0`; full text preserved in git history).
+- `EXPLORATION_REPORT.md` §F.2 + §F.3 (the source for the original C8.5 scope; §F.2 doesn't actually specify a Python version, confirming the §15 `3.11-slim` text was an authoring-time interpolation).
+- `which docker` → exit 1 (docker not installed); `which uv` → `/opt/miniconda3/bin/uv`; `uv --version` → `0.11.10`; `python3 --version` → `Python 3.13.9`.
+- natality `requirements.txt` + fetal-death `requirements.txt` both reference Python 3.13.9 as the build-time interpreter explicitly.
+- `find . -maxdepth 4 -name run_pipeline.py` → only `fetal_death/scripts/run_pipeline.py` exists at monorepo root.
+- User authorization chat 2026-05-13T04:15:00Z: HALT #1 = "Split C8.5 → C8.5a (lockfile now) + C8.5b (Dockerfile later)"; HALT #2 = "Pin to 3.13.x; §11 plan-update revises §15 line 963"; HALT #3 = "Env-resolution + test-suite passes (§11 plan-update)".
+
+**Verifiable by:**
+
+- This `[plan-update]` commit's diff shows `NEXT_STEPS.md` §15.C C8.5 entry rewritten into C8.5a + C8.5b + `KICKOFF.md` Tier 1 list + sequencing note edits + this DECISION_LOG entry + PRE_FLIGHT_LOG.md addendum.
+- Tag `C8.5-pre-do` lands on this `[plan-update]` commit (PRE-FLIGHT now PROCEEDS to C8.5a DO post-resolution; mirrors C8.2/C8.3 pattern).
+- C8.5a DO ships in a sibling commit tagged `C8.5a-complete`.
+- C8.5b resumption: a future session's PRE-FLIGHT addendum at the resumption-trigger moment + tag `C8.5b-pre-do` on whichever commit ships the Dockerfile.
+
+**Reversible:** yes — `git revert <this commit>` restores the original §15 C8.5 entry. The split is per-entry; reverting reverses both C8.5a + C8.5b stubs simultaneously.
+
+**Residual risks:**
+
+- (a) **The `requires-python = ">=3.13,<3.14"` may be too narrow** if a downstream consumer wants 3.14 support before we authorize a re-pin. Mitigation: this matches the build env; broader-pin authorization is a future §11 plan-update if requested.
+- (b) **The `uv.lock` will pin transitive dependencies that aren't in `requirements.txt`** (e.g., `numpy` is in requirements but `python-dateutil` (pandas transitive dep) is not). The lockfile will declare its own preferred versions. Mitigation: `uv lock` is deterministic given a fixed dependency tree; subsequent re-locks against the same `pyproject.toml` produce bit-identical output (verified at SMOKE Tier 0).
+- (c) **The deferred C8.5b may slip beyond Phase D start** if the docker-availability trigger doesn't fire. Mitigation: the resumption trigger is OR-coupled ("docker available OR C8.6 CI ships"); C8.6 (next Tier-1 task after C8.5a) ships GitHub Actions which has docker natively. C8.5b will become unblockable as soon as C8.6 lands, even without local docker install.
+- (d) **The original §15 VERIFY's pipeline-rebuild criterion is non-trivially weakened.** Specifically, the assertion "running the full pipeline from raw zips against this pinned env produces canonical parquet SHAs" loses its C8.5a anchor. Mitigation: C8.7's §15 entry explicitly takes this VERIFY (line 1006-ish: "VERIFY criteria: `uv sync && python scripts/run_pipeline.py` rebuilds parquets to canonical SHAs"). The end-to-end VERIFY chain still closes at C8.7-complete.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- This entry assumes `uv lock` against the currently-installed env produces a lockfile that resolves cleanly on a fresh `uv sync` (no transitive dep resolution failure). If `uv lock` discovers a conflict between `pandas==2.3.2` and another dep's `pandas` requirement on Python 3.13, the lockfile generation may fail or produce a different version pin than expected. Mitigation: SMOKE Tier 0 explicitly tests `uv lock` resolution; HALT-on-failure to surface this if it happens.
+- The `requires-python = ">=3.13,<3.14"` pin assumes 3.13 stays the canonical Python for the lifetime of this lockfile. If a Phase D / v1.1 Python 3.14 migration is desired, a §11 plan-update bumps the pin.
+- The deferred C8.5b is shipped as a §15 entry stub but not a fully-PRE-FLIGHTed task. When resumed, its PRE-FLIGHT must re-verify (i) `uv.lock` post-C8.5a sha = the one this session will produce; (ii) `docker` runtime available; (iii) `scripts/run_pipeline.py` post-C8.7 sha = the one C8.7 will produce. Failure of any of those triggers a fresh §11 plan-update at C8.5b PRE-FLIGHT moment.
+
+**Backport scope (per §11.4):** None directly. C8.1 / C8.2 / C8.3 / C8.4 receipts unaffected. C8.5a ships forward under the revised scope; C8.5b ships forward as a deferred task with explicit resumption trigger.
+
+---
+
 ## 2026-05-13T03:00:00Z — C8.4 — Linked-vs-natality per-year drift bounded by 0.01% (was previously undocumented for this product pair); B.5 harness softened from strict-subset to bounded-drift invariant
 
 **Choice (user-authorized at C8.4 DO halt-and-ask 2026-05-13T02:30Z, option `(a) Soften to relative-drift invariant (≤0.01%) + DECISION_LOG entry (Recommended)`):** The B.5 cross-product join parity harness's `test_linked_per_year_count_le_natality` was authored with a strict-subset assumption ("every linked birth is a natality birth"). On first run against the v2.4.0 / v2.8.0 / v3 release state, 5 of 19 joint years (2005, 2006, 2008, 2011, 2012) violated strict subset: linked exceeds natality by 1–228 records (max 0.0055% relative drift, year 2005 with +228 records on a 4.14M base).
