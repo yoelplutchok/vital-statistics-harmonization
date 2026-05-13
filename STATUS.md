@@ -1,6 +1,132 @@
-# STATUS — last updated 2026-05-13T22:30:00Z
+# STATUS — last updated 2026-05-13T23:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T23:00:00Z — C8.13 COMPLETE: F.5 pipeline timing benchmark shipped (1 of 3 §15 deliverables ACTIVE; F.1 + F.4 deferred via PRE-FLIGHT-time §11 plan-update earlier today); 5th Tier-2 task closed — NEW `scripts/_time_pipeline.py` (~50-line timer wrapper utility; subprocess + wall-clock per stage; CSV log) + NEW `scripts/_drive_fetal_death_benchmark.py` (43-year per-step driver routing around stale `fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 per soft-flag (d)) + NEW `scripts/_drive_natality_benchmark.py` (6-stage natality+linked chain: parse_all_v1_years + parse_all_linked_years + 2× harmonize + 2× derive) + NEW `docs/PIPELINE_TIMING_BENCHMARK.md` (aggregated benchmark + reconciliation + caveats + How-to-reproduce) + NEW `docs/PIPELINE_TIMING_BENCHMARK_fetal_raw.csv` (45 per-stage rows: 43 parse + harmonize + derive) + NEW `docs/PIPELINE_TIMING_BENCHMARK_natality_raw.csv` (6 per-stage rows); cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **74 passed + 1 skipped + 1 xfailed in 206.19s** (unchanged from C8.12 close baseline; F.5 does not change the test surface); zero §7 halts; **H10 reproducibility gate PASS** (all 4 shipped parquet SHAs preserved byte-exact post-re-derive: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…` all match documented anchors); fetal-death **PROPOSE-EDIT** for `paper/draft_v2_hmd_styled.md:68` (measured 5.22 min vs ~6 min claim → -13.1% drift outside ±10% PASS band; manuscript edit deferred to Phase D step 4 per the C8.12 RECEIPT manuscript-edit-bundles-at-Phase-D-step-4 precedent); natality+linked **PASS** (measured 88.45 min vs ~90 min claim → -1.72% drift; well within ±10%; no manuscript edit recommended); zero L11s in F.5 DO; zero new soft-flags this DO; full narrative in RECEIPTS/C8.13_2026-05-13T23-00-00Z.md; tag `C8.13-complete` lands on this commit; **Tier 2 progress now 5 of 7 §15-listed tasks COMPLETE** (C8.9 + C8.10 + C8.11 + C8.12 + C8.13); cumulative Phase C ~14.5 of 29-35 sessions (~43%; comfortably within +20% drift cap of 42 sessions); next §15 task = C8.14 (Worked-example FAQ + PROJECT_STRUCTURE.md upgrade; 1 session)
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.13 COMPLETE.** Task closed in one session (PRE-FLIGHT + §11 plan-update + F.5 DO + VERIFY + RECEIPT all bundled). One of three §15-listed deliverables ACTIVE this session (F.5); F.1 + F.4 deferred via the PRE-FLIGHT-time §11 plan-update at commit `f77158e` (KICKOFF.md line 194 + NEXT_STEPS.md §15.C C8.13 entry + DECISION_LOG 2026-05-13T22:30:00Z). The H10 reproducibility gate is the headline empirical result: re-running both pipelines from raw zips produces byte-identical parquets, validating the manuscript's *"byte-identical file"* claim at line 67.
+
+C8.13 effort fits within the revised 1-session estimate (was §15 1.5-2 sessions pre-plan-update; F.1 drop + F.4 defer cut ~50%). Cumulative Phase C effort ~14.5 of 29-35 sessions (~43%); 2 Tier-2 tasks remaining (C8.14 + C8.15).
+
+### What was done this session (F.5 DO + RECEIPT)
+
+1. **PRE-FLIGHT close + §11 plan-update** at commit `f77158e` (separate sub-step earlier this session; documented in STATUS 2026-05-13T22:30:00Z): F.1 dropped + F.4 deferred + F.5 active.
+2. **Backed up 4 shipped parquets** to `/tmp/c8_13_baseline/` (3.3 GB; H10 reproducibility-gate insurance for post-re-derive comparison; backups removed post-VERIFY).
+3. **Authored `scripts/_time_pipeline.py`** (~50 LOC; `run_stages(stages, log_csv)` API; subprocess + wall-clock per stage; CSV log; halts on non-zero returncode).
+4. **Authored `scripts/_drive_fetal_death_benchmark.py`** (43-year enumeration; 45 stages = 43 parse + harmonize + derive; routes around stale `run_pipeline.py` ALL_YEARS=29 per soft-flag (d)/C8.7b scope).
+5. **Ran fetal-death F.5 benchmark in background**: 45 stages, all rc=0; wall-clock total **312.91s = 5.22 min**. Per-stage breakdown:
+   - Parse 43 yrs: 193.34s (3.22 min); per-era means range 2.47s/yr (V3b 1985-rev, shortest record) to 5.52s/yr (V3a 1989-rev).
+   - Harmonize: 80.72s (1.35 min)
+   - Derive: 38.85s (0.65 min)
+6. **H10 fetal-death SHA gate**: `shasum -a 256` of post-re-derive parquets matched documented anchors `38e2cecb…` + `185c071e…` byte-exact. PASS.
+7. **Authored `scripts/_drive_natality_benchmark.py`** (6-stage chain; `parse_all_v1_years` 1990-2024 + `parse_all_linked_years` 2005-2023 + 2× harmonize + 2× derive; cwd routed to `~/Desktop/natality-harmonization/`).
+8. **Ran natality+linked F.5 benchmark in background** (~88 min wall): all 6 stages rc=0; wall-clock total **5307.24s = 88.45 min**. Per-stage breakdown:
+   - parse_all_v1_years (35 yrs × 138.8M records): 50.16 min
+   - parse_all_linked_years (19 cohort years × 74.9M records): 21.35 min
+   - harmonize_v1_core: 6.14 min
+   - harmonize_linked_v3: 4.12 min
+   - derive_v1_core: 3.91 min
+   - derive_linked_v3: 2.76 min
+   - Parse stages = 80.9% of total (confirms manuscript's "dominated by the fixed-width parse stage" characterization quantitatively).
+9. **H10 natality+linked SHA gate**: post-re-derive SHAs matched `e16ad5323d…` + `9b828a4d…` byte-exact. PASS.
+10. **Authored `docs/PIPELINE_TIMING_BENCHMARK.md`** (aggregated benchmark + reconciliation table + 5 caveats + How-to-reproduce + cross-references); raw per-stage CSVs at `docs/PIPELINE_TIMING_BENCHMARK_{fetal,natality}_raw.csv`.
+11. **Cache-cleared full pytest VERIFY**: `find . -name __pycache__ -delete && uv run pytest fetal_death/tests/ natality/tests/ tests/`: **74 passed + 1 skipped + 1 xfailed in 206.19s** (unchanged from C8.12 close baseline). PASS.
+12. **Cleanup**: `/tmp/c8_13_baseline/` backups removed (3.3 GB freed).
+13. **Reconciliation vs manuscript claim** at `paper/draft_v2_hmd_styled.md:68`:
+    - **Fetal-death PROPOSE-EDIT**: 5.22 min vs ~6 min → -13.1% drift (outside ±10% PASS band of 5.4-6.6 min). Recommended Phase D step 4 edit: `approximately six minutes` → `approximately five minutes`. Alternative: keep `approximately six` with companion-notebook citation. Editorial choice at Phase D step 4.
+    - **Natality+linked PASS**: 88.45 min vs ~90 min → -1.72% drift (well within ±10% PASS band of 81-99 min). No manuscript edit recommended.
+14. **RECEIPT authored** at `RECEIPTS/C8.13_2026-05-13T23-00-00Z.md` per §6 template: 8 self-check residual risks; 16 forward-looking HALTs for next-session C8.14 PRE-FLIGHT.
+15. **STATUS.md** appended (this section).
+16. **Pending**: commit (Convention 5 brevity ~5-line summary); tag `C8.13-complete`.
+
+### Last completed step
+
+Single commit ships: 7 NEW files (3 scripts + 4 docs incl. this RECEIPT) + this STATUS section. Tag `C8.13-complete` follows on the commit. No edits to existing tracked files (KICKOFF + NEXT_STEPS + DECISION_LOG already committed at PRE-FLIGHT close).
+
+### In-progress
+
+None — C8.13 closed.
+
+### Next planned task
+
+**C8.14 — Worked-example FAQ + PROJECT_STRUCTURE.md upgrade (E.3 + E.6)** per KICKOFF.md Phase C Tier-2 line 195 + NEXT_STEPS.md §15.C C8.14. Estimated 1 session. PRE-FLIGHT prerequisites: `docs/JOINT_USE_GUIDE.md` + 3 worked-example notebooks (C8.10a/b/c) + current `PROJECT_STRUCTURE.md`. Halt-condition flag: L11 (stale roadmap claims; surface on contact).
+
+After C8.14 close → **C8.15** (Worked-example notebooks 4-5; education_gradient + state_reporting_quirks; 2 sessions). Then Tier 2 COMPLETE (7/7 §15-listed) and Phase D begins.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied** (C8.13 F.5 surfaced empirical evidence that the existing per-step chain is fast + bit-reproducible; if/when C8.7b authors a monorepo-root orchestrator, the F.5 drivers in `scripts/_drive_*.py` are reusable substrate).
+
+### Open questions for human
+
+None blocking for C8.14. The C8.14 plan is fully specified at NEXT_STEPS.md §15.C C8.14.
+
+**Open soft-flags (11 carried + 1 (p) NEW at PRE-FLIGHT earlier today, RESOLVED-conditionally):**
+
+Carried unchanged from C8.13 PRE-FLIGHT close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b; **brushed-against this session for F.5 via explicit 43-year driver but not fixed in `run_pipeline.py` itself**) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X).
+
+**(p) preserved**: F.1 dict-encoding work permanently out of pre-submission scope per AskUserQuestion 2026-05-13T22:30:00Z; reconsider only on explicit user re-authorization. Analog of C.1 NCHS-suppression permanent drop at C8.9.
+
+**No NEW soft-flags from F.5 DO.** The DO ran cleanly with zero §7 halts and zero L11s.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start. Full enumeration (16 HALTs) in RECEIPTS/C8.13_2026-05-13T23-00-00Z.md.
+
+1. **`C8.13-pre-do` + `C8.13-complete` tags present**. Verify: `git tag --list 'C8.13*'` shows both.
+2. **All 4 parquet SHAs unchanged byte-exact** from the documented anchors: fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad5323d…` / linked_der=`9b828a4d…`. F.5 DO preserved these (H10 gate); they remain the canonical anchors.
+3. **`scripts/_time_pipeline.py` + `scripts/_drive_fetal_death_benchmark.py` + `scripts/_drive_natality_benchmark.py` present** at SHAs recorded post-commit; reproducibility entry-points.
+4. **`docs/PIPELINE_TIMING_BENCHMARK.md` present** at sha recorded post-commit; the manuscript-claim reconciliation record.
+5. **`docs/PIPELINE_TIMING_BENCHMARK_{fetal,natality}_raw.csv` present** at SHAs recorded post-commit (45-row + 6-row per-stage logs).
+6. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`** returns 74 PASS + 1 SKIP + 1 XFAIL (same as C8.12 close baseline; F.5 did not change the test surface; ~206s wall-time ±20s variance).
+7. **No KICKOFF.md / NEXT_STEPS.md edit at C8.13 close** (the C8.13 plan was settled by the PRE-FLIGHT-time §11 plan-update at `f77158e`).
+8. **No `paper/draft_v2_hmd_styled.md` mutation** (PROPOSE-EDIT to Phase D step 4 framing; no in-session manuscript edit).
+9. **`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`** unchanged (no parquet reshape under F.1-dropped scope; B.12 snapshot regression test remains valid byte-exact).
+10. **PROPOSE-EDIT for `paper/draft_v2_hmd_styled.md:68`** lands at Phase D step 4 (recommend `approximately six minutes` → `approximately five minutes`; or editorial-voice keep with companion-notebook citation).
+11. **Next §15 task = C8.14** (Worked-example FAQ + PROJECT_STRUCTURE.md upgrade; estimated 1 session).
+12. **F.4 deferred to Phase D step 3** (GitHub Release v1.x with parquet uploads bundles into the staging-dir scrub + v1.x push session); substrate verified ready.
+13. **Soft-flag (p) preserved**: F.1 dict-encoding permanently out of pre-submission scope.
+14. **/tmp/c8_13_baseline/ removed** (no stale state on disk; H10 insurance backups were transient).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (re-derived this session; SHAs unchanged from documented anchors).
+- V3b/V3a/V1 baseline parquets preserved (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (re-derived this session; SHA unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (re-derived this session; SHA unchanged).
+- All C8.1-C8.12 DO outputs unchanged.
+
+NEW this session:
+- `scripts/_time_pipeline.py` (NEW; ~50-line timer wrapper)
+- `scripts/_drive_fetal_death_benchmark.py` (NEW; 43-year per-step driver)
+- `scripts/_drive_natality_benchmark.py` (NEW; 6-stage natality+linked driver)
+- `docs/PIPELINE_TIMING_BENCHMARK.md` (NEW; aggregated benchmark doc)
+- `docs/PIPELINE_TIMING_BENCHMARK_fetal_raw.csv` (NEW; 45 per-stage rows)
+- `docs/PIPELINE_TIMING_BENCHMARK_natality_raw.csv` (NEW; 6 per-stage rows)
+- `RECEIPTS/C8.13_2026-05-13T23-00-00Z.md` (NEW; closing C8.13 receipt)
+- This STATUS section
+
+MODIFIED this session:
+- (none from F.5 DO; all KICKOFF/NEXT_STEPS/DECISION_LOG edits landed at the earlier PRE-FLIGHT-close commit `f77158e`)
+
+### Notes for next session
+
+- **C8.14 PRE-FLIGHT cheap-checks at next session start**: re-verify all 16 forward-looking HALTs above byte-exact; should take ~5 min. The 14 HALTs listed in STATUS line 2-15 + 2 forward-looking edge HALTs (15+16) in the RECEIPT cover the full anchor surface.
+- **C8.14 DO scope (per §15.C C8.14)**: (E.3) `docs/WORKED_EXAMPLE_FAQ.md` answering "how do I compute perinatal mortality rate?", "how do I get state-level data?" (cross-link to C8.9 state-suppression note + C.1-dropped framing at DECISION_LOG 2026-05-13T10:00:00Z), "what's the right canonical filter for my analysis?". (E.6) Upgrade `PROJECT_STRUCTURE.md` with notebook-deps graph + build-order DAG + which-file-by-use-case matrix.
+- **C8.14 has no parquet-mutation risk**; pure docs work. The H10 reproducibility gate is unaffected.
+- **F.5 drivers + timer utility are reusable**: at Phase D step 4 manuscript re-pass (if re-timing is needed) or at future C8.X tasks measuring pipeline cost (e.g., a C8.7b orchestrator authoring would consume the existing drivers as substrate).
+- **PROPOSE-EDIT routing at Phase D step 4**: the Phase D step 4 KICKOFF wording *"Update all numerics affected by Phase B/C work"* covers this case explicitly; the -13.1% fetal-death drift surfaces at re-pass via this RECEIPT's PROPOSE-EDIT trail.
+- **Tier 2 progress: 5 of 7 §15-listed tasks COMPLETE**. 2 remaining (C8.14 + C8.15). Cumulative Phase C ~14.5 of 29-35 sessions (~43%); Phase D entry projected at ~16-17 sessions cumulative.
+
+### Session summary
+
+C8.13 closed across PRE-FLIGHT + DO + VERIFY + RECEIPT in one session (~2-3 hours wall-clock; ~96 min compute dominated by natality+linked benchmark). PRE-FLIGHT-time §11 plan-update bundle (F.1 falsified-premise drop + F.4 Phase-D-step-3 defer + F.5 active) shipped at earlier commit `f77158e`; this commit ships F.5 DO outputs + RECEIPT + this STATUS section. H10 reproducibility gate intact across all 4 shipped parquets (re-running produces byte-identical output). Reconciliation vs manuscript claim: fetal-death PROPOSE-EDIT (-13.1%; routed to Phase D step 4); natality+linked PASS (-1.72%; well within ±10%). Cache-cleared pytest 74 PASS + 1 SKIP + 1 XFAIL preserved. Zero §7 halts in F.5 DO. C8.13 cumulative effort matches the revised 1-session estimate at 1 session. Cumulative Phase C effort ~14.5 of 29-35 sessions (~43%; comfortably within +20% drift cap of 42 sessions). Tier 2 progress 5 of 7 §15-listed tasks COMPLETE. Next §15 task = C8.14 (Worked-example FAQ + PROJECT_STRUCTURE.md upgrade; estimated 1 session).
 
 ---
 
