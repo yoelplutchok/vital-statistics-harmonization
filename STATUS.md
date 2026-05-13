@@ -1,6 +1,100 @@
-# STATUS — last updated 2026-05-13T23:00:00Z
+# STATUS — last updated 2026-05-13T23:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T23:45:00Z — C8.14 COMPLETE: Worked-example FAQ + PROJECT_STRUCTURE.md upgrade (E.3 + E.6) shipped; 6th Tier-2 task closed in 1 session matching §15 estimate — NEW `docs/WORKED_EXAMPLE_FAQ.md` (8 cross-product Q&A in 3 themed sections: rate computation across products + filters/product selection + geography/race/era breaks + citation; sha=`89730c31…`) + MODIFIED `PROJECT_STRUCTURE.md` (134 → ~210 lines; 3 NEW additive sections appended per §15: build-order DAG + notebook-deps graph + which-file-by-use-case matrix; existing top-level layout preserved byte-exact; sha=`54f75c32…`); cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **74 passed + 1 skipped + 1 xfailed in 209.78s** (unchanged from C8.13 close baseline; pure docs work has zero test-surface effect); zero §7 halts; **H10 reproducibility gate unaffected** (all 4 parquet SHAs preserved byte-exact: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); zero canonical-data mutation; zero L11s; zero new soft-flags; 1 in-DO cross-link correction (external GitHub URL → relative path); WORKED_EXAMPLE_FAQ is INDEX layer over existing canonical sources (per-subproject FAQs + JOINT_USE_GUIDE + COMPARABILITY + 4 notebooks + DECISION_LOG entries) — non-duplicative; full narrative in RECEIPTS/C8.14_2026-05-13T23-45-00Z.md; tag `C8.14-complete` lands on this commit; **Tier 2 progress now 6 of 7 §15-listed tasks COMPLETE** (C8.9 + C8.10 + C8.11 + C8.12 + C8.13 + C8.14); cumulative Phase C ~15.5 of 29-35 sessions (~46%); next + final Tier-2 task = C8.15 (Worked-example notebooks 4-5: education_gradient + state_reporting_quirks; 2 sessions)
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.14 COMPLETE.** Task closed in 1 session per §15 estimate (PRE-FLIGHT 23:30Z `e0eaf68` + DO + VERIFY + RECEIPT 23:45Z all in one session; ~45 min wall-clock authoring + ~3.5 min pytest VERIFY). Pure cross-product docs work; the WORKED_EXAMPLE_FAQ + PROJECT_STRUCTURE upgrade together close the §15 E.3 + E.6 deliverables.
+
+Cumulative Phase C effort ~15.5 of 29-35 sessions (~46%; comfortably within +20% drift cap). Tier 2 progress 6 of 7 §15-listed tasks COMPLETE. 1 Tier-2 task remaining (C8.15, 2 sessions). Phase D entry projected at ~17-18 cumulative sessions.
+
+### What was done this session
+
+1. **PRE-FLIGHT cheap-checks**: verified all 16 C8.13 forward-looking HALTs byte-exact (spot-checked 9 high-signal HALTs; tags + 4 parquet SHAs + scripts + docs + snapshot baseline + cleanup state). Enumerated C8.14 substrate: 2 per-subproject FAQs + JOINT_USE_GUIDE + 4 notebooks + PROJECT_STRUCTURE.md (134-line current). Convention 3 Field-value snapshot Table 1: WORKED_EXAMPLE_FAQ scope is non-duplicative INDEX over existing canonical sources.
+2. **PRE-FLIGHT entry + tag** at commit `e0eaf68` (`C8.14-pre-do`).
+3. **DO sub-step 1**: authored `docs/WORKED_EXAMPLE_FAQ.md` (~110 lines; 8 cross-product Q&A organized in 3 themed sections + 1 citation section; cross-links to JOINT_USE_GUIDE + COMPARABILITY + 4 notebooks + 2 per-subproject FAQs + DECISION_LOG + CITATION.cff).
+4. **DO sub-step 2**: appended 3 NEW additive sections to `PROJECT_STRUCTURE.md` (build-order DAG with the 5-stage per-product pipeline + cross-product notebook consumption layer; notebook-deps graph mapping 7 notebooks × parquet inputs × helper imports × NVSR validation; which-file-by-use-case matrix with 12 cross-product workflow rows). Existing 134-line top-level layout preserved byte-exact.
+5. **In-DO cross-link correction**: spotted one bad external GitHub URL in WORKED_EXAMPLE_FAQ ("How do I get state-level data?" — pointed to standalone-natality-repo GitHub); corrected to in-monorepo relative path `../natality/docs/FAQ.md`.
+6. **VERIFY**: (i) spot-checked 16 cross-link targets (all resolve at relative-path resolution); (ii) shared/helpers + views.sql presence confirmed; (iii) cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL in 209.78s (matches C8.13 close baseline exactly). All 4 VERIFY criteria PASS.
+7. **RECEIPT authored** at `RECEIPTS/C8.14_2026-05-13T23-45-00Z.md` per §6 template: 7 self-check residual risks; 9 forward-looking HALTs for next-session C8.15 PRE-FLIGHT.
+8. **STATUS.md** appended (this section).
+9. **Pending**: commit (Convention 5 brevity ~5-line summary); tag `C8.14-complete`.
+
+### Last completed step
+
+Single commit ships: 1 NEW file (`docs/WORKED_EXAMPLE_FAQ.md`) + 1 MODIFIED file (`PROJECT_STRUCTURE.md` upgrade) + this RECEIPT + this STATUS section. Tag `C8.14-complete` follows on the commit.
+
+### In-progress
+
+None — C8.14 closed.
+
+### Next planned task
+
+**C8.15 — Worked-example notebooks 4-5 (C.6.d `education_gradient.ipynb` + C.6.e `state_reporting_quirks.ipynb`)** per KICKOFF.md Phase C Tier-2 line 196 + NEXT_STEPS.md §15.C C8.15. Estimated 2 sessions. Dependencies: C8.10 (3 notebooks shipped) + C8.11 (cross-product COMPARABILITY shipped). Halt-condition flag: F4 (within_era column cross-era misuse — C.6.d education_gradient must respect the 1989/2003 boundary; the `maternal_education` (revised) vs `maternal_education_unrevised` (legacy) split is the core comparability constraint).
+
+C8.15 closure → **Tier 2 COMPLETE** (7/7 §15-listed tasks) → **Phase D begins** (D.1 redirect notices + D.2 unified Zenodo deposit + D.3 v1.x public-repo sync + D.4 manuscript re-pass).
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.**
+
+### Open questions for human
+
+None blocking for C8.15. The C8.15 plan is fully specified at NEXT_STEPS.md §15.C C8.15.
+
+**Open soft-flags (11 carried + 1 (p) preserved):**
+
+Carried unchanged from C8.13 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun (C8.15; **this is C8.15-scope per the original soft-flag routing**) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped from pre-submission scope.
+
+**No NEW soft-flags from C8.14 DO.** Pure docs work; zero residuals beyond the carry-forward set.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start. Full enumeration (9 HALTs) in RECEIPTS/C8.14_2026-05-13T23-45-00Z.md.
+
+1. **`C8.14-pre-do` + `C8.14-complete` tags present**. Verify: `git tag --list 'C8.14*'` shows both.
+2. **All 4 parquet SHAs unchanged byte-exact** from documented anchors (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`).
+3. **`docs/WORKED_EXAMPLE_FAQ.md` present** at sha=`89730c31…` (post-in-DO-correction; recorded at C8.14 close).
+4. **`PROJECT_STRUCTURE.md` upgraded** to ~210 lines at sha=`54f75c32…` (was 134 lines at sha=`32688930…`); 3 new sections appended after "Where to start"; existing layout preserved byte-exact.
+5. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`** returns 74 PASS + 1 SKIP + 1 XFAIL (~210s wall-time ±20s variance; unchanged from C8.13 close baseline).
+6. **No `paper/draft_v2_hmd_styled.md` mutation** (C8.13 PROPOSE-EDIT remains routed to Phase D step 4).
+7. **Tier 2 progress now 6 of 7 §15-listed tasks COMPLETE**; 1 remaining (C8.15).
+8. **Next task = C8.15** (Worked-example notebooks 4-5; estimated 2 sessions). Dependencies (C8.10 + C8.11) satisfied.
+9. **No KICKOFF.md / NEXT_STEPS.md edit at C8.14 close** (clean §15 spec held; no in-DO L11).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.13 DO outputs unchanged.
+
+NEW this session:
+- `docs/WORKED_EXAMPLE_FAQ.md` (NEW; ~110 lines; cross-product FAQ index)
+- `RECEIPTS/C8.14_2026-05-13T23-45-00Z.md` (NEW; closing C8.14 receipt)
+- This STATUS section
+
+MODIFIED this session:
+- `PROJECT_STRUCTURE.md` (134 → ~210 lines; 3 new sections appended)
+- `PRE_FLIGHT_LOG.md` (NEW entry at 2026-05-13T23:30:00Z; landed at commit `e0eaf68`)
+
+### Notes for next session
+
+- **C8.15 PRE-FLIGHT cheap-checks at next session start**: re-verify all 9 forward-looking HALTs above byte-exact; should take ~5 min.
+- **C8.15 DO scope (per §15.C C8.15)**: (C.6.d) `education_gradient.ipynb` within-era only — must explicitly split at 1989/2003 boundary, using `maternal_education_unrevised` (pre-2003) vs `maternal_education` (revised; post-2003); F4 halt risk if cross-era groupby on within_era column. (C.6.e) `state_reporting_quirks.ipynb` — Oklahoma 1992-2002 Hispanic non-reporting + Maryland 1992-1998 + Massachusetts 1992-1997 + Louisiana 1992-1994 plurality. State-level geography NOT in public-use files (per C8.9 finding) — the notebook would need to use NCHS-reported state quirks via NVSR cross-references rather than direct state-stratification. May surface a §7.13 L11 at PRE-FLIGHT — bundle into a §11 plan-update if so.
+- **Soft-flag (f) plurality footgun is C8.15 scope** — the state_reporting_quirks notebook should document the Louisiana 1992-1994 plurality miscoding finding.
+- **Tier 2 progress: 6 of 7 §15-listed tasks COMPLETE**. C8.15 closure (2 sessions) brings Tier 2 to 7/7 + cumulative Phase C to ~17-18 of 29-35 sessions (~52%).
+- **Phase D entry projected post-C8.15 close**: D.1 (redirect notices) + D.2 (unified Zenodo) + D.3 (v1.x public-repo sync + GitHub Release per F.4) + D.4 (manuscript re-pass; closes C8.13 PROPOSE-EDIT for line 68).
+
+### Session summary
+
+C8.14 closed across PRE-FLIGHT + DO + VERIFY + RECEIPT in 1 session per §15 estimate (~50 min wall-clock total: ~5 min PRE-FLIGHT cheap-checks + ~30 min docs authoring + ~3.5 min pytest VERIFY + ~10 min RECEIPT/STATUS). Pure cross-product docs work; zero parquet mutation; H10 reproducibility gate unaffected. WORKED_EXAMPLE_FAQ shipped as INDEX layer over existing canonical sources (8 Q&A; non-duplicative). PROJECT_STRUCTURE upgraded with 3 additive sections per §15 (build-order DAG + notebook-deps graph + which-file-by-use-case matrix; existing 134-line layout preserved byte-exact). Cache-cleared pytest 74 PASS + 1 SKIP + 1 XFAIL baseline preserved (209.78s). Zero §7 halts; zero L11s; zero new soft-flags. C8.14 cumulative effort matches the §15 1-session estimate at 1 session. Cumulative Phase C effort ~15.5 of 29-35 sessions (~46%). Tier 2 progress 6 of 7 §15-listed tasks COMPLETE. Next + final Tier-2 task = C8.15 (Worked-example notebooks 4-5; estimated 2 sessions; closes Tier 2 → Phase D entry).
 
 ---
 

@@ -129,6 +129,79 @@ Python utilities used by both subprojects (e.g., common parsing helpers, schema 
 
 ## Where to start
 
-- **A new researcher** should read this file then `README.md` then `docs/JOINT_USE_GUIDE.md`, then load a single product following its `GETTING_STARTED.md`.
+- **A new researcher** should read this file then `README.md` then `docs/JOINT_USE_GUIDE.md`, then load a single product following its `GETTING_STARTED.md`. For cross-product use cases, also read [`docs/WORKED_EXAMPLE_FAQ.md`](docs/WORKED_EXAMPLE_FAQ.md).
 - **An LLM agent** asked to add a feature, fix a bug, or extend coverage should grep this file for the relevant product subdirectory, read the target product's `README.md` and `scripts/` layout, then proceed.
 - **A reader of the manuscript** should map paper claims to artifacts via the validation tables in each `metadata/` directory.
+
+## Build-order DAG
+
+Each subproject is a five-stage pipeline that consumes raw NCHS zips and produces parquet artifacts. The stages run in order; later stages depend on earlier stages' outputs. Cross-product analyses consume the three derived parquets jointly via notebooks in `notebooks/`.
+
+```
+   raw_data/                               raw NCHS zips (97 total; SHA-pinned in docs/NCHS_SOURCE_MANIFEST.md)
+       │
+       ▼
+   01_import/        parse_*               yearly fixed-width → per-year Parquet
+       │                                  outputs: output/yearly_clean/<product>_<year>_*.parquet
+       │
+       ▼
+   03_harmonize/     harmonize_*           per-year Parquet → unified harmonized Parquet
+       │                                  outputs: output/harmonized/<product>_harmonized.parquet
+       │
+       ▼
+   04_derive/        derive_*              harmonized → harmonized + derived indicators
+       │                                  outputs: output/harmonized/<product>_harmonized_derived.parquet (SHIPPED)
+       │
+       ▼
+   05_validate/      validate_*            harmonized_derived → per-target PASS/FAIL tables
+                                          outputs: <product>/output/validation/*.{csv,md}
+```
+
+Cross-product joint analyses (`notebooks/joint_use_demo.ipynb`, `notebooks/maternal_age_stratified_imr.ipynb`, etc.) consume the three `*_harmonized_derived.parquet` files and the shared helpers in `shared/helpers/`. They are independent of the per-product validate stage; failure of a validator does not affect notebook execution but should be investigated before publication.
+
+The 02_clean_yearly (natality only) stage is empty in the current pipeline — natality's `parse_all_v1_years.py` writes the yearly clean parquets directly. The slot is preserved in the layout for symmetry with potential future per-year cleaning logic.
+
+**Reproducing end-to-end.** Drivers exist at [`scripts/_drive_fetal_death_benchmark.py`](scripts/_drive_fetal_death_benchmark.py) (43-year fetal-death chain) and [`scripts/_drive_natality_benchmark.py`](scripts/_drive_natality_benchmark.py) (natality + linked 6-stage chain). Both consume the SHA-pinned `uv.lock` environment. The C8.13 F.5 benchmark documents wall-clock per stage at [`docs/PIPELINE_TIMING_BENCHMARK.md`](docs/PIPELINE_TIMING_BENCHMARK.md). Re-running the pipelines produces byte-identical parquets (H10 reproducibility gate; validated empirically at C8.13).
+
+## Notebook-deps graph
+
+Each notebook lists its parquet inputs and helper-module imports. All notebooks read from the three shipped `*_harmonized_derived.parquet` files; some additionally consume the convenience denominator file.
+
+| Notebook | Fetal-death derived | Natality derived | Linked derived | `shared/helpers/` | NVSR validation |
+|---|---|---|---|---|---|
+| `joint_use_demo.ipynb` | ✓ (Sections A, B, C) | ✓ (Section A denom, Section C denom) | ✓ (Section C ENN) | `canonical_join_keys` | A: 8/8 cells *NVSR 73-09* Table 4; B: 7/7 *NVSR 73-09* Table A; C: sub-components |
+| `paper_companion.ipynb` | ✓ | ✓ | ✓ | (built post-Task 4) | Reproduces every manuscript numeric |
+| `maternal_age_stratified_imr.ipynb` (C.6.a) | — | — | ✓ | (linked-only) | Per-stratum cells vs *NVSR* IMR table |
+| `preterm_outcomes_time_series.ipynb` (C.6.b) | ✓ | ✓ | ✓ | `canonical_join_keys` | Per-year preterm cells |
+| `cross_race_fetal_mortality.ipynb` (C.6.c) | ✓ | — | — | (fetal-only) | 2017 bridged-race + 2022 single-race |
+| `education_gradient.ipynb` (C.6.d, future) | — | ✓ | — | — | TBD (C8.15) |
+| `state_reporting_quirks.ipynb` (C.6.e, future) | ✓ | ✓ | — | — | Documentary; no NVSR cells (geography suppressed) |
+
+Builder scripts at `notebooks/_build_*.py` produce the executed `.ipynb` deterministically. Re-running the builder against the current parquets reproduces the notebook cell-by-cell.
+
+The `shared/helpers/` directory contains the cross-product Python utilities used by multiple notebooks and pipelines:
+
+- `canonical_join_keys.py` — maps each product's residence-status column to a canonical name; provides `to_canonical_natality()` / `to_canonical_fetal_death()`
+- `build_stratified_denominators.py` — produces `fetal_death/stratified_denominators.csv` (the 4,906-cell long-format file used by joint-use rate computations)
+- `build_timeline_figure.py` — produces `figures/fig1_coverage_timeline.{pdf,png}` (manuscript Figure 1 candidate)
+
+## Which-file-by-use-case matrix
+
+Given an analytic question, this matrix points at the right starting file.
+
+| If you want to… | Start with | Filter to apply | Cross-link |
+|---|---|---|---|
+| Compute fetal mortality rate (unstratified) | `fetal_death/fetal_death_derived.parquet` + `fetal_death/live_births_by_year.csv` | `tabulation_flag == 2 AND residence_status != 4` (numerator) | `docs/JOINT_USE_GUIDE.md` §90 |
+| Compute fetal mortality rate by demographic stratum | `fetal_death/fetal_death_derived.parquet` + `fetal_death/stratified_denominators.csv` | as above + groupby stratum | `notebooks/joint_use_demo.ipynb` Section B |
+| Compute infant mortality rate (overall or by maternal stratum) | linked `natality_v3_linked_harmonized_derived.parquet` | `residence_status != 4` | `notebooks/maternal_age_stratified_imr.ipynb` |
+| Compute perinatal mortality rate | All three derived parquets | per-product canonical filter | `docs/JOINT_USE_GUIDE.md` §128 + `notebooks/joint_use_demo.ipynb` Section C |
+| Compute preterm-birth rate (any product, any era) | natality `_derived` (use `preterm_lt37`) | `residence_status != 4` + filter to relevant gestational-age era | `notebooks/preterm_outcomes_time_series.ipynb` |
+| Reproduce a specific *NVSR* cell | Per-product `external_validation_targets*.csv` + the corresponding `05_validate/*.py` script | per-product canonical filter | each subproject's `metadata/external_validation_targets*.csv` |
+| Understand era boundaries / which years are comparable | `docs/COMPARABILITY.md` (cross-product) + per-product `COMPARABILITY.md` | — | `docs/COMPARABILITY.md` |
+| Load the data in R / Stata / SAS | per-product `quickstart.R` / `quickstart.py` | (loader code includes the filter) | `docs/JOINT_USE_GUIDE.md` §174 |
+| Query via SQL without Python | `views.sql` at monorepo root (DuckDB views over the parquets) | (views include the filter) | `docs/JOINT_USE_GUIDE.md` §194 |
+| Check per-year totals against published *NVSR* figures | per-product `validation_results.csv` + each subproject's `output/validation/*.md` | — | per-subproject `VALIDATION.md` |
+| Add a new harmonized column | Per-product `harmonized_schema.csv` (then propagate through 03_harmonize/04_derive scripts) | — | per-subproject `REPRODUCING.md` |
+| Investigate a per-year discrepancy from *NVSR* | `<product>/output/validation/<target>_<year>.csv` (PASS/FAIL per cell) | — | per-product `05_validate/` source |
+| Cite this resource | `CITATION.cff` + Zenodo concept DOIs | — | `docs/WORKED_EXAMPLE_FAQ.md` |
+| Get state-level data | (not available from public-use NCHS files) | — | `docs/WORKED_EXAMPLE_FAQ.md` "How do I get state-level data?" |
