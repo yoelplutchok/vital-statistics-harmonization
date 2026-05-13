@@ -21,8 +21,25 @@ Built by [`_build_paper_companion.py`](_build_paper_companion.py); enumerates th
 
 A pedagogical notebook that loads the same demographic stratum across each of the era boundaries described in Table 1 of the manuscript, and shows where the harmonization made decisions (renames, value-level normalizations, comparability classifications). Useful for new users and reviewers who want to verify the harmonization choices.
 
+## Worked examples (Phase C Tier-2, C8.10)
+
+### `maternal_age_stratified_imr.ipynb` — IMR by maternal age, cohort-linked 2005-2023
+
+Built by [`_build_maternal_age_stratified_imr.py`](_build_maternal_age_stratified_imr.py); reproduces the cohort-linked file's published 2022 infant mortality cells byte-exact (7 cells from `23PE22CO_linkedUG.pdf` Documentation Tables 1 + 4) and the 19-year unweighted-IMR time series 2005-2023 (5 byte-exact cells for the years the user-guide reports unweighted counts: 2015 + 2020 + 2021 + 2022 + 2023). Section 3 extends to a maternal-age stratification (6 NCHS bands: `<20 / 20-24 / 25-29 / 30-34 / 35-39 / 40+`) as a machinery demo; NCHS publishes IMR-by-maternal-age only for the period-linked file (NVSR 73-05 Ely+Driscoll 2024), so the cohort-linked numbers in Section 3 are not directly comparable to a published NVSR cell — Section 4 documents the cohort-vs-period source distinction explicitly. Total of 12 NCHS-published cells reproduced byte-exact; maternal-age U-shape (minimum at 30-34) confirmed with row-count + death-count conservation across age bands.
+
+### `preterm_outcomes_time_series.ipynb` — preterm-birth secular trends (planned)
+
+Will load fetal-death + natality + linked parquets; compute preterm-birth time-series across all three products; document pre-2014 cause-of-death sub-population restrictions. Pending C8.10b PRE-FLIGHT.
+
+### `cross_race_fetal_mortality.ipynb` — V3a/V3b race-stratified FD (planned)
+
+Will demonstrate the V3a (1989-1991) and V3b (1982-1988) backward extensions with B3 1-digit MRACE recode caveats documented. Pending C8.10c PRE-FLIGHT.
+
 ## Status
 
 - `joint_use_demo.ipynb` — **shipped 2026-05-11** (Task 2 in `NEXT_STEPS.md` §15; see receipt under `RECEIPTS/`).
 - `paper_companion.ipynb` — **shipped 2026-05-11** (Task 4 in `NEXT_STEPS.md` §15; see receipt under `RECEIPTS/`).
+- `maternal_age_stratified_imr.ipynb` — **shipped 2026-05-13** (C8.10a in `NEXT_STEPS.md` §15; see receipt under `RECEIPTS/`).
+- `preterm_outcomes_time_series.ipynb` — pending C8.10b.
+- `cross_race_fetal_mortality.ipynb` — pending C8.10c.
 - `era_boundary_walkthrough.ipynb` — stub.

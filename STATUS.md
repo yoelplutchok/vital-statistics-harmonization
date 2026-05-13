@@ -1,6 +1,146 @@
-# STATUS — last updated 2026-05-13T11:30:00Z
+# STATUS — last updated 2026-05-13T14:37:17Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T14:37:17Z — C8.10a COMPLETE: worked-example notebook 1 of 3 — `notebooks/maternal_age_stratified_imr.ipynb` (NEW, 51,093 bytes, 23 cells, sha=`036de6b4b927e586…`) + `notebooks/_build_maternal_age_stratified_imr.py` (NEW, deterministic builder, 25,408 bytes, sha=`9db692743e050189…`) + `notebooks/README.md` (MODIFIED, +25 lines for new notebook entry + 2 planned C.6.b/C.6.c stubs, sha=`e388da8f9e77445d…`); reproduces **12 NCHS-published cells byte-exact** (7 cohort-linked user-guide 2022 cells from `23PE22CO_linkedUG.pdf` Documentation Tables 1 + 4 + 5 multi-year unweighted-IMR cells for 2015/2020/2021/2022/2023) plus maternal-age IMR stratification across 6 NCHS bands (machinery demo; cohort-vs-period source divergence documented in Section 4); U-shape confirmed (IMR minimum 4.49 at age 30-34; 9.88 at <20; 6.68 at 40+); row-count + death-count conservation invariants PASS (sum-across-bands = 3,667,758 births = 20,268 deaths = Section 1 totals byte-exact); §15 PRE-FLIGHT-input "NVSR validation cells (L9)" re-interpreted as already-L9-checked validation CSV cells (`raw_docs/` empty; sibling pattern from `_build_joint_use_demo.py`); cache-cleared pytest 56 PASS + 1 XFAIL preserved (114.88s); 4 parquet SHAs + 14 C8.9 file SHAs unchanged byte-exact; **TIER 2 progress 2 of 7** (C8.9 + C8.10a; parent C8.10 task at 1 of 3 sub-notebooks)
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.10a COMPLETE (notebook 1 of 3 within the C8.10 parent task).** First sub-task of the C8.10 worked-example-notebooks deliverable closed in ~1 session (PRE-FLIGHT + DO + VERIFY + RECEIPT). Tag `C8.10a-complete` lands on the commit shipping this STATUS section + receipt + builder + notebook + README update. Tier 2 progress: **2 of 7 §15-listed tasks** (C8.9 + the first of three C8.10 sub-tasks); C8.10 parent task progresses 1/3 → 33%. Cumulative Phase C effort ~10 sessions of 29-35 budget (~30% through). Comfortably within +20% drift cap (42 sessions).
+
+Zero §7 halt conditions surfaced this session. One soft-flag handled in-PRE-FLIGHT:
+
+1. **§15 PRE-FLIGHT-input "NVSR validation cells per notebook (L9 cheap-check)" re-interpretation.** Per the new C8.9-surfaced L11 discipline (re-verify each §15 PRE-FLIGHT-input claim against current artifacts), 4 cheap-check probes ran at PRE-FLIGHT: (a) `find raw_docs natality/raw_docs -type f` → only `.gitkeep` files, zero NVSR PDFs on disk; (b) sibling builder `_build_joint_use_demo.py` Section A consumes the validation CSV directly, not external PDFs; (c) `grep ',2022,' natality/metadata/external_validation_targets_v3_linked.csv` → 7 cells for 2022 from `23PE22CO_linkedUG.pdf` Documentation Tables 1 + 4; (d) sibling `_build_paper_companion.py` confirms the same CSV-consumption pattern. **Resolution: re-interpret the L9 cheap-check as "validation cells come from the per-product `external_validation_targets_*.csv` files whose entries were L9-cheap-checked at their authoring moment; downstream notebooks consume the CSV directly."** 7 cells exceeds the §15 "≥3" minimum; no external PDF fetch needed; no §7 halt; resolved at PRE-FLIGHT without §11 plan-update.
+
+Five canonical-state changes this session (zero parquet mutation):
+
+1. **PRE-FLIGHT commit `3a52957`** at 14:29Z: PRE_FLIGHT_LOG.md entry (PROCEED result; 12 C8.9 forward-looking HALTs all byte-exact; 14-cell Convention 3 Field-value snapshot; one soft-flag — the §15 PRE-FLIGHT-input re-interpretation above). Tag `C8.10a-pre-do` placed.
+2. **`notebooks/_build_maternal_age_stratified_imr.py`** (NEW; sha=`9db692743e050189…`). 25,408 bytes; ~470 lines. Deterministic builder mirroring `_build_joint_use_demo.py` pattern: `build()` constructs 23-cell notebook via `md()` + `code()` helpers; `NotebookClient.execute()` runs end-to-end at `cwd=REPO_ROOT` with `timeout=600`.
+3. **`notebooks/maternal_age_stratified_imr.ipynb`** (NEW; sha=`036de6b4b927e586…`). 51,093 bytes; 23 cells (4 markdown intro + 6 markdown section headers + 13 code cells); executed via NotebookClient; all in-cell `assert` statements PASS during execution.
+4. **`notebooks/README.md`** (MODIFIED; post-edit sha=`e388da8f9e77445d…`). +25 lines: new "Worked examples (Phase C Tier-2, C8.10)" section with C.6.a entry + 2 planned C.6.b/C.6.c stubs; Status section appended with sub-task lines.
+5. **`RECEIPTS/C8.10a_2026-05-13T14-37-17Z.md`** (NEW; full §6 template incl. 8 VERIFY criteria + 7-item Self-check + 12-item Forward-looking HALTs).
+
+### What was done this session (C8.10a PRE-FLIGHT + DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed" referencing the (c) plan (start C8.10 PRE-FLIGHT, scope this session to ship notebook 1 of 3).
+2. **C8.10a PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T14:29:23Z): verified all 12 C8.9 Forward-looking HALTs byte-exact (4 parquet SHAs + 3 R quickstart SHAs + views.sql + JOINT_USE_GUIDE + pyproject.toml + uv.lock + 7 inherited file SHAs + tag presence + duckdb-in-venv); ran 4 cheap-check probes on the §15 PRE-FLIGHT-input "NVSR validation cells (L9)" claim; built 14-cell Convention 3 Field-value snapshot (7 byte-exact NVSR-equivalent + 6 maternal-age machinery + 1 row-count conservation); result **PROCEED** (no §7 halt; one routine L11 PRE-FLIGHT-input re-interpretation).
+3. **Pre-DO commit** at `3a52957` shipping the PRE_FLIGHT_LOG.md addition; tag `C8.10a-pre-do` placed.
+4. **DO step 1**: Read `_build_joint_use_demo.py` end-to-end to identify the minimal builder pattern (cell-list composition, `NotebookClient.execute()` invocation, `nbformat.write()` output).
+5. **DO step 2**: Authored `notebooks/_build_maternal_age_stratified_imr.py` (~470 lines) with 23 cells: intro markdown (Section 0 + canonical-filter explainer + cohort-vs-period source disclosure) + 6 markdown section headers + 13 code cells implementing Section 0 (load + filter) + Section 1 (7-cell byte-exact validation) + Section 2 (19-year IMR time series + 5-cell byte-exact validation) + Section 3 (maternal-age stratification machinery demo + row-count conservation + U-shape asserts) + Section 4 (cohort-vs-period narrative) + Pass/Fail summary.
+6. **DO step 3**: `.venv/bin/python notebooks/_build_maternal_age_stratified_imr.py` — builder executed end-to-end; NotebookClient ran all 23 cells without exception (each in-cell `assert` PASSed); `nbformat.write()` produced `notebooks/maternal_age_stratified_imr.ipynb`.
+7. **DO step 4**: Updated `notebooks/README.md` adding the new notebook entry + 2 planned stubs (C.6.b + C.6.c) + Status section.
+8. **VERIFY** (8 criteria all PASS):
+   - (i) Notebook executes end-to-end without exception ✓
+   - (ii) Section 1: 7/7 cohort-linked user-guide 2022 cells within published tolerance ✓
+   - (iii) Section 2: 5/5 multi-year unweighted-IMR cells within published tolerance ✓
+   - (iv) Section 3: maternal-age U-shape (`<20 > 30-34`, `40+ > 30-34`, minimum in 25-29 or 30-34) ✓
+   - (v) Row-count + death-count conservation across maternal-age bands ✓
+   - (vi) Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`: **56 passed + 1 xfailed in 114.88s** ✓
+   - (vii) 4 parquet SHAs unchanged byte-exact ✓
+   - (viii) 14 C8.9 file SHAs unchanged byte-exact ✓
+9. **RECEIPT** at `RECEIPTS/C8.10a_2026-05-13T14-37-17Z.md` with full §6 template + 7-item Self-check + 12-item Forward-looking HALTs.
+
+### Last completed step
+
+Single commit ships: 2 new files (builder + notebook) + 1 modified file (`notebooks/README.md`) + 1 new receipt + 1 STATUS append. Tag `C8.10a-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.10a → C8.10b boundary; **Tier 2 progress 2 of 7**)
+
+### Next planned task
+
+**C8.10b — Worked-example notebook 2 of 3 (`preterm_outcomes_time_series.ipynb`)** per KICKOFF.md Phase C Tier-2 sequencing (line 191) + NEXT_STEPS.md §15.C C8.10 entry. Cross-product time-series (FD + natality + linked) of preterm-birth secular trends. Estimated 1-1.5 sessions (one notebook).
+
+C8.10a surfaced two candidate considerations for C8.10b:
+- (i) The CSV-as-source-of-truth pattern for NVSR cell validation worked cleanly (12 byte-exact cells reproduced without external PDF dependency). C8.10b PRE-FLIGHT should re-probe `natality/metadata/external_validation_targets_v1.csv` + `external_validation_targets_v3_linked.csv` for preterm-related encoded cells (likely `metric_id` containing `preterm`, `gest`, `<37wk`, etc.).
+- (ii) `gestational_age_weeks_clean` column presence across all 3 parquets is the load-bearing derivation lineage; C8.10b PRE-FLIGHT should verify the column exists in all 3 parquets and reads with consistent dtype + value range.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.** Recommended: revisit at Phase D step 3 or post-Tier-2.
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.** AND-coupled: C8.7a-complete (SATISFIED) + user-authorized multi-session compute window (PENDING). 6-12+ hours of compute estimated.
+
+### Open questions for human
+
+None for C8.10b scope.
+
+**Open soft-flags (carried forward from C8.9; none new from C8.10a beyond the in-receipt items):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+- (C8.5a-a/b/c) requirements.txt jupyter metapackage / cross-platform untested / 3-location inconsistency soft-flags.
+- (C8.6-a/b) Parquet-skip-in-CI / macOS-vs-linux-x86_64 soft-flags.
+- (C8.7a-a/b/c) Audit-script promotion candidate / natality+linked output-path C8.7b PRE-FLIGHT decision / ALL_YEARS=29 staleness.
+- (C8.8-a/b/c/d) EXPLORATION_REPORT §E.5 Hoyert/Gregory citation un-edited / CHANGELOG v1.1-WIP Phase D close / 3 GitHub URLs Phase D re-verify / manuscript Phase D step 6 citation candidate.
+- (C8.9-a/b/c/d/e) §15 PRE-FLIGHT-input authoring re-verification routine / DuckDB-vs-pyarrow parity row-count-only / views.sql cwd-dependent / R-memory-limit pattern / state stratification permanently out of scope.
+
+**New open soft-flags (C8.10a):**
+- (a) **`raw_docs/` is empty across the monorepo.** A Phase D step 3 / C8.13 candidate: decide whether to ship cited NVSR PDFs alongside the Zenodo deposit, link them from CITATION metadata, or document the L9-cheap-check provenance in a single `docs/CITED_NVSR_PROVENANCE.md` file. Not C8.10 scope.
+- (b) **Notebook bit-reproducibility caveat.** nbformat's `nbformat.write()` may produce non-bit-identical JSON across runs due to cell-output id randomization in some nbformat versions; the analytical content is reproducible (each code cell's print output and DataFrame execute_result is byte-identical across runs). Future C8.13 (B.12 snapshot regression) candidate: pin the notebook's analytical output table content rather than the file SHA.
+- (c) **Hardcoded absolute parquet paths** in the builder mirror the C8.7a soft-flag (b) precedent. Out of C8.10 scope; resolves at C8.7b's natality+linked output-path strategy decision.
+- (d) **Cohort-vs-period source distinction** is a Phase D step 6 manuscript candidate — the paper's Linked-file framing currently does not dwell on the cohort-vs-period distinction at the cell-level granularity this notebook does.
+- (e) **`era_boundary_walkthrough.ipynb` stub in `notebooks/README.md`** remains. C8.10 §15 only authorizes C.6.a/b/c (3 of 5); C.6.d + C.6.e are C8.15 scope. The era_boundary stub predates Tier-2 sequencing; future agents should not assume it is in active Phase C scope.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Per `RECEIPTS/C8.10a_2026-05-13T14-37-17Z.md` (12 items full list); restated here at session level for cheap-check access at next session start.
+
+1. **`C8.10a-complete` tag** present on this commit. Verify: `git tag --list 'C8.10*'` shows `C8.10a-pre-do` (`3a52957`) + `C8.10a-complete` (this commit). `C8.10b-pre-do` does NOT yet exist; parent `C8.10-complete` does NOT yet exist (deferred until C8.10c also ships).
+2. **`notebooks/_build_maternal_age_stratified_imr.py` sha=`9db692743e050189…`** (25,408 bytes). NEW this session.
+3. **`notebooks/maternal_age_stratified_imr.ipynb` sha=`036de6b4b927e586…`** (51,093 bytes, 23 cells). NEW this session. SHA reproducibility caveat per soft-flag (b).
+4. **`notebooks/README.md` sha=`e388da8f9e77445d…`** (MODIFIED; +25 lines).
+5. **All 4 parquet SHAs unchanged byte-exact**: fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+6. **All 14 C8.9 file SHAs unchanged byte-exact** (notebook-only task; no edits to any earlier-task artifact).
+7. **Next task = C8.10b** (`preterm_outcomes_time_series.ipynb`) per KICKOFF.md Phase C Tier-2 line 191 + §15.C C8.10 entry. PRE-FLIGHT considerations: years to include; preterm definition(s); NVSR validation cells already encoded in CSVs; `gestational_age_weeks_clean` derivation lineage.
+8. **C8.10c** (`cross_race_fetal_mortality.ipynb`) PRE-FLIGHT will need: V3a + V3b parquets present; B3 1-digit MRACE-recode caveats documented; race-stratified V3a/V3b cells already encoded — re-verify.
+9. **Parent C8.10 §15 task** ships across 3 sub-receipts (`C8.10a/b/c`). Sub-receipt convention established this session; STATUS tracks Tier-2 progress at sub-receipt granularity.
+10. **§15 PRE-FLIGHT-input re-verification discipline** (new C8.9-surfaced L11) applied cleanly to C8.10a. C8.10b + C8.10c PRE-FLIGHTs should treat each §15 PRE-FLIGHT-input claim as a "verify against current artifacts" gate before AskUserQuestion / DO.
+11. **`notebooks/README.md` Planned section** still includes `era_boundary_walkthrough.ipynb` as a stub. Out of active Phase C scope; future agents should not assume it is in active sequencing.
+12. **Cumulative Phase C effort: ~10 of 29-35 sessions** (~30% through; comfortably within +20% drift cap of 42 sessions). Tier 1 = 8 of 8 non-deferred COMPLETE; Tier 2 = 1 of 7 §15-listed tasks COMPLETE (C8.9) + 1 of 3 C8.10 sub-tasks COMPLETE (C8.10a; C8.10 parent at 33%).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.9).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged).
+- `tests/__init__.py` + `tests/conftest.py` + 3 invariant-test harnesses (unchanged from C8.4).
+- `pyproject.toml` + `uv.lock` + `.python-version` + README "Pinned environment" subsection (unchanged from C8.9).
+- `.github/workflows/ci.yml` (unchanged).
+- `fetal_death/scripts/05_validate/validate_2022.py` + `fetal_death/scripts/run_pipeline.py` (unchanged from C8.7a).
+- `CHANGELOG.md` + `docs/PRIOR_ART.md` (unchanged from C8.8).
+- 3× `quickstart.R` + `views.sql` + `docs/JOINT_USE_GUIDE.md` (unchanged from C8.9).
+
+NEW this session:
+- `notebooks/_build_maternal_age_stratified_imr.py` (sha=`9db692743e050189…`)
+- `notebooks/maternal_age_stratified_imr.ipynb` (sha=`036de6b4b927e586…`)
+- `RECEIPTS/C8.10a_2026-05-13T14-37-17Z.md`
+- `STATUS.md` this section (append)
+
+MODIFIED this session:
+- `notebooks/README.md` (sha=`e388da8f9e77445d…`; +25 lines)
+- `PRE_FLIGHT_LOG.md` (added PRE-FLIGHT entry at 14:29Z via pre-DO commit `3a52957`)
+
+### Notes for next session
+
+- **C8.10b — `preterm_outcomes_time_series.ipynb`** is the next sub-task. Cross-product notebook (FD + natality + linked); the §15-cited "preterm-birth secular trends" framing means a time-series across all three products. PRE-FLIGHT should probe: (i) `gestational_age_weeks` / `gestational_age_weeks_clean` column presence across all 3 parquets; (ii) which NVSR cells encode preterm-birth rates (the natality `external_validation_targets_v1.csv` and `external_validation_targets_v3_linked.csv` may already encode these — probe by `metric_id` containing `preterm` or `gest`); (iii) joint-use stratified denominators (do we have a preterm-stratified denominators CSV similar to the maternal-age one?); (iv) cohort-vs-period considerations again for the linked-file preterm cells.
+
+- **The C8.10a notebook reproduces 12 NCHS-published cells byte-exact**, which is significantly above the §15 "≥3 NVSR-equivalent cells" minimum. C.6.b + C.6.c should aim for the same density of cell-level validation where the validation CSVs encode targets. The CSV-as-source-of-truth pattern (vs external NVSR PDF L9 cheap-check) is the durable defense.
+
+- **C8.10a closed in ~1 session matching the §15 estimate** (1 of 3-4 sessions for the C8.10 parent task). Total session time: ~2 hours (PRE-FLIGHT cheap-checks 30 min; builder authoring 45 min; execute + VERIFY 15 min; receipt + STATUS 30 min). The CSV-as-source-of-truth pattern allowed the §15 PRE-FLIGHT-input L9-cheap-check overhead to collapse to ~5 min via the validation-CSV survey.
+
+- **No new mistake class** surfaced from C8.10a. The §15 PRE-FLIGHT-input re-interpretation is existing L11 (stale roadmap claim, this case sharpened by the new C8.9-surfaced "re-verify each §15 PRE-FLIGHT-input claim" discipline); the §8 matrix L11 row covers it.
+
+### Session summary
+
+C8.10a closed in ~1 session matching the §15 estimate exactly (1 of 3-4 sessions for the C8.10 parent task). Zero §7 halt conditions; one routine L11 PRE-FLIGHT-input re-interpretation handled in-place at PRE-FLIGHT (the §15 "NVSR validation cells (L9 cheap-check)" claim re-interpreted as "validation cells from the already-L9-checked per-product validation CSVs"; `raw_docs/` is empty on disk; the CSV-as-source-of-truth pattern is the durable defense — sibling pattern from `_build_joint_use_demo.py` + `_build_paper_companion.py`). Three canonical-usability-state artifacts shipped: `notebooks/_build_maternal_age_stratified_imr.py` (NEW; deterministic builder mirroring sibling pattern) + `notebooks/maternal_age_stratified_imr.ipynb` (NEW; executed notebook with 23 cells; **reproduces 12 NCHS-published cells byte-exact** across 7 cohort-linked-user-guide 2022 cells + 5 multi-year unweighted-IMR cells) + `notebooks/README.md` (MODIFIED; +25 lines for the new entry + 2 planned stubs). Notebook Section 3 extends to a 2022 maternal-age IMR stratification across 6 NCHS bands as a machinery demo (cohort-vs-period source divergence means a byte-exact comparison to NVSR 73-05 is not the right test; Section 4 documents the source distinction explicitly). U-shape across maternal age confirmed (IMR minimum 4.49 at 30-34; elevated tails <20 = 9.88 and 40+ = 6.68) with row-count + death-count conservation invariants PASS. Zero canonical-data mutation; all 4 parquet SHAs + 14 C8.9 file SHAs preserved byte-exact. Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **56 passed + 1 xfailed in 114.88s** (matches C8.9 baseline within run-to-run variance).
+
+**TIER 2 PROGRESS: 2 of 7 §15-listed tasks** (C8.9 + C8.10a; parent C8.10 at 1 of 3 sub-notebooks → 33%). Next session = C8.10b (`preterm_outcomes_time_series.ipynb`; ~1-1.5 sessions) per KICKOFF.md Phase C Tier-2 line 191. Tier 1 = 8 of 8 non-deferred COMPLETE; cumulative Phase C effort ~10 of 29-35 sessions (~30% through; +20% drift cap = 42 sessions, comfortably within).
 
 ---
 
