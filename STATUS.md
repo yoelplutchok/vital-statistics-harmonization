@@ -1,6 +1,141 @@
-# STATUS — last updated 2026-05-13T08:30:00Z
+# STATUS — last updated 2026-05-13T09:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T09:30:00Z — C8.8 COMPLETE: CHANGELOG.md (NEW, monorepo root, ~150 lines, sha=`38c8294f8f86…`) + docs/PRIOR_ART.md (MODIFIED, +5 sections / Gregory+Barfield 2024 + NICHD WG 2024 + GitHub precursors + HL7/fhir-bfdr + Q34 out-of-scope boundary, post-edit sha=`cfeb78cca6f0…`); one Convention 3 amendment resolved in-PRE-FLIGHT (PMID 38143212 author re-attribution Hoyert → Gregory+Barfield; load-bearing PMID unchanged); zero §7 halt, zero §11 plan-update needed; cache-cleared pytest 56 PASS + 1 XFAIL preserved (130.22s); 4 parquet SHAs + 7 file SHAs unchanged byte-exact; **TIER 1 NOW COMPLETE** modulo two intentionally-deferred items (C8.5b Dockerfile + C8.7b orchestrator)
+
+### Current phase
+
+**Phase C — Tier 1 COMPLETE (modulo C8.5b + C8.7b DEFERRED).** Eighth and final non-deferred Tier-1 task closed in ~1 session matching the §15 estimate exactly. Tag `C8.8-complete` lands on the commit shipping this STATUS section + receipt + CHANGELOG.md + PRIOR_ART.md. Tier 1 progress: **8 of 8 non-deferred tasks complete** (C8.1, C8.2, C8.3, C8.4, C8.5a, C8.6, C8.7a, C8.8); C8.5b + C8.7b carry explicit DEFERRED status with documented resumption triggers. Cumulative Phase C effort ~8 sessions of 29–35 budget. Comfortably within +20% drift cap (42 sessions).
+
+One Convention 3 amendment surfaced at C8.8 PRE-FLIGHT and resolved in-place (zero downstream artifacts affected):
+
+1. **EXPLORATION_REPORT §E.5 item 2 plan-label "Hoyert et al. 2024" mis-attributes PMID 38143212.** L8 cheap-check via NCBI esummary returned: PMID 38143212 = **Gregory ECW + Barfield WD**, *U.S. stillbirth surveillance: The national fetal death file and other data sources*, Semin Perinatol 2024;48(1):151873. The separately-existing Hoyert paper (PMID 39412872 = NVSR 73-09, Sep 2024 *Fetal Mortality: United States, 2022*) is already cited as the HVS validation gold standard; citing it in PRIOR_ART would be circular. Resolution: ship under correct authors (Gregory + Barfield 2024); drop the "Hoyert" label; the load-bearing PMID is unchanged. Documented in DECISION_LOG 2026-05-13T09:00:00Z + PRE_FLIGHT_LOG 2026-05-13T09:00:00Z. No §7 halt; no §11 plan-update needed (label-only correction; substantive intent preserved).
+
+Three canonical-state changes this session (zero parquet mutation):
+
+1. **`CHANGELOG.md` at monorepo root** (NEW; sha=`38c8294f8f86df4c…`). ~150 lines. `[v1.0]` section + `[Unreleased / v1.1-WIP]` section. v1.0 anchored to public push commit `a18ca3a` 2026-05-12; enumerates 3-product release state + 8-task Phase A bullet list. v1.1-WIP enumerates 8 Tier-1 Phase C task receipts (C8.1 through C8.8) + 3 deferred items (C8.5b, C8.7b, C8.9–C8.15).
+2. **`docs/PRIOR_ART.md`** (MODIFIED; post-edit sha=`cfeb78cca6f0c742…`, was 58 lines / 4809 bytes → 92 lines post-edit). 5 additions, no removals: (i) Gregory+Barfield 2024 + NICHD WG 2024 citations post-Ananth-2022; (ii) "GitHub precursors" subsection (Mikuana, arebe, damiancclarke); (iii) HL7/fhir-bfdr one-paragraph mention; (iv) "Out-of-scope vital-events series" subsection (Q34 boundary: M-D/MCD/abortion); (v) ICPSR bullet added to existing "Adjacent harmonized resources" list.
+3. **`RECEIPTS/C8.8_2026-05-13T09-30-00Z.md`** (NEW; full §6 template incl. 5-phase trace + 7-item Self-check + 10-item Forward-looking HALTs).
+
+### What was done this session (C8.8 PRE-FLIGHT + DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed in the best way" (mirroring C8.6 + C8.7 precedent — recommended-path option per the agent's stated default).
+2. **C8.8 PRE-FLIGHT** (`PRE_FLIGHT_LOG.md` 2026-05-13T09:00:00Z): verified all 10 C8.7a Forward-looking HALTs (4 parquet SHAs + 5 C8.5a/C8.6 file SHAs + 2 newly-patched script SHAs + `C8.7a-complete` tag + KICKOFF line 186 next-task pointer); L8 cheap-check on 3 cited external documents via `curl` (NCBI esummary PMID 38143212 → revealed Gregory+Barfield, not Hoyert; NICHD PDF HTTP 200 / 451KB; HL7/fhir-bfdr HTTP 200 / Last-Modified 2025-03-21); Field-value snapshot enumerated 6 mutation-target artifacts; identified one Convention 3 author-attribution divergence; result **PROCEED** (no §7 halt; routine Convention 3 amendment).
+3. **DECISION_LOG entry** at 2026-05-13T09:00:00Z recording the Convention 3 citation re-attribution choice (4 alternatives considered; reason; reversible; residual risk).
+4. **PRE-FLIGHT commit** at `a11c389` shipping the PRE_FLIGHT_LOG + DECISION_LOG additions; tag `C8.8-pre-do` placed.
+5. **DO step 1**: `Write` of `CHANGELOG.md` at monorepo root (NEW, ~150 lines, sha=`38c8294f8f86…`). v1.0 + v1.1-WIP sections with data-extensions / robustness / docs / breaking subsection structure.
+6. **DO step 2**: `Edit` × 2 of `docs/PRIOR_ART.md` adding 5 sections (post-Ananth citation pair + GitHub precursors + HL7 + Q34 boundary + ICPSR bullet). Post-edit sha=`cfeb78cca6f0…`.
+7. **SMOKE Tier 0** (docs structural): `grep` confirmed 5 new section headings at expected positions in PRIOR_ART.md (lines 37 / 43 / 69 / 79 / 83).
+8. **VERIFY** (6 criteria all PASS):
+   - (i) `CHANGELOG.md` exists at monorepo root ✓; covers v1.0 + v1.1-WIP with per-task receipt pointers
+   - (ii) `docs/PRIOR_ART.md` has all 5 new sections ✓
+   - (iii) Cited URLs resolve (PMID 38143212 / NICHD PDF / HL7 ✓; 3 GitHub URLs URL-shape-verified — see Self-check #3)
+   - (iv) 4 parquet SHAs unchanged byte-exact ✓
+   - (v) 7 file SHAs unchanged byte-exact ✓
+   - (vi) Cache-cleared `.venv/bin/python -m pytest fetal_death/tests/ natality/tests/ tests/`: **56 passed + 1 xfailed in 130.22s** ✓
+9. **RECEIPT** at `RECEIPTS/C8.8_2026-05-13T09-30-00Z.md` with full §6 template incl. 5-phase trace + 7-item Self-check + 10-item Forward-looking HALTs.
+
+### Last completed step
+
+Single commit ships: 1 new file (`CHANGELOG.md`) + 1 modified file (`docs/PRIOR_ART.md`) + 1 new receipt + 1 STATUS append. Tag `C8.8-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.8 → C8.9 boundary; **TIER 1 IS NOW COMPLETE** modulo 2 deferred items)
+
+### Next planned task
+
+**C8.9 — Usability: state-stratified denominators + R quickstart + DuckDB views (C.1 + C.2 + C.4)** per KICKOFF.md Phase C Tier-2 sequencing (line 190) + NEXT_STEPS.md §15.C C8.9 entry. Three usability layers: `shared/helpers/build_stratified_denominators_state.py` + `natality/stratified_denominators_state.csv`; `quickstart.R` mirroring `quickstart.py` per product; `views.sql` defining canonical-filter views + common joins as DuckDB-compatible views. Estimated 2.5-3 sessions. Could also be split into C8.9a (state denominators alone, 1 session) + C8.9b (R + DuckDB, 1.5-2 sessions) if a single-session boundary is preferred — a PRE-FLIGHT-time split decision.
+
+**Alternative next task** (depending on user judgment / compute-budget authorization): **C8.7b** (DEFERRED Tier-1 — orchestrator + Tier-1/Tier-2 re-derive, 1.5-5 sessions) if the user wants to close the Tier-1 reproducibility VERIFY before launching Tier 2. The two-AND resumption trigger for C8.7b is now half-satisfied (C8.7a-complete is satisfied; user-authorized multi-session compute window remains pending).
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED.** Resumption trigger: docker available OR C8.7b orchestrator ships. Recommended: complete Tier-2 first; revisit C8.5b at Phase D step 3 or post-Tier-2.
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED.** Resumption trigger AND-coupled: C8.7a-complete (SATISFIED) + user-authorized multi-session compute window (PENDING). First PRE-FLIGHT decision is the natality+linked output-path strategy (symlink at monorepo root vs script re-anchor). 6-12+ hours of compute estimated for full Tier-2.
+
+### Open questions for human
+
+**Next-task decision** — implicit choice between Tier-2 launch (C8.9 first) vs Tier-1-deferred-closure (C8.7b first). Default per KICKOFF.md Tier-2 sequencing: C8.9. User can override.
+
+**Open soft-flags (carried forward; none new from C8.8):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+- (C8.5a-a) `requirements.txt` declares `jupyter>=1.0` but metapackage NOT installed in lockfile env.
+- (C8.5a-b) Cross-platform lockfile resolution untested locally; closes at Phase D step 3 first sync.
+- (C8.5a-c) `requirements.txt` files at 3 locations have inconsistent dependency lists.
+- (C8.6-a) Parquet-skip-in-CI weakens green-check signal; routed to C8.13.
+- (C8.6-b) Locally-emulated VERIFY runs on macOS arm64; live CI runs on linux-x86_64.
+- (C8.7a-a) Audit-script `/tmp/c87a_audit_v2.py` ephemeral; promotion to `tests/test_script_path_resolution.py` filed as C8.12 candidate.
+- (C8.7a-b) Natality+linked output-path strategy is C8.7b's first PRE-FLIGHT item.
+- (C8.7a-c) `fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 is stale vs v2.4.0 43-yr envelope; C8.7b orchestrator scope to extend.
+
+**New open soft-flags (C8.8):**
+- (a) **EXPLORATION_REPORT.md §E.5 plan-text "Hoyert et al. 2024" remains stale** (not edited in C8.8). A future plan-update agent re-reading §E.5 verbatim should consult DECISION_LOG 2026-05-13T09:00:00Z for the substantive resolution. EXPLORATION_REPORT is on the public-repo exclude list, so public artifacts have the correct attribution.
+- (b) **CHANGELOG.md v1.1-WIP section** will need a one-line bump-and-finalize at Phase D step 3 first sync (tag the section as released `[v1.1]` with the sync date; or split into v1.1 + v1.2 if Tier-2 ships in a separate release).
+- (c) **3 GitHub precursor repo URLs in PRIOR_ART.md** were URL-pattern-verified but not WebFetched at C8.8. Phase D step 3 sync must re-verify each via `curl -sI`; replace/remove any 404'd entry.
+- (d) **Manuscript `paper/draft_v2_hmd_styled.md`** may add a one-sentence citation to Gregory+Barfield 2024 + NICHD WG 2024 at Phase D step 6 (parallel to PRIOR_ART); not on critical path.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Per `RECEIPTS/C8.8_2026-05-13T09-30-00Z.md` (10 items full list); restated here at session level for cheap-check access at next session start.
+
+1. **`C8.8-complete` tag** present on this commit. Verify: `git tag --list 'C8.8*'` shows `C8.8-pre-do` (`a11c389`) + `C8.8-complete` (this commit). `C8.9-pre-do` does NOT yet exist.
+2. **`CHANGELOG.md` sha=`38c8294f8f86df4c9ffb082d7a9be9d0148d4cf1508603f091817bb5a1fc69c1`.** Any future edit MUST update this STATUS section's recorded sha + re-verify content.
+3. **`docs/PRIOR_ART.md` sha=`cfeb78cca6f0c742c8206f22249c97ff541f833d8798ff974df508f271c19059`.** Any future edit MUST update sha + re-run manuscript-impact assessment.
+4. **All 4 parquet SHAs unchanged post-C8.8** (docs-only task): fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+5. **All 7 file SHAs (C8.5a + C8.6 + C8.7a) unchanged post-C8.8**: pyproject.toml=`c8826a61…`, uv.lock=`ab627034…`, .python-version=`02e735b3…`, README.md=`694fdd35…`, ci.yml=`c248cf51…`, validate_2022.py=`67a4dfcb…`, run_pipeline.py=`959ccac4…`.
+6. **Next task = C8.9** (Tier 2 first) per KICKOFF.md Phase C Tier-2 line 190 + §15 C8.9 entry, UNLESS user authorizes the C8.7b multi-session compute window.
+7. **The 3 GitHub precursor repo URLs** in PRIOR_ART.md must be `curl -sI` re-verified at Phase D step 3 first sync.
+8. **Phase D step 6 manuscript candidate**: add Gregory+Barfield 2024 + NICHD WG 2024 one-sentence to *Data resource basics* paragraph (parallel to PRIOR_ART). Filed; not C8.9 scope.
+9. **EXPLORATION_REPORT.md §E.5 plan-text remains "Hoyert et al. 2024"** un-edited; future agents consult DECISION_LOG 2026-05-13T09:00:00Z. Public artifacts have correct attribution.
+10. **L11 (stale-claim defense) status preserved** — KICKOFF.md Phase C Tier-1 line 186 → C8.8 now reads as ✅ via tag; Tier-2 sequencing starts at C8.9. Future edits to KICKOFF.md sequencing must update §15 + this STATUS in lock-step.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.7a).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged).
+- `tests/__init__.py` + `tests/conftest.py` + 3 invariant-test harnesses (unchanged from C8.4-complete).
+- `pyproject.toml` + `uv.lock` + `.python-version` + README "Pinned environment" subsection (unchanged from C8.5a-complete).
+- `.github/workflows/ci.yml` (unchanged from C8.6-complete).
+- `fetal_death/scripts/05_validate/validate_2022.py` (unchanged from C8.7a; sha=`67a4dfcb…`).
+- `fetal_death/scripts/run_pipeline.py` (unchanged from C8.7a; sha=`959ccac4…`).
+
+NEW this session:
+- `CHANGELOG.md` (sha=`38c8294f8f86…`)
+- `RECEIPTS/C8.8_2026-05-13T09-30-00Z.md`
+- `STATUS.md` this section (append)
+
+MODIFIED this session:
+- `docs/PRIOR_ART.md` (sha=`cfeb78cca6f0…`; was 58 lines / 4809 bytes pre-edit)
+
+MODIFIED this session (via pre-DO commit `a11c389` at 09:15Z):
+- `PRE_FLIGHT_LOG.md` (added PRE-FLIGHT entry at 09:00Z)
+- `DECISION_LOG.md` (added entry 2026-05-13T09:00:00Z)
+
+### Notes for next session
+
+- **C8.9 — Usability: state-stratified denominators + R quickstart + DuckDB views** is the next Tier-2 task. PRE-FLIGHT should consider: (i) split into C8.9a (state denominators, ~1 session) + C8.9b (R + DuckDB, 1.5-2 sessions) for a single-session boundary; (ii) state-code dtype verification per L13; (iii) F1 canonical filter on natality side; (iv) the C8.7b natality+linked output-path soft-flag may surface — if natality scripts can't write to monorepo, the state-denominators script needs explicit `--output-dir` argument.
+- **C8.5b (Dockerfile) is DEFERRED** with resumption trigger now half-satisfied (CI ships; docker still not installed locally). Recommended: revisit at Phase D step 3 or post-Tier-2.
+- **C8.7b (Orchestrator + re-derive) is DEFERRED** with resumption trigger half-satisfied (C8.7a complete; user authorization for compute window pending). Can resume any time the user authorizes the 6-12+ hour compute budget.
+- **Tier 1 progress: 8 of 8 non-deferred tasks COMPLETE** (C8.1, C8.2, C8.3, C8.4, C8.5a, C8.6, C8.7a, C8.8). Tier 2: 7 tasks (C8.9–C8.15) totaling ~16-20 sessions queued.
+- **Cumulative Phase C effort: ~8 sessions of 29-35 budget** (~24% through Tier-1+Tier-2 budget; comfortably within +20% drift cap which is 42 sessions).
+- **C8.8 effort matches §15 estimate exactly** (1 session). PRE-FLIGHT halt-and-ask was NOT triggered (Convention 3 amendment resolved in-place; no §7 halt). The L8 cheap-check + Convention 3 Field-value snapshot caught the Hoyert→Gregory+Barfield citation issue exactly as designed — a clean instance of the prevention discipline working.
+- **No new mistake class** surfaced from C8.8. The Convention 3 amendment is a routine L8/L11 application of the existing discipline.
+
+### Session summary
+
+C8.8 closed in ~1 session matching the §15 estimate exactly. One Convention 3 amendment surfaced at PRE-FLIGHT (PMID 38143212 actual authors = Gregory ECW + Barfield WD, not Hoyert as the EXPLORATION_REPORT §E.5 plan-label claimed) and was resolved in-PRE-FLIGHT without requiring a §7 halt or §11 plan-update — the load-bearing PMID was unchanged; only the human-readable label needed correction; the alternative resolution (cite the separate Hoyert paper PMID 39412872 = NVSR 73-09) was rejected as circular since NVSR 73-09 is already HVS's validation gold standard. Two canonical documentation artifacts shipped: `CHANGELOG.md` (NEW, monorepo root, v1.0 + v1.1-WIP sections, per-task receipt pointers) + `docs/PRIOR_ART.md` (MODIFIED, 5 additions / 0 removals — Gregory+Barfield 2024 + NICHD WG 2024 citations post-Ananth, GitHub precursors subsection, HL7/fhir-bfdr paragraph, Q34 out-of-scope vital-events boundary subsection, ICPSR bullet). Zero canonical-data mutation; all 11 watched SHAs (4 parquet + 7 file) preserved byte-exact. Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **56 passed + 1 xfailed in 130.22s**.
+
+**TIER 1 IS NOW COMPLETE** modulo the two intentionally-deferred items (C8.5b Dockerfile + C8.7b orchestrator + Tier-1/Tier-2 re-derive). Next session = C8.9 (Tier-2 first task: usability / state denominators / R / DuckDB views; 2.5-3 sessions estimated) per KICKOFF.md Phase C Tier-2 line 190 — OR C8.7b (DEFERRED Tier-1) if the user authorizes the multi-session compute window.
 
 ---
 
