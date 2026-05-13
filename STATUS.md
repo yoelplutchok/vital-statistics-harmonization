@@ -1,6 +1,124 @@
-# STATUS — last updated 2026-05-13T19:30:00Z
+# STATUS — last updated 2026-05-13T20:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T20:30:00Z — C8.12 DO step 1 (B.7 L13 audit + B.8 L14 audit) IN-PROGRESS: 3 L14-CANDIDATE validators patched + 19 fetal-death file_inventory.csv `record_length` cells patched + NEW `tests/test_inventory_invariants.py` shipped (3 tests; soft-flag (j) durable defense); cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **59 passed + 1 xfailed in 77.00s** (was 56 + 1 pre-C8.12; +3 from new invariant tests); 2 FIX_LOG cascade entries (L14 + L13) + 1 DECISION_LOG entry (L13 no-terminator convention choice); zero §7 halts; zero canonical-data mutation (parquets untouched); 4 parquet SHAs preserved byte-exact; one inventory-CSV SHA drift (`fetal_death/file_inventory.csv` 38dc035e… → 2f2ba2c9…; authorized C8.12 DO mutation, superseding C8.11 FL-HALT #2); C8.12 DO step 1 ships ahead of the PRE-FLIGHT-stated multi-session sequencing because user re-authorized continuation post-PRE-FLIGHT-close ("proceed"); subsequent DO sessions = B.11 SHA-stability + B.12 snapshot regression (Session 2) + B.6 mutation-test scaffolding across 7 FAIL-surface validators (Session 3)
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.12 DO step 1 in-progress.** First DO sub-step of C8.12 closed in <1 session immediately after PRE-FLIGHT (same-session continuation per user authorization "proceed"). Two of five C8.12 deliverables substantively advanced:
+
+- **B.7 L13 audit** — COMPLETE for `fetal_death/file_inventory.csv` (the highest-priority surface); 17 EMPTY + 2 MISMATCH cells in the `record_length` column patched to the no-terminator convention matching `field_specs.py` RECORD_LEN_*. The natality + linked metadata CSVs have a smaller L13 surface (no `record_length` column) — audited via the new invariant tests at the year-set level (PASS for both subprojects).
+- **B.8 L14 audit** — COMPLETE; 3 of 11 validators patched: `fetal_death/scripts/05_validate/validate_2022.py` (+ 4-line aggregation + `sys.exit(1)`), `fetal_death/scripts/05_validate/validate_external.py` (+1 line `sys.exit(1)`), `natality/scripts/05_validate/validate_linked_parquets.py` (+1 line `sys.exit(1)`). The remaining 8 validators correctly propagate (4) or are REPORT-ONLY (4).
+- **B.6 mutation tests** — NOT STARTED; queued for DO step 3 per the PRE-FLIGHT sequencing (depends on B.8 patches landing first so the mutation-runner can assume `sys.exit(1)` on FAIL — that prerequisite is now satisfied).
+- **B.11 SHA-stability test + B.12 snapshot regression test** — NOT STARTED; queued for DO step 2.
+- **NEW durable defense shipped this DO**: `tests/test_inventory_invariants.py` (3 tests; `DESIGN: tracks-current-state` first-docstring tag per Convention 2) encodes the C8.11-motivated soft-flag (j) L13 invariant ("inventory years ⊆ schema years_available" — both directions, for both subprojects) + the EMPTY-record_length defense. The natality test handles the `2005-2023 (linked)` annotation syntax via regex extraction.
+
+Tier 2 progress unchanged from C8.11: 3 of 7 §15-listed tasks COMPLETE (C8.9 + parent C8.10 + C8.11); C8.12 in-progress at DO step 1. Cumulative Phase C effort ~13.4 of 29-35 sessions (~39%; DO step 1 adds ~0.3 session worth of substantive work).
+
+### What was done this session (DO step 1: B.7 + B.8 + first durable test)
+
+1. **C8.12 PRE-FLIGHT entry + tag `C8.12-pre-do`** (committed at `3d35dc5` earlier this session).
+2. **Re-verified C8.11 FL-HALTs** byte-exact (all 15 items PASS at PRE-FLIGHT).
+3. **B.8 L14 audit + patches**:
+   - Inspected the 3 L14-CANDIDATE validators (validate_2022.py, validate_external.py, validate_linked_parquets.py); confirmed each has a real per-row FAIL surface but no `sys.exit(1)` propagation.
+   - Applied 3 minimal patches (validate_2022.py +4 lines aggregation + sys.exit(1); validate_external.py +1 line inside existing `if failures:` block; validate_linked_parquets.py +1 line inside existing `if failures:` block; all 3 already imported `sys`).
+   - Verified each patch via static `grep -cE 'sys\.exit\(1\)|SystemExit\(1\)'` post-patch.
+4. **B.7 L13 audit + patch**:
+   - Audited `fetal_death/file_inventory.csv` `record_length` column across all 43 rows via `zipfile.ZipFile(path).open(name).readline().rstrip(b'\r\n')` probe.
+   - Surfaced 17 EMPTY + 2 MISMATCH rows (2006: 3351 → 3350; 2022: 2652 → 2651; with-terminator convention diverging from the 24 EXACT no-terminator rows).
+   - Discovered the 2007 outlier (801 bytes vs 3338/3350 neighbors) is GENUINE per `field_specs.py:28` `RECORD_LEN_2007 = 801`; the parser correctly handles each per-year width.
+   - Applied 19-row patch standardizing on no-terminator convention via Python `csv.DictReader` + `csv.DictWriter` round-trip; column-order + quoting preserved.
+   - Post-patch audit: 0 EMPTY, 0 MISMATCH across all 43 rows. New sha=`2f2ba2c942f14296…` (was `38dc035eeccb8b80…`).
+   - Soft-flag (j) L13 invariant probe: BOTH fetal-death + natality inventory year-sets MATCH the schema years_available union byte-exact (fetal-death 1982-2024 = 43; natality 1990-2024 = 35; linked-cohort 2005-2023 = 19 tracked separately via `_linked` keys).
+5. **NEW durable defense**: authored `tests/test_inventory_invariants.py` with 3 tests + Convention 2 `DESIGN: tracks-current-state` first-docstring tag. Initial run surfaced a parser-format bug on natality's `"2005-2023 (linked)"` annotation syntax; fixed via regex extraction (`_YEAR_RANGE` + `_YEAR_SINGLE`); 3/3 PASS post-fix.
+6. **Cache-cleared full pytest run**: 59 passed + 1 xfailed in 77.00s (was 56 + 1 pre-C8.12 baseline; +3 from new invariant tests; +0 regression from L14 patches + L13 record_length patch).
+7. **FIX_LOG.md** appended with 2 NEW entries (L13 fetal-death inventory `record_length` patch; L14 3-validator consolidated). Both follow Convention 5 + §8 matrix row reference + Forward-looking-follow-up sub-sections.
+8. **DECISION_LOG.md** appended with 1 NEW entry (L13 no-terminator convention choice; 4 alternatives + 3 protocol justifications + 3 residual risks).
+9. **STATUS.md** appended (this section).
+10. **Pending**: commit DO step 1 (no new git tag; `C8.12-complete` not yet — DO steps 2 + 3 remain).
+
+### Last completed step
+
+Single commit ships: 3 validator L14 patches + 1 inventory CSV L13 patch + 1 NEW tests/test_inventory_invariants.py + 2 FIX_LOG entries + 1 DECISION_LOG entry + this STATUS section. No git tag (tag `C8.12-complete` shipped at RECEIPT phase post-DO closure).
+
+### In-progress
+
+C8.12 — DO step 1 of 3 COMPLETE (B.7 + B.8 + first durable test); steps 2 (B.11 + B.12) + 3 (B.6) remain. Estimated 2-3 sessions of remaining DO work.
+
+### Next planned task
+
+C8.12 DO step 2 next session: **B.11 SHA-stability test** (reads `docs/NCHS_SOURCE_MANIFEST.md` 97-row substrate + recomputes `shasum -a 256` on each raw zip; skip-if-missing in CI) + **B.12 snapshot regression test** (per-column SHA across 4 parquets × 340 columns; baseline snapshot file at `tests/snapshots/v<X>_<UTC>_columns.csv` per soft-flag (k) recommendation). Then DO step 3 = B.6 mutation-test scaffolding across 7 FAIL-surface validators.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.**
+
+### Open questions for human
+
+None for the remaining C8.12 DO steps. The 2 L13 NCHS-source-data scope-question soft-flags (e.g., should the natality inventory also gain a `record_length` column?) are filed for Phase D step 2 routing.
+
+**Open soft-flags (carried from C8.11 + (h)-(l) C8.12 PRE-FLIGHT + 1 NEW C8.12 DO step 1):**
+
+Carried unchanged from C8.11 + C8.12 PRE-FLIGHT: (a) stale fetal_death/PROVENANCE.md (Phase D step 2) + (b) absent natality/PROVENANCE.md (Phase D step 2) + (c) VERSION_ROADMAP.md "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) raw_data/ symlink fetal-only (C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (h) C8.11 in-DO L11 year-set (RESOLVED) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (j) PARTIALLY-RESOLVED — encoded as `tests/test_inventory_invariants.py` invariant tests; **the inventory-vs-schema invariant is now CI-gated**; (k) B.12 storage-format choice (DO step 2 DECISION_LOG entry) + (l) `validate_2022.py` Convention-2 DESIGN tag (not addressed in DO step 1; OPTIONAL bundle into DO step 3 B.6 mutation-test pairing).
+
+**New open soft-flag (C8.12 DO step 1):**
+
+- (m) **The `record_length` invariant test currently checks population only, NOT vs-actual-zip parity** because raw zips live outside the monorepo (C8.7a soft-flag (e)). A future C8.X (or the C8.7b orchestrator authoring) could promote the zip-presence-aware audit-script (in FIX_LOG 2026-05-13T20:15:00Z entry's audit logic) into a skip-if-missing test that runs from CI when raw zips become available via GitHub Release artifacts (C8.13 follow-up).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start.
+
+1. **`fetal_death/file_inventory.csv` sha=`2f2ba2c942f142961e8ad8ad85513dac6924e7e76450240e1eb77b82f73f8310`** (43 rows; year sequence 1982-2024 contiguous; 0 EMPTY + 0 MISMATCH `record_length` cells; supersedes C8.11 FL-HALT #2 sha=`38dc035e…`).
+2. **`tests/test_inventory_invariants.py` exists** (3 tests; sha probed at next session); failing if missing.
+3. **3 L14 patches present** in fetal_death/scripts/05_validate/{validate_2022,validate_external}.py + natality/scripts/05_validate/validate_linked_parquets.py; each has exactly 1 `sys.exit(1)` on the FAIL branch (static `grep -cE 'sys\.exit\(1\)|SystemExit\(1\)'` per file = 1).
+4. **All 4 parquet SHAs unchanged byte-exact** from C8.11 close: fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad5323d…` / linked_der=`9b828a4d…`. No DO step 1 parquet mutation.
+5. **All other C8.11 file SHAs unchanged byte-exact** (docs/NCHS_SOURCE_MANIFEST.md, docs/COMPARABILITY.md, migrations/*.md, VERSION_ROADMAP.md, 3 cross-link READMEs).
+6. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 59 PASS + 1 XFAIL** as new C8.12 baseline (was 56 + 1 pre-C8.12; +3 from invariant tests; 77.00s ±10s variance).
+7. **DO step 2 begins next session**: B.11 SHA-stability + B.12 snapshot regression. Pre-DO recommendation: SHA-stability test reads `docs/NCHS_SOURCE_MANIFEST.md` via simple markdown-table parser (97 rows); skip-if-missing pattern via conftest `_require()`-equivalent. Snapshot regression: per-column SHA in `tests/snapshots/v<X>_<UTC>_columns.csv` (soft-flag (k) recommendation; final DECISION_LOG choice at DO step 2 PRE-FLIGHT).
+8. **DO step 3 begins after step 2**: B.6 mutation-test scaffolding for 7 FAIL-surface validators in `tests/mutations/test_<validator>_mutation.py`; depends on B.8 patches landing first (already satisfied).
+9. **No `C8.12-complete` tag yet** — that lands at RECEIPT phase post-DO closure.
+10. **No §11 plan-update needed at DO step 1 close**. The L13 + L14 patches were explicit §15 DO scope; fix-on-contact for the inventory `record_length` ambiguity follows the C8.11 VERSION_ROADMAP.md precedent.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- V3b/V3a/V1 baseline parquets preserved (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.11 outputs unchanged EXCEPT `fetal_death/file_inventory.csv` (authorized C8.12 DO step 1 mutation; new sha `2f2ba2c9…`).
+
+NEW this session:
+- 3 L14 validator patches (fetal_death/scripts/05_validate/validate_2022.py + validate_external.py + natality/scripts/05_validate/validate_linked_parquets.py)
+- `tests/test_inventory_invariants.py` (NEW; 3 tests; Convention 2 DESIGN tag)
+- 2 new FIX_LOG entries (L14 consolidated + L13)
+- 1 new DECISION_LOG entry (L13 no-terminator convention)
+- This STATUS section
+- PRE_FLIGHT_LOG.md unchanged from earlier in-session commit (`3d35dc5`)
+
+MODIFIED this session:
+- `fetal_death/file_inventory.csv` (19-row `record_length` patch; new sha=`2f2ba2c9…`)
+- `fetal_death/scripts/05_validate/validate_2022.py` (+4 lines)
+- `fetal_death/scripts/05_validate/validate_external.py` (+1 line)
+- `natality/scripts/05_validate/validate_linked_parquets.py` (+1 line)
+
+### Notes for next session
+
+- **C8.12 DO step 2** PRE-FLIGHT cheap-checks at next session start: re-verify all 10 forward-looking HALTs above byte-exact; should take ~5 min.
+- **B.11 SHA-stability test design**: read `docs/NCHS_SOURCE_MANIFEST.md` (markdown-table parse; 97 rows with `| Year | raw_filename | SHA-256 |`); for each row, attempt `shasum -a 256 /Users/yoelplutchok/Desktop/.../<raw_filename>`; assert byte-equality with the manifest. Skip-if-zip-missing per the `conftest._require()` pattern. The 97-zip iteration may take ~30s on first run; mark with `@pytest.mark.slow` if pytest config supports it.
+- **B.12 snapshot regression design**: per-column SHA via streaming `pyarrow.parquet.ParquetFile(p).iter_batches(batch_size=100_000, columns=[col])`; aggregate hash across batches; store one row per (parquet, column) in `tests/snapshots/v<X>_<UTC>_columns.csv`. Test compares latest-run hashes vs the most-recent snapshot file; FAIL with per-column diff list if any drift. Re-snapshot triggered by §11 plan-update committing a new baseline (e.g., post-C8.13 dict-encoding reshape).
+- **B.6 mutation-test design (DO step 3)**: each `tests/mutations/test_<validator>_mutation.py` parses a deep-copy of `external_validation_targets.csv` (or the relevant input CSV); inserts a known violation (e.g., a row claiming impossible expected count); writes to temp file; spawns the validator via `subprocess.run([... env=... ])`; asserts `returncode == 1`. AND-of-rows aggregation per L14: each row's per-row classifier must be truthy for the test to PASS.
+- **Convention 1 (SHAPE-not-VALUE)** for the new tests: B.11 asserts a STRUCTURAL invariant (97 rows; per-row SHA match — count-based, not value-pinned). B.12 ALSO asserts structural (column count + per-column hash equality across the manifest); the snapshot file IS the pinned value but it's re-snapshot-on-authorized-reshape per soft-flag (k).
+- **Convention 2 DESIGN tag** on each new test file. B.11 + B.12 are `DESIGN: tracks-current-state`; B.6 mutation tests are also `DESIGN: tracks-current-state` (the canonical state is "the validator's `sys.exit(1)` returns when a known-bad row is injected"; updates only under authorized validator-contract changes).
+
+### Session summary
+
+C8.12 DO step 1 closed in ~45 min wall time post-PRE-FLIGHT (audit + 4 patches + new invariant test + 2 FIX_LOG + 1 DECISION_LOG + STATUS append). Two of five C8.12 deliverables substantively advanced (B.7 + B.8); one durable defense shipped (`tests/test_inventory_invariants.py`); zero §7 halts; zero canonical-parquet mutation. Cache-cleared pytest 59 PASS + 1 XFAIL preserved (was 56 + 1; +3 from new tests). C8.12 progress: ~30-40% of total estimated effort (B.7 + B.8 ~smaller-than-B.6 in DO depth). Cumulative Phase C effort ~13.4 of 29-35 sessions (~39%). Remaining DO sessions for C8.12: 2 estimated (step 2 = B.11+B.12; step 3 = B.6).
 
 ---
 

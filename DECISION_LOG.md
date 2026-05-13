@@ -23,6 +23,53 @@
 
 ---
 
+## 2026-05-13T20:30:00Z — C8.12 (DO step 1, B.7 L13 audit) — `fetal_death/file_inventory.csv` `record_length` convention standardized on no-terminator (matches `field_specs.py` RECORD_LEN_* + 24 EXACT inventory rows); 19-row fix-on-contact applied in-place per C8.11 precedent
+
+**Choice (LLM at C8.12 B.7 DO step 1):** Standardize the `record_length` column in `fetal_death/file_inventory.csv` on the **no-terminator convention** — i.e., the column records the byte length of the data content per record, EXCLUDING any trailing CR/LF/CRLF line terminator. This matches:
+
+1. **`fetal_death/scripts/01_import/field_specs.py:21-31`** `RECORD_LEN_*` constants — the parser's single source of truth (e.g., `RECORD_LEN_2003 = 1350`, `RECORD_LEN_2006 = 3350`, `RECORD_LEN_2007 = 801`, `RECORD_LEN_2014 = 3050`, `RECORD_LEN_2018 = 2651`). The parser slices fixed-width records via this convention.
+2. **24 existing EXACT inventory rows** (1982-2004 + 2014): all use no-terminator (e.g., 1989 row claims 360, actual stripped-of-CRLF is 360).
+
+The fix patches 19 inconsistent rows to match: **17 EMPTY rows** filled (2005, 2007-2013, 2015-2024) + **2 MISMATCH rows** reduced by 1 (2006: 3351→3350; 2022: 2652→2651; both were the with-terminator convention).
+
+**Alternatives considered:**
+
+1. **(A) Standardize on no-terminator (CHOSEN).** Pro: parser-aligned; matches the 24 EXACT rows; consistent across V3b+V3a+V2+V2.1+V1 eras post-fix. Con: changes the historical 2006+2022 claims by -1 byte each.
+2. **(B) Standardize on with-terminator (+1 to all 41 zip rows).** Pro: matches NCHS user-guide convention (NCHS documents logical-record-length-including-CRLF). Con: requires changing 24 already-correct rows; introduces fresh drift vs the parser's no-terminator convention; downstream consumers comparing `file_inventory.csv` `record_length` to `field_specs.py` RECORD_LEN_* would see off-by-1.
+3. **(C) Leave the column inconsistent + document the convention divergence in `notes`.** Pro: zero data mutation. Con: violates §8 matrix L13 row's defense (CSV column-content verifiable against canonical source); leaves the bug surface for future regressions. Rejected.
+4. **(D) Drop the `record_length` column entirely + delegate documentation to `field_specs.py` only.** Pro: removes the source-of-truth ambiguity. Con: deletes informational documentation that's useful for human inventory-readers; breaking change for any downstream user reading inventory metadata. Rejected.
+
+**Reason:** Option A standardizes on the single-source-of-truth convention (parser-aligned) with the smallest fix footprint (19 rows, mechanical) and removes ambiguity that could mislead future inventory authors (e.g., a future V4 backward extension would need to know which convention to use). The patched inventory is now byte-consistent with `field_specs.py` + the new `tests/test_inventory_invariants.py::test_fetal_death_inventory_record_length_populated_for_all_rows` invariant test fails fast if any future row ships with an EMPTY `record_length` cell.
+
+Three protocol justifications: (i) §8 L13 row's "verify column-content matches" remedy (the audit + fix-on-contact is the defense); (ii) §2 principle 1 cheap-before-expensive (auditing 43 rows via `zipfile.first-record-length` probe was ~5 minutes; the fix is mechanical); (iii) C8.11 precedent of fix-on-contact for inventory-level documentation drift (C8.11 DO patched `VERSION_ROADMAP.md` lines 11+13 fix-on-contact for the same reason).
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T19:30:00Z entry — C8.12 PRE-FLIGHT documented the B.7 audit scope (20 metadata CSVs across 2 subprojects).
+- `FIX_LOG.md` 2026-05-13T20:15:00Z entry — full audit table + patch detail.
+- `fetal_death/scripts/01_import/field_specs.py:21-31, 1330-1380` — `RECORD_LEN_*` constants + `get_record_layout(year)` dispatch.
+- Per-zip probes via `zipfile.ZipFile(path).open(name).readline().rstrip(b'\r\n')` across all 43 rows (audit script in FIX_LOG entry).
+- C8.11 DECISION_LOG 2026-05-13T17:25:00Z (precedent for inventory fix-on-contact under C8.X scope).
+
+**Verifiable by:**
+
+- Post-DO `fetal_death/file_inventory.csv` has populated `record_length` for all 43 rows; values match the per-year zip first-record-length under no-terminator convention; new sha=`2f2ba2c942f14296…` (was `38dc035eeccb8b80…`).
+- `tests/test_inventory_invariants.py::test_fetal_death_inventory_record_length_populated_for_all_rows` PASSes.
+- `for f in <2006, 2022>; do compare claim to field_specs.RECORD_LEN_$f; done` returns equality.
+- Cache-cleared pytest 59 PASS + 1 XFAIL preserved post-patch.
+
+**Reversible:** yes — `git revert <C8.12 DO step 1 commit>` restores the pre-fix `file_inventory.csv` state (17 EMPTY + 2 off-by-1 rows) + drops `tests/test_inventory_invariants.py`. The L13 finding itself is reversible only at the documentation layer; the parser convention is unchanged.
+
+**Residual risks:**
+
+- (a) **A future NCHS release MAY change record length within a year** (e.g., NCHS sometimes silently updates public-use files with no version-tag change). Defense: the `tests/test_inventory_invariants.py` `_populated_for_all_rows` test would NOT catch a silent NCHS reformat — it only catches EMPTY cells. A future C8.X could promote the audit-script (in the FIX_LOG entry) into a periodic re-probe test that runs against the on-disk zips. Deferred to C8.7b orchestrator + C8.12 B.6 mutation-test scaffolding session.
+- (b) **The `record_length` semantic divergence between fetal-death (no-terminator) and the (absent) natality `record_length`** is a residual asymmetry. If natality's inventory is ever extended to include `record_length`, it should follow this same no-terminator convention. Filed as Phase D step 2 follow-up note.
+- (c) **The 2006 + 2022 with-terminator claims** appear to have been authored from NCHS user guides that document logical-record-length-including-CRLF. Future inventory authors should be aware of this convention divergence in NCHS docs and explicitly probe vs-parser before recording. The new test fails fast if `record_length` is left empty, but doesn't catch off-by-1 within-convention errors (that requires the zip-presence audit-script).
+
+**Backport scope:** None directly. C8.1-C8.11 receipts unaffected. The C8.11 receipt's FL-HALT #2 (`fetal_death/file_inventory.csv` sha=`38dc035e…`) is now superseded by the C8.12 DO step 1 commit; the next C8.12 sub-session's PRE-FLIGHT must verify the NEW sha=`2f2ba2c9…`. No data, validator, or parquet output affected.
+
+---
+
 ## 2026-05-13T17:25:00Z — C8.11 — AskUserQuestion Option A: extend `fetal_death/file_inventory.csv` 34 → 43 rows in C8.11 DO (scope expansion ~30-60 min); 3 routine L11 PRE-FLIGHT-input re-interpretations user-authorized in-place per C8.9/C8.10a/b/c precedent
 
 **Choice (user at AskUserQuestion 2026-05-13T17:25:00Z, Question 1 = Option A; Question 2 = "Proceed in-place per precedent"):** Apply the file_inventory.csv extension in the C8.11 DO + apply 3 routine L11 PRE-FLIGHT-input re-interpretations in-place without separate §11 plan-update commits:

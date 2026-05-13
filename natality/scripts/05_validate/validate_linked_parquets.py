@@ -249,6 +249,7 @@ def main() -> None:
         for f in failures:
             print(f"    - {f}")
         print("\n  *** DO NOT PROCEED until resolved ***")
+        sys.exit(1)
     else:
         print("  All stop-ship checks PASSED.")
 

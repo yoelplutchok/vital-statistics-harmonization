@@ -450,6 +450,7 @@ def main():
         print("\nFailures:")
         for f in failures:
             print(f"  {f['year']} {f['metric']}: our={f['our_value']} expected={f['expected']} diff={f['diff']}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

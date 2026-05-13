@@ -19,6 +19,100 @@
 
 ---
 
+## 2026-05-13T20:15:00Z — C8.12 (DO step 1, B.7 L13 audit) — L13 — `fetal_death/file_inventory.csv` `record_length` column had 17 EMPTY + 2 off-by-1 MISMATCH cells out of 43 rows; patched to no-terminator convention matching `field_specs.py` RECORD_LEN_* + the 1982-2004+2014 inventory rows
+
+**Symptom:** C8.12 B.7 L13 audit (PRE_FLIGHT_LOG 2026-05-13T19:30Z Table 2; static probe of `record_length` claim vs actual zip first-record byte length via `zipfile.ZipFile(...).open(name).readline().rstrip(b'\r\n')`) surfaced 19 of 43 rows with documented `record_length` inconsistent with on-disk reality:
+
+| Rows | Status | Claimed → Actual |
+|---|---|---|
+| 1982-2004 (V3b + V3a + V2 + V2.1; 23 rows) | EXACT | claim matches actual byte-exact (200 / 360 / 1350 / 1500) |
+| 2014 (V1 COD; 1 row) | EXACT | 3050 → 3050 |
+| 2005, 2007-2013, 2015-2017, 2018-2024 (17 rows) | EMPTY | claim absent; actual probed at 3350 (2005-2006), 801 (2007), 3338 (2008-2013), 3050 (2014-2017), 2651 (2018-2024) |
+| 2006 (1 row) | MISMATCH | 3351 → 3350 (off-by-1; with-terminator convention) |
+| 2022 (1 row) | MISMATCH | 2652 → 2651 (off-by-1; with-terminator convention) |
+
+The 2007 outlier (801 bytes vs neighboring 3338/3350) is genuine — `Fetal2007US.zip` ships a single 801-byte-record file (`VS07Fetal.PublicUS`, 48.9 MB) with no trailing filler. `field_specs.py:28` already documents `RECORD_LEN_2007 = 801` so the parser correctly handles it; the inventory was just missing the documentation. The 2008-2013 records are 3338 bytes (different from 2005-2006's 3350; another year-specific layout shift the parser handles via `field_specs.py:get_record_layout(year)`). The 2006 + 2022 with-terminator claims (3351, 2652) diverge from the parser's no-terminator convention (`RECORD_LEN_2006 = 3350`, `RECORD_LEN_2018+ = 2651`).
+
+**Root cause:** The `fetal_death/file_inventory.csv` was authored incrementally across multiple sessions (v2.0 = 1992-2022 baseline at 2026-05-04 build; v2.1 = 2003+2004 at 2026-05-11 task3; V3a = 1989-1991 at 2026-05-12 task7_v3a; V3b = 1982-1988 at 2026-05-12 task7_v3b; latest-year = 2023+2024 at 2026-05-13 C8.2). The `record_length` column was populated for the V3b + V3a + V2.1 rows (which were authored from explicit byte-position probes during layout reconstruction) and for select V1 anchor years (2014); empty for the bulk-imported V1 years (2005, 2007-2013, 2015-2024). The 2006 + 2022 +1 discrepancy was authored from NCHS user guides which document logical-record-length-including-CR-LF, while the parser + the other inventory rows use no-terminator. The asymmetric population is a textbook L13 case: the inventory CSV records file roles (year + raw_filename + doc_filename + format + record_length) but column-content verification (does `record_length` match the actual data file's first-record byte length?) was never run as a downstream check until C8.12 B.7.
+
+**Fix:** Patched all 19 affected rows of `fetal_death/file_inventory.csv` to the no-terminator convention matching `field_specs.py` + the existing 24 EXACT rows. Per-year corrected values: 2005=3350, 2006=3350 (was 3351), 2007=801, 2008-2013=3338, 2015-2017=3050, 2018-2024=2651 (2022 was 2652). Single Python-script edit operating row-by-row with `csv.DictReader` + `csv.DictWriter`; column-order + quoting preserved. Post-fix audit: 0 EMPTY, 0 MISMATCH across all 43 rows.
+
+Additionally, authored `tests/test_inventory_invariants.py` (3 tests; `DESIGN: tracks-current-state` first-docstring tag per Convention 2) as the durable defense:
+
+1. `test_fetal_death_inventory_years_match_schema_years_available` — encodes the soft-flag (j) invariant from C8.11 PRE-FLIGHT: every `file_inventory.csv` year ⊆ `harmonized_schema.csv` years_available union, and vice versa. Defends against any future repeat of the C8.11 9-row gap.
+2. `test_natality_inventory_years_match_schema_years_available` — sibling invariant for natality + linked-cohort (skips `<YYYY>_linked` keys + parses `2005-2023 (linked)`-style annotation syntax).
+3. `test_fetal_death_inventory_record_length_populated_for_all_rows` — defends against any future inventory row shipping with an EMPTY `record_length` cell (the specific bug class fixed by this entry).
+
+**Files touched (this fix):**
+- `fetal_death/file_inventory.csv` — 19-row `record_length` patch; new sha=`2f2ba2c942f14296…` (was `38dc035eeccb8b80…` at C8.11 close)
+- `tests/test_inventory_invariants.py` (NEW) — 3 L13 invariant tests
+
+**Regression scope:** None. The `record_length` column in `file_inventory.csv` is INFORMATIONAL — it documents per-year byte width for human readers + future-audit reference. The harmonization pipeline reads byte widths from `field_specs.py` (single source of truth at the parser); the inventory column is documentation-only. Patching it brings the documentation into agreement with the parser + the on-disk reality; no data, no validation, no test outcome changes.
+
+Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **59 passed + 1 xfailed in 77.00s** post-patch (was 56 + 1 pre-C8.12; +3 from the new inventory-invariants tests).
+
+**Verified by:**
+- Post-patch audit script re-run: `for row in <43 rows>; do verify claim == actual; done` returns 0 EMPTY + 0 MISMATCH (down from 17 + 2).
+- `pytest tests/test_inventory_invariants.py -v` returns 3 PASS in 0.01s.
+- `pytest fetal_death/tests/ natality/tests/ tests/` returns 59 PASS + 1 XFAIL byte-exact baseline preserved (the existing 56 + new 3).
+- `field_specs.py:21-31` RECORD_LEN_* constants and inventory `record_length` column now agree row-by-row for the 43-year envelope.
+
+**Could the §8 matrix have caught this earlier?** Yes — L13's "any inventory row whose role/description names columns without a sibling column-name list is a soft-flag for downstream consumers to re-verify" is the matching matrix row. The defense (verify column-content matches at inventory write time) was not applied because the inventory CSV is informational-only and never gated a build or test. C8.12 B.7's audit + the new `tests/test_inventory_invariants.py` are the durable defense: any future inventory regression (e.g., a new year row landing with EMPTY `record_length`, or a year-set drift relative to schema) now fails CI immediately.
+
+**Forward-looking follow-up:**
+- **The `record_length` invariant test currently checks population only, NOT vs-actual-zip parity** because the raw zips live outside the monorepo at `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/raw_data/...` (C8.7a soft-flag). A future C8.X (or the C8.7b orchestrator authoring) could promote the zip-presence-aware audit-script (in this entry's audit logic) into a skip-if-missing test that runs from CI when raw zips become available (e.g., via a CI artifact download from the GitHub Release shipped at C8.13).
+- **The natality `metadata/file_inventory.csv` does NOT have a `record_length` column** (8 columns vs fetal-death's 9). For symmetry, a future C8.X (Phase D step 2 candidate) could extend natality's inventory schema with `record_length` + populate from the parsers' per-year byte widths.
+- **Convention 5 commit-message brevity**: the L13 + L14 patches both land in this commit per the C8.7a "consolidate by script-class" precedent (each FIX_LOG entry is one class; commit message names the cascade depth = 2 classes × 3+19 fixed rows).
+
+---
+
+## 2026-05-13T20:00:00Z — C8.12 (DO step 1, B.8 L14 audit) — L14 (consolidated by script-class per C8.7a precedent) — 3 validators silently returned exit-code 0 on per-row FAILs: `validate_2022.py` + `validate_external.py` + `validate_linked_parquets.py`
+
+**Symptom:** C8.12 B.8 L14 audit (PRE_FLIGHT_LOG 2026-05-13T19:30Z Table 1; static `grep` for `sys.exit`/`raise SystemExit` patterns vs `FAIL`/`failures` surfaces) surfaced 3 of 11 validators that detect per-row FAILs but do NOT propagate to a non-zero process exit code:
+
+| Validator | Per-row FAIL surface | Exit-code behavior pre-patch |
+|---|---|---|
+| `fetal_death/scripts/05_validate/validate_2022.py` | 19 `"PASS" if ... else "FAIL"` strings inline (one per `check()` call + 12 internal-consistency string assertions) baked into a markdown report at lines 36-37, 91, 303, 314, 322, 327, 334, 339, 344, 351, 356; report written to `output/validation/validation_2022.md` | main() falls through; exit code = 0 even when report contains 19 FAIL lines |
+| `fetal_death/scripts/05_validate/validate_external.py` | `failures = [r for r in all_results if not r["pass"]]` collected from `validate_gte20wk_counts` + `validate_mortality_rates` + `validate_2022_detail` + `validate_2022_cod` + `validate_2014_early_late`; printed to stdout via `for f in failures: print(...)` | main() prints failures but does NOT exit non-zero; exit code = 0 even when `failures` non-empty |
+| `natality/scripts/05_validate/validate_linked_parquets.py` | `failures = []` populated by 2 stop-ship checks (row-count MISMATCH for any year; IMR out of 3.0-10.0 plausible range); printed under `"## STOP-SHIP CHECKS"` header with `"*** DO NOT PROCEED until resolved ***"` admonition | main() prints + admonishes but does NOT exit non-zero; CI / `run_pipeline.py` orchestrator could not gate downstream on this validator's verdict |
+
+Each case is textbook L14 per §8 matrix row L14: "a reproduction / validation script's per-row CSV has FAIL / `exceeds_tolerance` / `bridge_applicable=False` rows, but `main()` returns 0 (Python: implicit None); CI / PRE-FLIGHT reads exit code only and reports PASS." All three scripts already had per-row truthy-string aggregation (the per-row classifier output is non-empty, e.g., `"FAIL"` literal in the markdown table cell, or `r["pass"] == False` in the `failures` list) — the missing piece was the `sys.exit(1 if n_fail > 0 else 0)` at end of main().
+
+**Root cause:** All three validators were authored as "write a report to disk + print summary to stdout" style scripts where the human reader was the intended audience. Exit-code propagation was never added because the authoring sessions did not anticipate CI / orchestrator integration. The L14 row of §8 matrix (added 2026-05-11T16:32:34Z via the upstream NHANES protocol-sync) named this exact failure mode but no audit had run across the existing validator inventory. C8.12's B.8 audit is that audit.
+
+`validate_external_v2.py` (fetal-death) + `compare_external_targets_v1.py` (natality) + `compare_external_targets_v3_linked.py` (natality) + `validate_v1_invariants.py` (natality) all DO propagate exit codes correctly — they were authored later under awareness of CI gating. The 4 REPORT-ONLY validators (`harmonized_missingness.py`, `key_rates_from_derived_core.py`, `qa_yearly_core_parquet.py`, `validate_row_counts_vs_nchs.py`) have no FAIL surface and correctly skip L14 propagation.
+
+**Fix (consolidated per C8.7a "FIX_LOG entries consolidated by script-class" precedent; 3 single-block edits in this single entry):**
+
+1. **`fetal_death/scripts/05_validate/validate_2022.py`** (end of main(), post-`OUT.write_text`): added 4-line block computing `n_fail = sum(1 for line in lines if "FAIL" in line)`; if `n_fail > 0`, prints `f"*** {n_fail} FAIL line(s) detected — see {OUT} ***"` to stderr + `sys.exit(1)`. The string-aggregation approach is robust because "FAIL" has no common substring with "PASS"; no false positives possible from the report's own PASS strings.
+
+2. **`fetal_death/scripts/05_validate/validate_external.py`** (inside the existing `if failures:` block at end of main()): added `sys.exit(1)` after the per-failure print loop. Reuses the existing `failures` list as the per-row failure indicator; no new aggregation needed.
+
+3. **`natality/scripts/05_validate/validate_linked_parquets.py`** (inside the existing `if failures:` block in the "STOP-SHIP CHECKS" section): added `sys.exit(1)` after the `"*** DO NOT PROCEED until resolved ***"` admonition print. Reuses the existing `failures` list.
+
+All three validators already imported `sys` (used for `file=sys.stderr` etc.) — no new imports needed.
+
+**Files touched (this fix):**
+- `fetal_death/scripts/05_validate/validate_2022.py` (+4 lines at main() tail)
+- `fetal_death/scripts/05_validate/validate_external.py` (+1 line inside existing `if failures:`)
+- `natality/scripts/05_validate/validate_linked_parquets.py` (+1 line inside existing `if failures:`)
+
+**Regression scope:** None. The patched exit-code behavior is a STRENGTHENING of the validator contract: previously the scripts ran clean (exit code 0) regardless of FAIL state; now they exit 1 when FAILs are detected. Downstream consumers reading the exit code (none currently — the validators are typically invoked interactively, not gated in CI) gain a correct signal. The test suite is unaffected: 56 PASS + 1 XFAIL preserved (cache-cleared run, 81.67s).
+
+**Verified by:**
+- Visual diff of each patch matches the §8 matrix L14 row's recommended remedy (`sys.exit(1 if FAIL_COUNT > 0 else 0)`).
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **56 passed + 1 xfailed in 81.67s** post-patch (matches C8.11/C8.12 PRE-FLIGHT baseline 83.55s within run-to-run variance).
+- Static re-scan: `for f in <3 validators>; do grep -cE 'sys\.exit\(1\)|SystemExit\(1\)' "$f"; done` → 1, 1, 1 (each validator now has exactly one `sys.exit(1)` propagation point on the FAIL branch).
+
+**Could the §8 matrix have caught this earlier?** Yes — the L14 row was added 2026-05-11T16:32:34Z via the NHANES protocol-sync `[plan-update]`, but the audit (this C8.12 B.8 step) is the first systematic application of the row to the validator inventory. Pre-existing validators that pre-dated the L14 row addition (these 3 are all v2.0-era authoring) carried the bug silently. Defense going forward: C8.6 (CI wiring; SHIPPED) plus a B.6 mutation-test scaffold around each validator (next C8.12 sub-step) gates regressions; CI now runs cache-cleared pytest on every push so any future L14 regression in a NEW validator surfaces immediately. C8.12 B.6 will pair each of the 7 FAIL-surface validators with a `tests/mutations/test_<validator>_mutation.py` that injects a known violation and asserts exit-code 1.
+
+**Forward-looking follow-up:**
+- **C8.12 B.6 (next DO step 2-3)**: mutation-test scaffolding for the 7 FAIL-surface validators. Each test injects a known violation (e.g., temporarily edit a copy of `external_validation_targets.csv` to claim an impossible expected count); spawns the validator via `subprocess.run`; asserts `returncode == 1`. The 3 L14-patched validators above are PREREQUISITES for the mutation-test runner because pre-patch they would all return 0 regardless of injection (false-PASS).
+- **The `validate_linked_parquets.py` FAIL surface is small** (2 stop-ship checks: row-count MISMATCH + IMR out-of-plausible-range). A future scope expansion could add per-year frequency-sanity checks (FLGND, AGER5, SEX, DPLURAL distributions; IMR trend monotonicity) as separate stop-ship conditions; deferred to a follow-up task.
+- **The `validate_2022.py` string-aggregation pattern** (`"FAIL" in line`) is robust for this script but does not generalize to scripts where report text might legitimately mention the word "FAIL" outside per-row classifier output. For C8.12 B.6 mutation-test pairing, the alternative aggregation (refactor `check()` to append to a module-level `_FAILURES: list[str]`) is cleaner; deferred to a future refactor if the script's report content evolves to legitimately mention "FAIL" outside classifier output (e.g., a header section discussing the FAIL concept).
+
+---
+
 ## 2026-05-13T08:30:00Z — C8.7a — L13-extension — Two remaining `fetal_death/scripts/` path-constants resolved to non-existent `fetal_death/output/...` paths from monorepo cwd; sibling of FIX_LOG 2026-05-12T01:30Z (harmonize.py + validate_external*.py paths) and FIX_LOG 2026-05-12T22:00Z (test-harness paths)
 
 **Symptom:** C8.7a Tier-0 static path-constant audit (AST-extract + isolated-exec under monorepo cwd; 31 scripts total across `fetal_death/scripts/` + `natality/scripts/`) surfaced **5 broken path-constants across 2 fetal-death scripts** that should have been part of the original 2026-05-12T01:30Z monorepo-migration path-fix pass but were overlooked because no end-to-end audit had been attempted from the monorepo root.

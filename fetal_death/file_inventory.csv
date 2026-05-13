@@ -22,23 +22,23 @@ year,source_url,source_org,raw_filename,file_format,doc_filename,record_length,i
 2002,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2002US.zip,NCHS,Fetal2002US.zip,fixed-width zip,2002FetalUserGuide.pdf,360,no,1989-revision uniform; stale-guide year (control count copy-pasted from 2000); clean reference guide for OCR cross-checks
 2003,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2003US.zip,NCHS,Fetal2003US.zip,fixed-width zip,2003FetalUserGuide.pdf,1350,no,V2.1 transition year; mixed 1989/2003-revision content; 54497 records; companion fetaldeath0304problems.pdf documents layout idiosyncrasies
 2004,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2004US.zip,NCHS,Fetal2004US.zip,fixed-width zip,2004FetalUserGuide.pdf,1500,no,V2.1 transition year; mixed 1989/2003-revision content; 53285 records; companion fetaldeath0304problems.pdf documents layout idiosyncrasies
-2005,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2005US.zip,NCHS,Fetal2005US.zip,fixed-width zip,2005FetalUserGuide.pdf,,no,no COD variant available
-2006,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2006US.zip,NCHS,Fetal2006US.zip,fixed-width zip,2006FetalUserGuide.pdf,3351,no,benchmark year; no COD variant; 52714 records
-2007,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2007US.zip,NCHS,Fetal2007US.zip,fixed-width zip,2007FetalUserGuide.pdf,,no,
-2008,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2008US.zip,NCHS,Fetal2008US.zip,fixed-width zip,2008FetalUserGuide.pdf,,no,
-2009,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2009US.zip,NCHS,Fetal2009US.zip,fixed-width zip,2009FetalUserGuide.pdf,,no,
-2010,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2010US.zip,NCHS,Fetal2010US.zip,fixed-width zip,2010FetalUserGuide.pdf,,no,
-2011,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2011US.zip,NCHS,Fetal2011US.zip,fixed-width zip,2011FetalUserGuide.pdf,,no,
-2012,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2012US.zip,NCHS,Fetal2012US.zip,fixed-width zip,2012FetalUserGuide.pdf,,no,
-2013,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2013US.zip,NCHS,Fetal2013US.zip,fixed-width zip,2013FetalUserGuide.pdf,,no,
+2005,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2005US.zip,NCHS,Fetal2005US.zip,fixed-width zip,2005FetalUserGuide.pdf,3350,no,no COD variant available
+2006,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2006US.zip,NCHS,Fetal2006US.zip,fixed-width zip,2006FetalUserGuide.pdf,3350,no,benchmark year; no COD variant; 52714 records
+2007,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2007US.zip,NCHS,Fetal2007US.zip,fixed-width zip,2007FetalUserGuide.pdf,801,no,
+2008,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2008US.zip,NCHS,Fetal2008US.zip,fixed-width zip,2008FetalUserGuide.pdf,3338,no,
+2009,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2009US.zip,NCHS,Fetal2009US.zip,fixed-width zip,2009FetalUserGuide.pdf,3338,no,
+2010,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2010US.zip,NCHS,Fetal2010US.zip,fixed-width zip,2010FetalUserGuide.pdf,3338,no,
+2011,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2011US.zip,NCHS,Fetal2011US.zip,fixed-width zip,2011FetalUserGuide.pdf,3338,no,
+2012,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2012US.zip,NCHS,Fetal2012US.zip,fixed-width zip,2012FetalUserGuide.pdf,3338,no,
+2013,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2013US.zip,NCHS,Fetal2013US.zip,fixed-width zip,2013FetalUserGuide.pdf,3338,no,
 2014,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2014US_COD.zip,NCHS,Fetal2014US_COD.zip,fixed-width zip,2014FetalUserGuide.pdf,3050,no,benchmark year; COD variant; 52872 records
-2015,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2015US_COD.zip,NCHS,Fetal2015US_COD.zip,fixed-width zip,2015FetalUserGuide.pdf,,no,COD variant
-2016,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2016US_COD.zip,NCHS,Fetal2016US_COD.zip,fixed-width zip,2016FetalUserGuide.pdf,,no,COD variant
-2017,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2017US_COD.zip,NCHS,Fetal2017US_COD.zip,fixed-width zip,2017FetalUserGuide.pdf,,no,COD variant
-2018,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2018US_COD.zip,NCHS,Fetal2018US_COD.zip,fixed-width zip,2018FetalUserGuide.pdf,,no,COD only from 2018+
-2019,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2019US_COD.zip,NCHS,Fetal2019US_COD.zip,fixed-width zip,2019FetalUserGuide.pdf,,no,COD only
-2020,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2020US_COD.zip,NCHS,Fetal2020US_COD.zip,fixed-width zip,2020fetaluserguide.pdf,,no,COD only; doc filename lowercase
-2021,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2021US_COD.zip,NCHS,Fetal2021US_COD.zip,fixed-width zip,2021fetaluserguide.pdf,,no,COD only; doc filename lowercase
-2022,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2022US_COD.zip,NCHS,Fetal2022US_COD.zip,fixed-width zip,2022fetaluserguide.pdf,2652,no,benchmark year; COD only; 40113 records; doc filename lowercase
-2023,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2023US_COD.zip,NCHS,Fetal2023US_COD.zip,fixed-width zip,2023fetaluserguide.pdf,,no,COD only; 39574 records; doc URL at /Dataset_Documentation/DVS/fetaldeath/ (no us suffix; NCHS reorganized 2023+)
-2024,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2024US_COD.zip,NCHS,Fetal2024US_COD.zip,fixed-width zip,2024fetaluserguide.pdf,,no,COD only; 35648 records; doc URL at /Dataset_Documentation/DVS/fetaldeath/
+2015,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2015US_COD.zip,NCHS,Fetal2015US_COD.zip,fixed-width zip,2015FetalUserGuide.pdf,3050,no,COD variant
+2016,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2016US_COD.zip,NCHS,Fetal2016US_COD.zip,fixed-width zip,2016FetalUserGuide.pdf,3050,no,COD variant
+2017,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2017US_COD.zip,NCHS,Fetal2017US_COD.zip,fixed-width zip,2017FetalUserGuide.pdf,3050,no,COD variant
+2018,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2018US_COD.zip,NCHS,Fetal2018US_COD.zip,fixed-width zip,2018FetalUserGuide.pdf,2651,no,COD only from 2018+
+2019,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2019US_COD.zip,NCHS,Fetal2019US_COD.zip,fixed-width zip,2019FetalUserGuide.pdf,2651,no,COD only
+2020,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2020US_COD.zip,NCHS,Fetal2020US_COD.zip,fixed-width zip,2020fetaluserguide.pdf,2651,no,COD only; doc filename lowercase
+2021,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2021US_COD.zip,NCHS,Fetal2021US_COD.zip,fixed-width zip,2021fetaluserguide.pdf,2651,no,COD only; doc filename lowercase
+2022,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2022US_COD.zip,NCHS,Fetal2022US_COD.zip,fixed-width zip,2022fetaluserguide.pdf,2651,no,benchmark year; COD only; 40113 records; doc filename lowercase
+2023,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2023US_COD.zip,NCHS,Fetal2023US_COD.zip,fixed-width zip,2023fetaluserguide.pdf,2651,no,COD only; 39574 records; doc URL at /Dataset_Documentation/DVS/fetaldeath/ (no us suffix; NCHS reorganized 2023+)
+2024,https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/fetaldeathus/Fetal2024US_COD.zip,NCHS,Fetal2024US_COD.zip,fixed-width zip,2024fetaluserguide.pdf,2651,no,COD only; 35648 records; doc URL at /Dataset_Documentation/DVS/fetaldeath/

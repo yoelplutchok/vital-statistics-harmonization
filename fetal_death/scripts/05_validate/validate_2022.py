@@ -446,6 +446,11 @@ def main():
     OUT.write_text("\n".join(lines))
     print(f"Validation report written to {OUT}")
 
+    n_fail = sum(1 for line in lines if "FAIL" in line)
+    if n_fail > 0:
+        print(f"*** {n_fail} FAIL line(s) detected — see {OUT} ***", file=sys.stderr)
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
