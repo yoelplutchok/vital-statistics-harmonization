@@ -1,6 +1,169 @@
-# STATUS — last updated 2026-05-13T09:30:00Z
+# STATUS — last updated 2026-05-13T11:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T11:30:00Z — C8.9 COMPLETE: 3× `quickstart.R` (fetal_death + natality + natality_linked, two using `arrow::open_dataset()` lazy pattern due to R 16GB mem-limit on materializing 138M-row natality) + `views.sql` at monorepo root (4 DuckDB views: 3 product-canonical-filter + 1 cross-product `fetal_mortality_rate_by_year` aggregate) + `docs/JOINT_USE_GUIDE.md` "Cross-language access" section (~60 lines) + `pyproject.toml`/`uv.lock` updated via `uv add duckdb` (1.5.2; 38 pkgs → 39); **C.1 (state-stratified denominators) DROPPED at PRE-FLIGHT** via §11 plan-update `9af0924` — NCHS suppresses state-level geography in all 3 products' public-use files (confirmed via 11-year column probe + natality FAQ:87-89 + 84+6-col harmonized schema absence); two §7.13 HALTs resolved in one PRE-FLIGHT cycle (C.1 unbuildable + duckdb missing from C8.5a lockfile); SMOKE Tier-1 DuckDB-vs-pyarrow row-count parity 3/3 byte-exact; cache-cleared pytest 56 PASS + 1 XFAIL preserved (108.88s); 4 parquet SHAs unchanged byte-exact
+
+### Current phase
+
+**Phase C — Tier 1 COMPLETE; Tier 2 underway, C8.9 COMPLETE.** First Tier-2 task closed in ~1 session matching the §11-revised §15 estimate (1-1.5 sessions; originally 2.5-3 sessions pre-C.1-drop). Tag `C8.9-complete` lands on the commit shipping this STATUS section + receipt + 4 new files + 3 modified files. Tier 2 progress: **1 of 7 tasks complete** (C8.9). Cumulative Phase C effort ~9 sessions of 29–35 budget. Comfortably within +20% drift cap (42 sessions).
+
+Two §7.13 HALT conditions surfaced at C8.9 PRE-FLIGHT (zero downstream artifacts affected):
+
+1. **§7.13 — C.1 (state-stratified denominators) is structurally unbuildable from public-use data.** 4 cheap-check probes confirmed NCHS suppresses state-level geography in all 3 products' public-use files: (a) natality harmonized schema 84+6=90 cols, zero state column; (b) natality `yearly_clean` parquets across 11 sampled years 1990-2024, zero state column in any year (only `MBSTATE_REC`=birthplace recode from 2014+); (c) `natality/docs/FAQ.md:87-89` explicit "No state-level identifiers in public-use natality files" statement + `ABOUT_THIS_RELEASE.md:70` "No restricted-use geography"; (d) `fetal_death/harmonized_schema.csv` only has `residence_status` 1-4 code + `maternal_nativity` US-born/foreign flag, no state column. The §15 C8.9 PRE-FLIGHT-input claim "state available 1990-2024" was factually wrong; appears to be an EXPLORATION_REPORT §C.1 authoring error never verified against current data. **Resolution: drop C.1 from C8.9 entirely; document as permanently out-of-HVS-scope (requires NCHS RDC, well outside pre-submission window).**
+
+2. **§7.13 — `duckdb` Python package NOT in C8.5a lockfile** despite §15 PRE-FLIGHT-input claim "DuckDB installed in the env (C8.5 lockfile)". 38 packages in uv.lock, none named duckdb; `.venv/bin/python -c "import duckdb"` → `ModuleNotFoundError`. **Resolution: `uv add duckdb` executed in C8.9 DO step 1**; pyproject.toml + uv.lock SHA drift from C8.5a-recorded values is an authorized addition.
+
+Both resolved via single `[plan-update]` commit `9af0924` per user authorization 2026-05-13T10:00:00Z ("proceed in the way you think is the best" — interpreted as Option A "Drop C.1; ship C.2+C.4 only" per the recommended option in the AskUserQuestion preamble).
+
+Six canonical-state changes this session (zero parquet mutation):
+
+1. **`[plan-update]` commit `9af0924`** at 10:15Z: NEXT_STEPS.md §15 C8.9 entry rewritten (C.1 dropped; DO scope 4 items; VERIFY 5 criteria; effort 2.5-3 → 1-1.5 sessions); KICKOFF.md Phase C Tier-2 line 190 revised; PRE_FLIGHT_LOG entry (HALT) + addendum (PROCEED); DECISION_LOG entry 2026-05-13T10:00:00Z. Tag `C8.9-pre-do` placed.
+2. **`fetal_death/quickstart.R`** (NEW; sha=`3b2c0fe0…`). ~75 lines. `arrow::read_parquet()` pattern (small 2.4M-row data). 5 sections.
+3. **`natality/quickstart.R`** (NEW; sha=`15d9edfb…`). ~100 lines. `arrow::open_dataset()` lazy pattern (138.8M rows exceed R 16GB default `mem.maxVSize()` when materialized via `read_parquet()`). 6 sections.
+4. **`natality/quickstart_linked.R`** (NEW; sha=`a83e0a90…`). ~100 lines. Same `open_dataset()` pattern. 5 sections incl. IMR-by-year + top-cause analysis.
+5. **`views.sql`** (NEW; sha=`c7b674f6…`). ~85 lines. 4 `CREATE OR REPLACE VIEW` statements: 3 canonical-filter views + 1 `fetal_mortality_rate_by_year` aggregate (35 rows; CTE-pre-aggregated + INNER JOIN on `data_year`).
+6. **`docs/JOINT_USE_GUIDE.md`** (MODIFIED; post-edit sha=`534814a9…`). New "Cross-language access: R and DuckDB" section (~60 lines) inserted before "Caveats". 3 subsections: R quickstart + DuckDB views + Note on state-level geography (documents NCHS suppression policy as upstream constraint).
+7. **`pyproject.toml`** (MODIFIED via `uv add duckdb`; post-add sha=`c044f1c6…`; was `c8826a61…` per C8.5a). +1 line (`duckdb` dep).
+8. **`uv.lock`** (MODIFIED via `uv add duckdb`; post-add sha=`a3850943…`; was `ab627034…` per C8.5a). +17 lines (duckdb 1.5.2 package entry). 38 → 39 packages.
+9. **`RECEIPTS/C8.9_2026-05-13T11-30-00Z.md`** (NEW; full §6 template incl. 7-item Self-check + 12-item Forward-looking HALTs).
+
+### What was done this session (C8.9 PRE-FLIGHT + §11 plan-update + DO + SMOKE + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed in the way you think is the best."
+2. **C8.9 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T10:00:00Z): verified all 10 C8.8 Forward-looking HALTs; 4 cheap-check probes on the §15 PRE-FLIGHT-input claim "state available 1990-2024" surfaced HALT #1; 1 cheap-check probe on "DuckDB installed in C8.5 lockfile" surfaced HALT #2; result **HALT**.
+3. **AskUserQuestion 2026-05-13T10:00:00Z**: 1 question with 4 options (A/B/C/D) covering Drop-C.1 / Re-purpose / Halt+C8.7b / Halt+C8.10. User response = Option A (recommended).
+4. **§11 plan-update commit `9af0924`** at 10:15Z: NEXT_STEPS §15 C8.9 rewritten + KICKOFF line 190 revised + PRE_FLIGHT_LOG addendum (PROCEED) + DECISION_LOG entry. Tag `C8.9-pre-do`.
+5. **DO step 1**: `uv add duckdb` → duckdb==1.5.2 installed; pyproject.toml + uv.lock updated.
+6. **DO step 2**: authored 3× `quickstart.R` files. Initial natality version used `read_parquet()` and hit R 16GB memory limit; refactored natality + linked to `arrow::open_dataset()` lazy pattern (best practice for HVS-scale data); fetal-death retained `read_parquet()` (small data).
+7. **DO step 3**: authored `views.sql` at monorepo root.
+8. **DO step 4**: added "Cross-language access" section to `docs/JOINT_USE_GUIDE.md`.
+9. **SMOKE Tier 0a**: all 3 `.R` files parse via `Rscript --vanilla -e 'parse(file=...)'` → OK.
+10. **SMOKE Tier 0b**: `views.sql` loads + creates 4 views without error via `duckdb.connect().execute(...)`.
+11. **SMOKE Tier 1**: all 3 R quickstarts run end-to-end with plausible output (96s natality, 58s linked, <5s fetal-death). DuckDB-vs-pyarrow row-count parity 3/3 byte-exact (1,121,986 / 138,582,904 / 74,785,708). `fetal_mortality_rate_by_year` view returns 35 rows (1990-2024 joint coverage; FMR 7.49→5.44).
+12. **VERIFY** (5 criteria all PASS):
+    - (i) R quickstart loads each parquet ✓ (3/3 exit 0).
+    - (ii) DuckDB views == pyarrow filter row counts ✓ (3/3 byte-exact).
+    - (iii) Cache-cleared `pytest`: **56 passed + 1 xfailed in 108.88s** ✓ (matches C8.8 baseline).
+    - (iv) 4 parquet SHAs unchanged byte-exact ✓.
+    - (v) pyproject.toml + uv.lock SHAs change in expected direction ✓ (.python-version + README.md + ci.yml + scripts + CHANGELOG.md + PRIOR_ART.md SHAs unchanged).
+13. **RECEIPT** at `RECEIPTS/C8.9_2026-05-13T11-30-00Z.md` with full §6 template + 7-item Self-check + 12-item Forward-looking HALTs.
+
+### Last completed step
+
+Single commit ships: 4 new files (3 R quickstarts + 1 views.sql) + 3 modified files (JOINT_USE_GUIDE.md + pyproject.toml + uv.lock) + 1 new receipt + 1 STATUS append. Tag `C8.9-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.9 → C8.10 boundary; **Tier 2 launched**)
+
+### Next planned task
+
+**C8.10 — Worked-example notebooks 1-3 of 5 (C.6.a + C.6.b + C.6.c)** per KICKOFF.md Phase C Tier-2 sequencing (line 191) + NEXT_STEPS.md §15.C C8.10 entry. Three notebooks: `maternal_age_stratified_imr.ipynb` (linked; replicable IMR-by-maternal-age curve) + `preterm_outcomes_time_series.ipynb` (FD + natality + linked; preterm-birth secular trends) + `cross_race_fetal_mortality.ipynb` (V3a/V3b race-stratified FD with B3 1-digit-recode caveats documented). Estimated 3-4 sessions (one session per notebook minimum).
+
+C8.9 surfaced one candidate consideration for C8.10:
+- C8.10 notebooks may reference the DuckDB views or R quickstart patterns shipped this session. C8.10 PRE-FLIGHT must record post-C8.9 SHAs (4 new files + 3 modified) as expected inputs.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.** Recommended: revisit at Phase D step 3 or post-Tier-2.
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.** AND-coupled: C8.7a-complete (SATISFIED) + user-authorized multi-session compute window (PENDING). 6-12+ hours of compute estimated.
+
+### Open questions for human
+
+None for C8.10 scope.
+
+**Open soft-flags (carried forward; none new from C8.9):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+- (C8.5a-a) `requirements.txt` declares `jupyter>=1.0` but metapackage NOT installed in lockfile env.
+- (C8.5a-b) Cross-platform lockfile resolution untested locally; closes at Phase D step 3 first sync.
+- (C8.5a-c) `requirements.txt` files at 3 locations have inconsistent dependency lists.
+- (C8.6-a) Parquet-skip-in-CI weakens green-check signal; routed to C8.13.
+- (C8.6-b) Locally-emulated VERIFY runs on macOS arm64; live CI runs on linux-x86_64.
+- (C8.7a-a) Audit-script `/tmp/c87a_audit_v2.py` ephemeral; promotion to `tests/test_script_path_resolution.py` filed as C8.12 candidate.
+- (C8.7a-b) Natality+linked output-path strategy is C8.7b's first PRE-FLIGHT item.
+- (C8.7a-c) `fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 is stale vs v2.4.0 43-yr envelope; C8.7b orchestrator scope to extend.
+- (C8.8-a) EXPLORATION_REPORT §E.5 plan-text "Hoyert et al. 2024" un-edited; future agents consult DECISION_LOG 2026-05-13T09:00Z.
+- (C8.8-b) CHANGELOG.md v1.1-WIP section needs Phase D step 3 bump-and-finalize.
+- (C8.8-c) 3 GitHub precursor URLs in PRIOR_ART.md need `curl -sI` re-verify at Phase D step 3.
+- (C8.8-d) Manuscript Phase D step 6 candidate: add Gregory+Barfield 2024 + NICHD WG 2024 one-sentence.
+
+**New open soft-flags (C8.9):**
+- (a) **§15 PRE-FLIGHT-input authoring pattern surfaced 2 factual errors this session.** EXPLORATION_REPORT §C.1 + §F.3 (drafted 2026-05-12T20:30Z) contain claims about data availability + env state (state-stratified geography; DuckDB-in-C8.5-lockfile) that the exploration author did not verify against current artifacts. Filed as a soft-flag for C8.10-C8.15 PRE-FLIGHT phases: **always re-verify §15 PRE-FLIGHT-input claims via L9/L13 probes BEFORE AskUserQuestion / proceeding to DO.** This is existing L11 pattern (stale roadmap claim); no new mistake class needed.
+- (b) **DuckDB-vs-pyarrow parity is row-count-only** at C8.9 SMOKE Tier 1. A future C8.12 (mutation tests) should harden by injecting known violations + verifying both engines catch them at the cell-value level.
+- (c) **`views.sql` requires parquets at specific filenames in cwd** matching Zenodo deposit layout. Documented in views.sql header + JOINT_USE_GUIDE.md. Users running from non-deposit cwd get explicit "File not found" errors.
+- (d) **R-memory-limit-pattern lesson**: at HVS scale (138.8M × 84 cols), R users should use `arrow::open_dataset()` (lazy) not `arrow::read_parquet()` (eager). Documented in natality + linked R script docstrings. Filed for Phase D step 6 manuscript Accessibility section.
+- (e) **C.1 state stratification permanently out of scope.** Any future state-level work requires NCHS RDC; if a future Tier-3/Tier-5 task surfaces state-stratification need, the §11 plan-update must cite this receipt's PRE-FLIGHT probes + DECISION_LOG 2026-05-13T10:00:00Z as the established baseline.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Per `RECEIPTS/C8.9_2026-05-13T11-30-00Z.md` (12 items full list); restated here at session level.
+
+1. **`C8.9-complete` tag** present on this commit. Verify: `git tag --list 'C8.9*'` shows `C8.9-pre-do` (`9af0924`) + `C8.9-complete` (this commit). `C8.10-pre-do` does NOT yet exist.
+2. **`pyproject.toml` sha=`c044f1c603f980cb915abcc624a467680699160dcccce7a696a1dd0e69976296`** (post-uv-add-duckdb). +1 line vs C8.5a.
+3. **`uv.lock` sha=`a385094314580e866c23a3c1212a9406a20fc7108784dfcb10538d1532291a25`** (post-uv-add-duckdb). +17 lines; 39 packages total.
+4. **All 4 parquet SHAs unchanged byte-exact**: fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+5. **4 new files present + unchanged**: `fetal_death/quickstart.R` `3b2c0fe0…`, `natality/quickstart.R` `15d9edfb…`, `natality/quickstart_linked.R` `a83e0a90…`, `views.sql` `c7b674f6…`.
+6. **`docs/JOINT_USE_GUIDE.md` sha=`534814a94651c509610e25cd4258ae2f566700172352e862c699d7bed055aa2a`** (post-edit).
+7. **All other C8.5a/C8.6/C8.7a/C8.8 file SHAs unchanged**: `.python-version`=`02e735b3…`, `README.md`=`694fdd35…`, `ci.yml`=`c248cf51…`, `validate_2022.py`=`67a4dfcb…`, `run_pipeline.py`=`959ccac4…`, `CHANGELOG.md`=`38c8294f…`, `PRIOR_ART.md`=`cfeb78cc…`.
+8. **`.venv` has duckdb 1.5.2 installed.**
+9. **Next task = C8.10** per KICKOFF.md Phase C Tier-2 line 191. PRE-FLIGHT verifies above 7 SHAs + new env state + L9 cheap-checks on each cited NVSR validation table.
+10. **Phase D step 3 sync exclude list** must NOT exclude `views.sql` + 3× `quickstart.R` (they're user-facing usability deliverables). Currently safe (exclude list is state-files-only); sanity check at sync time is the durable defense.
+11. **C8.5b + C8.7b remain DEFERRED.** Resumption triggers unchanged.
+12. **L11 stale-claim defense surface** now well-covered by C8.9's PRE-FLIGHT probes pattern (state-availability claim + duckdb-in-lockfile claim both surfaced). Filed for C8.10-C8.15 PRE-FLIGHT routine: re-verify each §15 PRE-FLIGHT-input claim via L9/L13 probes before AskUserQuestion / DO.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.7a).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged).
+- `tests/__init__.py` + `tests/conftest.py` + 3 invariant-test harnesses (unchanged from C8.4).
+- `pyproject.toml` (sha=`c044f1c6…`, NEW) + `uv.lock` (sha=`a3850943…`, NEW) + `.python-version` + README "Pinned environment" subsection (.python-version + README unchanged).
+- `.github/workflows/ci.yml` (unchanged).
+- `fetal_death/scripts/05_validate/validate_2022.py` + `fetal_death/scripts/run_pipeline.py` (unchanged).
+- `CHANGELOG.md` (unchanged from C8.8).
+- `docs/PRIOR_ART.md` (unchanged from C8.8).
+
+NEW this session:
+- `fetal_death/quickstart.R` (sha=`3b2c0fe0…`)
+- `natality/quickstart.R` (sha=`15d9edfb…`)
+- `natality/quickstart_linked.R` (sha=`a83e0a90…`)
+- `views.sql` (sha=`c7b674f6…`)
+- `RECEIPTS/C8.9_2026-05-13T11-30-00Z.md`
+- `STATUS.md` this section (append)
+
+MODIFIED this session:
+- `docs/JOINT_USE_GUIDE.md` (sha=`534814a9…`; new Cross-language access section)
+- `pyproject.toml` (sha=`c044f1c6…`; +1 line duckdb dep)
+- `uv.lock` (sha=`a3850943…`; +17 lines duckdb pkg entry)
+
+MODIFIED this session (via pre-DO `[plan-update]` commit `9af0924` at 10:15Z):
+- `NEXT_STEPS.md` (§15 C8.9 rewritten; effort 2.5-3 → 1-1.5 sessions; C.1 dropped)
+- `KICKOFF.md` (Phase C Tier-2 line 190 revised)
+- `PRE_FLIGHT_LOG.md` (added PRE-FLIGHT entry HALT + addendum PROCEED at 10:00Z + 10:15Z)
+- `DECISION_LOG.md` (added entry 2026-05-13T10:00:00Z)
+
+### Notes for next session
+
+- **C8.10 — Worked-example notebooks 1-3 of 5** is the next Tier-2 task. PRE-FLIGHT should consider: (i) which 3 of the 5 candidate notebooks; (ii) `_build_<name>.py` builder pattern from existing `joint_use_demo.ipynb`; (iii) NVSR validation cells per notebook (L9 cheap-check on each cited table+page); (iv) F1 + F2 + F4 halt-condition flags from §15.
+- **C8.9 closed in ~1 session matching the §11-revised §15 estimate** (1-1.5 sessions). The PRE-FLIGHT halt-and-ask + §11 plan-update overhead (~30 min) was offset by the cleanly-scoped DO. Total session time: ~3.5 hours.
+- **Tier 1 progress remains: 8 of 8 non-deferred tasks COMPLETE.** Tier 2 progress: 1 of 7 (C8.9) complete; 6 remaining (C8.10–C8.15).
+- **Cumulative Phase C effort: ~9 sessions of 29-35 budget** (~26% through; comfortably within +20% drift cap = 42 sessions).
+- **No new mistake class** surfaced from C8.9. The §15 PRE-FLIGHT-input claim issue is existing L11 (stale roadmap claim); the §8 matrix L11 row covers it.
+- **R-memory-limit pattern** (16 GB default) is a lesson for the manuscript Accessibility section + a candidate for FAQ inclusion (`Phase D step 6` re-paragraph scope).
+
+### Session summary
+
+C8.9 closed in ~1 session matching the §11-revised §15 estimate. Two §7.13 HALTs surfaced at PRE-FLIGHT (C.1 state-stratified denominators structurally unbuildable per NCHS public-use suppression policy + duckdb missing from C8.5a lockfile despite §15 claim) and resolved cleanly via §11 plan-update + user authorization 2026-05-13T10:00:00Z (Option A "Drop C.1; ship C.2+C.4 only" per AskUserQuestion recommended option). Four canonical-usability-state artifacts shipped: 3× `quickstart.R` (per product; two using `arrow::open_dataset()` lazy pattern due to R 16GB mem-limit on 138.8M-row natality materialization) + `views.sql` at monorepo root (4 DuckDB views — 3 product-canonical-filter views + 1 `fetal_mortality_rate_by_year` aggregate; 35-row joint coverage 1990-2024). Zero canonical-data mutation; all 4 parquet SHAs preserved byte-exact. SMOKE Tier-1 DuckDB-vs-pyarrow row-count parity 3/3 byte-exact (1.12M / 138.6M / 74.8M). Cache-cleared `pytest` returns **56 passed + 1 xfailed in 108.88s** (matches C8.8 baseline within run-to-run variance).
+
+**TIER 2 LAUNCHED.** Next session = C8.10 (worked-example notebooks 1-3 of 5; 3-4 sessions estimated) per KICKOFF.md Phase C Tier-2 line 191. Tier 1 = 8 of 8 non-deferred COMPLETE; Tier 2 = 1 of 7 COMPLETE; 6 remaining (C8.10–C8.15).
 
 ---
 

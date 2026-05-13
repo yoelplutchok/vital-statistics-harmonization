@@ -171,6 +171,67 @@ The cross-product validation notebook reproduces:
 - **Section B-legacy**: 2017 bridged-race joint-use machinery (no NVSR cell — no NCHS *Fetal Mortality 2017* report exists).
 - **Section C**: 2022 perinatal mortality rate joint computation, sub-components validated individually.
 
+## Cross-language access: R and DuckDB
+
+Beyond the Python pattern shown above, HVS ships two additional access paths:
+
+### R quickstart
+
+Three R scripts mirror the Python `quickstart.py` for each product. Requires R packages `arrow` + `dplyr`.
+
+- [`fetal_death/quickstart.R`](../fetal_death/quickstart.R) — uses `arrow::read_parquet()` (the 2.4M-row fetal-death parquet fits comfortably in memory).
+- [`natality/quickstart.R`](../natality/quickstart.R) — uses `arrow::open_dataset()` because the 138.8M-row natality parquet exceeds R's default 16 GB memory limit; dplyr verbs are pushed down to Arrow and only the aggregated result is materialized.
+- [`natality/quickstart_linked.R`](../natality/quickstart_linked.R) — same `open_dataset()` pattern for the 74.9M-row linked file; demonstrates per-year IMR computation and cause-of-death distribution.
+
+Usage:
+
+```bash
+Rscript fetal_death/quickstart.R path/to/fetal_death_derived.parquet
+Rscript natality/quickstart.R    path/to/natality_v2_harmonized_derived.parquet
+Rscript natality/quickstart_linked.R path/to/natality_v3_linked_harmonized_derived.parquet
+```
+
+### DuckDB views
+
+[`views.sql`](../views.sql) at the monorepo root defines four DuckDB views over the parquets. Three apply each product's canonical filter; the fourth pre-aggregates each side and joins on `data_year` to compute the per-year fetal mortality rate.
+
+| View | Source | Filter |
+|---|---|---|
+| `fetal_death_canonical` | `fetal_death_derived.parquet` | `tabulation_flag = 2 AND residence_status != 4` |
+| `natality_canonical` | `natality_v2_harmonized_derived.parquet` | `residence_status != 4` |
+| `linked_canonical` | `natality_v3_linked_harmonized_derived.parquet` | `residence_status != 4` |
+| `fetal_mortality_rate_by_year` | join of the first two | aggregated; 35 rows; FMR per 1,000 |
+
+Usage (from a directory containing the three parquets at the unpacked Zenodo deposit layout):
+
+```bash
+# DuckDB CLI
+duckdb hvs.duckdb < views.sql
+duckdb hvs.duckdb -c "SELECT * FROM fetal_mortality_rate_by_year LIMIT 5"
+```
+
+```python
+# Python
+import duckdb
+con = duckdb.connect()
+con.execute(open("views.sql").read())
+con.execute("SELECT * FROM fetal_mortality_rate_by_year").fetchdf()
+```
+
+```r
+# R
+library(duckdb)
+con <- dbConnect(duckdb())
+DBI::dbExecute(con, paste(readLines("views.sql"), collapse = "\n"))
+DBI::dbGetQuery(con, "SELECT * FROM fetal_mortality_rate_by_year")
+```
+
+The DuckDB views' row counts are byte-exact-equivalent to applying the same filter via Python `pyarrow.compute`; verified in `RECEIPTS/C8.9_<UTC>.md`.
+
+### Note on state-level geography
+
+State-level identifiers (state of residence, state of occurrence) are **suppressed across all three NCHS public-use files** for confidentiality. This monorepo therefore cannot ship state-stratified denominators; any state-level analysis requires NCHS Research Data Center access. See `natality/docs/FAQ.md` for the upstream NCHS policy.
+
 ## Caveats
 
 1. **Era-specific reporting quirks.** Several states had incomplete reporting of Hispanic origin or plurality during 1992–2002 (Oklahoma all years; Maryland 1992–1998; Massachusetts 1992–1997; Louisiana plurality 1992–1994). See [`fetal_death/COMPARABILITY.md`](../fetal_death/COMPARABILITY.md). Joint analyses on those strata in those years should restrict to states with complete reporting.
