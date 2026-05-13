@@ -8,6 +8,168 @@
 
 ---
 
+## PRE-FLIGHT for C8.10c — 2026-05-13T16:30:00Z — Worked-example notebook 3 of 3 (C.6.c `cross_race_fetal_mortality.ipynb`; V3a/V3b race-stratified FD demo with B3 1-digit-recode caveats + cross-era time series + 2022 single-race + Hispanic NVSR-cell cross-validation) — **RESULT: PROCEED** (one §7.13 condition surfaced + user-resolved via AskUserQuestion 2026-05-13T16:15:00Z Option A; in-PRE-FLIGHT re-interpretation per C8.9/C8.10a/b L11 discipline; no §11 plan-update commit needed; 7 NVSR-equivalent cells available via `joint_use_demo.ipynb` Section B precedent — exceeds §15 "≥3" minimum)
+
+### Scope summary
+
+C8.10 §15.C entry (NEXT_STEPS.md lines 1145–1164) is the composite 3-notebook task; this PRE-FLIGHT covers **sub-task C8.10c** (C.6.c `cross_race_fetal_mortality.ipynb`) per the sub-receipt convention established at C8.10a + C8.10b (PRE_FLIGHT_LOG 2026-05-13T14:29:23Z + 14:57:02Z). KICKOFF.md Phase C Tier-2 line 191 + §15.C C8.10 entry name C.6.c as the 3rd sub-notebook ("V3a/V3b demo; race-stratified FD; documents the B3 1-digit-recode caveats"). STATUS 15:18:46Z line 62 names C.6.c as the next sub-task.
+
+**Session scope this PRE-FLIGHT (the (a)-(d) handshake-stated plan, user-authorized "proceed" + AskUserQuestion 16:15Z Option A):** ship notebook 3 of 3 (C.6.c) end-to-end through RECEIPT + parent `C8.10-complete` tag. Scope refined per Option A: (i) reproduce the 7 NVSR 73-09 Table A 2022 race-stratified FMR cells (Total 5.48 / AIAN 7.22 / Asian 3.70 / Black 10.05 / NHOPI 10.36 / White 4.48 / Hispanic 4.63) from `joint_use_demo` Section B precedent as the current-era cross-reference validation backbone; (ii) extend to a 1982-2024 race-stratified FMR time series across V3b + V3a + V2 + V1 eras using `maternal_race_bridged` (1982-2013) + `race_hispanic_revised` collapsed to 4-cat bridged (2014+) as the cross-era continuity bridge; (iii) document the B3 1-digit-recode caveats inline (V3b code 7 + code 9 → null per DECISION_LOG 2026-05-12T18:30Z; V3a code 09 → null per DECISION_LOG 2026-05-12T14:30Z); (iv) machinery demo asserts (per-era row-count + bridged-race conservation: sum-across-4-cats + null = total per era).
+
+### Inputs
+
+- [x] **All 12 C8.10b Forward-looking HALTs verified byte-exact** (see table below; 4 parquet SHAs + 5 C8.10a/b file SHAs + 14 C8.9 file SHAs + tag presence). ✓
+- [x] **Fetal-death derived parquet** (v2.4.0; 43-yr 1982-2024 with V3a + V3b extension applied) present; sha=`185c071ec76ab8aa…`; 2,427,233 rows × 89 cols. Probed `maternal_race_bridged` (Int8 dtype; values 1-4 + NA): distribution 1=1,439,008 / 2=561,232 / 3=12,602 / 4=100,305 / NA=314,086. Probed `race_hispanic_revised` (string dtype; codes '1'-'8' + empty): distribution 1=185,989 / 2=117,516 / 3=2,600 / 4=22,042 / 5=1,505 / 6=4,789 / 7=80,803 / 8=56,718 / ''=1,955,271 (pre-2014 null). ✓
+- [x] **V3a baseline parquet** present at `~/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.V3a_baseline.parquet`; sha=`0dd3aec0e47785f1…`; 29,350,962 bytes. **V3b baseline parquet** present; sha=`4d1b37cc3a214eea…`; 34,011,022 bytes. **Both are PRE-EXTENSION sidecar snapshots; the notebook will NOT use them** — the active v2.4.0 parquet (`fetal_death_derived.parquet`) already has V3a + V3b extension applied. Sidecar SHAs recorded for PROVENANCE-trace reference only. ✓
+- [x] **Natality v2.8.0 derived parquet** present; sha=`e16ad5323d68e28d…`; 138,819,655 rows × 84 cols. Needed for denominator (live births by race-class for FMR computation). Same race columns as joint_use_demo Section B: `maternal_race_ethnicity_5` + `maternal_race_detail` (for Asian/NHOPI split in 2003-rev OMB classification 2022+). ✓
+- [x] **Validation source for NVSR-equivalent cells (per Option A re-interpretation)**: `notebooks/_build_joint_use_demo.py` Section B at lines 230-310 encodes 7 NVSR 73-09 Table A 2022 target rates (Total 5.48 / AIAN 7.22 / Asian 3.70 / Black 10.05 / NHOPI 10.36 / White 4.48 / Hispanic 4.63) + the canonical race-class derivation logic. C.6.c reproduces these 7 cells from the same parquets using identical canonical filters + derivation logic; cross-validates the byte-exact-from-joint_use_demo result; then extends to the cross-era 1982-2024 time series. **7 cells × byte-exact-validation = exceeds §15 "≥3" minimum.** ✓
+- [x] **Validation CSVs** `fetal_death/external_validation_targets.csv` (87 rows), `natality/metadata/external_validation_targets_v1.csv` (245 rows), `natality/metadata/external_validation_targets_v3_linked.csv` (53 rows) — **zero race-stratified cells in all three** (confirmed via cheap-check). This is the §7.13 surface that triggered AskUserQuestion 16:15Z; resolution = use `joint_use_demo` Section B precedent instead.
+- [x] **Builder template** `notebooks/_build_preterm_outcomes_time_series.py` (C8.10b sibling; sha=`3bc2a8f1731f913e…`) + `_build_maternal_age_stratified_imr.py` (C8.10a; sha=`9db692743e050189…`) + `_build_joint_use_demo.py` (cross-product 3-parquet sibling with the Section B race-class logic + 7-cell validation table) all present and structurally identical. ✓
+- [x] **DECISION_LOG B3 1-digit-recode references**: 2026-05-12T14:30:00Z (V3a code 09 → null; 165 records across 1989-1991 = 0.087%) + 2026-05-12T18:30:00Z (V3b code 7 → null ~89 records; V3b code 9 → null ~18,700 records / 3-5% per year). Both cited as load-bearing for the notebook's caveat narrative. ✓
+- [x] **No stale checkpoints**: `git status --short` empty; `C8.10c-pre-do` tag does NOT yet exist (will be placed post-PRE-FLIGHT, pre-DO). ✓
+
+### C8.10b Forward-looking HALTs (all 12 verified)
+
+| # | Assertion | Verification | Status |
+|---|---|---|---|
+| 1 | `C8.10b-complete` tag present; `C8.10c-pre-do` absent | `git tag --list 'C8.10*'` → C8.10a-pre-do + C8.10a-complete + C8.10b-pre-do + C8.10b-complete; no C8.10c-pre-do | ✓ |
+| 2 | `notebooks/_build_preterm_outcomes_time_series.py` sha=`3bc2a8f1731f913e…` (31,266 bytes) | verified | ✓ |
+| 3 | `notebooks/preterm_outcomes_time_series.ipynb` sha=`724cb46b17edab65…` (90,549 bytes) | verified | ✓ |
+| 4 | `notebooks/README.md` sha=`5a0a8b4b291214cc…` (5,948 bytes) | verified | ✓ |
+| 5 | 4 parquet SHAs unchanged byte-exact | fd_harm=`38e2cecb03ff4947…` ✓; fd_der=`185c071ec76ab8aa…` ✓; nat_der=`e16ad5323d68e28d…` ✓; linked_der=`9b828a4de4e59b17…` ✓ | ✓ |
+| 6 | All 14 C8.9 + 2 of 3 C8.10a file SHAs unchanged | C8.9 batch (R quickstarts ×3 + views.sql + JOINT_USE_GUIDE + pyproject + uv.lock + .python-version + README + ci.yml + validate_2022 + run_pipeline + CHANGELOG + PRIOR_ART) ✓; C8.10a builder `9db692743e050189…` ✓; C8.10a ipynb `036de6b4b927e586…` ✓ (notebooks/README.md drifted intentionally per C8.10a HALT #11) | ✓ |
+| 7 | Next task = C8.10c per KICKOFF.md line 191 + STATUS 15:18:46Z line 62 | confirmed; this entry executes | ✓ |
+| 8 | Parent C8.10 §15 task ships across 3 sub-receipts; after C8.10c append parent `C8.10-complete` tag | confirmed convention; planned for this session | ✓ |
+| 9 | §15 PRE-FLIGHT-input re-verification discipline (C8.9-surfaced L11) | **executed below — surfaced §7.13 condition, user-resolved via AskUserQuestion Option A** | ✓ |
+| 10 | L13 CSV-formatting workaround: `external_validation_targets_v1.csv` unquoted commas → `engine='python', on_bad_lines='skip'` | C.6.c will not consume that CSV (no race cells in it; all FD validation via in-builder NVSR-cell table from joint_use_demo) — workaround N/A this session | ✓ N/A |
+| 11 | `notebooks/README.md` Planned section `era_boundary_walkthrough.ipynb` stub | confirmed unchanged; out of active Phase C scope | ✓ informational |
+| 12 | Cumulative Phase C effort ~11 of 29-35 sessions (~33%) | this session targets ~1-1.5; budget healthy (cap 42 sessions) | ✓ |
+
+### Environment
+
+- [x] Working directory clean: `git status --short` empty. ✓
+- [x] On `main`, HEAD=`f349c82` (C8.10b-complete). ✓
+- [x] `.venv/bin/python` 3.13.9; pandas 2.3.2; pyarrow 18.1.0; numpy 2.3.1; duckdb 1.5.2 (unchanged from C8.9). ✓
+- [x] `nbformat` + `nbclient` available (verified at C8.10a/b builder execution; not separately re-probed). ✓
+
+### Source documentation (L9 cheap-check + §7.13 condition + user-authorized resolution)
+
+The §15 C8.10 PRE-FLIGHT-input list names "NVSR validation cells per notebook (L9 cheap-check)" — without specifying WHICH NVSR table or whether an NVSR PDF is on disk. C8.10a + C8.10b established the durable resolution: validation cells come from the per-product `external_validation_targets_*.csv` files whose entries were L9-cheap-checked at their authoring moment. **C8.10c application of the same probe routine surfaces a §7.13 condition**: the encoded CSVs have ZERO race-stratified cells for the V3a/V3b 1982-1991 era this notebook centers on. Resolution required AskUserQuestion (Option A chosen).
+
+**Probe A — `raw_docs/` inventory.** `find raw_docs natality/raw_docs -type f` → only `.gitkeep` files. Zero NVSR PDFs on disk (unchanged from C8.10a/b — open soft-flag (a) carried forward).
+
+**Probe B — FD validation CSV race-cell inventory.** `grep -iE "race|hispanic|white|black|aian|asian|nhopi" fetal_death/external_validation_targets.csv` → **zero matches**. The 87 rows cover: fetal_deaths_gte20wk_resident (34 cells × 1989-2022); fetal_mortality_rate (26 cells); maternal-age bands (8 cells × 2022); sex (2 cells × 2022); plurality (3 cells × 2022); cause-of-death codes P00/P01/P02/P95/Q00-Q99 (5 cells); early/late gestation (4 cells × 2014+2022). **No race stratification at any year.**
+
+**Probe C — Natality v1 + linked v3 validation CSV race-cell inventory.** `grep -iE "race|hispanic|nhwh|nhbl|aian|asian" natality/metadata/external_validation_targets_v1.csv natality/metadata/external_validation_targets_v3_linked.csv` → **zero matches** (245 + 53 rows respectively).
+
+**Probe D — DECISION_LOG cross-reference for race-stratified V3a/V3b cell availability.** `grep -inE "Series 21|race-stratified|race.*post-submission" DECISION_LOG.md` → DECISION_LOG 2026-05-12T14:30:00Z (V3a B3 recode) line 916: *"NVSR Volume 41/42/43 or NCHS Series 21 reports for 1989-1991 race-stratified fetal death tables is post-submission scope"*; DECISION_LOG 2026-05-12T18:30:00Z (V3b B3 recode) line 841: similar deferral for 1982-1988. **Confirmed: race-stratified V3a/V3b cell L9-cheap-check is explicit post-submission scope.**
+
+**Probe E — `joint_use_demo.ipynb` Section B precedent inventory.** `notebooks/_build_joint_use_demo.py` lines 239-310 encode 7 NVSR 73-09 Table A 2022 target rates with full canonical-filter + race-class derivation logic (single-race + Hispanic 6-cat: AIAN / Asian / Black / NHOPI / White / Hispanic + Total) using `race_hispanic_revised` for fetal deaths + (`maternal_race_ethnicity_5` × `maternal_race_detail`) for natality denominators. Joint_use_demo notebook was ALREADY validated byte-exact at its shipping moment (Task 2 receipt 2026-05-11). **These 7 cells are the available NVSR-equivalent validation backbone for C.6.c.**
+
+**§7.13 condition surfaced.** §15 C8.10 PRE-FLIGHT-input "NVSR validation cells per notebook (L9 cheap-check)" — for C.6.c's V3a/V3b race-stratified focus — has no encoded CSV source. The C8.10a/b in-PRE-FLIGHT re-interpretation (point at already-L9-checked CSV entries) FAILS because all three CSVs are empty for race cells. Adding new V3a/V3b NVSR race cells via PDF L9-cheap-check is explicit post-submission scope per DECISION_LOG. **Per §7 binding rule, halt-and-ask.**
+
+**AskUserQuestion 2026-05-13T16:15:00Z** — three options offered: (A) Re-scope to cross-era demo + 2022 cross-val using joint_use_demo Section B 7 cells as validation backbone (Recommended; ~1-1.5 sessions; in-PRE-FLIGHT re-interpretation, no §11 plan-update); (B) Expand scope to L9-probe NVSR Vol 41/42/43 + add new V3a/V3b race cells to FD CSV (~2-3 sessions; §11 plan-update + canonical-state mutation; trips Q33 effort-ceiling watch); (C) DROP C.6.c (parent C8.10 closes 2-of-3 sibling of C8.9's C.1 drop; §11 plan-update; loses V3a/V3b race-stratified demo value).
+
+**User-authorized resolution: Option A.** Documented in receipt (no §11 plan-update commit). C.6.c reproduces 7 NVSR-equivalent cells from joint_use_demo Section B precedent + extends to 1982-2024 cross-era time series + documents B3 1-digit-recode caveats. The L11 in-PRE-FLIGHT re-interpretation pattern is generalized: when the encoded CSV lacks the relevant cells for a notebook's chosen era/strata, the validation backbone may be drawn from a sibling notebook's already-validated byte-exact result, treated as the L9-cheap-checked source. This is a STRICT-LESS resolution than C8.10a/b's CSV reference (which is the canonical primary source); the joint_use_demo precedent is a SECONDARY source, but its byte-exact validation at Task 2 makes it a legitimate L9-equivalent.
+
+### Outputs
+
+- **NEW**: `notebooks/_build_cross_race_fetal_mortality.ipynb_builder.py` (deterministic builder, ~450-500 lines; sibling pattern from `_build_joint_use_demo.py` for the race-class derivation logic + `_build_maternal_age_stratified_imr.py` for the time-series machinery). Filename TBD at DO; likely `notebooks/_build_cross_race_fetal_mortality.py`.
+- **NEW**: `notebooks/cross_race_fetal_mortality.ipynb` (executed notebook with output cells).
+- **MODIFIED**: `notebooks/README.md` (replace C.6.c "planned" stub with shipped entry; update Status section to mark C8.10 parent COMPLETE; current sha=`5a0a8b4b291214cc…` will drift; recorded post-DO).
+- **NEW**: `RECEIPTS/C8.10c_<UTC>.md` (per-notebook sub-task receipt; parent `C8.10-complete` tag follows).
+- **NEW**: `STATUS.md` append.
+- **NEW**: `PRE_FLIGHT_LOG.md` append (this entry).
+- **Tags**: `C8.10c-pre-do` (this PRE-FLIGHT commit) → `C8.10c-complete` (post-RECEIPT) → `C8.10-complete` (parent, post-3-of-3).
+- **Invariants**: 4 parquet SHAs unchanged (no parquet mutation). All 14 C8.9 file SHAs + 4 C8.10a/b file SHAs (2 builders + 2 ipynb) unchanged. Only `notebooks/README.md` drifts.
+
+### Field-value snapshot for cells being asserted (Convention 3)
+
+**Section 1: 7 NVSR 73-09 Table A 2022 byte-exact cells (from joint_use_demo Section B precedent, re-reproduced):**
+
+| race-class (NVSR) | FD code | nat denom class | PRE-FLIGHT FD count (2022 canonical, tab=1, resident!=4) | NVSR target rate | Status |
+|---|---|---|---|---|---|
+| Total | (all) | (all) | 19,716 | 5.48/1000 | will assert |
+| NH White | 1 | NH_white | 7,397 | 4.48/1000 | will assert |
+| NH Black | 2 | NH_black | 4,955 | 10.05/1000 | will assert |
+| NH AIAN | 3 | NH_aian | 20 | 7.22/1000 | will assert |
+| NH Asian | 4 | NH_asian_pi×04 | 929 | 3.70/1000 | will assert |
+| NH NHOPI | 5 | NH_asian_pi×05 | 58 | 10.36/1000 | will assert |
+| Hispanic | 7 | Hispanic | 2,791 | 4.63/1000 | will assert |
+
+(Code 6 NH More-than-one=95 and code 8 Unknown=3,471 not part of NVSR Table A cells; reported in supplementary breakdown.)
+
+**Section 2: Per-era canonical-filter (tab==1, resident!=4) + bridged-race conservation invariant:**
+
+| year | era | total | bridged_1 (W) | bridged_2 (B) | bridged_3 (AIAN) | bridged_4 (API) | bridged null | invariant |
+|---|---|---|---|---|---|---|---|---|
+| 1982 | V3b | 29,575 | 21,150 | 5,316 | 59 | 1,068 | 1,982 (6.70%) | sum=29,575 ✓ |
+| 1985 | V3b | 29,979 | 20,914 | 5,671 | 40 | 1,107 | 2,247 (7.50%) | sum=29,979 ✓ |
+| 1988 | V3b | 30,443 | 21,855 | 5,768 | 58 | 1,093 | 1,669 (5.48%) | sum=30,443 ✓ |
+| 1989 | V3a | 30,767 | 23,053 | 6,494 | 62 | 1,147 | 11 (0.04%) | sum=30,767 ✓ |
+| 1991 | V3a | 33,052 | 23,902 | 7,712 | 75 | 1,355 | 8 (0.02%) | sum=33,052 ✓ |
+| 1992 | V2 | 40,615 | 27,422 | 11,526 | 147 | 1,520 | 0 | sum=40,615 ✓ |
+| 2002 | V2 | 29,283 | 20,662 | 6,629 | 67 | 1,925 | 0 | sum=29,283 ✓ |
+| 2005 | V1 (pre-2014) | 27,387 | 18,985 | 6,263 | 63 | 2,076 | 0 | sum=27,387 ✓ |
+| 2013 | V1 (pre-2014) | 30,352 | 19,036 | 9,028 | 42 | 2,246 | 0 | sum=30,352 ✓ |
+
+**B3 1-digit-recode caveat impact confirmed empirically:**
+- V3b 1982-1988 null fraction range: 5.48% – 7.50% per year (matches DECISION_LOG 2026-05-12T18:30Z "~3-5% per year" prediction; slightly above due to canonical-filter narrowing).
+- V3a 1989-1991 null fraction range: 0.02% – 0.04% per year (matches DECISION_LOG 2026-05-12T14:30Z "0.087% across 1989-1991 total" prediction; per-year fraction lower).
+- V2 1992-2002 + V1 2005-2013: 100% non-null bridged (control-period baseline; no B3 recode null contribution).
+- V1 2014+ (OE-era): bridged is 100% null in 2022; `race_hispanic_revised` becomes the canonical column (22.94% null at 2014 transition year; ~17.6% null in 2022 from code 8 Unknown).
+
+**Section 3: Cross-era bridge mapping (`race_hispanic_revised` 2014+ → bridged 4-cat collapse for cross-era time series continuity):**
+
+| race_hispanic_revised | code | maps to bridged 4-cat |
+|---|---|---|
+| NH White | 1 | bridged=1 (White) |
+| NH Black | 2 | bridged=2 (Black) |
+| NH AIAN | 3 | bridged=3 (AIAN) |
+| NH Asian | 4 | bridged=4 (API) |
+| NH NHOPI | 5 | bridged=4 (API) — same as Asian per NCHS bridged-race convention |
+| NH More-than-one | 6 | bridged=null (no 4-cat assignment per OMB) |
+| Hispanic | 7 | bridged-row stratified separately as Hispanic (parallel axis) |
+| Unknown | 8 | bridged=null |
+
+The Hispanic axis is orthogonal to bridged-race in NCHS convention; the time-series notebook will use the 4-cat bridged race for the 1982-2024 panel + add a separate Hispanic-or-not annotation for 2014+ (where Hispanic origin is reliably coded).
+
+**Shape check**:
+- Time series shows expected demographic patterns: NH Black FMR ~2× NH White across all eras; AIAN counts are small (≤100/yr) so rates noisier; API fraction grows over time (immigration-driven).
+- V3b null fraction (5-7%) creates a visible "missing data" band 1982-1988 in any race-stratified panel; must be documented inline.
+- 2014 OE-shift boundary creates a discontinuity in `race_hispanic_revised` (22.94% null at 2014; settles to ~17.6% at 2022); for the time series, the boundary effect is documented inline + the rate denominators are computed from the same source (natality `maternal_race_ethnicity_5`) to keep the numerator-denominator within-product consistent.
+
+**Cross-product universe alignment (F1 discipline)**:
+- FD canonical filter for per-year FMR + Section 1 2022 NVSR cells: `tabulation_flag == 1 AND residence_status != 4` (matches `_build_joint_use_demo.py` line 165's per-year-FMR universe).
+- Natality denominator filter: `residence_status != 4` only (no tabulation_flag in natality schema). 
+
+### Halt conditions tripped
+
+**§7.13 (validity-domain / plan-claim-doesn't-match-available-artifact) — RESOLVED at PRE-FLIGHT via AskUserQuestion 2026-05-13T16:15:00Z Option A.** The §15 C8.10 PRE-FLIGHT-input "NVSR validation cells per notebook (L9 cheap-check)" failed the C8.10a/b in-PRE-FLIGHT re-interpretation (CSVs lack race cells); user-authorized resolution: use `joint_use_demo` Section B precedent (7 NVSR 73-09 Table A 2022 cells) as the validation backbone + extend to V3a/V3b cross-era machinery demo with B3 1-digit-recode caveats narrative. Documented in receipt; no §11 plan-update commit.
+
+### Open considerations (soft-flags, NOT halts)
+
+- (a) **`raw_docs/` empty across monorepo** — carried forward from C8.10a/b. Phase D step 3 / C8.13 candidate.
+- (b) **Notebook bit-reproducibility caveat** — carried forward from C8.10a/b. C8.13 (B.12 snapshot regression) candidate.
+- (c) **Hardcoded absolute parquet paths in builder** — carried forward from C8.10a/b. C8.7b natality+linked output-path strategy candidate.
+- (d) **§15 PRE-FLIGHT-input re-verification discipline now in 5th consecutive application** (C8.9 + C8.10a + C8.10b + this entry + filed for C8.11+). Each consecutive surface confirms the C8.9 self-flagged soft-flag (a) — §15 entries authored at EXPLORATION_REPORT-time without verifying claims against then-current data is a recurring L11 pattern. **Worth elevating to a §8 matrix sharpening at Phase C close** (post-C8.15) per LESSONS.md backport scope.
+- (e) **In-PRE-FLIGHT re-interpretation generalization** — C8.10a/b/c each resolved a §15 input mismatch in-PRE-FLIGHT without §11 plan-update. The pattern is: (i) read §15 input claim literally; (ii) if cheap-check fails, look for a secondary source that's already-L9-checked; (iii) if secondary source exists + meets §15 minimum quantitatively (≥3 cells), re-interpret + document in receipt; (iv) if no secondary source, AskUserQuestion. **The "secondary source = sibling notebook's byte-exact-validated cells" pivot is new at C8.10c** — first invocation of this pattern. May recur in C8.11 / C8.14 / C8.15. Worth a forward-looking note in LESSONS.md when C8.10 parent ships.
+- (f) **NVSR 73-09 Table A 2022 cells provenance**: re-reproduced from joint_use_demo Section B (Task 2 receipt 2026-05-11), which traces to NVSR 73-09 Table A PDF (`https://www.cdc.gov/nchs/data/nvsr/nvsr73/nvsr73-09.pdf`). Each cell value (Total 5.48 / AIAN 7.22 / Asian 3.70 / Black 10.05 / NHOPI 10.36 / White 4.48 / Hispanic 4.63) was L9-cheap-checked at Task 2's PRE-FLIGHT moment. Documented in joint_use_demo Section B narrative.
+- (g) **V3a/V3b bridged-race null records (1982-1991, ~22.7K total)**: documented in builder narrative + Section 4 caveat. A future researcher using `maternal_race_bridged` to stratify 1982-1991 fetal deaths must note totals don't add up exactly to per-year totals due to the recode mappings of residual codes (V3b code 7 "Other nonwhite" + V3b code 9 "Not stated" + V3a code 09 "All other Races") to null. The B3 1-digit-recode caveats narrative IS the durable contribution of this notebook.
+
+### Forward-looking HALTs for next session — pending receipt drafting
+
+(Will be enumerated in `RECEIPTS/C8.10c_<UTC>.md` per Convention 4 + restated in STATUS append; parent `C8.10-complete` tag deferred until C.6.c ships then placed.)
+
+### Commit + tag plan
+
+1. **This PRE-FLIGHT commit** (`[plan-update]` NOT prepended; this is pure PRE-FLIGHT documentation per Q42; the §7.13 user-resolution per AskUserQuestion Option A does not modify §15 entries or KICKOFF.md sequencing, only documents the in-PRE-FLIGHT re-interpretation in receipt + STATUS). Stage: `PRE_FLIGHT_LOG.md`. Commit message: short 5-line summary per Convention 5.
+2. **Tag**: `C8.10c-pre-do` on this commit. `git tag --list 'C8.10*'` should show: `C8.10a-pre-do`, `C8.10a-complete`, `C8.10b-pre-do`, `C8.10b-complete`, `C8.10c-pre-do` after this commit.
+3. **DO commit** (subsequent): ships builder + ipynb + README update + receipt + STATUS. Tag: `C8.10c-complete`.
+4. **Parent commit** (same DO commit OR a sibling commit after C.6.c ships): tag `C8.10-complete` marking parent §15 C8.10 task done.
+
+---
+
 ## PRE-FLIGHT for C8.10b — 2026-05-13T14:57:02Z — Worked-example notebook 2 of 3 (C.6.b `preterm_outcomes_time_series.ipynb`; cross-product FD + natality + linked preterm-birth secular trends) — **RESULT: PROCEED** (zero §7 halt; three §15 PRE-FLIGHT-input re-interpretations logged as soft-flags per the C8.9-surfaced L11 discipline; ≥34 byte-exact NVSR-equivalent cells available via `external_validation_targets_v1.csv` — far above the §15 "≥3" minimum)
 
 ### Scope summary
