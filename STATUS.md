@@ -1,6 +1,116 @@
-# STATUS — last updated 2026-05-13T17:15:00Z
+# STATUS — last updated 2026-05-13T17:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T17:30:00Z — C8.11 PRE-FLIGHT close (DO begins next session): `PRE_FLIGHT_LOG.md` 2026-05-13T17:30:00Z entry (NEW; 178 lines; PROCEED result; 12 C8.10c forward-looking HALTs all byte-exact; one §7.13-shape scope-affecting L11 surfaced + user-resolved via AskUserQuestion 2026-05-13T17:25:00Z Option A — extend `fetal_death/file_inventory.csv` from 34 to 43 rows in C8.11 DO to bring SHA manifest to full v2.4.0 43-year envelope, ~30-60 min addition; three routine L11 PRE-FLIGHT-input re-interpretations user-authorized in-place per the C8.9/C8.10a/b/c precedent ((i) re-target fetal-death migration-guide filename `v2.0.0-to-v2.3.0-fetal-death.md` → `v2.0.0-to-v2.4.0-fetal-death.md` since actual current is v2.4.0 not v2.3.0; (ii) E.8 SHA manifest is NEW data keyed by year × raw_filename, NOT a re-export of file_inventory.csv since neither inventory has a sha256 column; manifest target path `docs/NCHS_SOURCE_MANIFEST.md`; (iii) fix-on-contact `VERSION_ROADMAP.md` line 11+13 fetal-death `v2.1.0` → `v2.4.0` + record count 1,741,977 → 2,427,233 + coverage 1992-2022 → 1982-2024); no §11 plan-update commit; Convention 3 Field-value snapshot **24 rows across 5 tables** (5 migration-content sources verified against DECISION_LOG entries + 7 cross-product COMPARABILITY synthesis cells + 9 inventory-extension rows for V3b 1982-1988 + 2023+2024 + 2 VERSION_ROADMAP fix-on-contact + 1 cross-link); **7 soft-flags (a)-(g) filed for Phase D / future-task resolution** (stale fetal_death/PROVENANCE.md + .sha256 pre-V2.1, absent natality/PROVENANCE.md, VERSION_ROADMAP "Planned" section broader staleness, ALL_YEARS=29 in run_pipeline.py, no monorepo natality+linked raw_data symlink, plurality footgun investigation for E.4 author, carry-forward C8.X soft-flags); 4 parquet SHAs + 14 C8.9 + 5 C8.10a/b/c file SHAs preserved (no DO work this session); tag `C8.11-pre-do` placed on commit `e1ea09f`
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.11 PRE-FLIGHT complete (DO begins next session).** First sub-step of the C8.11 deliverable closed in <1 session (PRE-FLIGHT only). Tag `C8.11-pre-do` lands on the commit shipping this STATUS section + PRE_FLIGHT_LOG.md entry. Tier 2 progress unchanged from C8.10c: **2 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10); C8.11 in-progress at PRE-FLIGHT close. Cumulative Phase C effort ~12.1 of 29-35 sessions (~37% through; PRE-FLIGHT-only sub-step adds ~0.1 session). Comfortably within +20% drift cap (42 sessions).
+
+C8.11's PRE-FLIGHT cheap-checks surfaced **4 L11 findings + 7 soft-flags** — the densest single-task L11 surface this project has produced (sibling of C8.9's "duckdb missing + state suppressed" + C8.10c's "race cells absent from validation CSV" landmark PRE-FLIGHT surfaces). The §15 PRE-FLIGHT-input re-verification discipline (the C8.9-surfaced L11 routine) is in **5th consecutive application**; pattern is durable.
+
+One §7.13-shape condition surfaced and was user-resolved via AskUserQuestion 2026-05-13T17:25:00Z:
+
+- **Question 1: fetal_death/file_inventory.csv stale (34 rows; actual v2.4.0 envelope is 43 zips on disk).** User selected **(A) Extend inventory to 43 rows in C8.11 DO (Recommended)** — brings SHA manifest to full envelope cleanly + matches DO-time effort budget (~30-60 min addition). Bundles the 9-row extension (7 V3b 1982-1988 + 2 latest-year 2023+2024) into C8.11 DO scope.
+- **Question 2: three routine L11 PRE-FLIGHT-input re-interpretations.** User selected **Proceed in-place per precedent (Recommended)** — applies all three resolutions during C8.11 DO without separate halts, matching the C8.9 / C8.10a / C8.10b / C8.10c routine.
+
+This session shipped PRE-FLIGHT entry + tag only (no DO mutation). Per the §4 five-phase discipline, DO + VERIFY + RECEIPT for the 4 deliverables (E.2a natality migration guide; E.2b fetal-death migration guide; E.4 cross-product COMPARABILITY; E.8 inventory extension + SHA manifest) + 2 fix-on-contact mutations (VERSION_ROADMAP.md line 11 + 13) + cross-link edits begin in subsequent session(s). Estimated 3-4 sessions to close C8.11 per §15 (with Option A +30-60 min addition).
+
+### What was done this session (C8.11 PRE-FLIGHT only)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed in the way you think is best" referencing the (c) plan (start C8.11 PRE-FLIGHT, full E.2 + E.4 + E.8 scope per §15, ~3-4 sessions estimate). Mirrors C8.6 / C8.7 / C8.10c precedent for "do what you think is best" interpretation = Option A from the (c) preamble.
+2. **C8.11 PRE-FLIGHT cheap-check probes** (per the C8.9-surfaced L11 re-verification discipline):
+   - Verified all 12 C8.10c Forward-looking HALTs byte-exact (4 parquet SHAs + 3 C8.10c file SHAs + 14 C8.9 + 4 of 5 C8.10a/b file SHAs + 7 C8.10-tag presence).
+   - Probed both `file_inventory.csv` files for L13 + cross-product schema parity: fetal-death 34 rows / 9 columns; natality 54 rows / 8 columns; neither has a sha256 column. **L13/L11 findings: fetal-death inventory is 9 rows short of the v2.4.0 envelope; the natality inventory is current at 54 rows (35 natality + 19 linked-cohort).**
+   - Probed both COMPARABILITY files for E.4 synthesis: natality (41,736 bytes, 8 top-level sections) + fetal-death (26,053 bytes, 12 numbered sections + variable availability matrix). Both present + current.
+   - Probed raw-zip universe on disk: 43 fetal-death zips at `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/raw_data/fetal_death/` (1982-2024 inclusive); 35 natality zips at `/Users/yoelplutchok/Desktop/natality-harmonization/raw_data/` (1990-2024); 19 linked-cohort zips at `/Users/yoelplutchok/Desktop/natality-harmonization/raw_data/linked/` (2005-2023 cohort years). Total 97 raw zips (Note: PRE-FLIGHT body says "87 raw zips"; corrected here to 97 = 43 + 35 + 19; the PRE-FLIGHT body's "87" figure was an arithmetic typo and is documented in the C8.11 receipt's self-check as a fix-on-contact finding for DO).
+   - Probed migration source-of-truth DECISION_LOG entries: `natality_v28_rename` (line 926+) + `task3_v21_fetal_death` (line 1099+) + `task7_v3a` (line 882+) + `task7_v3b` (line 800+ + 850+) + C8.2 latest-year refresh — all present + load-bearing.
+   - Probed VERSION_ROADMAP.md: line 11 + 13 carry stale `v2.1.0 / 1992-2022 / 1,741,977` claims; actual is `v2.4.0 / 1982-2024 / 2,427,233`. Fix-on-contact at C8.11 DO authorized.
+3. **AskUserQuestion** at 2026-05-13T17:25:00Z (2 questions; Option A + in-place resolution selected). Convention 3 Field-value snapshot 24 rows built across 5 tables.
+4. **Wrote PRE-FLIGHT entry** to `PRE_FLIGHT_LOG.md` at 2026-05-13T17:30:00Z (178 lines; full §5 template + Convention 3 snapshot + 7 soft-flags filing). Result PROCEED.
+5. **Committed PRE-FLIGHT at `e1ea09f`**; tag `C8.11-pre-do` placed on the commit. Convention 5 commit-message brevity preserved.
+6. Updating this STATUS section (append-only, top-of-file).
+
+### Last completed step
+
+Single commit ships: `PRE_FLIGHT_LOG.md` modification (178-line C8.11 entry added at top). Tag `C8.11-pre-do` placed. DO phase commences in subsequent session.
+
+### In-progress
+
+C8.11 — at PRE-FLIGHT close; awaiting next-session DO pickup.
+
+### Next planned task
+
+**C8.11 DO** — pickup from `C8.11-pre-do` tag. Scope (per §15 + Option A + in-place L11 resolutions):
+
+1. **E.2a** `migrations/v2.7.0-to-v2.8.0-natality.md` — column renames + sample sed/awk recipes (source: `natality_v28_rename` DECISION_LOG entries 2026-05-12T13:35:02Z + 2026-05-12T03:25:00Z).
+2. **E.2b** `migrations/v2.0.0-to-v2.4.0-fetal-death.md` (re-targeted from §15 v2.3.0) — covers V2.1 (2003-2004 transition) + V3a (1989-1991) + V3b (1982-1988) + v2.4.0 (2023-2024 latest-year refresh) + H8 dtype reconciliation; sample query updates (sources: 4 DECISION_LOG entries from Table 1 of the PRE-FLIGHT entry).
+3. **E.4** `docs/COMPARABILITY.md` at monorepo root — synthesize within_era + cross_era caveats from both subprojects' COMPARABILITY files + 2014 race-coding-methodology boundary (new this session from C8.10c) + 2014 OE-based GA boundary (C8.10b) (7 synthesis cells enumerated in Table 2 of the PRE-FLIGHT entry).
+4. **E.8a** Extend `fetal_death/file_inventory.csv` from 34 → 43 rows (Option A; 9 NEW rows enumerated in Table 3 of the PRE-FLIGHT entry).
+5. **E.8b** `docs/NCHS_SOURCE_MANIFEST.md` at monorepo root — SHAs of 97 raw NCHS zips (43 fetal-death + 35 natality + 19 linked-cohort), keyed by year × raw_filename matching the inventory rows.
+6. **Fix-on-contact** `VERSION_ROADMAP.md` line 11 + line 13 (2 single-line substitutions; Table 4 of the PRE-FLIGHT entry).
+7. **Cross-link edits** to monorepo `README.md` Repository Layout block (1 NEW row each for `migrations/` + `docs/COMPARABILITY.md` + `docs/NCHS_SOURCE_MANIFEST.md`) + 1-line cross-links from `fetal_death/README.md` near line 156 + `natality/README.md` near line 28.
+
+VERIFY criteria (per §15): migration guides include working sample queries; cross-product COMPARABILITY covers every era boundary; SHA manifest checksums align with each subproject's file_inventory.csv (per Option A scope — including extended fetal-death inventory rows). Test suite 56 PASS + 1 XFAIL must remain preserved across DO (zero-mutation expected on parquets + tests + schema CSVs + validation CSVs). 4 parquet SHAs + 14 C8.9 + 5 C8.10a/b/c file SHAs (incl. the C8.10c notebooks/README.md drift) must remain unchanged.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.** Recommended: revisit at Phase D step 3 or post-Tier-2.
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.** AND-coupled: C8.7a-complete (SATISFIED) + user-authorized multi-session compute window (PENDING). 6-12+ hours of compute estimated.
+
+### Open questions for human
+
+None for C8.11 DO scope (all 4 L11 cases resolved by AskUserQuestion 17:25Z).
+
+**Open soft-flags (carried forward from C8.10c + 7 NEW from this PRE-FLIGHT):**
+
+Carried forward from C8.10c (open soft-flags table at C8.10c STATUS line 85-101): C8.2 / C8.3 / C8.4 / C8.5a-a/b/c / C8.6-a/b / C8.7a-a/b/c / C8.8-a/b/c/d / C8.9-a/b/c/d/e / C8.10a-a/b/c/d/e / C8.10b-a/b/c/d / C8.10c-a/b/c/d/e — all preserved.
+
+**New open soft-flags (C8.11 PRE-FLIGHT) — 7 items:**
+
+- **(a) Stale `fetal_death/PROVENANCE.md` + `fetal_death/PROVENANCE.sha256`** (last updated 2026-05-05; covers only v2.0.0 output artifacts; current v2.4.0 parquet SHAs differ from PROVENANCE.md-listed values). **OUT-OF-SCOPE for C8.11** (§15 focuses on RAW NCHS source data, not output PROVENANCE); soft-flag for Phase D step 2 (Zenodo deposit refresh).
+- **(b) Natality has NO PROVENANCE.md** in the monorepo (Zenodo deposit ships one but it's not mirrored here). Same Phase D step 2 resolution.
+- **(c) `VERSION_ROADMAP.md` "Planned" section (lines 15-22+)** still lists shipped V2.1 / V3a / V3b items as PLANNED. OUT-OF-SCOPE for C8.11 per Anti-Pattern #8 (compressed-task avoidance; authorized fix-on-contact at C8.11 covers ONLY lines 11 + 13). Soft-flag for a future small VERSION_ROADMAP refresh task.
+- **(d) `fetal_death/scripts/run_pipeline.py` `ALL_YEARS=29`** stale relative to v2.4.0's 43-year envelope (C8.7a-documented). Soft-flag: C8.11 fetal-death migration guide can NAME the v2.4.0 envelope to help legacy v2.0.0 users understand the year extension.
+- **(e) Monorepo `raw_data/` symlink** only links fetal-death; no natality+linked symlink (C8.7a finding). C8.11 E.8 manifest's SHA computation reads from 3 absolute paths (fetal-death build dir + natality build dir + natality linked subdir). Not a halt; DO-step responsibility.
+- **(f) Plurality footgun for natality** (C.6.e candidate notebook from C8.15). fd COMPARABILITY §7 names it as fetal-death-specific; same NCHS sentinel pattern may apply to natality 2005-2013. Soft-flag for E.4 DO author to investigate during cross-product COMPARABILITY synthesis.
+- **(g) PRE-FLIGHT entry typo**: body says "87 raw zips" in two places where the correct total is 97 (43 + 35 + 19). Recorded as fix-on-contact at C8.11 DO; receipt self-check will document.
+
+### Forward-looking HALTs for next session (Convention 4) — PRE-FLIGHT close form
+
+The full Convention 4 Forward-looking HALTs list ships at the C8.11 RECEIPT (after DO + VERIFY). For this PRE-FLIGHT-close intermediate state, the next session's PRE-FLIGHT MUST verify:
+
+1. **`C8.11-pre-do` tag is on commit `e1ea09f`.** Verify: `git rev-parse C8.11-pre-do` returns `e1ea09f`.
+2. **`PRE_FLIGHT_LOG.md` 2026-05-13T17:30:00Z entry present** (178 lines; section title `## PRE-FLIGHT for C8.11 — 2026-05-13T17:30:00Z`).
+3. **All canonical state at C8.10c-complete byte-exact** (no DO mutation this session): 4 parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`); 14 C8.9 file SHAs (per the C8.10c receipt line 58 list); 5 C8.10a/b/c file SHAs unchanged (incl. `notebooks/README.md` = `6fc9b191…`).
+4. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL** (not re-verified this PRE-FLIGHT since no canonical-state mutation; expected to hold).
+5. **Convention 3 Field-value snapshot 24 rows valid** (PRE-FLIGHT entry Tables 1-5). Next session's DO author should consume the snapshot as the substantive DO scope manifest.
+6. **All 4 L11 resolutions from this PRE-FLIGHT are authorized** (AskUserQuestion 17:25Z) and must be APPLIED in C8.11 DO without re-asking the user. Treat the §15 entry as superseded by this PRE-FLIGHT's resolution column.
+7. **PRE-FLIGHT body "87 raw zips" typo** must be corrected to "97" in the C8.11 receipt + STATUS append at C8.11 COMPLETE. Filed as soft-flag (g) above.
+
+### Build artifacts current
+
+All artifacts unchanged from C8.10c (no DO mutation this session). NEW this session:
+
+- `PRE_FLIGHT_LOG.md`: MODIFIED (178-line C8.11 PRE-FLIGHT entry appended at top; pre-entry sha=`<pre-commit>`, post-entry sha computed at commit `e1ea09f`).
+- `STATUS.md`: MODIFIED (this section appended at top).
+
+### Notes for next session
+
+- **C8.11 DO scope is fully spec'd in the PRE-FLIGHT entry's Tables 1-5.** Next session's PRE-FLIGHT can be much shorter — verify the 7 forward-looking HALTs above; confirm canonical state byte-exact; proceed straight to DO.
+- **Recommended DO sub-task ordering**: (1) E.8a inventory extension (smallest; unblocks E.8b manifest by giving it the canonical row keys); (2) E.8b SHA manifest (computational; 97 SHA-256 hashes on raw zips); (3) E.2a natality migration guide (smallest content authoring); (4) E.2b fetal-death migration guide (covers 4 migrations; largest content authoring); (5) E.4 cross-product COMPARABILITY synthesis (longest narrative); (6) fix-on-contact VERSION_ROADMAP lines 11+13 (single edit; bundle with E.2b commit); (7) cross-link edits (3 READMEs; bundle with final commit). Each can ship as its own commit per Convention 5 brevity. RECEIPT lands at the final commit with `C8.11-complete` tag.
+- **No new mistake class** surfaced from this PRE-FLIGHT. The 4 L11 cases + 7 soft-flags are all existing class members (L11 stale roadmap claim; L13 inventory file-roles drift; L17 cousin for VERSION_ROADMAP). The pattern of "PRE-FLIGHT-surfaces-multiple-L11-cases-in-one-task" is a feature of the C8.9-surfaced re-verification discipline, not a new class.
+- **Phase C cumulative effort** ~12.1 sessions of 29-35 budget (~37%). C8.11 is the next task to ship; will bring cumulative to ~15-16 sessions at COMPLETE. Tier 2 remaining after C8.11: C8.12 (mutation tests + L13/L14 audits) + C8.13 (performance + release artifacts) + C8.14 (FAQ + PROJECT_STRUCTURE) + C8.15 (notebooks 4-5).
+
+### Session summary
+
+C8.11 PRE-FLIGHT shipped in <1 session (~20-30 min of agent time including 4 cheap-check probes + 1 AskUserQuestion + Convention 3 Field-value snapshot authoring + PRE_FLIGHT_LOG entry write). One §7.13-shape scope-affecting L11 (fetal_death/file_inventory.csv 34→43 row extension) + three routine L11 PRE-FLIGHT-input re-interpretations all user-resolved via AskUserQuestion 2026-05-13T17:25:00Z (Option A inventory extension + Proceed-in-place-per-precedent for the other three). Convention 3 Field-value snapshot **24 rows across 5 tables** — second-densest snapshot this project has produced (C8.10c's was 16 rows; C8.9's was 16 rows; C8.11's 24 rows reflects 4 deliverables × multi-cell-each authoring scope). 7 soft-flags (a)-(g) filed for Phase D / future-task resolution. Zero canonical-data mutation; 4 parquet SHAs + 14 C8.9 + 5 C8.10a/b/c file SHAs preserved byte-exact. Tag `C8.11-pre-do` placed on commit `e1ea09f`.
+
+**Tier 2 progress unchanged: 2 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10); C8.11 in-progress at PRE-FLIGHT close. Next session = **C8.11 DO** with full scope spec in the PRE-FLIGHT entry's Tables 1-5.
 
 ---
 
