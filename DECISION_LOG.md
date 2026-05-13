@@ -23,6 +23,51 @@
 
 ---
 
+## 2026-05-13T09:00:00Z — C8.8 — Convention 3 amendment at PRE-FLIGHT: EXPLORATION_REPORT §E.5 author label "Hoyert et al. 2024" mis-attributes PMID 38143212 (actual lead author = Gregory ECW + Barfield WD); ship citation under correct authors; load-bearing PMID unchanged
+
+**Choice (LLM at C8.8 PRE-FLIGHT 2026-05-13T09:00:00Z, no user halt-and-ask needed — Convention 3 routine amendment within the same L8 cheap-check pattern the §15 C8.8 halt-flag explicitly anticipates):** Resolve EXPLORATION_REPORT.md §E.5 item 2's citation mis-attribution by citing the PMID's actual authors (Gregory ECW, Barfield WD) rather than the (incorrect) label "Hoyert et al." Drop the "Hoyert" name from this PRIOR_ART citation. Do NOT add the separate Hoyert paper (PMID 39412872 = NVSR 73-09) to PRIOR_ART because doing so would be circular (NVSR is exactly the aggregate-publication category PRIOR_ART argues fails to fill the microdata gap).
+
+**L8 cheap-check evidence (NCBI esummary API, 2026-05-13T09:00:00Z):**
+
+- PMID 38143212: "U.S. stillbirth surveillance: The national fetal death file and other data sources." Authors: **Gregory ECW, Barfield WD**. *Semin Perinatol* 2024 Feb;48(1):151873. ISSN 0146-0005. **No Hoyert author.**
+- PMID 39412872 (separate paper): "Fetal Mortality: United States, 2022." Authors: **Gregory ECW, Valenzuela CP, Hoyert DL**. *Natl Vital Stat Rep* 2024 Sep 12;73(9). DOI 10.15620/cdc:…. **This is NVSR 73-09**, already cited in HVS as the validation gold-standard publication.
+
+The EXPLORATION_REPORT §E.5 plan-author appears to have conflated the two papers (both 2024, both stillbirth-adjacent, partial author overlap via Gregory ECW as lead). The load-bearing identifier (PMID 38143212) is the canonical input; only the human-readable label diverges. Convention 3 (Field-value snapshot at PRE-FLIGHT) caught this at the cheap-check moment, before any DO mutation — exactly the failure mode L8 + Convention 3 are designed to surface.
+
+**Alternatives considered:**
+
+1. **(A) Cite Gregory + Barfield 2024 (PMID 38143212) with correct authors; drop "Hoyert" label (CHOSEN).** Pro: matches the load-bearing PMID; the Semin Perinatol paper is substantively appropriate for the literature-gap argument (it surveys U.S. stillbirth surveillance and discusses microdata limitations post-Ananth 2022); preserves the substantive purpose of the §E.5 update (close the gap argument to 2024). Con: ships a citation under different authors than the EXPLORATION_REPORT plan named — but the plan-author appears to have erred on the label, not on the substantive intent. Documented in PRE_FLIGHT_LOG 2026-05-13T09:00Z.
+
+2. **(B) Cite Hoyert + Gregory 2024 (PMID 39412872 = NVSR 73-09) instead.** Pro: matches the "Hoyert" name in §E.5. Con: NVSR 73-09 is **already** cited 11 times across HVS metadata + RECEIPTS + manuscript as the canonical 2022 fetal-mortality validation source. PRIOR_ART's central argument is that NCHS aggregate NVSR publications (like NVSR 73-09) are EXACTLY the resource that lacks the microdata HVS provides — so citing NVSR 73-09 in PRIOR_ART as evidence of the gap would be circular (citing what PRIOR_ART defines as inadequate as evidence that the gap exists). Rejected.
+
+3. **(C) Cite BOTH Gregory+Barfield 2024 (PMID 38143212) AND Hoyert+Gregory 2024 (PMID 39412872).** Pro: maximally complete. Con: same NVSR-circularity concern as Option B; clutters the literature-gap argument with a duplicate-of-validation-source citation. Rejected.
+
+4. **(D) Halt-and-ask via AskUserQuestion.** Pro: aligns with C8.6/C8.7 precedent of asking the user when a plan-vs-current-state divergence surfaces. Con: this divergence has only one substantively correct resolution (Option A); the others are circular (B+C) or self-defeating; an AskUserQuestion here would be ceremony, not decision-support. The §7 conditions do NOT classify "plan-text label diverges from cited identifier" as a halt — §7.11 (plan-text claim doesn't match cited artifact) is the closest match, but its remedy is "resolve at PRE-FLIGHT and document," which this entry does. Rejected.
+
+**Reason:**
+
+- The PRIOR_ART literature-gap argument depends on the SUBSTANTIVE content (post-Ananth-2022 evidence the gap persists), not on a specific author name. The load-bearing PMID is the canonical input. Re-attributing to the correct authors preserves the substantive argument while correcting the label.
+- The §15 C8.8 entry's halt-flag explicitly names L8 (citation resolution) as the predicted failure surface; the fact that L8 surfaced a divergence is expected, not surprising. The remedy (cite the actual paper at the named PMID) is the routine L8 + Convention 3 application.
+- Avoiding the circular NVSR-73-09 citation is independently correct: PRIOR_ART argues NCHS aggregate publications fail to harmonize microdata across boundaries; pointing at one such publication doesn't advance the argument.
+
+**Source:**
+
+- PMID 38143212 NCBI esummary: `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=38143212&retmode=json` (probed 2026-05-13T09:00Z; full JSON saved in PRE_FLIGHT_LOG entry).
+- PMID 39412872 NCBI esummary: `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=39412872&retmode=json` (probed; full JSON saved in PRE_FLIGHT_LOG entry).
+- EXPLORATION_REPORT.md §E.5 item 2 (line 736): the misattributed plan-text.
+- HVS use of NVSR 73-09 as 2022 validation source: see `fetal_death/external_validation_targets.csv` + manuscript `paper/draft_v2_hmd_styled.md` + receipts task2/task4/task7_*.
+
+**Verifiable by:**
+
+- `curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=38143212"` returns Gregory + Barfield as authors (reproducible).
+- Grep monorepo for "NVSR 73-09" or "Gregory" or "Barfield" returns the C8.8-shipped PRIOR_ART citation (after this commit) as the only "Gregory + Barfield" reference (whereas Hoyert is referenced in fetal-death validation context via NVSR 73-09 only).
+
+**Reversible:** yes — `git revert` of the C8.8 commit returns PRIOR_ART.md to its pre-C8.8 state; a future plan-update could re-introduce a Hoyert citation if a different 2024 Hoyert-led paper is identified.
+
+**Residual risk:** Low. If a manuscript reviewer notices the missing "Hoyert" attribution and asks for it, the response is "the PMID's correct authors are Gregory + Barfield; the matching Hoyert paper (NVSR 73-09) is already cited as our validation gold standard; citing it in PRIOR_ART would be circular." Both branches of the response are defensible.
+
+---
+
 ## 2026-05-13T07:40:00Z — [plan-update] C8.7 — Split task C8.7 → C8.7a (path-drift static audit, this session) + C8.7b (orchestrator + Tier-1/2 re-derive, DEFERRED); revise §15 C8.7 entry's SMOKE/DO/VERIFY scope (Tier-0 only; no orchestrator authoring; no live re-derive); KICKOFF.md Tier-1 list + sequencing note revised; C8.5b resumption trigger re-pointed at C8.7b
 
 **Choice (user-authorized at C8.7 PRE-FLIGHT halt-and-ask 2026-05-13T07:30:00Z, AskUserQuestion response "do what you think is best" interpreted as Option A "Tier-0 dry-run path audit only; defer reproducibility VERIFY to C8.7b" per the agent's stated recommendation in the question preamble, mirroring C8.6's same-phrasing precedent 2026-05-13T05:30:00Z):** Apply a single `[plan-update]` commit resolving four §7-class HALTs surfaced at C8.7 PRE-FLIGHT:

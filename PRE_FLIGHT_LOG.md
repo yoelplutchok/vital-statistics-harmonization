@@ -8,6 +8,115 @@
 
 ---
 
+## PRE-FLIGHT for C8.8 — 2026-05-13T09:00:00Z — CHANGELOG.md + PRIOR_ART.md updates (E.1 + E.5) — **RESULT: PROCEED** (one Convention 3 amendment: citation re-attribution from "Hoyert et al. 2024" → Gregory ECW + Barfield WD 2024, both at PMID 38143212; the load-bearing PMID is unchanged; no §7 halt)
+
+### Scope summary
+
+C8.8 §15.C entry (NEXT_STEPS.md lines 1081–1097): "(E.1) Author `CHANGELOG.md` at monorepo root: one section per version, v1.0 → v1.x → … delta. (E.5) Three concrete PRIOR_ART.md updates from EXPLORATION_REPORT §A.7 + literature-gap agent: (i) GitHub precursors subsection (Mikuana, arebe, damiancclarke); (ii) Hoyert et al. 2024 + NICHD Stillbirth WG July 2024 citation; (iii) one-sentence HL7/fhir-bfdr mention." Plus Q34 boundary statement (M-D / MCD / abortion out-of-HVS-scope per DECISION_LOG 2026-05-12T21:00:00Z entry line 508). Estimated 1 session. Halt-condition flags named: **L8 (citation resolution); L11 (stale roadmap claims)**.
+
+### Inputs
+
+- [x] **All seven RECEIPTS/ files for Tier-1 work present** as changelog source: `task6_linked_validation_reconcile_2026-05-11T17-30-00Z.md` through `C8.7a_2026-05-13T08-30-00Z.md` (17 receipts total spanning task1 through C8.7a + natality_v28_rename + task7_v3a + task7_v3b). ✓
+- [x] **EXPLORATION_REPORT.md** present (sha not pinned; consumed read-only). §A.7 (lines 202–213) + §E.5 (lines 732–749) confirm the 3 PRIOR_ART update specifics. §A.6 (lines 193–200) + §A.8 row 6 confirm Q34 boundary (M-D/MCD/abortion out-of-scope). ✓
+- [x] **docs/PRIOR_ART.md** present (58 lines, 4809 bytes). Current sections: gap statement / Cited adaptations (Salihu 2004, Willinger 2009, Hogue+Silver 2011, Ananth 2022) / NCHS aggregate / Adjacent harmonized (IPUMS, HMD, NHIS, NBER) / What this resource adds. ✓
+- [x] **CHANGELOG.md** at monorepo root: **DOES NOT EXIST** ✓ (matches C8.8's E.1 spec that it will be authored newly).
+- [x] **ABOUT_THIS_RELEASE.md** files: present in both `natality/docs/ABOUT_THIS_RELEASE.md` (v2.8.0 in-repo) + `fetal_death/ABOUT_THIS_RELEASE.md` (v2.0 plus V2.1/V3a/V3b extensions). Provide cross-reference for changelog "data extensions" content.
+- [x] **All 14 C8.X tags + 9 task-N tags present.** `git tag --list 'C8.*' | sort` returns C8.1-pre-do through C8.7a-complete (14 tags); task1 through task7_v3b plus public-v1.0 push (commit `a18ca3a`).
+
+### C8.7a Forward-looking HALTs (all 10 verified)
+
+| # | Assertion | Verification | Status |
+|---|---|---|---|
+| 1 | `C8.7a-complete` tag present | `git tag --list 'C8.7*'` returns `C8.7-pre-do` + `C8.7a-complete`; `C8.7b-pre-do` does NOT exist | ✓ |
+| 2 | 4 parquet SHAs unchanged (fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`) | All 4 verified byte-exact via build-dir paths (fetal-death via `output/harmonized/` symlink → `fetal-death-harmonization-build/output/harmonized/`; natality + linked at `~/Desktop/natality-harmonization/output/harmonized/`) | ✓ all 4 match |
+| 3 | 5 C8.5a + C8.6 file SHAs unchanged: pyproject.toml=`c8826a61…`, uv.lock=`ab627034…`, .python-version=`02e735b3…`, README.md=`694fdd35…`, ci.yml=`c248cf51…` | All 5 verified at monorepo root | ✓ all 5 match |
+| 4 | 2 newly-patched script SHAs: validate_2022.py=`67a4dfcb…`, run_pipeline.py=`959ccac4…` | Both verified | ✓ both match |
+| 5 | C8.8 is the next task per KICKOFF.md line 186 + §15 C8.8 | KICKOFF Phase C Tier 1 sequencing (line 186): "C8.8 — CHANGELOG + PRIOR_ART update [1 session]" | ✓ this entry executes it |
+| 6 | C8.7b first PRE-FLIGHT decision (natality+linked output strategy) | Not C8.8's scope; carried as a soft-flag | ✓ deferred |
+| 7 | Audit-script promotion to permanent test | Filed as C8.12 candidate in C8.7a receipt; not C8.8's scope | ✓ deferred |
+| 8 | L13-extension defense surface well-covered | C8.8 does not touch scripts; not gating | ✓ informational |
+| 9 | `run_pipeline.py` ALL_YEARS=29 staleness | C8.7b scope; not C8.8's | ✓ deferred |
+| 10 | `SUBPROJECT_ROOT` rename forward-compatibility | C8.7b scope; not C8.8's | ✓ deferred |
+
+### Environment
+
+- [x] Working directory clean: `git status --short` empty. ✓
+- [x] On `main`, HEAD=`f4f15ca` (C8.7a-complete). ✓
+- [x] Python interpreter / `uv` / `.venv` all unchanged from C8.5a-complete (verified 7-file SHA invariant above).
+- [x] `curl` available for L8 cheap-check probes (NCBI eutils + NICHD + HL7). ✓
+
+### Source documentation (L8 cheap-check)
+
+L8 = "every cited external document must resolve via PRE-FLIGHT probe before being shipped." §15 C8.8 names this halt-flag explicitly. Three probes:
+
+| Citation (per EXPLORATION_REPORT §E.5) | URL / PMID | Probe result | Match expected? |
+|---|---|---|---|
+| "Hoyert et al. 2024 ([PubMed 38143212](https://pubmed.ncbi.nlm.nih.gov/38143212/))" | PMID 38143212 → NCBI esummary | **Title:** "U.S. stillbirth surveillance: The national fetal death file and other data sources." **Authors:** Gregory ECW, Barfield WD. **Journal:** Semin Perinatol 2024 Feb;48(1):151873. **ISSN:** 0146-0005. | ✗ — author attribution diverges: PMID 38143212 = Gregory + Barfield, NOT Hoyert. See Convention 3 amendment below. |
+| NICHD Stillbirth Working Group Report, July 2024 | `https://www.nichd.nih.gov/sites/default/files/inline-files/NICHD_Stillbirth_WG_Report_July_2024_508.pdf` | `curl -L -k`: HTTP 200, size=451,388 bytes (Last-Modified header confirms 2024-07 release). | ✓ |
+| HL7/fhir-bfdr (Birth + Fetal Death Reporting FHIR IG) | `http://hl7.org/fhir/us/bfdr/` | `curl -sI`: HTTP 200; Last-Modified: 2025-03-21. | ✓ |
+
+**Convention 3 amendment — citation re-attribution.** The EXPLORATION_REPORT §E.5 plan-label "Hoyert et al. 2024" mis-identifies the lead author. The load-bearing identifier (PubMed 38143212) is canonical and resolves correctly; only the human-readable label is wrong. A separate Hoyert 2024 paper exists (PMID 39412872 = Gregory ECW, Valenzuela CP, Hoyert DL. *Fetal Mortality: United States, 2022.* Natl Vital Stat Rep. 2024 Sep 12) but it is **NVSR 73-09**, which is already cited throughout HVS as the validation gold standard — citing it in PRIOR_ART as evidence of the literature gap would be circular (PRIOR_ART argues the gap is that NCHS publishes aggregate NVSR tables, not microdata; pointing back at NVSR doesn't advance the argument). Resolution: ship PMID 38143212 with its correct authors (Gregory ECW + Barfield WD 2024) and drop the "Hoyert" label. The substantive purpose of the citation (post-Ananth-2022 evidence the gap persists) is preserved.
+
+### Outputs
+
+- Intended outputs:
+  - `CHANGELOG.md` at monorepo root — **NEW** ✓ (canonical changelog; v1.0 → v1.1 sections).
+  - `docs/PRIOR_ART.md` — **MODIFIED** ✓ (3 §E.5 updates + Q34 boundary statement).
+  - `RECEIPTS/C8.8_<UTC>.md` — NEW.
+  - `STATUS.md` — append new section.
+  - `PRE_FLIGHT_LOG.md` (this entry) + `DECISION_LOG.md` (new entry recording the citation re-attribution Convention 3 amendment).
+  - No script edits; no parquet mutations; no schema CSV touches.
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+| Artifact | Field / claim | Current value (verified PRE-FLIGHT) | Plan's assumed value | Match? |
+|---|---|---|---|---|
+| EXPLORATION_REPORT §E.5 item 2 | Citation author attribution | PMID 38143212 = Gregory ECW + Barfield WD | "Hoyert et al. 2024" | ✗ — see L8 row above. **Resolution**: cite Gregory + Barfield 2024 (correct authors at the load-bearing PMID). Documented in this PRE-FLIGHT entry + DECISION_LOG. |
+| `docs/PRIOR_ART.md` Adjacent-harmonized section | Lists IPUMS, HMD, NHIS, NBER | as written | Updates need to nest: (a) new "GitHub precursors" subsection; (b) HL7/fhir-bfdr one-sentence within "NCHS itself harmonizes" section as appropriate boundary statement. | ✓ — current state matches plan input; edit-in-place is safe |
+| `docs/PRIOR_ART.md` "Cited adaptations" section | Ends at Ananth 2022 (line 35) | as written | Insert post-Ananth subsection citing Gregory+Barfield 2024 (PMID 38143212) + NICHD WG 2024. | ✓ |
+| `docs/PRIOR_ART.md` boundary statement | No explicit Q34 boundary (M-D/MCD/abortion) currently | as written | Insert one-paragraph "Out-of-scope vital-events series" subsection per DECISION_LOG 2026-05-12T21:00:00Z entry. | ✓ |
+| Manuscript `paper/draft_v2_hmd_styled.md` *Data resource basics* paragraph | Cites Salihu, Willinger, Hogue+Silver, Ananth | as written | **NOT touched in C8.8**: §15 C8.8 scope is `PRIOR_ART.md` + `CHANGELOG.md` only. Manuscript update is Phase D step 6 scope. The new Gregory+Barfield 2024 + NICHD 2024 citations can be added to manuscript at Phase D — flagged as a forward-looking item, not a C8.8 mutation. | n/a (out of C8.8 scope) |
+| Monorepo `CHANGELOG.md` | Does not exist | as expected | New file authored. v1.0 section anchored at `a18ca3a` (2026-05-12 public push); v1.1 section enumerates C8.1-C8.7a + the deferred C8.5b/C8.7b/C8.8 + planned-but-not-yet-shipped C8.9–C8.15. | ✓ |
+
+### CHANGELOG.md v1.0 + v1.1 content plan (PRE-FLIGHT outline)
+
+**v1.0** (2026-05-12, public push at commit `a18ca3a` per STATUS 2026-05-12T19:15Z):
+- Sources: 4 sub-products as shipped at v1.0 — natality v2.7.0 (35-yr, 138.8M records), linked v3 (19-yr, 74.9M records), fetal-death v2.0.0 (29-yr, 1.63M records pre-V2.1/V3a/V3b).
+- Public-facing artifact set matched what was rsync'd from `~/Desktop/vital-statistics-harmonization/` to `~/Desktop/vital-statistics-harmonization-public/` with the documented exclude list (STATUS / DECISION_LOG / FIX_LOG / LESSONS / NEXT_STEPS / KICKOFF / PRE_FLIGHT_LOG / RECEIPTS / .claude / paper / EXPLORATION_REPORT).
+
+**v1.1** (Tier-1 + Tier-2 work; in-progress as of 2026-05-13):
+- **Data extensions**: V2.1 fetal-death 2003+2004 (+107K records); V3a fetal-death 1989-1991 (+188K, +3 years); V3b fetal-death 1982-1988 (+421K, +7 years); natality v2.7.0 → v2.8.0 column rename. (Per task3, task7_v3a, task7_v3b, natality_v28_rename receipts.) Combined fetal-death envelope: 29-yr → 43-yr (1982-2022), 1.63M → 2.35M records.
+- **Robustness**: H8 dtype-parity test (C8.1 + L17 retag fix); 3 invariant-test harnesses (C8.4); 4× `__init__.py` namespace-package fix (FIX_LOG 2026-05-12T22:30Z); 2 path-anchor fixes in `fetal_death/scripts/{05_validate/validate_2022.py, run_pipeline.py}` (C8.7a); `pyproject.toml` + `uv.lock` + `.python-version` pinned env (C8.5a); GitHub Actions CI (C8.6).
+- **Docs**: This CHANGELOG.md; PRIOR_ART.md updates (3 §E.5 items + Q34 boundary).
+- **Breaking / deprecations**: natality v2.7.0 → v2.8.0 column rename (`year` → `data_year`; `restatus` → `residence_status`; `maternal_race_bridged4` → `maternal_race_bridged`; `maternal_hispanic_origin` → `hispanic_origin`) per natality_v28_rename receipt. Users of legacy column names need to update. Migration guide is C8.11 (Tier 2 DEFERRED until v1.1 ships).
+- **Deferred to v1.x**: C8.5b (Dockerfile), C8.7b (monorepo-root orchestrator + Tier-1/Tier-2 re-derive), C8.9–C8.15 (Tier-2 work).
+
+### PRIOR_ART.md edit plan (PRE-FLIGHT outline)
+
+Five small additions, no removals:
+
+1. **New citation after Ananth 2022** (post-line 35): one paragraph citing Gregory + Barfield 2024 (PMID 38143212, Semin Perinatol; "U.S. stillbirth surveillance: The national fetal death file and other data sources") + NICHD Stillbirth Working Group Report July 2024 (linked PDF). Framed as: "Two 2024 publications reinforce the same conclusion: the gap remains operative."
+
+2. **New "GitHub precursors" subsection** (after "Adjacent harmonized resources"): three repos (`Mikuana/vitalstatistics`, `arebe/cdc-natality`, `damiancclarke/nchs-fetaldata`) framed as partial precursors none of which (a) harmonize across the 1989/2003 boundary, (b) cover all three products, (c) validate against NVSR, (d) publish as Data Resource Profile.
+
+3. **One-sentence HL7/fhir-bfdr mention** (within "Adjacent harmonized resources" or as its own short paragraph): "HL7's *fhir-bfdr* IG ([hl7.org/fhir/us/bfdr/](http://hl7.org/fhir/us/bfdr/)) defines a prospective FHIR-based reporting standard for future birth and fetal-death certificates; it is orthogonal to retrospective harmonization of the historical microdata covered here."
+
+4. **New "Out-of-scope vital events" subsection (Q34 boundary statement)**: one paragraph naming marriage/divorce, multiple-cause-of-death (all-age mortality), and abortion surveillance as deliberately excluded from HVS's vital-events-around-birth scope. Cites EXPLORATION_REPORT §A.6 reasoning + DECISION_LOG 2026-05-12T21:00:00Z.
+
+5. **No reword of Ananth 2022 paragraph** (per §E.5 risks: "Don't reword Ananth 2022 framing (it's the load-bearing citation)").
+
+### Halt conditions tripped (§7)
+
+**None.** Convention 3 caught one plan-vs-current-state divergence (the Hoyert→Gregory+Barfield citation re-attribution); this is a routine PRE-FLIGHT amendment (label correction; load-bearing PMID unchanged), not a §7 condition. No DO mutation has happened yet; the resolution is documented in this PRE-FLIGHT entry and in a parallel DECISION_LOG entry (`2026-05-13T09:00:00Z`). No §11 plan-update commit is needed (the §15 C8.8 entry does NOT specify the author label, only the PMID; the EXPLORATION_REPORT §E.5 label is informational-only).
+
+L11 (stale roadmap claims, §15 C8.8 halt-flag): re-checked. KICKOFF Phase C Tier-1 list line 186 ("C8.8 — CHANGELOG + PRIOR_ART update [1 session]") matches §15 C8.8 wording. No stale claim surfaced.
+
+### Result
+
+**PROCEED** to C8.8 DO. Tag `C8.8-pre-do` lands on this PRE-FLIGHT commit (alongside the DECISION_LOG entry recording the Convention 3 citation amendment). `C8.8-complete` tag follows the DO commit shipping CHANGELOG.md + PRIOR_ART.md + receipt + STATUS append.
+
+---
+
 ## PRE-FLIGHT for C8.7 — 2026-05-13T07:30:00Z — End-to-end pipeline smoke from monorepo root (B.10) — **RESULT: HALT**
 
 ### Scope summary
