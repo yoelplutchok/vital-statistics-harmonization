@@ -23,6 +23,86 @@
 
 ---
 
+## 2026-05-13T07:40:00Z — [plan-update] C8.7 — Split task C8.7 → C8.7a (path-drift static audit, this session) + C8.7b (orchestrator + Tier-1/2 re-derive, DEFERRED); revise §15 C8.7 entry's SMOKE/DO/VERIFY scope (Tier-0 only; no orchestrator authoring; no live re-derive); KICKOFF.md Tier-1 list + sequencing note revised; C8.5b resumption trigger re-pointed at C8.7b
+
+**Choice (user-authorized at C8.7 PRE-FLIGHT halt-and-ask 2026-05-13T07:30:00Z, AskUserQuestion response "do what you think is best" interpreted as Option A "Tier-0 dry-run path audit only; defer reproducibility VERIFY to C8.7b" per the agent's stated recommendation in the question preamble, mirroring C8.6's same-phrasing precedent 2026-05-13T05:30:00Z):** Apply a single `[plan-update]` commit resolving four §7-class HALTs surfaced at C8.7 PRE-FLIGHT:
+
+1. **HALT #1 resolution (§7.13 — no monorepo-root `scripts/run_pipeline.py` exists).** §15 C8.7 names this script as the entry point; PRE-FLIGHT verified it does NOT exist (`find . -maxdepth 4 -name run_pipeline.py` returns only `fetal_death/scripts/run_pipeline.py`). The deferred orchestrator authoring moves to C8.7b. C8.7a operates on per-step scripts directly via static analysis, not via the (non-existent) orchestrator.
+
+2. **HALT #2 resolution (§7.13 — `fetal_death/scripts/run_pipeline.py` is mis-pathed AND stale).** Its `REPO_ROOT = Path(__file__).resolve().parent.parent` resolves to `fetal_death/` (monorepo subproject) under monorepo cwd, but raw zips live at `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/raw_data/` (standalone build-dir) and outputs at `MONOREPO_ROOT/output/` via symlink. Its `ALL_YEARS = 29` (V2 1992-2002 + V1 2005-2022) is stale relative to the current v2.4.0 43-year envelope (V3a 1989-1991 + V3b 1982-1988 shipped 2026-05-12). Both issues land in C8.7b's authoring scope; C8.7a documents them as audit findings without patching the orchestrator itself.
+
+3. **HALT #3 resolution (§7.13 — natality has no orchestrator; natality + linked parquets not symlinked into monorepo `output/`).** Natality + linked re-derive infrastructure work moves entirely to C8.7b. C8.7a's audit covers natality per-step scripts' path-constants but does not attempt to wire them into the monorepo.
+
+4. **HALT #4 resolution (§7.15 — Tier-2 full re-derive is 6-12+ hours of compute, vs §15's 1-session estimate).** Tier-2 moves to C8.7b under an explicit multi-session compute budget; C8.7a is metadata-only and matches the original 1-session estimate.
+
+**Plan-update applied (this commit):**
+
+1. **`NEXT_STEPS.md` §15.C C8.7 entry rewritten into two entries:**
+   - **C8.7a (path audit; THIS SESSION)** — Goal narrowed to static path-constant audit of per-step scripts; SMOKE rewritten as Tier-0a (AST import) + Tier-0b (resolution test) + Tier-0c (helper-import reachability) — no Tier-1, no Tier-2, no live invocation; DO scope = audit table + L13 fix-on-contact patches + consolidated FIX_LOG entries by script-class; VERIFY = 6 criteria all metadata-only (audit table complete + patches captured + parquet SHAs unchanged + test-suite 56 PASS + 1 XFAIL preserved + C8.5a/C8.6 file SHAs unchanged + live-rebuild VERIFY closes at C8.7b); estimated 1 session.
+   - **C8.7b (orchestrator + Tier-1 + Tier-2; DEFERRED)** — preserves all original C8.7 orchestrator + reproducibility VERIFY language; explicit DEFERRED-at-C8.7-PRE-FLIGHT status; AND-coupled resumption trigger (C8.7a-complete + user-authorized compute window); SMOKE plan describes Tier 0 orchestrator dry-run + Tier 1 single-year-per-product + optional Tier 2 full re-derive; effort estimate 1.5-5 sessions depending on Tier-1-only vs Tier-2 inclusion at resumption.
+
+2. **`KICKOFF.md` Tier 1 task list (line 184)** split: single `C8.7` row split into `C8.7a` (this session, 1 session) + `C8.7b` (DEFERRED, 1.5-5 sessions).
+
+3. **`KICKOFF.md` sequencing note (line 203)** revised: C8.5b resumption trigger now references **C8.7b** (the orchestrator), not C8.7 — with explicit clarification that C8.7a does NOT land an orchestrator.
+
+4. **`PRE_FLIGHT_LOG.md`** PRE-FLIGHT addendum at 2026-05-13T07:40:00Z records the resolution + PROCEED-to-C8.7a-DO.
+
+5. **This DECISION_LOG entry** records the §11 plan-update.
+
+**Alternatives considered (per AskUserQuestion 2026-05-13T07:30:00Z):**
+
+1. **(A) Tier-0 path audit only; defer reproducibility VERIFY to C8.7b (chosen).** Pro: surgical; matches §15's 1-session estimate exactly; cleanest scope; symmetric with C8.5a/C8.5b split precedent; closes C8.7's GOAL ("confirms no further path-drift exists") at the L13-mistake-class level via static analysis; preserves Anti-Pattern #8 (no compressed tasks). Con: leaves the named "byte-identical re-derive" VERIFY for C8.7b. Mitigation: live-rebuild VERIFY is logically distinct from path-drift surfacing; deferral is honest.
+
+2. **(B) Author monorepo-root orchestrator + Tier-1 single-year-per-product re-build.** Pro: closes both GOAL + a narrowed VERIFY (single-year SHA-match per product); first reproducibility witness for all three products under monorepo cwd. Con: 1.5-2 sessions (50% over §15 estimate); compresses two distinct concerns into one task. Rejected.
+
+3. **(C) Orchestrator + Tier-2 fetal-death only + Tier-1 nat/linked.** Pro: closes full Tier-2 reproducibility for the cheapest product. Con: 1.5-2 sessions; asymmetric across products; partial-completion shape. Rejected.
+
+4. **(D) Full Tier-2 across all three products.** Pro: closes the §15 VERIFY literally. Con: 3-5 sessions; trips the Q33 effort-ceiling soft cap; major scope expansion vs §15. Rejected.
+
+**Reason:** §11 plan-update process is the canonical path for in-Phase-C scope adjustments surfaced during PRE-FLIGHT verification of plan-vs-reality alignment (per Q42 self-resolution + Convention 3 Field-value snapshot). All 4 HALTs were caught at the cheap-check moment before any DO mutation — exactly what PRE-FLIGHT cheap-checks are for. The Option A split preserves every original C8.7 design intent (path-drift surfacing + reproducibility VERIFY) while aligning the immediate-session scope with what's locally verifiable + deferring orchestrator + live re-derive to its natural home.
+
+Three protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — discovering the orchestrator-absence + ALL_YEARS-staleness + Tier-2-cost mismatches at PRE-FLIGHT saves ~1 session of rework that would have surfaced mid-DO if I'd attempted to run the (non-existent) orchestrator. (ii) §11 plan-update is the canonical path for in-Phase-C scope adjustments per Q42 (>1 session change to scope requires `[plan-update]`; the deferred orchestrator + Tier-1 + Tier-2 = 1.5-5 sessions of work; well past the §11 threshold). (iii) §10 self-check encourages the LLM to surface "what could I have gotten wrong that VERIFY wouldn't catch" — in this case, three ground-truth-unverified §15 PRE-FLIGHT-input assumptions (monorepo-root orchestrator exists; fetal-death orchestrator is current; Tier-2 fits in 1 session) that L9 cheap-checks at PRE-FLIGHT caught.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T07:30:00Z entry documenting the 4 HALTs (§7.13 ×3 + §7.15 + §7.17 + §7.12).
+- `NEXT_STEPS.md` §15.C C8.7 entry pre-revision text (lines 1037-1055 at commit `67ab76f`; full text preserved in git history).
+- `find . -maxdepth 4 -name run_pipeline.py` → only `fetal_death/scripts/run_pipeline.py` (verified PRE-FLIGHT 2026-05-13T07:30:00Z).
+- `fetal_death/scripts/run_pipeline.py` line 32-40: `REPO_ROOT = Path(__file__).resolve().parent.parent`; `ALL_YEARS = V2_YEARS + V1_PRE_COD_YEARS + V1_COD_YEARS` = 29 years (1992-2002 + 2005-2022); does not include V3a 1989-1991 or V3b 1982-1988.
+- `ls fetal_death/output/ natality/output/` → "No such file or directory" (verified PRE-FLIGHT).
+- `ls -la output/` → 3 symlinks pointing to `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/{harmonized,validation,yearly_clean}`; no natality / linked entries.
+- Raw zip count: 43 fetal-death (build-dir) + 54 natality+linked (natality-harmonization dir) = 97 zips total.
+- C8.5a outputs unchanged (4 SHAs match C8.6 forward-looking HALT #4); 4 parquet SHAs unchanged (match HALT #5); ci.yml sha unchanged (matches HALT #3).
+- STATUS 2026-05-13T06:30:00Z line 116 ("PRE-FLIGHT should consider: ... natality has no current orchestrator — C8.7 may need to author one or wire the existing per-step scripts") confirms HALT #1 + #3 were foreseen.
+- User authorization chat 2026-05-13T07:30:00Z: "do what you think is best" — interpreted as Option A per the agent's recommendation in the AskUserQuestion preamble, mirroring C8.6 precedent (DECISION_LOG 2026-05-13T05:45:00Z).
+
+**Verifiable by:**
+
+- This `[plan-update]` commit's diff shows `NEXT_STEPS.md` §15.C C8.7 entry rewritten into C8.7a + C8.7b + `KICKOFF.md` Tier 1 list + sequencing note edits + this DECISION_LOG entry + `PRE_FLIGHT_LOG.md` PRE-FLIGHT entry (HALT) + addendum (PROCEED).
+- Tag `C8.7-pre-do` lands on this `[plan-update]` commit (PRE-FLIGHT now PROCEEDS to C8.7a DO post-resolution; mirrors C8.2 / C8.3 / C8.5 / C8.6 plan-update precedent).
+- C8.7a DO ships in a sibling commit tagged `C8.7a-complete` containing audit-table receipt + L13 patches + FIX_LOG entries + STATUS append.
+- C8.7b resumption: a future session's PRE-FLIGHT at resumption-trigger moment + tag `C8.7b-pre-do` on whichever commit ships the orchestrator + Tier-1 or Tier-2 work.
+
+**Reversible:** yes — `git revert <this commit>` restores the original §15 C8.7 entry. The split is per-entry; reverting reverses both C8.7a + C8.7b stubs simultaneously.
+
+**Residual risks:**
+
+- (a) **Tier-0 static analysis may miss runtime-only failures** — e.g., a script that imports correctly but fails on first `subprocess.run(...)` invocation due to a missing CLI tool. Mitigation: C8.7b's Tier-1 single-year-per-product live run is the durable runtime test. C8.7a's audit is a necessary-but-not-sufficient defense.
+- (b) **The "consolidated FIX_LOG entry per script-class" choice may hide per-script details** — a future debugger investigating a single broken script may want a finer-grained log. Mitigation: the C8.7a receipt's audit table preserves per-script detail; FIX_LOG entries reference the audit-table row by script path.
+- (c) **The deferred C8.7b may slip beyond Phase D start** if the compute-window authorization doesn't fire. Mitigation: C8.5b's resumption-trigger update now binds Dockerfile work to C8.7b's orchestrator landing; users wanting Docker reproducibility VERIFY will surface C8.7b as a dependency.
+- (d) **`fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 is stale relative to the v2.4.0 43-year envelope**, but C8.7a does NOT patch this — the script-update belongs in C8.7b (orchestrator authoring is the natural home for `ALL_YEARS` extension). C8.7a's audit table records this as a DOCUMENTED finding, not PATCHED. Mitigation: C8.7b's PRE-FLIGHT must verify the `ALL_YEARS` extension landed before claiming Tier-2 closure.
+
+**Self-check (residual risks the VERIFY phase wouldn't catch):**
+
+- The "do what you think is best" user response is the second occurrence of this phrasing in two consecutive task PRE-FLIGHT halt-and-asks (C8.6 + C8.7). If the user intended a slightly different scope each time (e.g., Option B at C8.7), the agent's mirrored Option-A interpretation may drift further from user intent over time. Defense: surface the precedent-mirroring in this entry's self-check + offer the user a future correction window (Phase D close).
+- The C8.7a audit's exhaustiveness depends on the agent's enumeration of "every per-step script" — the audit must be reproducible from the audit-table row count. Defense: audit table records `git ls-files <subdir>/scripts/ | grep '\.py$'` row count as the floor; any audit table with row count < git-ls-files count is incomplete and triggers a follow-up.
+- The L13 "fix on contact" pattern works on the assumption that path-constant drift is the ONLY drift class. If a script has e.g. a CLI-tool dependency drift (`tabulate` removed from env post-C8.5a) or a Python-API drift (`pd.read_csv(squeeze=True)` removed), the audit won't catch it. Defense: scope is explicitly L13-only; non-L13 drift surfaces at C8.7b's runtime test.
+- The "FIX_LOG entries consolidated by script-class" choice trades verbosity for readability; if there are many script-class FIX_LOGs, the consolidated entries become hard to navigate. Defense: audit table is the index; FIX_LOG entries link back via timestamp.
+
+**Backport scope (per §11.4):** None directly. C8.1 / C8.2 / C8.3 / C8.4 / C8.5a / C8.6 receipts unaffected. C8.7a ships forward under the revised scope; C8.7b ships forward as a deferred task with explicit resumption trigger; C8.5b's resumption trigger updated to point at C8.7b instead of C8.7.
+
+---
+
 ## 2026-05-13T05:45:00Z — [plan-update] C8.6 — Ship workflow file in monorepo + defer live-CI green-check VERIFY to Phase D step 3 first sync; revise §15 C8.6 DO scope (single-version Python 3.13, not 3.11+3.12 matrix) + VERIFY criterion (YAML structurally valid + locally-emulated test command runs green + forward-looking live-CI VERIFY at Phase D)
 
 **Choice (user-authorized at C8.6 PRE-FLIGHT halt-and-ask 2026-05-13T05:30:00Z, AskUserQuestion response "do what you think is the best move" interpreted as Option A "Ship workflow now, live-VERIFY at Phase D" per the agent's stated recommendation in the question preamble):** Apply a single `[plan-update]` commit resolving two §7-class HALTs surfaced at C8.6 PRE-FLIGHT:

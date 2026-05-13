@@ -8,6 +8,139 @@
 
 ---
 
+## PRE-FLIGHT for C8.7 — 2026-05-13T07:30:00Z — End-to-end pipeline smoke from monorepo root (B.10) — **RESULT: HALT**
+
+### Scope summary
+
+C8.7 §15.C entry (NEXT_STEPS.md lines 1037–1055): "Run `scripts/run_pipeline.py` from monorepo root end-to-end (raw zips → yearly_clean → harmonized → derived → validate) and fix any path-drift findings as L13-style 'fix on contact' patches." SMOKE plan: Tier 0 dry-run path-constant blocks; Tier 1 single-year per product; Tier 2 full re-build. VERIFY: "Re-built parquets sha256-match current shipped parquets. No new FIX_LOG entries needed (or all surfaced cases patched and verified)." Estimated effort 1 session.
+
+### Inputs
+
+- [x] All required input files exist
+  - `fetal_death/scripts/run_pipeline.py`: present (3818 bytes; ALL_YEARS=29 covering V2 1992-2002 + V1 2005-2022) ✓
+  - `natality/scripts/run_pipeline.py`: **DOES NOT EXIST** ✗ (no analogous orchestrator under `natality/scripts/`; per-step subdirs `01_import`/`02_clean_yearly`/`03_harmonize`/`04_derive`/`05_validate`/`06_convenience`/`07_figures` only)
+  - `scripts/run_pipeline.py` at monorepo root (named by §15): **DOES NOT EXIST** ✗
+  - Per-subproject per-step scripts: present in both `fetal_death/scripts/` and `natality/scripts/` ✓
+- [x] All required upstream tasks marked complete in STATUS.md
+  - C8.5a-complete: ✓ (tag present at `e9cd08e`); C8.6-complete: ✓ (tag at `67ab76f`)
+- [x] No stale checkpoints from previous incomplete runs of this task
+  - `git status` clean ✓; no `C8.7-pre-do` tag exists ✓
+
+### Environment
+
+- [x] Python version: 3.13.9 via miniconda; `.venv` from C8.5a present (Python 3.13.0); both ≥3.11 ✓
+- [x] uv version: 0.11.10 ✓
+- [x] pandas version: per `uv.lock` resolution = 2.3.2 ✓; pyarrow per lock ≥18.0 ✓
+- [x] Working directory clean (`git status`): ✓
+- [x] On expected branch (`main`, HEAD=`67ab76f`): ✓
+
+### Source documentation
+
+- n/a — C8.7 is a pipeline-smoke task; no new NVSR PDFs introduced. NCHS source zips are bit-identical-on-disk (verified by sha-tracked file_inventory.csv state — not re-probed at this PRE-FLIGHT since C8.7 reads zips but does not re-download).
+
+### Outputs
+
+- [x] Intended output paths:
+  - `RECEIPTS/C8.7_<UTC>.md`: does not exist (good) ✓
+  - Re-derived parquets (if Tier 2 runs): WOULD OVERWRITE `output/harmonized/fetal_death_harmonized.parquet`, `output/harmonized/fetal_death_derived.parquet` (currently symlinked to `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/`); natality + linked targets are NOT symlinked into the monorepo (see Field-value snapshot below) — re-derive would write to `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/` (build-dir of the standalone repo, not monorepo state).
+
+### C8.6 Forward-looking HALTs (all verified)
+
+| # | Assertion | Status |
+|---|---|---|
+| 2 | `C8.6-complete` tag present | ✓ at `67ab76f` |
+| 3 | `.github/workflows/ci.yml` sha=`c248cf51159f907b…` | ✓ matches |
+| 4 | `pyproject.toml`=`c8826a61…`, `uv.lock`=`ab627034…`, `.python-version`=`02e735b3…`, `README.md`=`694fdd35…` | ✓ all 4 match |
+| 5 | 4 parquet SHAs unchanged (fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`) | ✓ all 4 match |
+| 8 | C8.7 is the next task; PRE-FLIGHT verifies uv.lock + ci.yml + 4 parquet SHAs unchanged | ✓ this entry verifies them |
+
+Items 1, 6, 7, 9, 10 are not PRE-FLIGHT-time gates for C8.7 (Phase-D / informational).
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.7 will not mutate canonical data values (parquets) unless Tier 2 fires — and Tier 2 should reproduce existing SHAs byte-exact. The mutation surface in scope is `scripts/` (path-constant edits + possible new orchestrator). The Field-value snapshot enumerates the *script paths* that would have to be edited, alongside the *output paths* whose existence and current contents determine the SMOKE plan's feasibility.
+
+**(a) Orchestrator inventory:**
+
+| Orchestrator path | Present? | ALL_YEARS coverage | REPO_ROOT resolution from monorepo cwd |
+|---|---|---|---|
+| `scripts/run_pipeline.py` (monorepo-root, §15-named) | **NO** ✗ | n/a | n/a |
+| `fetal_death/scripts/run_pipeline.py` | YES | V2 (1992-2002) + V1 (2005-2022) = **29 years; does NOT include V3a (1989-1991) + V3b (1982-1988) = 14 years currently in shipped v2.4.0 envelope (43 years total)** ✗ | `REPO_ROOT = fetal_death/`; `RAW_DIR = fetal_death/raw_data/fetal_death/`; `HARMONIZED_DIR = fetal_death/output/harmonized/` — **none of these dirs exist in monorepo** (raw zips live in standalone build dir; output exists only at MONOREPO_ROOT/output/ via symlinks) ✗ |
+| `natality/scripts/run_pipeline.py` | **NO** ✗ | n/a | n/a — per-step scripts only |
+
+**(b) Raw-zip inventory:**
+
+| Product | Expected count | Location | Status |
+|---|---|---|---|
+| Fetal-death (1982-2022, 43 years) | 43 | `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/raw_data/` | 43 zips found ✓ — but NOT in monorepo path; `fetal_death/raw_data/` does not exist |
+| Natality (1990-2024, 35 years) + Linked (2005-2023, 19 years) | 54 | `/Users/yoelplutchok/Desktop/natality-harmonization/raw_data/` | 54 zips found ✓ — but NOT in monorepo path; `natality/raw_data/` does not exist |
+
+**(c) Output-path / symlink state:**
+
+| Product | Canonical parquet path | Monorepo-root path | Status |
+|---|---|---|---|
+| Fetal-death harmonized + derived | `output/harmonized/fetal_death_{harmonized,derived}.parquet` | Reachable via `MONOREPO_ROOT/output/` (symlink to `fetal-death-harmonization-build/output/`) | ✓ accessible from monorepo |
+| Natality v2 derived | `natality_v2_harmonized_derived.parquet` | Lives at `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/`; **NOT symlinked** into monorepo `output/` | ✗ inaccessible from monorepo root |
+| Natality v3 linked derived | `natality_v3_linked_harmonized_derived.parquet` | Same as above | ✗ inaccessible from monorepo root |
+
+**(d) §15 plan-vs-reality divergences identified:**
+
+| § | §15 / Plan claim | Reality | Class |
+|---|---|---|---|
+| D.1 | "Run `scripts/run_pipeline.py` from monorepo root" | No such file exists | §7.13 ambiguity / L13-class (path drift) |
+| D.2 | "fix any path-drift findings as L13-style fix-on-contact patches" — implies surface is small | `fetal_death/scripts/run_pipeline.py` REPO_ROOT/RAW_DIR/OUTPUT_DIR all mis-resolve from monorepo cwd (3 path-constants per script × many scripts); natality has no orchestrator at all | §7.13 + §7.17 (scope creep) |
+| D.3 | "raw zips already on disk per file_inventory" | True (43 + 54 = 97 zips) but at standalone-build-dir paths, NOT at `fetal_death/raw_data/` or `natality/raw_data/` (the paths the unmodified scripts expect) | §7.13 (path) |
+| D.4 | "Verify final parquet SHAs match current shipped SHAs (byte-identical re-derive)" — Tier 2 estimated 1 session | Compute cost: fetal-death derive ~30-60 min; natality 35yr × 138.8M records = hours; linked 19yr × 74.9M records = hours; plus 5 × `05_validate/` × 2 products = additional cost. **Combined Tier-2 estimate: 6-12+ hours of compute — well over 1 session** | §7.15 (cost) |
+| D.5 | "ALL_YEARS = 29 years" hardcoded in `fetal_death/scripts/run_pipeline.py` | Current shipped v2.4.0 envelope is 43 years (V3a + V3b added 14 years 2026-05-12). Script is stale by 14 years' worth of harmonization | §7.13 (stale script) |
+| D.6 | Natality + linked parquets re-derivable from monorepo | Not currently — natality scripts write to natality-harmonization/output/, not to MONOREPO_ROOT/output/. Re-derive comparison requires (i) re-symlinking, (ii) re-pointing scripts at MONOREPO_ROOT, OR (iii) running natality re-derive in its standalone-build dir and comparing | §7.13 (path) |
+
+### Halt conditions tripped (§7)
+
+1. **§7.13 — Validity-domain / path-resolution ambiguity (×3)**: (i) no monorepo-root orchestrator; (ii) `fetal_death/run_pipeline.py` REPO_ROOT mis-resolves from monorepo cwd; (iii) natality + linked parquets not symlinked into monorepo `output/`.
+2. **§7.17 — Scope creep**: closing C8.7 per §15 literal requires (a) authoring a monorepo-root orchestrator (~0.5-1 session NEW work, was implicit in §15 but not enumerated as a DO step) + (b) fixing 3+ path-constants per subproject + (c) extending `ALL_YEARS` to 43 years for fetal-death — none of which are bounded by §15.
+3. **§7.15 — Time/cost budget exceeded**: Tier-2 full re-derive across three products is hours of compute; §15's 1-session estimate is inconsistent with the named Tier-2 VERIFY criterion.
+4. **§7.12 — Conflicting documentation**: §15 names `scripts/run_pipeline.py` as if it exists; STATUS 2026-05-13T06:30:00Z line 116 already flagged this ("natality has no current orchestrator — C8.7 may need to author one or wire the existing per-step scripts").
+
+### Result
+
+**HALT.** §15 C8.7 spec is internally inconsistent with current monorepo state on (i) named orchestrator presence; (ii) ALL_YEARS coverage; (iii) Tier-2 compute cost vs 1-session estimate; (iv) natality + linked output-path connectivity. Halt-and-ask required before any DO mutation. Three resolution paths are plausible (Tier-0 dry-run only / Tier-1 single-year-per-product / Tier-2 full re-derive); each implies a different §11 plan-update revising C8.7's scope. Posing AskUserQuestion to select between them.
+
+---
+
+## PRE-FLIGHT addendum for C8.7 — 2026-05-13T07:40:00Z — All 4 HALTs resolved per user authorization ("do what you think is best" → Option A per the AskUserQuestion preamble recommendation); task split C8.7 → C8.7a (path audit, this session) + C8.7b (orchestrator + Tier-1/2 re-derive, DEFERRED); PROCEED to C8.7a DO
+
+**User authorization.** AskUserQuestion 2026-05-13T07:30:00Z presented 4 options (A: Tier-0 dry-run only / B: orchestrator + Tier-1 / C: orchestrator + Tier-2 FD + Tier-1 nat/linked / D: full Tier-2). User response: "do what you think is best." Per the question preamble's explicit "(A) ... Recommended" framing (mirrored C8.6's "do what you think is the best move" precedent → Option A), I interpret the delegation as Option A authorization.
+
+**Resolution applied (single `[plan-update]` commit, this session):**
+
+1. **§15 C8.7 rewritten as C8.7a + C8.7b** in NEXT_STEPS.md. C8.7a (this entry) = Tier-0 static path-constant audit across per-step scripts; no orchestrator authoring; no live re-derive; matches §15's 1-session estimate. C8.7b stub (DEFERRED) = orchestrator + Tier-1 + Tier-2 re-derive; resumption trigger AND-coupled on C8.7a-complete + user-authorized compute window.
+
+2. **KICKOFF.md Tier-1 task list (line 184)** split: `C8.7 — End-to-end pipeline smoke` → `C8.7a — Path-drift static audit` (this session) + `C8.7b — Orchestrator + Tier-1/2 re-derive (DEFERRED)`.
+
+3. **KICKOFF.md sequencing note (line 203)** revised: C8.5b resumption trigger now references **C8.7b** (the orchestrator), not C8.7 — with explicit clarification that C8.7a does NOT land an orchestrator.
+
+4. **This addendum** + **DECISION_LOG entry 2026-05-13T07:40:00Z** record the §11 plan-update.
+
+**Field-value snapshot revisited (post-resolution).**
+
+- C8.7a in-scope DO surface: every per-step pipeline script's path-constant block (`fetal_death/scripts/01_import/`, `03_harmonize/`, `04_derive/`, `05_validate/`, plus the existing `fetal_death/scripts/run_pipeline.py`; `natality/scripts/01_import/`, `02_clean_yearly/`, `03_harmonize/`, `04_derive/`, `05_validate/`).
+- Method: Python AST inspection of each module's globals to enumerate `Path(__file__).resolve()...`-shape constants; `exists()` test under monorepo cwd; helper-import reachability test.
+- Patches applied on contact (sibling of FIX_LOG 2026-05-12T01:30Z entries). FIX_LOG entries consolidated by script-class (entry-point / parse / harmonize / derive / validate) to avoid log bloat.
+- VERIFY remains metadata-only — no parquet SHAs should change, no test-suite regression, no canonical-state mutation.
+
+**Halt conditions resolved.**
+
+- §7.13 (×3) — resolved by deferring the live-run / orchestrator concerns to C8.7b; C8.7a's Tier-0 audit doesn't touch raw zips or output dirs, so the geographic path-mismatch isn't a blocker for the audit itself.
+- §7.17 (scope creep) — resolved by tightening C8.7a's DO scope to "audit + L13 patches" (no new orchestrator, no `ALL_YEARS` extension, no symlinks).
+- §7.15 (cost) — resolved by removing Tier-2 from C8.7a; C8.7a is metadata-only.
+- §7.12 (conflicting documentation) — resolved by the §11 plan-update aligning §15 + KICKOFF with the locally-verifiable scope.
+
+### Result
+
+**PROCEED** to C8.7a DO post-resolution. Tag `C8.7-pre-do` lands on the `[plan-update]` commit. C8.7a-complete tag follows the DO commit.
+
+---
+
 ## PRE-FLIGHT for C8.6 — 2026-05-13T05:30:00Z — CI: GitHub Actions wiring (B.9) — **RESULT: HALT**
 
 ### Scope summary

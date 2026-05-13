@@ -181,7 +181,8 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 - **C8.5a** — Distribution: pyproject.toml + uv.lock              [0.5-1 session]
 - **C8.5b** — Distribution: Dockerfile (DEFERRED; needs docker)   [1-2 sessions]
 - **C8.6** — CI: GitHub Actions wiring                            [1 session]
-- **C8.7** — End-to-end pipeline smoke                            [1 session]
+- **C8.7a** — Path-drift static audit across per-step scripts    [1 session]
+- **C8.7b** — Orchestrator + Tier-1/2 re-derive (DEFERRED)        [1.5-5 sessions]
 - **C8.8** — CHANGELOG + PRIOR_ART update                         [1 session]
 
 #### Tier 2 — high-value additions (~16-20 sessions)
@@ -200,7 +201,7 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 
 - **C8.1 first** (Q37): cheapest item, pure-metadata, fixes the known stale L17 smoke case (forward-looking HALT #10 in STATUS 20:30Z). Unblocks any subsequent task that touches fetal-death state.
 - **C8.2 second** (Q37): latest-year refresh extends the data envelope before downstream test/CI scaffolding so subsequent CI runs gate on the full extended envelope (no rework when 2023-2024 land).
-- **C8.5a + C8.6 paired**: CI (B.9) depends on a pinned env (F.3 lockfile = C8.5a); ship lockfile first. C8.5b Dockerfile deferred to after `docker` is available on build machine OR after C8.7 lands the monorepo-root pipeline orchestrator (whichever comes first).
+- **C8.5a + C8.6 paired**: CI (B.9) depends on a pinned env (F.3 lockfile = C8.5a); ship lockfile first. C8.5b Dockerfile deferred to after `docker` is available on build machine OR after C8.7b lands the monorepo-root pipeline orchestrator (whichever comes first). Note: C8.7a (path-drift audit, this session's narrowed C8.7 scope) does NOT land the orchestrator; that work is in C8.7b (DEFERRED).
 - **C8.4 before C8.6**: CI gates on real invariant tests, not bare structural smokes.
 - **C8.8 last in Tier 1**: PRIOR_ART updates + CHANGELOG land after Tier 1 work supplies the evidence to cite.
 - **C8.9-C8.11 ordering within Tier 2**: usability (C8.9, C8.10) ships before docs (C8.11) so migration guides can reference live R/DuckDB examples.

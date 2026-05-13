@@ -1034,25 +1034,47 @@ Concurrency control: `group: ci-${{ github.ref }}`, `cancel-in-progress: true`.
 
 ---
 
-### Task C8.7 — End-to-end pipeline smoke from monorepo root (B.10)
+### Task C8.7a — Path-drift static audit across per-step pipeline scripts (B.10, narrowed)
 
-**Goal.** Run `scripts/run_pipeline.py` from monorepo root end-to-end (raw zips → yearly_clean → harmonized → derived → validate) and fix any path-drift findings as L13-style "fix on contact" patches.
+**Note: Originally bundled with C8.7b orchestrator + Tier-1/Tier-2 reproducibility VERIFY as one task C8.7.** Split into C8.7a + C8.7b at C8.7 PRE-FLIGHT 2026-05-13T07:30:00Z (DECISION_LOG entry of same timestamp) after PRE-FLIGHT discovered (i) no monorepo-root `scripts/run_pipeline.py` exists (the §15-named entry point); (ii) `fetal_death/scripts/run_pipeline.py` mis-resolves `REPO_ROOT` from monorepo cwd AND its `ALL_YEARS = 29` is stale relative to the current v2.4.0 43-year envelope (V3a + V3b shipped 2026-05-12); (iii) natality has no orchestrator at all; (iv) Tier-2 full re-derive across three products is 6-12+ hours of compute — well beyond §15's 1-session estimate. The §11 plan-update preserves the path-drift-surfacing GOAL (the locally-verifiable cheap-check portion) in C8.7a (this entry) and moves orchestrator authoring + Tier-1 / Tier-2 reproducibility VERIFY to C8.7b (DEFERRED follows).
 
-**Why this matters.** FIX_LOG 2026-05-12T01:30Z noted three latent path-drift bugs in `fetal_death/scripts/` not caught because no end-to-end run from the monorepo root had been attempted. C8.1 already surfaced a fourth (test conftest + `_regenerate_schema_years.py`). Confirms no further path-drift exists.
+**Goal.** Statically audit every per-step pipeline script under `fetal_death/scripts/` and `natality/scripts/` (entry-point scripts + helpers); enumerate each script's path-constant computation (`REPO_ROOT`, `RAW_DIR`, `INPUT_DIR`, `OUTPUT_DIR`, etc.) and verify whether each resolves to an existing monorepo-relative path under current monorepo cwd. For each broken case: patch on contact (L13 fix-on-contact pattern) OR document with a FIX_LOG entry naming the broken constants + the runtime invocation that would surface them.
 
-**PRE-FLIGHT inputs.** Existing pipeline scripts (fetal_death + natality); raw zips (already on disk per file_inventory).
+**Why this matters.** FIX_LOG 2026-05-12T01:30Z surfaced three latent path-drift bugs in `fetal_death/scripts/`; FIX_LOG 2026-05-12T22:00Z (C8.1 followup) surfaced two more in the test harness. Class L13-extension (monorepo migration path drift). Static audit confirms whether the path-constant surface is closed — without incurring the compute cost of a live re-derive. Live re-derive is C8.7b's responsibility.
 
-**SMOKE plan.** Tier 0: dry-run each script's path-constant block; flag any that resolves to a non-existent monorepo path. Tier 1: live run on a single year per product. Tier 2: full re-build.
+**PRE-FLIGHT inputs.** Existing per-step pipeline scripts under `fetal_death/scripts/01_import` / `03_harmonize` / `04_derive` / `05_validate` and `natality/scripts/01_import` / `02_clean_yearly` / `03_harmonize` / `04_derive` / `05_validate` (entry-point `.py` files + helpers); `fetal_death/scripts/run_pipeline.py` (the existing fetal-death-only orchestrator); current symlink state at `output/` (verified: only fetal-death subdirs symlinked; natality + linked outputs NOT symlinked from monorepo `output/`). C8.6-complete tag at `67ab76f`; ci.yml sha=`c248cf51…`; 4 C8.5a file SHAs and 4 parquet SHAs all match the C8.6 forward-looking HALTs.
 
-**DO scope.** Patch each surfaced path-drift case + FIX_LOG entry per case. Verify final parquet SHAs match current shipped SHAs (byte-identical re-derive).
+**SMOKE plan (revised).** Tier 0a (Python AST audit): import each entry-point script via `importlib.util.spec_from_file_location` + `module_from_spec` (in a sandboxed namespace where `__main__` doesn't execute); read its module-level path constants by inspecting the loaded module's globals. Tier 0b (resolution test): for each path constant, `pathlib.Path.exists()` under monorepo cwd. Tier 0c (helper-script reachability): grep each entry-point script for imports of sibling helpers (`from common import …`, `from harmonize import …`, etc.) + verify each importable from monorepo cwd. No live data invocation; no canonical-state mutation.
 
-**VERIFY criteria.** Re-built parquets sha256-match current shipped parquets. No new FIX_LOG entries needed (or all surfaced cases patched and verified).
+**DO scope.** For each entry-point script: record path-constant audit row in `RECEIPTS/C8.7a_<UTC>.md` audit table. For each FAIL: apply minimal L13-style patch (sibling of FIX_LOG 2026-05-12T01:30Z entries) — typically replace `Path(__file__).resolve().parent.parent` with a `MONOREPO_ROOT` / `SUBPROJECT_ROOT` distinction; pin output paths relative to the symlinked `output/` location at monorepo root. File one consolidated FIX_LOG entry per script-class (entry-point orchestrator / per-step parse / harmonize / derive / validate) rather than one entry per script, to avoid log bloat. NO orchestrator authoring; NO Tier-1 live run; NO parquet re-derive.
 
-**Estimated effort.** 1 session (budget for 1-2 more L13-style path-drift cases).
+**VERIFY criteria.** (i) Every per-step pipeline script's path-constant resolution from monorepo cwd is documented in the receipt's audit table with verdict PASS / PATCHED / DOCUMENTED. (ii) Every PATCHED case has its Edit captured in the commit + a FIX_LOG entry (consolidated by script class). (iii) No parquet SHAs change (this is a metadata-only task — VERIFY all 4 SHAs unchanged: fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`). (iv) Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` still returns 56 PASS + 1 XFAIL (no test-suite regression from any path-constant edit). (v) C8.5a file SHAs unchanged; ci.yml sha unchanged. (vi) **Forward-looking live-rebuild VERIFY closes at C8.7b** (whenever orchestrator + Tier-1 + Tier-2 are authorized).
 
-**Dependencies.** None upstream; ideally after C8.5 (run in clean Docker env).
+**Estimated effort.** 1 session (matches original §15 1-session estimate; static audit + targeted L13 patches; no compute cost).
 
-**Halt-condition flags.** L13 (path-drift extension class), H10 (reproducibility regression if final SHAs differ).
+**Dependencies.** None upstream. C8.7b depends on C8.7a (orchestrator delegates to per-step scripts; their path-constants must be correct first).
+
+**Halt-condition flags.** L13 (path-drift class); L4 (sibling-propagation for any fix landing in fetal_death/ must check natality/ + tests/); L11 (any audit row whose script is `out of scope per a prior DECISION_LOG entry` must cite the entry).
+
+---
+
+### Task C8.7b — Monorepo-root pipeline orchestrator + Tier-1 single-year-per-product re-build + Tier-2 full re-derive VERIFY (B.10 follow-up; **DEFERRED**)
+
+**Status: DEFERRED at C8.7 PRE-FLIGHT 2026-05-13T07:30:00Z** per user authorization (DECISION_LOG entry of same timestamp). Originally bundled with C8.7a as a single C8.7 task. Deferred because (i) authoring a monorepo-root orchestrator is a substantive new design decision (entry-point shape + per-subproject delegation + output-path symlinks for natality + linked + extending fetal-death `ALL_YEARS` to 43 to cover V3a/V3b) — not bounded by the original §15 1-session estimate; (ii) Tier-2 full re-derive across three products is 6-12+ hours of wall-clock compute — well beyond a single session even if authored cleanly; (iii) Anti-Pattern #8 forbids compressing two tasks into one because they go together (path-drift surfacing vs orchestrator authoring vs reproducibility VERIFY are logically distinct concerns).
+
+**Trigger for resumption.** AND-coupled: (a) C8.7a-complete (path-constants verified across all per-step scripts so the orchestrator delegates to a known-clean substrate); AND (b) user authorization for the multi-session compute window (Tier-2 wall-clock is dominated by natality 35yr × 138.8M-record re-derive + linked 19yr × 74.9M-record re-derive); a future PRE-FLIGHT at C8.7b resumption proposes either (i) split into Tier-1-only "single-year per product" close (~1.5-2 sessions) + Tier-2 deferred; OR (ii) full Tier-2 background-compute over multiple sessions (~3-5 sessions; Q33 effort-ceiling check).
+
+**PRE-FLIGHT inputs (when resumed).** C8.7a-complete (path constants audited + patched); `fetal_death/scripts/run_pipeline.py` post-C8.7a sha (verify unchanged or re-audit); current parquet SHAs (4 values); current raw-zip inventory (43 fetal-death + 35 natality + 19 linked = 97 zips) verified bit-identical to file_inventory.csv; compute-time budget acknowledged.
+
+**SMOKE plan (when resumed).** Tier 0: orchestrator dry-run (parse args, resolve all delegated-script paths, NO execution). Tier 1: live run on 1 year per product (e.g., FD 2020 + nat 2020 + linked 2020); re-derive single-year intermediate + compare to slice extracted from current shipped parquet. Tier 2 (OPTIONAL within C8.7b scope; can be split off): full 43-year FD re-derive (~30-60 min) + full 35-year nat re-derive (multi-hour) + full 19-year linked re-derive (multi-hour); compare final parquet SHAs against current shipped SHAs byte-exact.
+
+**DO scope (when resumed).** Author `scripts/run_pipeline.py` at monorepo root with per-product subcommands (`fd`, `natality`, `linked`, `all`) + `--year` and `--steps` args. Add output symlinks for natality + linked under monorepo `output/` (or accept that natality re-derive writes to its standalone build-dir). Extend fetal-death `ALL_YEARS` from 29 to 43 to cover V3a + V3b (or document the gap as out-of-scope and pin to current 29-year scope as a tracks-current-state assertion).
+
+**VERIFY criteria (when resumed).** Per Tier (1 or 2): re-derived parquet (or slice) sha256-matches the corresponding slice from current shipped parquet. Or: H10 reproducibility regression filed in FIX_LOG with reproducer.
+
+**Dependencies.** C8.7a (path-constants audited). Independent of C8.5b (Dockerfile) — the orchestrator can run under uv-pinned env (C8.5a) without docker.
+
+**Halt-condition flags.** L13 (orchestrator path-constants); H10 (reproducibility regression on byte-exact re-derive); L11 (stale `ALL_YEARS` claim — confirm scope at resumption).
 
 ---
 
