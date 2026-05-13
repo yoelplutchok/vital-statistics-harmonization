@@ -1,6 +1,110 @@
-# STATUS — last updated 2026-05-13T23:45:00Z
+# STATUS — last updated 2026-05-14T01:15:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T01:15:00Z — C8.15 COMPLETE: Worked-example notebooks 4-5 (C.6.d `education_gradient.ipynb` + C.6.e `state_reporting_quirks.ipynb`) shipped in 1 session at the LOW end of the §15 2-session estimate; **Tier 2 CLOSED 7/7 §15-listed tasks COMPLETE** (C8.9 + C8.10 + C8.11 + C8.12 + C8.13 + C8.14 + C8.15); cumulative Phase C ~17.5 of 29-35 sessions (~52%); Phase D begins next session — 2 routing-shape PRE-FLIGHT-time L11s surfaced + user-resolved via AskUserQuestion 2026-05-14T00:30:00Z (C.6.d=natality+linked-only Recommended; C.6.e=read from `output/yearly_clean/` raw parquets Recommended; precedent C8.10a/b/c + C8.11 routine routing decisions stay in PRE_FLIGHT_LOG + DECISION_LOG without `[plan-update]` commit prefix); NEW `notebooks/_build_education_gradient.py` (478 LOC; `DESIGN: tracks-current-state`) + NEW `notebooks/education_gradient.ipynb` (33,998 bytes; 21 cells; **F4 contract demonstration headline** — 2009-2013 unfiltered vs filtered queries produce identical arithmetic [lt_hs 13.52% → ba_plus 9.74%] but **19.2% silent drop vs 1.2% explicit drop**; the substantive difference is declarability) + NEW `notebooks/_build_state_reporting_quirks.py` (528 LOC) + NEW `notebooks/state_reporting_quirks.ipynb` (37,011 bytes; 18 cells; reproduces COMPARABILITY-cited counts byte-exact: LA 1992-1994 raw 1,714/1,686 ✓ + OK 1992-2002 11/11 100% ORMOTH=9 ✓ + MD 1992-1998 + MA 1992-1997 in-window 100% ✓ + V1 plurality '5' aggregate raw=10,207 vs canonical-filtered=44 + V1 era state suppression 100% blank confirmed); **soft-flag (f) plurality footgun OPERATIONALLY CLOSED** by C.6.e Section 4 + recipe demonstration (3,980 records reclassified plurality=5 → blank in 2005-2013 window in synthesized cohort); cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **74 passed + 1 skipped + 1 xfailed in 220.80s** (within 209.78-230.74s observed range); zero §7 halts in DO; **H10 reproducibility gate unaffected** (all 4 parquet SHAs preserved byte-exact: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); zero canonical-data mutation; 2 in-DO fixes for C.6.e (Section 1 substrate routing → `load_v2_raw` to match COMPARABILITY's unfiltered count; Section 4 demo cell → drop `data_year` from raw-parquet column request); 1 NEW soft-flag (q) at PRE-FLIGHT (WORKED_EXAMPLE_FAQ.md STATUS-anchor typo: STATUS recorded `89730c31…` but on-disk + committed sha=`341c4550…`; `git diff HEAD` empty → file matches commit byte-exact; STATUS-typo only); 12 carry-forward soft-flags + (f) operationally closed + (q) NEW; full narrative in RECEIPTS/C8.15_2026-05-14T01-15-00Z.md; tag `C8.15-complete` lands on this commit
+
+### Current phase
+
+**Phase C — Tier 2 CLOSED, C8.15 COMPLETE; Phase D begins next session.** Task closed at the LOW end of the §15 2-session estimate (PRE-FLIGHT 00:30Z `9d7c49d` + DO sub-step 1 [C.6.d] + DO sub-step 2 [C.6.e] + VERIFY + RECEIPT 01:15Z all in one session; ~3 hours wall-clock total). Both notebooks shipped + all section assertions PASS byte-exact + cache-cleared pytest baseline preserved. Cumulative Phase C effort ~17.5 of 29-35 sessions (~52%; comfortably within +20% drift cap of 42 sessions).
+
+**Phase C Tier 2 closure summary**: 7 of 7 §15-listed tasks COMPLETE (C8.9 R quickstart + DuckDB views; C8.10 worked-example notebooks 1-3; C8.11 migration guides + cross-product COMPARABILITY; C8.12 mutation tests + L13/L14 audits + SHA stability; C8.13 pipeline timing benchmark; C8.14 worked-example FAQ + PROJECT_STRUCTURE upgrade; C8.15 worked-example notebooks 4-5). Tier 3 + Tier 5 deferred per Q35 user authorization (re-authorization required before any Tier 3 / Tier 5 task starts).
+
+### What was done this session
+
+1. **PRE-FLIGHT cheap-checks**: verified all 9 C8.14 forward-looking HALTs byte-exact (cache-cleared pytest 74 PASS + 1 SKIP + 1 XFAIL in 230.74s; 4 parquet SHAs preserved). Surfaced HALT #3 typo (WORKED_EXAMPLE_FAQ.md actual sha=`341c4550…` vs STATUS-recorded `89730c31…`); investigated via `git diff HEAD` (empty → file matches commit byte-exact); filed as soft-flag (q). Convention 3 Field-value snapshot identified 2 routing-shape L11s (C.6.d data product framing + C.6.e substrate routing); raised AskUserQuestion 2026-05-14T00:30:00Z; user authorized Option A × 2.
+2. **PRE-FLIGHT close + tag** at commit `9d7c49d` (`C8.15-pre-do`); shipped DECISION_LOG entry recording the 2 routing decisions.
+3. **DO sub-step 1** (C.6.d): authored `notebooks/_build_education_gradient.py` (478 LOC) + executed → `notebooks/education_gradient.ipynb` (21 cells; F4 contract demonstration as headline pedagogical point).
+4. **DO sub-step 2** (C.6.e): authored `notebooks/_build_state_reporting_quirks.py` (528 LOC); first execution surfaced 2 in-DO fixes (Section 1 substrate routing assertion + Section 4 demo cell column request); both fixed; re-execution → `notebooks/state_reporting_quirks.ipynb` (18 cells; all 5 section assertions PASS byte-exact).
+5. **VERIFY**: cache-cleared pytest returns 74 PASS + 1 SKIP + 1 XFAIL in 220.80s ✓; both notebooks render end-to-end ✓; F4 contract enforced in C.6.d ✓; state-quirk reproduction byte-exact in C.6.e ✓.
+6. **RECEIPT authored** at `RECEIPTS/C8.15_2026-05-14T01-15-00Z.md` per §6 template: 7 self-check residual risks; 14 forward-looking HALTs for next-session Phase D entry.
+7. **STATUS.md** appended (this section).
+8. **Pending**: commit (Convention 5 brevity ~5-line summary); tag `C8.15-complete`.
+
+### Last completed step
+
+Single commit ships: 4 NEW notebook files (2 builders + 2 executed notebooks) + this RECEIPT + this STATUS section. Tag `C8.15-complete` follows on the commit.
+
+### In-progress
+
+None — C8.15 closed; Tier 2 closed.
+
+### Next planned task
+
+**Phase D begins** per KICKOFF.md "Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT":
+
+- **D.1** Task 9 — redirect notices on the two old GitHub repos (`yoelplutchok/natality-harmonization`, `yoelplutchok/fetal-death-harmonization`). Notice text proposed in STATUS 2026-05-12T18:45Z Q30. ~15-30 min, **human-driven** (agent cannot push to old standalone repos under user's GitHub account; user executes the gh CLI commands).
+- **D.2** Task 10 — Unified Zenodo deposit + version patches. 1 session + Zenodo upload time.
+- **D.3** KICKOFF step 5 — Sync monorepo to public staging dir + push v1.x to GitHub (includes F.4 GitHub Release with parquet uploads per C8.13 PRE-FLIGHT-time defer).
+- **D.4** KICKOFF step 6 — Manuscript re-pass + submit (~½ session). PROPOSE-EDITs to surface: (a) C8.13 fetal-death timing line 68 (-13.1% drift; recommend `approximately six minutes` → `approximately five minutes`); (b) any C8.15-surfaced framing edits (none anticipated).
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.**
+
+### Open questions for human
+
+1. **Phase D start authorization**: ready to begin Phase D? D.1 is human-driven (agent prepares + queues; user executes the gh CLI commands for the redirect notices).
+2. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — confirm `approximately six minutes` → `approximately five minutes` edit (or keep `approximately six` with companion-notebook citation per C8.13 RECEIPT alternative).
+
+**Open soft-flags (12 carried + (f) OPERATIONALLY CLOSED + (q) NEW):**
+
+Carried unchanged from C8.14 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped from pre-submission scope.
+
+**(f) plurality footgun OPERATIONALLY CLOSED** by C.6.e Section 4 + recipe demonstration. Soft-flag carries forward for documentation-trail purposes but no further action required.
+
+**NEW soft-flag (q) this PRE-FLIGHT**: WORKED_EXAMPLE_FAQ.md SHA anchor typo in STATUS 2026-05-13T23:45:00Z (recorded `89730c31…` but on-disk + committed sha=`341c4550…`; `git diff HEAD` empty → file IS the committed file; STATUS-typo only). Future HALT-verification sessions reading the C8.14 closing anchor will see the same mismatch + need to repeat this session's `git diff HEAD` resolution.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start. Full enumeration (14 HALTs) in RECEIPTS/C8.15_2026-05-14T01-15-00Z.md.
+
+1. **`C8.15-pre-do` + `C8.15-complete` tags both present**. Verify: `git tag --list 'C8.15*'` shows both.
+2. **All 4 parquet SHAs unchanged byte-exact** from documented anchors (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`).
+3. **`notebooks/_build_education_gradient.py` + `notebooks/education_gradient.ipynb` present** at SHAs recorded post-commit; 21 cells.
+4. **`notebooks/_build_state_reporting_quirks.py` + `notebooks/state_reporting_quirks.ipynb` present** at SHAs recorded post-commit; 18 cells.
+5. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`** returns 74 PASS + 1 SKIP + 1 XFAIL (~220s wall-time ±25s variance).
+6. **No `paper/draft_v2_hmd_styled.md` mutation** (C8.13 PROPOSE-EDIT remains routed to Phase D step 4).
+7. **No KICKOFF.md / NEXT_STEPS.md edit at C8.15 close**.
+8. **Tier 2 CLOSED** (7/7 §15-listed tasks COMPLETE); Phase D begins next.
+9. **Soft-flag (q) preserved**: WORKED_EXAMPLE_FAQ.md STATUS-anchor typo.
+10. **Soft-flag (f) plurality footgun OPERATIONALLY CLOSED** by C.6.e Section 4.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.14 DO outputs unchanged.
+
+NEW this session:
+- `notebooks/_build_education_gradient.py` (NEW; 478 LOC; deterministic builder)
+- `notebooks/education_gradient.ipynb` (NEW; 33,998 bytes; 21 cells)
+- `notebooks/_build_state_reporting_quirks.py` (NEW; 528 LOC; deterministic builder)
+- `notebooks/state_reporting_quirks.ipynb` (NEW; 37,011 bytes; 18 cells)
+- `RECEIPTS/C8.15_2026-05-14T01-15-00Z.md` (NEW; closing C8.15 receipt)
+- This STATUS section
+
+MODIFIED earlier this session (at PRE-FLIGHT close commit `9d7c49d`):
+- `PRE_FLIGHT_LOG.md` (NEW entry at 2026-05-14T00:30:00Z)
+- `DECISION_LOG.md` (NEW entry at 2026-05-14T00:30:00Z)
+
+### Notes for next session
+
+- **Phase D entry**: D.1 (redirect notices) is human-driven. Agent role: prepare gh CLI commands + notice text; user executes pushes. ~15-30 min real-time.
+- **Cumulative Phase C ~17.5 sessions** of 29-35 (~52%); well within +20% drift cap. Phase D adds ~3-4 sessions (D.1 + D.2 + D.3 + D.4); total project ~20-22 sessions to manuscript submission.
+- **Soft-flag (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo**: not blocking; future HALT-verification sessions handle via the same `git diff HEAD` resolution applied at C8.15 PRE-FLIGHT.
+- **C8.13 PROPOSE-EDIT** (`paper/draft_v2_hmd_styled.md:68` fetal-death timing -13.1% drift) still pending Phase D step 4 manuscript re-pass.
+- **B.12 snapshot regression test** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) remains valid byte-exact through C8.15 (no parquet reshape under notebook-authoring scope).
+- **Tier 3 + Tier 5 deferred** per Q35 user authorization; re-authorization required before any Tier 3 / Tier 5 task starts (tracked in DECISION_LOG 2026-05-12T21:00:00Z).
+
+### Session summary
+
+C8.15 closed across PRE-FLIGHT + DO + VERIFY + RECEIPT in 1 session at the LOW end of the §15 2-session estimate (~3 hours wall-clock total). 2 routing-shape PRE-FLIGHT-time L11s surfaced + user-resolved via AskUserQuestion 2026-05-14T00:30:00Z (precedent: C8.10a/b/c + C8.11 routine routing). Two NEW deterministic notebook builders + 2 NEW shipped notebooks (4 NEW files total). C.6.d demonstrates the F4 contract on `maternal_education_cat4` across the 2009-2013 revised-only era; C.6.e reproduces COMPARABILITY-cited state-quirk counts byte-exact across LA plurality 1992-1994 + OK Hispanic 1992-2002 + MD 1992-1998 + MA 1992-1997 + V1 plurality '5' miscoding 2005-2013, with soft-flag (f) operationally closed by Section 4 recipe demonstration. Cache-cleared pytest 74 PASS + 1 SKIP + 1 XFAIL in 220.80s (within observed range). H10 reproducibility gate intact; zero canonical-data mutation. **Tier 2 CLOSED 7/7 §15-listed tasks COMPLETE**; cumulative Phase C ~17.5 of 29-35 sessions (~52%); Phase D begins next session (D.1 redirect notices, human-driven).
 
 ---
 
