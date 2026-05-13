@@ -1,6 +1,107 @@
-# STATUS — last updated 2026-05-13T21:30:00Z
+# STATUS — last updated 2026-05-13T22:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T22:30:00Z — C8.13 PRE-FLIGHT close + `[plan-update]` (F.1 DROPPED + F.4 DEFERRED to Phase D step 3 + F.5 PROCEEDS this session) — One §7.13-shape PRE-FLIGHT-time L11 surfaced (F.1 empirical falsification: all 4 parquets already produce near-optimal encoding under pyarrow defaults — both fetal-death parquets 100% dict-encoded at 29+36 MB total; all 38+41 non-dict columns in natality + linked are booleans using RLE+PLAIN, the optimal 1-bit-per-value encoding); user-resolved via AskUserQuestion 2026-05-13T22:30:00Z = Option A × 3 (drop F.1, defer F.4, run real F.5 benchmark); §11 plan-update applied this commit (KICKOFF.md line 194 + NEXT_STEPS.md §15.C C8.13 entry re-scope + DECISION_LOG.md 22:30Z entry + this STATUS section); tag `C8.13-pre-do` placed on this commit; zero canonical-data mutation; all 14 C8.12 forward-looking HALTs verified byte-exact (incl. cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL in 152.66s; 4 parquet SHAs preserved); 11 carry-forward soft-flags + 1 NEW (p) F.1 permanently dropped (analog of C.1 NCHS-suppression drop at C8.9); revised effort 1.5-2 → ~1 session under narrowed scope; precedent C8.5/C8.6/C8.7/C8.9 PRE-FLIGHT-time §11 plan-updates with same shape
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.13 PRE-FLIGHT closed.** C8.13 scope narrowed from F.1+F.4+F.5 to F.5-only via PRE-FLIGHT-time §11 plan-update. F.1 (parquet dict-encoding work) permanently dropped — pyarrow defaults already produce near-optimal encoding; the §15 "30-50% size reduction" premise is empirically falsified. F.4 (GitHub Release v1.x with parquets) deferred to Phase D step 3 where it bundles with the staging-dir scrub + v1.x push event. F.5 (pipeline timing benchmark vs manuscript ~6 min fetal-death / ~90 min natality claims at `paper/draft_v2_hmd_styled.md:68`) is the sole active DO deliverable this session.
+
+Cumulative Phase C effort unchanged from C8.12 close at ~14 of 29-35 sessions (~41%); C8.13 closure projected at ~14.5 of 29-35 sessions after F.5 RECEIPT ships. Tier 2 progress unchanged from C8.12 close at 4 of 7 §15-listed tasks COMPLETE; C8.13 in-progress at DO sub-step pending.
+
+### What was done this session (PRE-FLIGHT close + §11 plan-update)
+
+1. **(a)-(d) handshake** completed; user-authorized "proceed in the way you think is best" at 2026-05-13T22:00:00Z; PRE-FLIGHT cheap-checks begun.
+2. **All 14 C8.12 forward-looking HALTs verified byte-exact** (cache-cleared pytest 74 PASS + 1 SKIP + 1 XFAIL in 152.66s; 4 parquet SHAs preserved; 9 tests/mutations file SHAs match; C8.12 DO-step-1+2 file SHAs match; C8.11 file SHAs spot-checked match). Full table at PRE_FLIGHT_LOG.md 2026-05-13T22:30Z.
+3. **F.1 per-column encoding state probed** via `pyarrow.parquet.ParquetFile.metadata.row_group(0).column(c).encodings` across all 340 columns × 4 parquets. **Critical L11 finding**: both fetal-death parquets are already 100% dict-encoded (73/73 + 89/89; 29+36 MB total; no headroom); all 38+41 non-dict columns in natality+linked are booleans using RLE+PLAIN (the optimal encoding for 2-state columns; dict-encoding booleans would not help and would likely hurt). The §15 "30-50% size reduction via use_dictionary=True per column" premise is empirically falsified. Convention 3 Field-value snapshot caught this at the cheap-check moment.
+4. **F.4 substrate verified**: gh CLI 2.87.3 + auth OK (yoelplutchok keyring; token scopes `gist, read:org, repo, workflow`); public repo at v1.0 commit `a18ca3a`; no releases yet.
+5. **F.5 substrate located**: manuscript timing claim at `paper/draft_v2_hmd_styled.md:68` (verbatim cite in PRE_FLIGHT_LOG); per-stage script inventory enumerated for both subprojects (fetal-death has stale `run_pipeline.py` ALL_YEARS=29 per soft-flag (d) → 43-yr manual per-step run is the F.5 measurement approach; natality has no orchestrator per C8.7b DEFERRED → 6-script chain is the F.5 measurement approach).
+6. **AskUserQuestion 2026-05-13T22:30:00Z** raised with 3 questions on F.1/F.4/F.5 scope resolution; user answered Option A × 3 (drop F.1, defer F.4 to Phase D step 3, run real F.5 benchmark this session).
+7. **§11 plan-update applied** in this commit: (i) `KICKOFF.md` line 194 revised (Tier-2 C8.13 description + effort 1.5-2 → ~1 session); (ii) `NEXT_STEPS.md` §15.C C8.13 entry revised with full PRE-FLIGHT-time-falsification preamble + F.5-only DO scope + revised VERIFY criteria; (iii) `DECISION_LOG.md` 2026-05-13T22:30:00Z appended (3 alternatives × 3 sub-resolutions; 4 protocol justifications; 4 residual risks; soft-flag (p) filed); (iv) `PRE_FLIGHT_LOG.md` 2026-05-13T22:30:00Z appended (Table 1: 340-col encoding state; Table 2: F.5 script inventory; Table 3: F.4 substrate); (v) this STATUS section.
+8. **Pending**: commit `[plan-update] C8.13 PRE-FLIGHT` bundling (i)-(v); tag `C8.13-pre-do` on this commit; then begin F.5 DO (background-compute).
+
+### Last completed step
+
+Single `[plan-update] C8.13 PRE-FLIGHT` commit ships: 5 file edits (KICKOFF.md + NEXT_STEPS.md + DECISION_LOG.md + PRE_FLIGHT_LOG.md + this STATUS section). Tag `C8.13-pre-do` follows on the commit. F.5 DO begins post-commit.
+
+### In-progress
+
+C8.13 — PRE-FLIGHT CLOSED; DO pending. F.5 benchmark execution next: per-stage manual timing of both pipelines + reconciliation vs manuscript claim + RECEIPT + `C8.13-complete` tag. Estimated ~96 min compute + ~30 min RECEIPT/VERIFY.
+
+### Next planned task
+
+**C8.13 F.5 DO** (this session, post-commit): (i) author `scripts/_time_pipeline.py` lightweight timer wrapper (~50 LOC; CSV log per stage); (ii) launch fetal-death 43-yr per-step benchmark in background (parse loop × 43 + harmonize + derive ≈ ~6-9 min wall); (iii) launch natality+linked per-step benchmark in background (parse_all_v1_years + parse_all_linked_years + 2× harmonize + 2× derive ≈ ~90 min wall); (iv) monitor both; (v) aggregate into `docs/PIPELINE_TIMING_BENCHMARK.md`; (vi) compare vs manuscript ~6/~90 min claims at ±10% tolerance; (vii) H10 reproducibility gate — verify 4 parquet SHAs preserved byte-exact post-re-derive; (viii) RECEIPT + tag `C8.13-complete`.
+
+Per §15 revised C8.13 entry: if measured wall-clock falls outside ±10%, **propose** manuscript line 68 edit (do NOT mutate the manuscript line this session); the actual edit bundles to Phase D step 4 per the C8.12 RECEIPT framing.
+
+After C8.13 close → **C8.14** (Worked-example FAQ + PROJECT_STRUCTURE.md upgrade; 1 session).
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.** Note: C8.13 F.5 routes around the orchestrator absence via per-step manual invocation; the orchestrator authoring itself is NOT C8.13 scope.
+
+### Open questions for human
+
+None blocking for C8.13 F.5 DO. The F.5 plan is fully specified at NEXT_STEPS.md §15.C C8.13 revised entry + DECISION_LOG 22:30Z + this STATUS section.
+
+**Open soft-flags (11 carried + 1 NEW (p) F.1 dropped):**
+
+Carried unchanged from C8.12 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b; **brushed-against this session for F.5 but NOT fixed** — documented as F.5 caveat) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X).
+
+**NEW soft-flag (p) this PRE-FLIGHT**: F.1 dict-encoding work permanently dropped per user authorization 2026-05-13T22:30:00Z. Any future per-parquet encoding work (alternative codecs ZSTD/LZ4; row-group sizing; column-group reshape) requires fresh §11 plan-update + DECISION_LOG entry. Reconsider only on explicit user re-authorization. Analog of C.1 NCHS-suppression permanent drop at C8.9.
+
+### Forward-looking HALTs for next sub-step (F.5 DO) — Convention 4
+
+Restated for cheap-check access at the F.5 DO start.
+
+1. **`C8.13-pre-do` tag** present on this commit. Verify: `git tag --list 'C8.13*'` shows `C8.13-pre-do`; `C8.13-complete` absent (will be placed post-RECEIPT).
+2. **All 4 parquet SHAs unchanged byte-exact** at F.5 DO start: fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad5323d…` / linked_der=`9b828a4d…`.
+3. **At F.5 DO close (post-re-derive)**: all 4 parquet SHAs MUST still match byte-exact (H10 reproducibility gate; primary §7 halt). Any drift = §7.18 halt + FIX_LOG entry + halt-and-ask.
+4. **Cache-cleared pytest at F.5 DO close**: 74 PASS + 1 SKIP + 1 XFAIL preserved (the F.5 re-derive must not affect any test outcome).
+5. **`scripts/_time_pipeline.py` authored** (NEW; ~50 LOC; lightweight timer; CSV log).
+6. **`docs/PIPELINE_TIMING_BENCHMARK.md` authored** (NEW) with per-stage breakdown + reconciliation vs manuscript claim + machine spec + caveats.
+7. **No `manuscript/draft_v2_hmd_styled.md` mutation this session** (per C8.12 RECEIPT framing: manuscript-edit-bundles-at-Phase-D-step-4). If F.5 surfaces >±10% drift, RECEIPT documents the PROPOSE-EDIT routing.
+8. **No KICKOFF.md / NEXT_STEPS.md edit at F.5 DO close** — the C8.13 plan is settled by this PRE-FLIGHT plan-update; F.5 DO is execution-only.
+9. **No NEW DECISION_LOG entry at F.5 DO close** unless an unexpected residual surfaces (anticipated: zero; the plan-update has settled the design questions).
+10. **At F.5 DO close**: `git tag --list 'C8.13*'` shows `C8.13-pre-do` + `C8.13-complete`; STATUS.md has a new dated section appended; PRE_FLIGHT_LOG entry sha unchanged from this PRE-FLIGHT close (no per-sub-step PRE-FLIGHT entry for F.5; the upfront PRE-FLIGHT covers it).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- V3b/V3a/V1 baseline parquets preserved (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.12 DO outputs unchanged.
+
+MODIFIED this session (§11 plan-update only):
+- `KICKOFF.md` (line 194 revised — Tier-2 C8.13 description + effort)
+- `NEXT_STEPS.md` (§15.C C8.13 entry revised — full re-scope preamble + F.5-only DO scope)
+- `DECISION_LOG.md` (NEW entry 2026-05-13T22:30:00Z)
+- `PRE_FLIGHT_LOG.md` (NEW entry 2026-05-13T22:30:00Z)
+- This STATUS section
+
+NEW this session (post-this-commit, F.5 DO):
+- (pending) `scripts/_time_pipeline.py`
+- (pending) `docs/PIPELINE_TIMING_BENCHMARK.md`
+- (pending) `RECEIPTS/C8.13_<UTC>.md`
+
+### Notes for next sub-step (F.5 DO)
+
+- **F.5 DO begins immediately post-commit (this session continues).** Background-compute strategy: launch fetal-death (shorter; ~6-9 min) and natality+linked (longer; ~90 min) in parallel; BashOutput-monitor.
+- **CRITICAL: idempotency contract.** Each pipeline re-run MUST produce the SAME parquet SHAs as currently shipped. Mechanism: pyarrow + pandas are deterministic given identical inputs; pinned `uv.lock` ensures pyarrow 18.1.0; raw zips are byte-identical (SHA-verified at C8.12 B.11). H10 reproducibility gate is NON-NEGOTIABLE; any SHA drift = §7.18 halt + halt-and-ask.
+- **F.5 timing approach: per-step manual run.** Not via `run_pipeline.py` (stale ALL_YEARS=29 per soft-flag (d); C8.7b scope). Each stage runs in its respective build dir; the timer wrapper at `scripts/_time_pipeline.py` records wall-clock per stage.
+- **The validate stage is EXCLUDED from the F.5 timing claim** per the manuscript's "pipeline runs end-to-end" framing (interpreted as parse → derive primary chain; validate is the Level-2 verification framing).
+- **B.12 snapshot regression test remains valid** under F.1-dropped scope: no parquet reshape; the existing baseline `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` continues to be the canonical per-column SHA anchor.
+- **Soft-flag (p)** filed in this commit — F.1 permanently out of pre-submission scope; reconsider only on explicit user re-authorization.
+
+### Session summary
+
+C8.13 PRE-FLIGHT closed in ~30 min wall time post-(a)-(d) handshake. Cheap-check probe of per-column encoding state across 340 columns × 4 parquets surfaced an L11-class §15 plan-claim falsification (F.1 30-50% size reduction empirically untrue for our specific schemas). User-resolved via AskUserQuestion 2026-05-13T22:30:00Z = Option A × 3 (drop F.1, defer F.4 to Phase D step 3, run real F.5 benchmark this session). §11 plan-update applied in one bundled commit (KICKOFF + NEXT_STEPS + DECISION_LOG + PRE_FLIGHT_LOG + STATUS). Tag `C8.13-pre-do` follows on this commit. F.5 DO begins post-commit with ~96 min background compute + ~30 min RECEIPT/VERIFY; total session estimate ~2-2.5 hours wall-clock. Zero canonical-data mutation in PRE-FLIGHT phase; H10 reproducibility gate is the primary §7 halt for F.5 DO. Precedent for the PRE-FLIGHT-time §11 plan-update pattern: C8.5 / C8.6 / C8.7 / C8.9 (4 prior instances). Tier 2 progress 4 of 7 §15-listed tasks COMPLETE (unchanged from C8.12 close); C8.13 in-progress.
 
 ---
 

@@ -23,6 +23,69 @@
 
 ---
 
+## 2026-05-13T22:30:00Z — [plan-update] C8.13 PRE-FLIGHT — F.1 (parquet dict-encoding work) DROPPED + F.4 (GitHub Release) DEFERRED to Phase D step 3 + F.5 (timing benchmark) PROCEEDS this session; revise §15 C8.13 entry + KICKOFF.md Tier-2 line 194; effort revised 1.5-2 → ~1 session
+
+**Choice (LLM at C8.13 PRE-FLIGHT 2026-05-13T22:30:00Z; user-resolved via AskUserQuestion):** The §15 C8.13 PRE-FLIGHT cheap-check probed per-column encoding state via `pyarrow.parquet.ParquetFile.metadata.row_group(0).column(c).encodings` across all 340 columns × 4 parquets and surfaced a §7.13-shape L11 PRE-FLIGHT-time finding: the §15 plan claim "Re-write derive.py's parquet-write call with `use_dictionary=True` per column [→] typically yields 30-50% size reduction" is empirically falsified by the actual encoding state. Specifically:
+
+1. **Both fetal-death parquets are already 100% dict-encoded** (73/73 `fd_harm` + 89/89 `fd_der`; 29 + 36 MB total). PyArrow's default `use_dictionary=True` (boolean) already produces this state; the §15 plan would not change behavior. No headroom anyway (65 MB combined).
+2. **All 38+41 non-dict columns in `nat_der` (2.2 GB) + `linked_der` (1.3 GB) are booleans using RLE+PLAIN** — the optimal 1-bit-per-value encoding for 2-state columns. Forcing dict-encoding on booleans does not reduce size and likely increases it (a dict + indices is strictly larger than RLE on 2 distinct values).
+3. **Achievable size reduction from F.1 as scoped in §15 ≈ 0%** (or negative if dict encoding is forced onto boolean columns). The §15 "30-50%" estimate from `EXPLORATION_REPORT.md` §F.1 was a generic prior; it did not survive the per-parquet empirical probe.
+
+User-resolved via AskUserQuestion 2026-05-13T22:30:00Z:
+- **F.1 = Option A (DROP entirely + plan-update):** Ship this DECISION_LOG entry + revise §15 C8.13 entry + KICKOFF.md line 194. No parquet mutation; no SHA shift; B.12 snapshot regression test remains valid (the §15-anticipated "one-time SHA shift" interaction is now MOOT).
+- **F.4 = Option A (DEFER to Phase D step 3):** GitHub Release v1.x with parquet uploads moves to the staging-dir scrub + v1.x push session for one bundled public-facing release event. Substrate verified ready (gh 2.87.3 + auth OK with `repo` scope).
+- **F.5 = Option A (Run real end-to-end benchmark this session):** Background per-stage timing measurement of both pipelines vs `paper/draft_v2_hmd_styled.md:68` claims (~6 min fetal-death + ~90 min natality+linked). ±10% tolerance = PASS; >±10% → propose manuscript edit to Phase D step 4 (no in-session manuscript mutation).
+
+**Alternatives considered (F.1):**
+
+1. **(A) DROP F.1 entirely + ship DECISION_LOG entry + §11 plan-update (CHOSEN).** Pro: cleanest; matches §11 process; precedent C8.5/C8.6/C8.7/C8.9 PRE-FLIGHT-time plan-updates; zero parquet risk; B.12 snapshot stays valid. Con: leaves a (small) latent size-reduction question if pyarrow defaults are ever sub-optimal under future schema changes — addressed by leaving the path open via soft-flag (p) re-authorization mechanism.
+2. **(B) Replace F.1 with broader encoding work.** Pro: try alternative compression codecs (e.g. ZSTD vs current default SNAPPY); try row-group sizing on the high-cardinality columns; might yield real reduction. Con: substantial scope-creep (each experiment requires re-derive + B.12 baseline regen + SHA shift); §15 1.5-2 session estimate would blow past +20% drift cap; ZSTD vs SNAPPY trade-off involves dependency surface considerations (older pyarrow versions vs newer; CI compatibility) — substantively bigger task than C8.13 was scoped for.
+3. **(C) Document-only F.1.** Pro: ship `docs/PARQUET_ENCODING_STATE.md` audit summary; no parquet mutation, no codec experiments. Con: incomplete relative to user authorization Option A which closes the question definitively; introduces an additional doc file that would need maintenance across future parquet rebuilds. The DECISION_LOG entry + revised §15 + KICKOFF.md is sufficient documentation.
+
+**Alternatives considered (F.4):**
+
+1. **(A) DEFER to Phase D step 3 (CHOSEN).** Pro: one bundled public-facing release event; Phase D step 3 already does the staging-dir scrub + v1.x push that would precede the Release create; cleaner narrative for users. Con: users behind Zenodo-blocked firewalls wait an additional ~16 sessions (the cumulative Phase C remaining + Phase D startup) before parquets are available via GitHub Release.
+2. **(B) Ship F.4 now on v1.0 commit.** Pro: users get parquets sooner. Con: two release events (this + Phase D step 3); each requires release-notes drafting + Zenodo cross-link maintenance + version-bumping decisions; v1.0 commit predates all the Phase B/C work so the parquets shipped wouldn't reflect the current state at the v1.x sync time — confusing for users.
+
+**Alternatives considered (F.5):**
+
+1. **(A) Run real end-to-end benchmark this session (CHOSEN).** Pro: closes the F.5 VERIFY criterion definitively; provides honest current-state measurement; manuscript-cited number stays defensible. Con: ~96 min compute (90 min natality+linked + 6 min fetal-death) + idempotency-preservation contract (re-run MUST produce byte-identical SHAs; H10 reproducibility gate is non-negotiable).
+2. **(B) Defer F.5 to Phase D step 4.** Pro: Phase D step 4 already refreshes every manuscript-cited number; would fold cleanly. Con: defers a §15-listed Tier-2 task to Phase D; cumulative Tier-2 closure ticks down; manuscript-cited number stays unvalidated longer.
+3. **(C) Quick analytical estimate.** Pro: cheapest. Con: no real measurement; can't honestly claim ±10% verification; defeats the purpose of the F.5 work.
+
+**Reason:** Option A (drop F.1) preserves four protocol concerns: (i) §2 principle 2 fail-closed — falsified premise → halt and ask; user authorized drop; do not silently work around. (ii) §2 principle 1 cheap-before-expensive — the cheap-check at PRE-FLIGHT (pyarrow encoding probe; ~5 seconds) caught the falsification BEFORE the expensive re-derive (~96 min) + B.12 re-snapshot (~90 s) would have committed. (iii) §11 plan-update process — `[plan-update]` commit prefix; KICKOFF + NEXT_STEPS §15 edits ship in the same commit. (iv) §8 row L11 (stale roadmap claim) — encoded via the same shape as C8.5 / C8.6 / C8.7 / C8.9 PRE-FLIGHT-time L11 catches. Option A (defer F.4) preserves §15 Tier-2 closure narrative (the Phase D step 3 bundling is canonically how public-repo synchronization happens; F.4 fits naturally there). Option A (real F.5 benchmark) preserves §17 *"ready to submit"* criterion 2 (deterministic re-runnable pipelines) by giving the manuscript a defensible timing number.
+
+**Three protocol justifications:** (i) §8 matrix L11 row (stale roadmap claim) — the §15 "30-50% size reduction" claim is exactly an L11 case caught at the cheap-check moment. (ii) Convention 3 Field-value snapshot (PRE-FLIGHT subsection) — the per-parquet encoding-state probe is the canonical Convention-3 application; the table-of-340-columns × 4 parquets in PRE_FLIGHT_LOG 2026-05-13T22:30Z is the artifact. (iii) §11 plan-update process — the precedent chain C8.5 / C8.6 / C8.7 / C8.9 establishes that PRE-FLIGHT-time §15 plan-claim falsification is resolved via user-authorized AskUserQuestion + `[plan-update]` commit prefix.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T22:30:00Z Table 1 — per-parquet encoding state probe results (340 columns total; 38+41 booleans using RLE+PLAIN); the empirical evidence.
+- `paper/draft_v2_hmd_styled.md:68` — manuscript timing-claim cite (F.5 substrate); verbatim text recorded in PRE_FLIGHT_LOG.
+- AskUserQuestion 2026-05-13T22:30:00Z — user authorization for Option A × 3.
+- `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6539849d931951e89cc3965930dabcaa88d20b2616a74fcdc85df153d` — B.12 snapshot regression baseline; remains valid under F.1-dropped re-scope (no SHA shift).
+
+**Verifiable by:**
+
+- `git tag --list 'C8.13-*'` shows `C8.13-pre-do` post-this-commit; `C8.13-complete` post-F.5 RECEIPT.
+- `uv run python -c "import pyarrow.parquet as pq; [...]"` re-running the C8.13 PRE-FLIGHT encoding probe reproduces Table 1 (73/73, 89/89, 46+38, 53+41) byte-exact.
+- KICKOFF.md line 194 + NEXT_STEPS.md §15.C C8.13 entry reflect this plan-update.
+- `gh release list --repo yoelplutchok/vital-statistics-harmonization` returns empty at this PRE-FLIGHT moment + at Phase D step 3 + 1 entry post-Phase-D-step-3 close.
+
+**Reversible:** yes — `git revert <this plan-update commit>` restores the original §15 C8.13 entry + KICKOFF.md line 194 + removes this DECISION_LOG entry. No parquet, validator, or canonical-data mutation. Reversibility is theoretical only; the empirical encoding-state probe stands regardless of git state.
+
+**Residual risks:**
+
+- (a) **Future schema-bumping tasks may surface new high-cardinality string columns** that would benefit from explicit `use_dictionary=True` (pyarrow defaults handle this case for known-string types but edge cases exist). Defense: soft-flag (p) re-authorization mechanism; any future encoding-work task triggers a fresh §11 plan-update + DECISION_LOG entry.
+- (b) **The 38+41 boolean columns COULD benefit from a different encoding strategy** (e.g., bit-packed BIT_PACKED instead of RLE+PLAIN for high-density true/false patterns) but pyarrow's RLE+PLAIN default is already near-optimal for the typical density patterns observed (most CA_* and INFECTION_* columns are >95% null/0); investigating finer-grained encoding is out of pre-submission scope.
+- (c) **Manuscript line 68 timing claim** (~6 min / ~90 min) might be confirmed at F.5 DO as wall-clock-PASS within ±10%, OR the measurement might fall outside ±10% and trigger a propose-edit-for-Phase-D-4. The PROPOSE-EDIT path is procedural-only — the actual manuscript line edit lands at Phase D step 4 per the C8.12 RECEIPT framing (manuscript-edit-bundles-at-Phase-D-step-4).
+- (d) **H10 reproducibility gate at F.5 DO** is non-negotiable — every re-derive parquet MUST sha256-match the current shipped SHA byte-exact. Any drift is a §7.18 halt + FIX_LOG cascade.
+
+**Backport scope:** None. C8.12 RECEIPT's Forward-looking HALT #12 ("C8.13 PRE-FLIGHT must anticipate B.12 snapshot-regression interaction") was a defensive anticipation; this plan-update resolves it as MOOT (no parquet reshape → no B.12 SHA shift → no re-snapshot needed). The "anticipated re-snapshot" closure is the documentation of this resolution in the C8.13 RECEIPT's forward-looking-HALTs section.
+
+**Soft-flag (p) filed:** F.1 dict-encoding work permanently dropped from pre-submission scope; reconsider only on explicit user re-authorization. Analog of (i) the C.1 NCHS-suppression permanent drop at C8.9 and (ii) the C8.5b Dockerfile DEFERRED entry awaiting docker-available trigger. Any future per-parquet encoding work (alternative codecs ZSTD/LZ4; row-group sizing; column-group reshape) requires fresh §11 plan-update + DECISION_LOG entry.
+
+---
+
 ## 2026-05-13T21:00:00Z — C8.12 (DO step 2, B.12 snapshot baseline) — Per-column SHA-256 snapshot stored as CSV at `tests/snapshots/v<X>_<UTC>_columns.csv`; row-group-streamed Arrow buffer hashing; re-snapshot triggered by §11 plan-update on authorized parquet reshape (resolves soft-flag (k) from C8.12 PRE-FLIGHT)
 
 **Choice (LLM at C8.12 B.12 DO step 2):** The B.12 per-column-SHA snapshot baseline ships as a single committed CSV at `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` with six columns: `parquet,column_name,column_index,arrow_type,row_count,column_sha256`. Hash function (`tests/snapshots/_build_snapshot.py::column_sha256_map`) streams each parquet row-group by row-group, projecting every column at once for sequential-read efficiency, and folds each Arrow chunk's underlying memory buffers into the per-column SHA-256 (null buffer slots fed `b"\\x00"` so type-shape contributes deterministically). The committed baseline is **frozen until an authorized §11 plan-update reshapes a parquet** (anticipated triggers: C8.13 dict-encoding pass; latest-year refresh; harmonization-rule revision). At that point a sibling `v<X+1>_<UTC>_columns.csv` is generated alongside the rebuild commit, and `tests/test_parquet_column_snapshot.py::latest_baseline_path` automatically picks the lexicographic-latest (the `v<X>_<UTC>` convention is sort-stable).

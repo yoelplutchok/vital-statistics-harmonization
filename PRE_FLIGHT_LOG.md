@@ -8,6 +8,170 @@
 
 ---
 
+## PRE-FLIGHT for C8.13 — 2026-05-13T22:30:00Z — Performance + GitHub Release artifacts + pipeline timing benchmark (F.1 + F.4 + F.5) — **RESULT: HALT (one §7.13-shape PRE-FLIGHT-time L11 surfaced) → resolved via AskUserQuestion 2026-05-13T22:30:00Z (F.1 dropped + F.4 deferred + F.5 ACTIVE; precedent: C8.5/C8.6/C8.7/C8.9 PRE-FLIGHT-time §11 plan-update); PROCEED to C8.13 DO with narrowed scope**
+
+### Scope summary
+
+C8.13 §15.C entry (NEXT_STEPS.md lines 1208-1224, pre-this-plan-update) names 3 deliverables: **(F.1)** parquet column-dictionary tuning per low-cardinality column with anticipated 30-50% size reduction; **(F.4)** GitHub Release v1.x with parquet uploads alongside Zenodo; **(F.5)** pipeline timing benchmark vs manuscript `~6 min fetal-death / ~90 min natality` claims (paper/draft_v2_hmd_styled.md:68). KICKOFF.md Phase C Tier-2 line 194 + STATUS 2026-05-13T21:30:00Z line 39 name C8.13 as next §15 task post-C8.12. Estimated effort 1.5-2 sessions per §15. §15 halt-condition flag: "B.12 snapshot-regression interaction (one-time SHA shift expected — bundle DECISION_LOG note)."
+
+**Session scope this PRE-FLIGHT (per (a)-(d) handshake; user-authorized "proceed in the way you think is best" 2026-05-13T22:00:00Z):** ship PRE-FLIGHT entry + §11 plan-update (KICKOFF.md + NEXT_STEPS.md §15.C C8.13 re-scope + DECISION_LOG entry) + tag `C8.13-pre-do` in one commit; F.5 DO + RECEIPT span the same session via background-compute (~96 min natality+linked + ~6-9 min fetal-death real timing).
+
+### Inputs
+
+- [x] **All 14 C8.12 Forward-looking HALTs verified byte-exact** (table below). ✓
+- [x] **Existing parquets enumerated** for F.1 + F.5 substrate: 4 parquets on disk; sizes 29 + 36 MB (fd) + 2.2 GB (nat) + 1.3 GB (linked) = ~3.6 GB total. ✓
+- [x] **Per-column encoding state probed via `pyarrow.parquet.ParquetFile.metadata.row_group(0).column(c).encodings`** for all 4 parquets (340 columns total): see Field-value snapshot Table 1 below. ✓ **(L11-surfacing finding — see Halt conditions tripped)**
+- [x] **F.4 substrate**: `gh` CLI v2.87.3 installed; auth status `Logged in to github.com account yoelplutchok` with token scopes `gist, read:org, repo, workflow` (`repo` scope sufficient for Release create); `gh release list --repo yoelplutchok/vital-statistics-harmonization` returns empty (no releases yet on the public repo). ✓
+- [x] **F.5 substrate**: `fetal_death/scripts/run_pipeline.py` exists at the monorepo subproject path (stale `ALL_YEARS=29` per soft-flag (d); see PRE-FLIGHT Field-value snapshot Table 2 for natality per-step scripts — no orchestrator per C8.7b DEFERRED status). Manuscript timing claim located at `paper/draft_v2_hmd_styled.md:68`: *"The fetal-death pipeline runs end-to-end in approximately six minutes on a 2024-vintage laptop; the natality pipeline (which also produces the linked file) takes approximately ninety minutes, dominated by the fixed-width parse stage."* ✓
+- [x] **Raw zip inventory**: 43 fetal-death + 35 natality + 19 linked-cohort zips present at canonical absolute paths (verified via `ls`). ✓
+- [x] **No stale checkpoints**: `git status --short` empty; `C8.13-pre-do` tag does NOT yet exist (will be placed post-PRE-FLIGHT, pre-DO). ✓
+
+**C8.12 Forward-looking HALT verification table (Convention 4 carry-over):**
+
+| HALT # | Assertion | Verified | Note |
+|---|---|---|---|
+| 1 | `C8.12-complete` tag present on commit `51f6836` | ✓ | `git tag --list 'C8.12*'` shows both `C8.12-pre-do` + `C8.12-complete` |
+| 2 | `tests/mutations/` package exists with 9 files at documented SHAs | ✓ | All 9 files present (1 init + 1 runner + 7 mutation tests) |
+| 3 | `tests/mutations/__init__.py` sha=`e3b0c44298fc1c14…` (canonical empty-file SHA) | ✓ | matches exactly |
+| 4 | `tests/mutations/_runner.py` sha=`98ecb483ca24a660…` | ✓ | matches exactly |
+| 5 | 7 mutation test file SHAs byte-exact | ✓ | All 7 match (compare_external_targets_v1=`691b5b8f…`, compare_external_targets_v3_linked=`83d9ab51…`, validate_2022=`4305f89f…`, validate_external=`a13cedf3…`, validate_external_v2=`833e2277…`, validate_linked_parquets=`724bbe49…`, validate_v1_invariants=`b7d8df48…`) |
+| 6 | 4 parquet SHAs unchanged byte-exact | ✓ | fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad5323d…` / linked_der=`9b828a4d…` all match |
+| 7 | All C8.12 DO-step-1 + DO-step-2 file SHAs unchanged | ✓ | `fetal_death/file_inventory.csv` `2f2ba2c9…` / `tests/test_inventory_invariants.py` `823e2a8d…` / `tests/test_source_zip_sha_stability.py` `e09158af…` / `tests/test_parquet_column_snapshot.py` `6c605783…` / `tests/snapshots/__init__.py` empty-sha / `tests/snapshots/_build_snapshot.py` `a27b5e70…` / `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` `b6fe22d6…` all match |
+| 8 | All C8.11 file SHAs unchanged | ✓ | docs/NCHS_SOURCE_MANIFEST.md=`ed2a44d3…` / docs/COMPARABILITY.md=`10cead2b…` / migrations/v2.7.0-to-v2.8.0-natality.md=`96bb1c54…` / migrations/v2.0.0-to-v2.4.0-fetal-death.md=`90e010a7…` all match |
+| 9 | Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL | ✓ | **74 passed, 1 skipped, 1 xfailed in 152.66s** (cache-cleared via `find . -name __pycache__ -delete`; matches PASS/SKIP/XFAIL counts exactly; wall-time 152.66s is faster than the 209.70s C8.12 baseline but Convention 1 SHAPE-not-VALUE pin is on counts only, not wall-time — passes). |
+| 10 | The 1 SKIP is `test_validate_linked_parquets_mutation` | ✓ | confirmed via `pytest tests/mutations/ -v` collection: SKIP occurs at the `natality/output/linked/` missing-input check |
+| 11 | Next task = C8.13 (performance + GitHub release artifacts) | ✓ | This entry executes |
+| 12 | C8.13 PRE-FLIGHT must anticipate B.12 snapshot-regression interaction | ✓ | RESOLVED at this PRE-FLIGHT: F.1 dropped → no parquet reshape → no B.12 SHA shift → no re-snapshot required this session. (The §15 anticipated interaction is moot under the F.1-dropped re-scope.) |
+| 13 | No §11 plan-update needed at C8.12 close | N/A at C8.13 close: §11 plan-update REQUIRED at this PRE-FLIGHT close per the F.1 falsification finding (precedent: C8.5/C8.6/C8.7/C8.9 PRE-FLIGHT-time plan-updates). | — |
+| 14 | Soft-flag (l) RESOLVED-as-not-applicable at C8.12 receipt | ✓ | preserved unchanged |
+
+### Environment
+
+- [x] Python version: 3.13.9 (required ≥3.11) ✓
+- [x] pandas version: 2.3.2 (required ≥2.3) ✓
+- [x] pyarrow version: 18.1.0 (required ≥18.0; C8.12 DECISION_LOG 21:00Z pinned dict-encoding contract to this version) ✓
+- [x] DuckDB Python: present (C8.9 lockfile) ✓ (not exercised by C8.13)
+- [x] gh CLI: 2.87.3, auth OK with `repo` scope ✓ (F.4 substrate)
+- [x] Working directory clean (`git status --short` empty on `main` at `51f6836`): ✓
+- [x] On expected branch (`main`): ✓
+- [x] Active tags on HEAD: `C8.12-complete` (verified) ✓
+- [x] uv-managed `.venv` matches `uv.lock` (C8.5a baseline): ✓
+
+### Source documentation
+
+C8.13 is benchmark + plan-update + docs work; no new NVSR PDFs or NCHS user guides are CONSUMED. The substantive inputs are (i) the 4 harmonized + derived parquets' physical encoding state (F.1 probe substrate); (ii) `paper/draft_v2_hmd_styled.md:68` for the F.5 manuscript timing claim (cite-anchored at line 68); (iii) `gh release` API surface for F.4. No L9 cheap-checks on external PDFs required. ✓
+
+The manuscript citation `paper/draft_v2_hmd_styled.md:68` reads (verbatim): *"Re-deriving the parquet from a fresh download of the NCHS source zips produces a byte-identical file, and SHA-256 checksums for every shipped artifact are committed in `PROVENANCE.md`. The fetal-death pipeline runs end-to-end in approximately six minutes on a 2024-vintage laptop; the natality pipeline (which also produces the linked file) takes approximately ninety minutes, dominated by the fixed-width parse stage."* The ±10% tolerance is the §15 VERIFY criterion.
+
+### Outputs
+
+- [x] **NEW files (must not exist before DO):**
+  - `RECEIPTS/C8.13_<UTC>.md`: will be written at C8.13 RECEIPT phase post-F.5 benchmark
+  - `docs/PIPELINE_TIMING_BENCHMARK.md` (NEW; F.5 results record + per-stage breakdown + reconciliation vs manuscript claim): does NOT exist ✓
+- [x] **MAY BE MODIFIED:**
+  - `paper/draft_v2_hmd_styled.md` line 68 — IF F.5 benchmark surfaces a >±10% drift from `~6 min / ~90 min`, update the timing prose; current sha probed at DO baseline. If within tolerance, NO edit.
+  - `KICKOFF.md` line 194 (C8.13 description) — §11 plan-update applied this commit
+  - `NEXT_STEPS.md` §15.C C8.13 entry (lines 1208-1224) — §11 plan-update applied this commit
+- [x] **APPEND-ONLY state files** (per Anti-Pattern #1):
+  - `PRE_FLIGHT_LOG.md`: this entry (written before DO begins)
+  - `STATUS.md`: new dated section at top at PRE-FLIGHT close + further appends per DO/RECEIPT phases
+  - `DECISION_LOG.md`: F.1-falsification entry resolving the L11 cheap-check finding
+  - `FIX_LOG.md`: no FIX entry anticipated this session (F.1 finding is a §15 plan-claim L11, not a code-state bug; documented in DECISION_LOG per the C8.5/C8.6/C8.7/C8.9 precedent)
+  - `LESSONS.md`: NO new entry. The L11 pattern is already in the §8 matrix; this instance is one more reinforcement of the pattern, not a new mistake class.
+- [x] **NOT mutated** (forward-looking HALT for VERIFY):
+  - 4 parquets unchanged ✓ — F.1 dropped means zero parquet mutation this session
+  - All C8.9 + C8.10a/b/c + C8.11 + C8.12 file SHAs preserved ✓
+  - `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` unchanged (no re-snapshot required under F.1-dropped scope) ✓
+  - test suite baseline 74 PASS + 1 SKIP + 1 XFAIL preserved (F.5 benchmark does not touch test surface) ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+Per §5 template second bullet: enumerate target rows/cells/columns + verify current values against task plan's assumed state. C8.13's substantive PRE-FLIGHT-time field-value snapshot is **the parquet per-column encoding state** (F.1 substrate; the source of the falsified §15 premise) + **the manuscript timing claim** (F.5 substrate; cite-anchored at line 68) + **per-stage script inventory** (F.5 measurement surface).
+
+**Table 1: Per-parquet encoding state (F.1 probe; 340 columns total)**
+
+| Parquet | Rows | Cols | RGs | File size | Dict-encoded cols (RG0) | Non-dict cols (RG0) | Non-dict-col dtypes |
+|---|---|---|---|---|---|---|---|
+| `output/harmonized/fetal_death_harmonized.parquet` | 2,427,233 | 73 | 3 | 0.029 GB | 73/73 (100%) | 0 | N/A |
+| `output/harmonized/fetal_death_derived.parquet` | 2,427,233 | 89 | 3 | 0.036 GB | 89/89 (100%) | 0 | N/A |
+| `natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | 278 | 2.203 GB | 46/84 (55%) | 38 | **All 38 = bool, RLE+PLAIN** |
+| `natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | 150 | 1.300 GB | 53/94 (56%) | 41 | **All 41 = bool, RLE+PLAIN** |
+
+**F.1 critical finding (L11 / §7.13 PRE-FLIGHT-time discovery):** The §15 PRE-FLIGHT-input claim "Re-write derive.py's parquet-write call with `use_dictionary=True` per column [→] typically yields 30-50% size reduction" is **empirically falsified** by the encoding-state probe:
+
+1. **Both fetal-death parquets are already 100% dict-encoded** (73/73 + 89/89). PyArrow defaults already produce this state for fd. Total fd size = 65 MB; no headroom anyway.
+2. **All 38+41 non-dict columns in natality + linked are booleans using RLE+PLAIN encoding** — the optimal 1-bit-per-value encoding for 2-state columns. Forcing dict-encoding on booleans does not help (a dict + indices is strictly larger than RLE on 2 distinct values).
+3. **PyArrow's default `use_dictionary=True` (boolean)** already enables dict encoding for cardinality-appropriate columns; the encoding choice per column is per-column-adaptive at the column-writer level. The §15 plan ("`use_dictionary=True` per column") would not change behavior because pyarrow already does the right thing.
+4. **Achievable size reduction from F.1 as scoped in §15** ≈ 0% (or negative if dict encoding is forced onto boolean columns).
+
+This is a textbook L11-class stale §15 plan claim catch — the §15 plan was authored from the `EXPLORATION_REPORT.md` `~30-50% reduction` heuristic without first probing the actual per-parquet encoding state. The Convention 3 Field-value snapshot is precisely the cheap-check moment designed to catch this. Precedent: C8.5 (PRE-FLIGHT split § 5 → C8.5a + C8.5b on docker absence), C8.6 (PRE-FLIGHT deferred live-CI verify to Phase D step 3), C8.7 (PRE-FLIGHT split → C8.7a + C8.7b on orchestrator scope realism), C8.9 (PRE-FLIGHT dropped C.1 on NCHS state-suppression policy). All five precedents follow the same shape: cheap-check at PRE-FLIGHT discovers the §15 plan's substrate doesn't exist as the plan assumed; user-resolved via AskUserQuestion; §11 plan-update applied in the same commit.
+
+**Resolution (user-authorized via AskUserQuestion 2026-05-13T22:30:00Z):** F.1 **DROPPED** from C8.13 scope. The §11 plan-update applied this commit revises KICKOFF.md line 194 + NEXT_STEPS.md §15.C C8.13 entry to remove F.1 from the active DO scope; the falsified-premise documentation lands in DECISION_LOG.md 2026-05-13T22:30:00Z. Zero parquet mutation; zero SHA shift; B.12 snapshot regression test remains valid.
+
+**Table 2: F.5 per-stage script inventory (timing measurement surface)**
+
+| Subproject | Stage | Entry-point script | Cardinality |
+|---|---|---|---|
+| fetal_death | run_pipeline orchestrator | `fetal_death/scripts/run_pipeline.py` | 1 entry-point (ALL_YEARS=29 stale; covers 1992-2022 V2+V2.1+V1 era) |
+| fetal_death | per-year parse | `fetal_death/scripts/01_import/parse_fetal_year.py` | 43 invocations (1982-2024) |
+| fetal_death | harmonize | `fetal_death/scripts/03_harmonize/harmonize.py` | 1 invocation |
+| fetal_death | derive | `fetal_death/scripts/04_derive/derive.py` | 1 invocation |
+| fetal_death | validate external | `fetal_death/scripts/05_validate/validate_external*.py` + `validate_2022.py` | 3 invocations |
+| natality (no orchestrator per C8.7b DEFERRED) | parse all V1 years | `~/Desktop/natality-harmonization/scripts/01_import/parse_all_v1_years.py` | 1 batch (35 yrs internally) |
+| natality | parse all linked years | `~/Desktop/natality-harmonization/scripts/01_import/parse_all_linked_years.py` | 1 batch (19 cohort yrs) |
+| natality | harmonize V1 core | `harmonize_v1_core.py` | 1 invocation |
+| natality | harmonize linked V3 | `harmonize_linked_v3.py` | 1 invocation |
+| natality | derive V1 core | `derive_v1_core.py` | 1 invocation |
+| natality | derive linked V3 | `derive_linked_v3.py` | 1 invocation |
+| natality | validate | 8 scripts under `05_validate/` (not all on critical path; manuscript ~90 min claim covers parse+harmonize+derive primary chain) | varies |
+
+**F.5 timing approach (user-authorized "Run real end-to-end benchmark this session"):**
+- Fetal-death: run 43-year per-step pipeline manually (parse loop + harmonize + derive + validate); time each stage; total wall-clock vs `~6 min` claim. Note: `run_pipeline.py` has stale `ALL_YEARS=29` per soft-flag (d); not fixing this session (C8.7b scope); the 43-year per-step manual run produces an honest current-state measurement.
+- Natality + linked: run `parse_all_v1_years.py` + `parse_all_linked_years.py` + `harmonize_v1_core.py` + `harmonize_linked_v3.py` + `derive_v1_core.py` + `derive_linked_v3.py` sequentially; time the full chain; total vs `~90 min` claim. Validate stage excluded from the timing claim (manuscript scope is "pipeline runs end-to-end" interpreted as parse → derive primary chain; validate runs separately per the manuscript's Level-2 framing).
+- Approach: run in background (BashOutput-monitored), capture wall-clock per stage, aggregate into `docs/PIPELINE_TIMING_BENCHMARK.md`.
+
+**Table 3: F.4 substrate snapshot (DEFERRED to Phase D step 3 per user authorization)**
+
+| Item | State |
+|---|---|
+| `gh` CLI version | 2.87.3 |
+| GitHub auth | `yoelplutchok` keyring; token scopes `gist, read:org, repo, workflow` (sufficient for Release create) |
+| Public repo | `yoelplutchok/vital-statistics-harmonization` at v1.0 commit `a18ca3a` |
+| Existing releases | 0 (none) |
+| F.4 disposition | DEFERRED to Phase D step 3; bundles into the staging-dir scrub + v1.x push event (cleaner: one public-release event) |
+
+**Plan assumptions verified at PRE-FLIGHT (per Convention 3 second bullet):**
+
+1. **F.1 §15 premise FALSIFIED at cheap-check** (see Table 1). Resolved via user-authorized §11 plan-update Option A: drop F.1; ship DECISION_LOG entry documenting the falsified premise. ✓
+2. **F.4 substrate VERIFIED** (gh CLI auth OK; public repo exists; no prior releases). Resolved via user-authorized deferral to Phase D step 3. ✓
+3. **F.5 substrate VERIFIED** (manuscript claim located + per-stage script inventory complete). Resolved via user-authorized real-benchmark this session. ✓
+4. **B.12 snapshot regression interaction MOOT** under F.1-dropped re-scope (no parquet reshape; no SHA shift; no re-snapshot). ✓
+
+**Soft-flags surfaced at PRE-FLIGHT (NOT in-scope this session; carried forward):**
+
+- Carry-forward from C8.12 close (9 carried + 2 new + 3 RESOLVED): (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b; **brushed-against this session for F.5 but NOT fixed** — C8.7b scope; documented as a F.5 caveat in the RECEIPT) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X).
+- **NEW soft-flag (p) this PRE-FLIGHT**: F.1 dict-encoding work permanently dropped per user authorization 2026-05-13T22:30:00Z; documented in DECISION_LOG. Any future per-parquet encoding work (e.g., alternative compression codecs ZSTD vs default SNAPPY; row-group size tuning) is **out of pre-submission scope** and requires explicit re-authorization (analog of C.1 NCHS-suppression permanent drop at C8.9). Reconsider only on user request.
+
+### Halt conditions tripped
+
+**ONE §7.13-shape PRE-FLIGHT-time L11** (F.1 §15-premise falsification; the §15 plan's "30-50% size reduction" validity domain is empty for our specific schemas). Resolved via user AskUserQuestion 2026-05-13T22:30:00Z = Option A (drop F.1) + Option A (defer F.4) + Option A (run real benchmark). §11 plan-update applied this commit. Precedent: C8.5 / C8.6 / C8.7 / C8.9 PRE-FLIGHT-time §11 plan-updates with the same shape (cheap-check falsifies §15 substrate; user-resolved in-PRE-FLIGHT; commit `[plan-update]` prefix; DECISION_LOG documents the resolution).
+
+No §7.18 (reproducibility regression). No L17 (no SMOKE stale-pinning). No L13 (no inventory CSV claim drift). No L14 (no validator exit-code regression). No L11 elsewhere (no other §15 stale claims).
+
+### Result
+
+**PROCEED post-§11 plan-update.** This PRE-FLIGHT entry + the §11 plan-update artifacts (KICKOFF.md + NEXT_STEPS.md edits + DECISION_LOG entry + STATUS.md append) ship as one bundled `[plan-update] C8.13 PRE-FLIGHT` commit. Tag `C8.13-pre-do` placed on this commit. DO begins post-commit with F.5 benchmark execution (background-compute) followed by RECEIPT + `C8.13-complete` tag.
+
+Recommended DO sequencing this session:
+- **PRE-FLIGHT close (this commit)**: `[plan-update] C8.13 PRE-FLIGHT` ships PRE_FLIGHT_LOG entry + KICKOFF + NEXT_STEPS edits + DECISION_LOG entry + STATUS section. Tag `C8.13-pre-do`.
+- **DO**: launch background per-stage F.5 timing measurements (fetal-death 43-yr per-step + natality+linked per-step); BashOutput-monitor each.
+- **VERIFY**: compare measured wall-clock per stage against manuscript `~6 min / ~90 min` claims; ±10% tolerance is PASS; >±10% drift triggers manuscript line 68 update (which itself is Phase D step 4 scope — at C8.13 RECEIPT, we document the drift + propose the manuscript edit but leave the actual edit to Phase D 4 per the C8.12 RECEIPT precedent of "manuscript impact deferred to Phase D step 4").
+- **RECEIPT**: write `RECEIPTS/C8.13_<UTC>.md` + `docs/PIPELINE_TIMING_BENCHMARK.md` + STATUS append; tag `C8.13-complete`.
+
+Effort revised under narrowed scope: **~1 session** (was §15-estimated 1.5-2 sessions; F.1 drop + F.4 defer cuts ~50%; F.5 alone is ~96 min compute + ~30 min plan-update + ~30 min RECEIPT/VERIFY).
+
+---
+
 ## PRE-FLIGHT for C8.12 — 2026-05-13T19:30:00Z — Mutation tests + L13 audit + L14 audit + SHA-stability + snapshot regression (B.6 + B.7 + B.8 + B.11 + B.12) — **RESULT: PROCEED** (zero §7 halts; zero L11s; scope enumeration matches §15 expectation incl. "Likely surfaces FIX_LOG cascades — budget for fix-on-contact" — 3 L14-CANDIDATE validators surfaced at audit-surface enumeration, 7 validators with FAIL surface for B.6 mutation-test pairing; clean PRE-FLIGHT)
 
 ### Scope summary

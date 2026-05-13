@@ -191,7 +191,7 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 - **C8.10** — Worked-example notebooks (3 of 5)                   [3-4 sessions]
 - **C8.11** — Migration guides + cross-product COMPARABILITY      [3-4 sessions]
 - **C8.12** — Mutation tests + L13/L14 audits + SHA stability     [3-4 sessions]
-- **C8.13** — Performance + GitHub release artifacts              [1.5-2 sessions]
+- **C8.13** — Pipeline timing benchmark (F.5 only; F.1+F.4 plan-updated 2026-05-13T22:30Z) [~1 session]
 - **C8.14** — Worked-example FAQ + PROJECT_STRUCTURE upgrade      [1 session]
 - **C8.15** — Notebooks 4-5 (education, state quirks)             [2 sessions]
 

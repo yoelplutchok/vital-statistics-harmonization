@@ -1205,23 +1205,54 @@ Concurrency control: `group: ci-${{ github.ref }}`, `cancel-in-progress: true`.
 
 ---
 
-### Task C8.13 — Performance + GitHub release artifacts (F.1 + F.4 + F.5)
+### Task C8.13 — Pipeline timing benchmark (F.5 only; F.1 dropped + F.4 deferred 2026-05-13T22:30Z)
 
-**Goal.** (F.1) Parquet column-dictionary tuning per low-cardinality column. (F.4) Attach parquets to GitHub Release alongside Zenodo. (F.5) Pipeline timing benchmark (re-verify manuscript's "approximately six minutes" / "approximately ninety minutes" claims against post-V3b state).
+**Note: §15 entry revised at C8.13 PRE-FLIGHT 2026-05-13T22:30:00Z** (DECISION_LOG entry of same timestamp). Originally bundled F.1 (parquet dict-encoding tuning) + F.4 (GitHub Release) + F.5 (timing benchmark) as one task. C8.13 PRE-FLIGHT cheap-check probed the per-column encoding state via `pyarrow.parquet.ParquetFile.metadata.row_group(0).column(c).encodings` for all 340 columns across the 4 parquets and discovered: **both fetal-death parquets are already 100% dict-encoded** (73/73 + 89/89; 29 + 36 MB total); **all 38+41 non-dict columns in natality + linked are booleans using RLE+PLAIN** — the optimal 1-bit-per-value encoding for 2-state columns. Forcing dict-encoding on booleans does not reduce size and likely increases it. The §15 "30-50% size reduction via `use_dictionary=True` per column" premise is empirically falsified for our specific schemas. User authorized **Option A (drop F.1 entirely)** + **Option A (defer F.4 to Phase D step 3)** + **Option A (run real F.5 benchmark this session)** via AskUserQuestion 2026-05-13T22:30:00Z. Precedent: C8.5 / C8.6 / C8.7 / C8.9 PRE-FLIGHT-time §11 plan-updates with same shape.
 
-**Why this matters.** F.1 typically yields 30-50% size reduction (smaller Zenodo deposit + faster downloads). F.4 gives Zenodo-blocked users an alternate path. F.5 verifies a manuscript-cited number.
+**Goal.** (F.5 ONLY) Pipeline timing benchmark: measure real end-to-end wall-clock for the fetal-death pipeline (43-yr 1982-2024 envelope; per-step manual run since `fetal_death/scripts/run_pipeline.py` has stale `ALL_YEARS=29` per soft-flag (d), out-of-scope per C8.7b DEFERRED) and the natality+linked pipeline (35 + 19 yr; per-step manual run since no orchestrator exists per C8.7b DEFERRED). Compare against manuscript claim `paper/draft_v2_hmd_styled.md:68` *"approximately six minutes" (fetal) / "approximately ninety minutes" (natality)*. If within ±10%, ship a `docs/PIPELINE_TIMING_BENCHMARK.md` record + RECEIPT; if outside ±10%, propose manuscript line 68 edit to Phase D step 4.
 
-**PRE-FLIGHT inputs.** Existing harmonized + derived parquets; GitHub Release infrastructure; timer harness.
+**Why this matters (F.5).** Manuscript-cited reproducibility number. ±10% tolerance is the §15 VERIFY criterion. Builds substrate for Phase D step 4 manuscript re-pass.
 
-**DO scope.** Re-write `derive.py`'s parquet-write call with `use_dictionary=True` per column. Re-derive; measure size delta. SHA changes — one-time forward-stability shift documented. Author GitHub Release v1.x with parquet uploads. Run timing benchmark; update manuscript timing claim if shifted.
+**F.1 disposition (DROPPED):** Permanently out of pre-submission scope per soft-flag (p) filed at C8.13 PRE-FLIGHT 2026-05-13T22:30:00Z. Any future per-parquet encoding work (alternative codecs like ZSTD vs default SNAPPY; row-group size tuning) requires explicit re-authorization. Analog of C.1 NCHS-suppression permanent drop at C8.9.
 
-**VERIFY criteria.** Size reduction ≥20% (or document why less). GitHub Release downloads work. Timing matches manuscript ±10% (else update manuscript).
+**F.4 disposition (DEFERRED to Phase D step 3):** GitHub Release v1.x with parquet uploads moves to the Phase D step 3 staging-dir scrub + v1.x push session for one bundled public-facing release event. `gh` CLI substrate verified ready at C8.13 PRE-FLIGHT (gh 2.87.3 + auth OK with `repo` scope). The Release create command itself runs at Phase D step 3.
 
-**Estimated effort.** 1.5-2 sessions.
+**PRE-FLIGHT inputs (this PRE-FLIGHT entry covers all of these).** All 14 C8.12 forward-looking HALTs verified byte-exact. Per-stage script inventory (fetal-death: parse_fetal_year.py × 43 + harmonize.py + derive.py; natality: parse_all_v1_years.py + parse_all_linked_years.py + 2× harmonize + 2× derive). Raw zip inventory: 43 fetal + 35 nat + 19 linked present at canonical absolute paths. Manuscript timing-claim cite at `paper/draft_v2_hmd_styled.md:68`.
 
-**Dependencies.** C8.2 (post-refresh state); C8.7 (clean pipeline confirms timing).
+**SMOKE plan.** Tier 0 (cheap-check): probe at least one zip's first-record byte length via the inventory's `record_length` column (already validated by C8.12 invariant tests; no new check needed). Tier 0b: dry-run timer harness on a 1-year fetal-death subset (verify timer wraps `subprocess.run` correctly + records start/end wall-clock; abort on non-zero exit). Tier 1: not applicable to F.5 (this IS the full DO measurement).
 
-**Halt-condition flags.** B.12 snapshot-regression interaction (one-time SHA shift expected — bundle DECISION_LOG note).
+**DO scope (F.5 only).**
+
+1. **Author lightweight timer wrapper** at `scripts/_time_pipeline.py` (~50 LOC; runs a list of `(stage_label, command_argv)` tuples; logs `start_ts, end_ts, duration_seconds, returncode` per stage to a CSV; aggregates into a summary). Not an orchestrator (no per-product subcommands; no smart skip-if-already-done — those are C8.7b scope).
+2. **Run fetal-death 43-yr per-step benchmark** in background:
+   - parse: 43 invocations of `parse_fetal_year.py` (one per year 1982-2024); time the batch
+   - harmonize: 1 invocation of `harmonize.py` (output → `output/yearly_clean/...`)
+   - derive: 1 invocation of `derive.py`
+   - total wall-clock vs ~6 min manuscript claim
+3. **Run natality+linked per-step benchmark** in background:
+   - parse_all_v1: 1 invocation (iterates 35 years internally; the bulk of the ~90 min claim)
+   - parse_all_linked: 1 invocation (iterates 19 cohort years)
+   - harmonize_v1_core + harmonize_linked_v3: 2 invocations
+   - derive_v1_core + derive_linked_v3: 2 invocations
+   - total wall-clock vs ~90 min manuscript claim
+4. **CRITICAL: idempotency preservation.** Each pipeline writes to its canonical output paths. The re-run MUST produce parquets byte-identical to the current shipped SHAs (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`). H10 reproducibility regression is the primary §7 halt condition for this DO; if any post-rerun SHA differs, FIX_LOG entry filed + halt-and-ask.
+5. **Aggregate results** into `docs/PIPELINE_TIMING_BENCHMARK.md`: per-stage wall-clock + total + reconciliation vs manuscript claim + machine spec + caveats (e.g., parallel-run cache effects; the 2024-vintage-laptop manuscript anchor).
+6. **Manuscript-drift handling:** If measured wall-clock is within ±10% of `~6 min` / `~90 min`, log PASS + cite `paper/draft_v2_hmd_styled.md:68` UNCHANGED. If outside ±10%, propose the edit + cite the propose-edit-deferred-to-Phase-D-4 precedent (C8.12 RECEIPT framing); do NOT edit the manuscript line in this session per the manuscript-edit-bundles-at-Phase-D-step-4 precedent.
+
+**VERIFY criteria.**
+1. Both pipelines completed end-to-end with exit code 0 (every stage).
+2. **All 4 parquet SHAs preserved byte-exact** (H10 reproducibility gate; primary §7 halt condition).
+3. Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL (unchanged from C8.12 close; the F.5 re-derive must not affect any test outcome).
+4. `docs/PIPELINE_TIMING_BENCHMARK.md` exists with per-stage breakdown + reconciliation table + caveats.
+5. Manuscript drift recorded as PASS (within ±10%) or PROPOSE-EDIT (outside ±10%; edit deferred to Phase D step 4).
+
+**RECEIPT requirement.** Standard template + Forward-looking HALTs covering: F.5 timer harness presence; new docs/PIPELINE_TIMING_BENCHMARK.md sha; 4 parquet SHAs unchanged byte-exact (H10 gate); 74 PASS + 1 SKIP + 1 XFAIL preserved; manuscript-line-68 disposition (PASS / PROPOSE-EDIT-for-Phase-D-4).
+
+**Estimated effort.** ~1 session under narrowed scope (was §15 1.5-2 sessions; F.1 drop + F.4 defer cuts ~50%; F.5 = ~96 min compute + ~30 min plan-update + ~30 min RECEIPT/VERIFY).
+
+**Dependencies.** None upstream (C8.2 already shipped; C8.7 deferred per C8.7b but F.5 routes around the orchestrator via per-step manual invocation).
+
+**Halt-condition flags.** **H10 (reproducibility regression)** primary: re-run MUST produce byte-identical parquets. **L17-extension**: F.5 wall-clock is wall-time-VALUE, not a SHAPE invariant; the timing record file declares `DESIGN: tracks-current-state` analog (snapshot of current measurement; future builds may shift under hardware / pyarrow upgrades). **L11**: F.1 falsified premise resolved via this plan-update; no further L11 expected.
 
 ---
 
