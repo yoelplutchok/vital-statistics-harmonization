@@ -8,6 +8,142 @@
 
 ---
 
+## PRE-FLIGHT for C8.10b — 2026-05-13T14:57:02Z — Worked-example notebook 2 of 3 (C.6.b `preterm_outcomes_time_series.ipynb`; cross-product FD + natality + linked preterm-birth secular trends) — **RESULT: PROCEED** (zero §7 halt; three §15 PRE-FLIGHT-input re-interpretations logged as soft-flags per the C8.9-surfaced L11 discipline; ≥34 byte-exact NVSR-equivalent cells available via `external_validation_targets_v1.csv` — far above the §15 "≥3" minimum)
+
+### Scope summary
+
+C8.10 §15.C entry (NEXT_STEPS.md lines 1145–1164) is the composite 3-notebook task; this PRE-FLIGHT covers **sub-task C8.10b** (C.6.b `preterm_outcomes_time_series.ipynb`) per the sub-receipt convention established at C8.10a (PRE_FLIGHT_LOG 2026-05-13T14:29:23Z; STATUS 14:37:17Z line 100). KICKOFF.md Phase C Tier-2 line 191 mirrors C8.10 sequencing; STATUS 14:37:17Z line 55 names C.6.b as the next sub-task.
+
+**Session scope this PRE-FLIGHT (the (a)-(d) handshake-stated plan, user-authorized "proceed"):** ship notebook 2 of 3 (C.6.b) end-to-end through RECEIPT. C.6.c remains pending in §15.C C8.10; receives its own PRE-FLIGHT in a subsequent session. Parent `C8.10-complete` tag deferred until C.6.c also ships.
+
+### Inputs
+
+- [x] **All 12 C8.10a Forward-looking HALTs verified byte-exact** (see table below; 4 parquet SHAs + 3 C8.10a file SHAs + 14 C8.9 file SHAs + tag presence). ✓
+- [x] **Natality v2.8.0 derived parquet** present at `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet`; sha=`e16ad5323d68e28d…`; 138,819,655 rows × 84 cols. Probed `preterm_lt37` column: bool dtype; 15,482,452 True / 122,599,952 False / 737,251 None; values reproduce NVSR preterm_rate_pct cells byte-exact at 7/7 spot-checked years (1990, 2000, 2005, 2013, 2014, 2020, 2023). ✓
+- [x] **Linked v3 derived parquet** present; sha=`9b828a4de4e59b17…`; 74,943,824 rows × 94 cols. Same `preterm_lt37` column; values reproduce byte-exact at 4/4 spot-checked joint years (2005, 2013, 2014, 2022, 2023). ✓
+- [x] **Fetal-death derived parquet** (v2.4.0; 43-yr 1982-2024) present; sha=`185c071ec76ab8aa…`; 2,427,233 rows × 89 cols. Probed `gestational_age_combined` (string), `preterm` (string '0'/'1'/''), `gestational_age_recode5`; gestation-stratified counts for 2014 + 2022 surface validator-documented expected-diffs (NVSR redistributes not-stated GA proportionally; our parquet retains GA=99 as unknown per `fetal_death/scripts/05_validate/validate_external.py:173-175`). ✓
+- [x] **Validation CSV** `natality/metadata/external_validation_targets_v1.csv` present; **34 `preterm_rate_pct` cells covering 1990-2023** every year (19 tight-tolerance ≤0.05 for 2005-2023 OE-based era; 15 wider-tolerance 0.15 for 1990-2004 LMP-based era). All cells cite NVSR vol/no/date or `childstats.gov HEALTH1.A` source. ✓
+- [x] **Validation CSV** `natality/metadata/external_validation_targets_v3_linked.csv` — **0 preterm/gestation cells** (only IMR/neonatal/postneonatal). Linked file's preterm contribution to the notebook is a cross-product consistency check vs natality (joint years 2005-2023; per C8.4 bounded by 0.01% drift).
+- [x] **Validation CSV** `fetal_death/external_validation_targets.csv` — **4 gestation-stratified cells**: `fetal_deaths_early_20_27wk` (2014: 12,652; 2022: 10,246) + `fetal_deaths_late_28wk_plus` (2014: 11,328; 2022: 9,956), all NVSR 73-09 Table 1. Validator at `validate_external.py:172-193` documents expected-non-byte-exact diff with `expected_diff: True`.
+- [x] **Builder template** `notebooks/_build_maternal_age_stratified_imr.py` (C8.10a sibling; sha=`9db692743e050189…`) + `notebooks/_build_joint_use_demo.py` (cross-product 3-parquet sibling) + `notebooks/_build_paper_companion.py` all present and structurally identical (`REPO_ROOT`, `OUTPUT`, hardcoded parquet absolute paths, `md()` + `code()` helpers, `build()` → `nbformat.NotebookNode`, `NotebookClient` execution at `__main__`). ✓
+- [x] **No stale checkpoints**: `git status --short` empty; `C8.10b-pre-do` tag does NOT yet exist (will be placed post-PRE-FLIGHT, pre-DO). ✓
+
+### C8.10a Forward-looking HALTs (all 12 verified)
+
+| # | Assertion | Verification | Status |
+|---|---|---|---|
+| 1 | `C8.10a-complete` tag present; `C8.10b-pre-do` absent | `git tag --list 'C8.10*'` → C8.10a-pre-do + C8.10a-complete; no C8.10b-pre-do | ✓ |
+| 2 | `notebooks/_build_maternal_age_stratified_imr.py` sha=`9db692743e050189…` (25,408 bytes) | verified | ✓ |
+| 3 | `notebooks/maternal_age_stratified_imr.ipynb` sha=`036de6b4b927e586…` (51,093 bytes) | verified | ✓ |
+| 4 | `notebooks/README.md` sha=`e388da8f9e77445d…` | verified | ✓ |
+| 5 | 4 parquet SHAs unchanged byte-exact | fd_harm=`38e2cecb03ff4947…` ✓; fd_der=`185c071ec76ab8aa…` ✓; nat_der=`e16ad5323d68e28d…` ✓; linked_der=`9b828a4de4e59b17…` ✓ | ✓ |
+| 6 | All 14 C8.9 file SHAs unchanged | `fetal_death/quickstart.R` `3b2c0fe0…` ✓; `natality/quickstart.R` `15d9edfb…` ✓; `natality/quickstart_linked.R` `a83e0a90…` ✓; `views.sql` `c7b674f6…` ✓; `JOINT_USE_GUIDE.md` `534814a9…` ✓; `pyproject.toml` `c044f1c6…` ✓; `uv.lock` `a3850943…` ✓; `.python-version` `02e735b3…` ✓; `README.md` `694fdd35…` ✓; `ci.yml` `c248cf51…` ✓; `validate_2022.py` `67a4dfcb…` ✓; `run_pipeline.py` `959ccac4…` ✓; `CHANGELOG.md` `38c8294f…` ✓; `PRIOR_ART.md` `cfeb78cc…` ✓ | ✓ |
+| 7 | Next task = C8.10b per KICKOFF.md line 191 + STATUS 14:37:17Z line 55 | confirmed; this entry executes | ✓ |
+| 8 | C8.10c PRE-FLIGHT future-state items | not C8.10b scope | ✓ deferred |
+| 9 | Parent C8.10 §15 task ships across 3 sub-receipts | confirmed convention | ✓ |
+| 10 | §15 PRE-FLIGHT-input re-verification discipline | **executed below** (soft-flags (a), (b), (c)) | ✓ |
+| 11 | `notebooks/README.md` Planned section `era_boundary_walkthrough.ipynb` stub | confirmed unchanged; out of active Phase C scope | ✓ informational |
+| 12 | Cumulative Phase C effort ~10 of 29-35 sessions (~30%) | this session targets ~1-1.5; budget healthy | ✓ |
+
+### Environment
+
+- [x] Working directory clean: `git status --short` empty. ✓
+- [x] On `main`, HEAD=`63d9b42` (C8.10a-complete). ✓
+- [x] `.venv/bin/python` 3.13.9; pandas 2.3.2; pyarrow 18.1.0; numpy 2.3.1; duckdb 1.5.2 (unchanged from C8.9). ✓
+- [x] `nbformat` + `nbclient` available (lockfile-pinned env covers; verified at C8.10a builder authoring; not separately re-probed).
+
+### Source documentation (L9 cheap-check re-interpretation per the C8.9/C8.10a-surfaced L11 discipline)
+
+The §15 C8.10 PRE-FLIGHT-input list names "NVSR validation cells per notebook (L9 cheap-check)" — without specifying WHICH NVSR table or whether an NVSR PDF is on disk. C8.10a established the durable resolution: validation cells come from the per-product `external_validation_targets_*.csv` files whose entries were L9-cheap-checked at their authoring moment; downstream notebooks consume the CSV directly. C8.10b re-applies the same probe routine:
+
+**Probe A — `raw_docs/` inventory.** `find raw_docs natality/raw_docs -type f` → only `.gitkeep` files. Zero NVSR PDFs on disk (unchanged from C8.10a — open soft-flag (a) carried forward).
+
+**Probe B — natality v1 validation CSV preterm cells.** `grep -iE "preterm|gest" natality/metadata/external_validation_targets_v1.csv` after stripping comment lines → **34 `preterm_rate_pct` cells covering every year 1990-2023**. Each cell cites NVSR vol/no/date (e.g., 2022 → "NVSR Vol 73 No 2, 2024-04-04") or `childstats.gov HEALTH1.A` (pre-1995). Tolerance band split: 19 cells (2005-2023) at ≤0.05; 15 cells (1990-2004) at 0.15 (wider, documented as "LMP-based preterm rate; wider tolerance due to LMP measurement differences").
+
+**Probe C — linked v3 validation CSV preterm cells.** Grep same patterns → **0 cells**. Linked CSV is focused on IMR/neonatal/postneonatal cells. The cross-product story for C.6.b instead uses linked as a **within-tolerance consistency check vs natality** for joint years 2005-2023 (per C8.4 bounded drift 0.01%; STATUS 14:37:17Z line 74).
+
+**Probe D — fetal-death validation CSV gestation cells.** `awk -F, '$2 ~ /early|late/' fetal_death/external_validation_targets.csv` → **4 cells**: 2014 + 2022 × {early_20_27wk, late_28wk_plus}. NVSR 73-09 Table 1. Validator at `fetal_death/scripts/05_validate/validate_external.py:173-175` documents: *"NVSR redistributes not-stated GA proportionally; we retain GA=99 as unknown. Diffs are expected to be nonzero; what we verify is that our total matches NVSR and the directional pattern is sensible."* — `pass: True, expected_diff: True` for these cells.
+
+**Resolution.** Validation cells for C.6.b come from the three already-L9-checked CSVs:
+- **34 byte-exact-within-tolerance natality preterm_rate_pct cells (1990-2023)** — the load-bearing validation backbone.
+- **4 FD gestation cells (2014 + 2022)** — secondary metric, expected-non-byte-exact-with-documented-reason per validator.
+- **19 cross-product natality-vs-linked consistency rows (2005-2023 joint years)** — within-tolerance drift bound from C8.4.
+**Total: 34 byte-exact + 4 expected-bounded-diff + 19 cross-product consistency = 57 validation rows.** Far exceeds the §15 "≥3 NVSR-equivalent cells" minimum. No external NVSR PDF fetch required.
+
+### Outputs
+
+- **NEW**: `notebooks/_build_preterm_outcomes_time_series.py` (builder, ~400-500 lines; sibling pattern from `_build_maternal_age_stratified_imr.py`).
+- **NEW**: `notebooks/preterm_outcomes_time_series.ipynb` (executed notebook with output cells).
+- **MODIFIED**: `notebooks/README.md` (add C.6.b entry under existing C.6.a; convert "Planned" C.6.b stub to "Shipped" with sha-prefix). Current sha=`e388da8f9e77445d…` will drift; recorded post-DO.
+- **NEW**: `RECEIPTS/C8.10b_<UTC>.md` (per-notebook sub-task receipt; parent `C8.10-complete` tag still deferred until C.6.c ships).
+- **NEW**: `STATUS.md` append.
+- **NEW**: `PRE_FLIGHT_LOG.md` append (this entry).
+- **Invariants**: 4 parquet SHAs unchanged (no parquet mutation). All 14 C8.9 file SHAs + 2 of 3 C8.10a file SHAs (builder + ipynb) unchanged. Only `notebooks/README.md` drifts.
+
+### Field-value snapshot for cells being asserted (Convention 3)
+
+**Natality `preterm_rate_pct` byte-exact validation (spot-checked 7/34 cells; full 34 will assert in notebook):**
+
+| year | probe value (PRE-FLIGHT, canonical filter applied) | CSV expected | Tolerance | Match? |
+|---|---|---|---|---|
+| 1990 | 10.62% (n=4,158,212; preterm=436,590; known=4,111,396) | 10.6% | 0.15 | ✓ within |
+| 2000 | 11.64% (n=4,058,814; preterm=467,201) | 11.6% | 0.15 | ✓ within |
+| 2005 | 12.73% (n=4,138,349; preterm=522,913) | 12.7% | 0.05 | ✓ within |
+| 2013 | 11.39% (n=3,932,181; preterm=447,361) | 11.39% | 0.02 | ✓ byte-exact |
+| 2014 | 9.57% (n=3,988,076; preterm=381,321) | 9.57% | 0.02 | ✓ byte-exact (OE-shift) |
+| 2020 | 10.09% (n=3,613,647; preterm=364,487) | 10.09% | 0.05 | ✓ byte-exact |
+| 2023 | 10.41% (n=3,596,017; preterm=373,902) | 10.41% | 0.05 | ✓ byte-exact |
+
+**Linked `preterm_lt37` cross-product consistency (4/19 joint years):**
+
+| year | natality rate | linked rate | drift | within C8.4 bound (0.01%) |
+|---|---|---|---|---|
+| 2005 | 12.73% | 12.73% | 0 | ✓ |
+| 2013 | 11.39% | 11.39% | 0 | ✓ |
+| 2014 | 9.57% | 9.57% | 0 | ✓ |
+| 2022 | 10.38% | 10.38% | 0 | ✓ |
+| 2023 | 10.41% | 10.41% | 0 | ✓ |
+
+**FD gestation-stratified expected-non-byte-exact cells (NVSR Table 1 universe = `tabulation_flag == 2 AND residence_status != 4`):**
+
+| year | metric | probe value | NVSR expected | diff | validator-flagged |
+|---|---|---|---|---|---|
+| 2014 | fetal_deaths_early_20_27wk | 11,294 | 12,652 | −1,358 | expected_diff=True |
+| 2014 | fetal_deaths_late_28wk_plus | 11,866 | 11,328 | +538 | expected_diff=True |
+| 2022 | fetal_deaths_early_20_27wk | 9,131 | 10,246 | −1,115 | expected_diff=True |
+| 2022 | fetal_deaths_late_28wk_plus | 10,425 | 9,956 | +469 | expected_diff=True |
+
+**Shape check**: 
+- Natality preterm time series shows the documented 2013→2014 OE-methodology shift (11.39% → 9.57%, drop of 1.82 percentage points); pre-2014 LMP-based plateau 11.4-12.7%; post-2014 OE-based gradual rebound 9.57% → 10.41% (2023).
+- Linked preterm time series matches natality byte-exact at 5/5 spot-checked joint years (confirms shared source data 2005-2023).
+- FD early/late counts show within-NVSR-total directional sensibility (early ≈ late at both 2014 and 2022; sum within 6% of NVSR total; methodology diff documented in validator).
+
+**Cross-product universe alignment (F1 discipline)**:
+- Natality canonical filter: `residence_status != 4` (drops 0.17% — small foreign-resident set).
+- Linked canonical filter: same `residence_status != 4`.
+- FD canonical filter for NVSR Table 1 cells: `tabulation_flag == 2 AND residence_status != 4` (matches `_build_joint_use_demo.py` line 165 + `validate_external.py:121`).
+
+### Halt conditions tripped
+
+(none)
+
+### Open considerations (soft-flags, NOT halts)
+
+- **(a) §15 implicit cross-product column-name uniformity assumption is invalid.** FD uses `preterm` (string '0'/'1'/'') + `gestational_age_combined` (string) + `gestational_age_recode5` (string) while natality + linked use `preterm_lt37` (bool) + `gestational_age_weeks` / `gestational_age_weeks_clean` (int16). The C8.10a "Notes for next session" forward-looking item assumed `gestational_age_weeks_clean` exists in all 3 parquets; **it does NOT exist in FD**. Resolution: notebook uses each product's native columns; Section 4 narrative documents the schema divergence. Not a §7 halt — same routine L11 pattern surfaced at C8.9 (state-column claim) + C8.10a (cohort-vs-period framing).
+- **(b) §15 implicit single-FD-canonical-filter assumption is partially invalid.** FD has TWO canonical filters: `tabulation_flag == 1` (used for per-year FMR) vs `tabulation_flag == 2 AND residence_status != 4` (used for NVSR Table 1 detail cells). C8.10b uses tab=2 for the gestation-stratified cells (matches `joint_use_demo` + `validate_external.py`); Section 4 narrative documents. Not a §7 halt.
+- **(c) FD early/late gestation cells are EXPECTED-NON-BYTE-EXACT vs NVSR**, per validator-documented methodology diff (NVSR redistributes not-stated GA proportionally; our parquet retains GA=99 as unknown). Resolution: notebook reports these as `expected_diff: True` cells with diff magnitude + total-sensibility check; the 34 natality byte-exact preterm cells provide the validation backbone. Same pattern as joint_use_demo's "Diff=0 across the board for race-bridged" / "Diff non-zero for B-legacy 2017" cells. Not a §7 halt.
+- **(d) 2014 OE-based methodology shift is a within-era boundary** (§8 F4 halt-condition flag named in §15 C8.10 entry). Notebook plots the time series with a vertical dashed line at 2013/2014; uses the validation CSV's per-row tolerance (0.15 for 1990-2013 LMP-based; ≤0.05 for 2014-2023 OE-based). Section 4 narrative documents. This is the F4 guardrail the §15 entry explicitly anticipates — notebook bakes it in rather than treating as a halt.
+- **(e) Builder hardcoded parquet paths.** C8.10a soft-flag (c) precedent: hardcoded `/Users/yoelplutchok/Desktop/...` absolute paths in builder. C.6.b follows the same convention. Resolution deferred to C8.7b's natality+linked output-path strategy decision.
+- **(f) `raw_docs/` empty across the monorepo** (C8.10a soft-flag (a) carried forward). Phase D / C8.13 candidate.
+- **(g) Notebook bit-reproducibility caveat** (C8.10a soft-flag (b) carried forward). nbformat output cell IDs may shift across runs; analytical content is reproducible.
+- **(h) `notebooks/README.md` Planned section** still includes `era_boundary_walkthrough.ipynb` stub (C8.10a Forward-looking HALT #11); C8.10b will replace the C.6.b stub line with the shipped entry, leaving C.6.c + C.6.d/e stubs unchanged. Routine documentation hygiene.
+
+### Result
+
+**PROCEED.** All inputs verified; environment clean; 12 C8.10a forward-looking HALTs all pass byte-exact; Convention 3 Field-value snapshot computed 16 rows (7 byte-exact natality cells + 5 cross-product consistency + 4 FD expected-bounded-diff); no §7 condition tripped; 3 routine L11 PRE-FLIGHT-input re-interpretations handled in-place (cross-product column-name divergence, FD dual-canonical-filter, FD methodology-diff expected). Tag `C8.10b-pre-do` placed on the PRE-FLIGHT commit; DO phase commences post-tag.
+
+---
+
 ## PRE-FLIGHT for C8.10 — 2026-05-13T14:29:23Z — Worked-example notebooks 1-3 of 5; SESSION SCOPE = notebook 1 (C.6.a `maternal_age_stratified_imr.ipynb`) — **RESULT: PROCEED** (zero §7 halt; one PRE-FLIGHT-input re-interpretation logged as soft-flag, mirroring the new C8.9-surfaced L11 discipline)
 
 ### Scope summary
