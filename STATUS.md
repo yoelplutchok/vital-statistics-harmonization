@@ -1,6 +1,110 @@
-# STATUS — last updated 2026-05-13T20:30:00Z
+# STATUS — last updated 2026-05-13T21:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T21:00:00Z — C8.12 DO step 2 (B.11 SHA-stability + B.12 snapshot regression) COMPLETE: NEW `tests/test_source_zip_sha_stability.py` (3 tests; 97-zip manifest verification against on-disk SHA-256) + NEW `tests/test_parquet_column_snapshot.py` (6 tests; 4 parametrized per-parquet × 2 structural anchors) + NEW `tests/snapshots/_build_snapshot.py` (~120-line baseline builder, row-group-streamed Arrow buffer hashing) + NEW `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` (340-row baseline; 73+89+84+94 columns; sha=`b6fe22d6539849d931951e89cc3965930dabcaa88d20b2616a74fcdc85df153d`) + NEW `tests/snapshots/__init__.py` (package init); cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **68 passed + 1 xfailed in 180.29s** (was 59 + 1 pre-DO-step-2; +9 from B.11×3 + B.12×6; +90s from per-column hashing across 4 parquets totaling 218.5M rows × 340 columns); 1 DECISION_LOG entry resolving C8.12 PRE-FLIGHT soft-flag (k) on B.12 storage-format choice (CSV at sort-stable `v<X>_<UTC>` filename + row-group-streamed Arrow-buffer hashing + re-snapshot triggered by §11 plan-update); zero §7 halts; zero canonical-data mutation (4 parquet SHAs preserved byte-exact `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); zero L11s; clean PRE-FLIGHT (all 10 forward-looking HALTs from C8.12 DO step 1 verified byte-exact); ALL 97 raw-zip SHA-256 values in `docs/NCHS_SOURCE_MANIFEST.md` verified PASS against on-disk content via the new B.11 test (43 fetal-death + 35 natality + 19 linked-cohort); C8.12 DO step 3 (B.6 mutation-test scaffolding) is the final DO sub-step before RECEIPT + `C8.12-complete` tag
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.12 DO step 2 COMPLETE.** Second DO sub-step closed in ~30 min wall time post-PRE-FLIGHT cheap-checks (PRE-FLIGHT verified all 10 C8.12 DO step 1 forward-looking HALTs byte-exact; then B.11 + B.12 test authoring + baseline generation + cache-cleared pytest re-run). Three of five C8.12 deliverables substantively COMPLETE (B.7 + B.8 from DO step 1; B.11 + B.12 from this DO step). Tier 2 progress unchanged from C8.11: 3 of 7 §15-listed tasks COMPLETE; C8.12 in-progress at DO step 2 closure. Cumulative Phase C effort ~13.7 of 29-35 sessions (~40%; DO step 2 adds ~0.3 session worth of substantive work).
+
+C8.12 remaining: DO step 3 = B.6 mutation-test scaffolding for 7 FAIL-surface validators (`tests/mutations/test_<validator>_mutation.py`); ~1 session estimated. Then RECEIPT + tag `C8.12-complete`.
+
+### What was done this session (DO step 2: B.11 + B.12 + first regression baseline)
+
+1. **PRE-FLIGHT cheap-checks** verified all 10 C8.12 DO step 1 forward-looking HALTs byte-exact (zero drift): 4 parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); 3 L14 patches present (1 `sys.exit(1)` each); inventory CSV sha=`2f2ba2c9…`; `tests/test_inventory_invariants.py` exists; `docs/NCHS_SOURCE_MANIFEST.md` sha=`ed2a44d3…`; cache-cleared `pytest` 59 PASS + 1 XFAIL in 89.62s; `tests/mutations/` not present. Convention 3 Field-value snapshot covered by C8.12 upfront PRE-FLIGHT 19:30Z entry; no separate per-sub-step entry per C8.12 DO step 1 precedent.
+2. **B.11 SHA-stability test authored**: `tests/test_source_zip_sha_stability.py` (~140 lines; Convention 2 `DESIGN: tracks-current-state` first-docstring tag). Three tests: (a) 97-row manifest anchor (Convention 1 STRUCTURAL); (b) 43+35+19 section anchor (Convention 1 STRUCTURAL); (c) per-zip SHA-256 vs `shasum -a 256` on-disk content. Regex-based manifest parser handles all 3 sections via filename + 64-hex-char pattern. Skip-if-all-zips-missing per `_require()`-style pattern.
+3. **B.12 baseline builder authored**: `tests/snapshots/_build_snapshot.py` (~120 lines). Hash function reads each parquet row-group by row-group, projecting all columns at once for sequential-read efficiency; folds each Arrow chunk's underlying memory buffers (data + validity + offsets) into per-column SHA-256 (null buffer slots fed `b"\x00"` for type-shape determinism). `column_sha256_map(parquet_path)` is the canonical hash API; `latest_baseline_path()` returns the sort-stable lexicographic-latest `v<X>_<UTC>_columns.csv` under `tests/snapshots/`.
+4. **B.12 baseline generated**: `uv run python -m tests.snapshots._build_snapshot` produced `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` (340 rows × 6 columns: `parquet,column_name,column_index,arrow_type,row_count,column_sha256`; sha=`b6fe22d6…`; wall time ~90s for 4 parquets totaling 218.5M rows × 340 columns).
+5. **B.12 snapshot regression test authored**: `tests/test_parquet_column_snapshot.py` (~110 lines; Convention 2 `DESIGN: tracks-current-state`). Six tests: (a) anchor row count = 340 (Convention 1 STRUCTURAL); (b) per-parquet column counts = 73+89+84+94 (Convention 1 STRUCTURAL); (c-f) 4 parametrized per-parquet per-column SHA equality (value-pinning re-snapshot-on-§11-plan-update per soft-flag (k) policy). Skip-if-parquet-missing per parquet.
+6. **NEW `tests/snapshots/__init__.py`** (empty; package init for the imports in `tests/test_parquet_column_snapshot.py`).
+7. **Cache-cleared full pytest** (`find . -name __pycache__ -delete && uv run pytest fetal_death/tests/ natality/tests/ tests/`): **68 passed + 1 xfailed in 180.29s** (was 59 + 1 pre-step-2; +3 from B.11 + +6 from B.12). The B.12 per-column hash tests added ~90s; the per-column hashing across 4 parquets totaling ~3GB on disk is the dominant cost.
+8. **DECISION_LOG.md** appended with 1 NEW entry (B.12 storage-format choice; resolves C8.12 PRE-FLIGHT soft-flag (k); 5 alternatives + 5 protocol justifications + 4 residual risks; Reversible: yes via `git revert`).
+9. **STATUS.md** appended (this section).
+10. **Pending**: commit DO step 2 (no new git tag; `C8.12-complete` shipped at RECEIPT post-DO-step-3 closure).
+
+### Last completed step
+
+Single commit ships: 2 NEW test files + 1 NEW baseline builder + 1 NEW baseline CSV + 1 NEW package init + 1 NEW DECISION_LOG entry + this STATUS section. No git tag (RECEIPT phase at DO step 3).
+
+### In-progress
+
+C8.12 — DO step 2 of 3 COMPLETE (B.11 + B.12 + first regression baseline); step 3 = B.6 mutation-test scaffolding remains. Estimated 1 session of remaining DO work.
+
+### Next planned task
+
+C8.12 DO step 3 next session: **B.6 mutation-test scaffolding** for 7 FAIL-surface validators identified in the C8.12 PRE-FLIGHT (3 L14-CANDIDATE patched in DO step 1: `validate_2022.py` + `validate_external.py` + `validate_linked_parquets.py`; 4 OK validators with proper SystemExit propagation: `validate_external_v2.py` + `compare_external_targets_v1.py` + `compare_external_targets_v3_linked.py` + `validate_v1_invariants.py`). Each mutation test in `tests/mutations/test_<validator>_mutation.py` injects a known violation (e.g., temporarily edit a copy of `harmonized_schema.csv` to claim `type=str` for an integer column), spawns the validator via `subprocess.run`, asserts `returncode == 1`. Tier-0 AND-of-rows aggregation per L14: each row's per-row classifier must be truthy for the test to PASS. Estimated 1 session; ships RECEIPT + tag `C8.12-complete` at same commit.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.**
+
+### Open questions for human
+
+None blocking. The B.6 mutation-test design (DO step 3) is fully specified at C8.12 PRE-FLIGHT + STATUS notes lines 115-117 (mutation runner spawns the validator via `subprocess.run`; asserts exit-code 1; AND-of-rows aggregation per L14).
+
+**Open soft-flags (carried from C8.11 + (h)-(m) C8.12 PRE-FLIGHT + DO step 1):**
+
+Carried unchanged from C8.12 DO step 1: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) raw_data/ symlink fetal-only (C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (h) C8.11 in-DO L11 year-set (RESOLVED) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (j) RESOLVED — encoded as `tests/test_inventory_invariants.py` at DO step 1 + (k) **RESOLVED this DO step 2** — encoded as `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` + DECISION_LOG entry 2026-05-13T21:00:00Z; (l) `validate_2022.py` Convention-2 DESIGN tag (NOT addressed in DO step 2; bundle into DO step 3 B.6 mutation-test pairing as previously noted); (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b orchestrator candidate; deferred).
+
+**No new soft-flags this DO step 2.** The B.11 + B.12 tests both passed cleanly with all 97 zip SHAs matching the manifest + all 340 column SHAs matching the just-generated baseline (the latter is a tautology on first generation; the test gates against future drift).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start.
+
+1. **`tests/test_source_zip_sha_stability.py` exists** (3 tests; Convention 2 `DESIGN: tracks-current-state`).
+2. **`tests/test_parquet_column_snapshot.py` exists** (6 tests including 4 parametrized; Convention 2 `DESIGN: tracks-current-state`).
+3. **`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` exists** at sha=`b6fe22d6539849d931951e89cc3965930dabcaa88d20b2616a74fcdc85df153d` (341 lines = header + 340 data rows).
+4. **`tests/snapshots/_build_snapshot.py` exists** (canonical baseline regeneration entrypoint at `uv run python -m tests.snapshots._build_snapshot`).
+5. **`tests/snapshots/__init__.py` exists** (empty; package init).
+6. **All 4 parquet SHAs unchanged byte-exact** from C8.12 DO step 1: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`. No DO step 2 parquet mutation.
+7. **All C8.12 DO step 1 file SHAs unchanged byte-exact** (`fetal_death/file_inventory.csv` `2f2ba2c9…`; 3 L14-patched validators; `tests/test_inventory_invariants.py`).
+8. **All C8.11 file SHAs unchanged byte-exact** (docs/NCHS_SOURCE_MANIFEST.md `ed2a44d3…`; docs/COMPARABILITY.md; migrations/*; VERSION_ROADMAP.md; 3 cross-link READMEs).
+9. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 68 PASS + 1 XFAIL** as new C8.12 DO step 2 baseline (was 59 + 1 pre-step-2; +3 from B.11 + +6 from B.12; 180.29s ±15s variance; the +90s comes from per-column hashing across 218.5M rows × 340 columns).
+10. **DO step 3 begins next session**: B.6 mutation-test scaffolding for 7 FAIL-surface validators. Pre-DO recommendations: create `tests/mutations/__init__.py` (empty); one test file per validator at `tests/mutations/test_<validator_basename>_mutation.py`; each test spawns the validator via `subprocess.run([sys.executable, validator_path, ...])` with a tempdir-copy of its input pointing to a mutated CSV; asserts `result.returncode == 1`; AND-of-rows aggregation pattern per L14 (each row's per-row classifier truthy → mutation runner verifies per-row FAIL count > 0).
+11. **No `C8.12-complete` tag yet** — that lands at RECEIPT phase post-DO-step-3 closure (DO step 3 + RECEIPT bundle into the same commit).
+12. **No §11 plan-update needed at DO step 2 close**. The B.11 + B.12 tests were explicit §15 DO scope; storage-format choice was a soft-flag (k) DO-time DECISION_LOG entry, not a §11 trigger.
+13. **B.12 baseline is currently locked to pyarrow 21.0.0** (per `uv.lock`); a future pyarrow upgrade is a §11 plan-update event that triggers re-snapshot per residual-risk (a) in the DECISION_LOG 2026-05-13T21:00:00Z entry.
+14. **B.11 + B.12 both PASS on the canonical build machine** (all 97 zips on disk + all 4 parquets on disk + all SHAs match). A CI environment without local raw zips will SKIP B.11's per-zip test; a CI environment without local parquets will SKIP B.12's per-parquet tests. Skip behavior is by design per the established `_require()`-style pattern.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- V3b/V3a/V1 baseline parquets preserved (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.12 DO-step-1 outputs unchanged.
+
+NEW this session:
+- `tests/test_source_zip_sha_stability.py` (NEW; 3 tests; B.11 deliverable)
+- `tests/test_parquet_column_snapshot.py` (NEW; 6 tests; B.12 deliverable)
+- `tests/snapshots/__init__.py` (NEW; empty package init)
+- `tests/snapshots/_build_snapshot.py` (NEW; baseline builder)
+- `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` (NEW; 340-row baseline; sha=`b6fe22d6…`)
+- 1 new DECISION_LOG entry (B.12 storage-format choice; resolves soft-flag (k))
+- This STATUS section
+
+MODIFIED this session:
+- (none) — DO step 2 ships only NEW files; no edits to existing files.
+
+### Notes for next session
+
+- **C8.12 DO step 3** PRE-FLIGHT cheap-checks at next session start: re-verify all 14 forward-looking HALTs above byte-exact; should take ~5 min.
+- **B.6 mutation-test design**: per the C8.12 PRE-FLIGHT 19:30Z entry + STATUS notes from DO step 1 (line 115). Each `tests/mutations/test_<validator>_mutation.py` shape: (i) read the validator's canonical input (e.g., `fetal_death/external_validation_targets.csv`) into a tempdir copy; (ii) inject a known violation (e.g., flip an `expected` count by +1, or claim impossible `expected=0` where harmonized parquet ships rows); (iii) spawn the validator via `subprocess.run([sys.executable, validator_path, ...], cwd=tempdir, capture_output=True)`; (iv) assert `result.returncode == 1` AND `b"FAIL" in result.stdout` (AND-of-rows aggregation per L14; both conditions must hold to PASS). The AND prevents a future regression where the validator exits 1 but for an unrelated reason (e.g., crash).
+- **L14-CANDIDATE-patched validators (3)** are the prerequisite for B.6 — without DO step 1's `sys.exit(1)` propagation, the mutation runner would see returncode=0 regardless of mutation injection (false-PASS). DO step 1 satisfied that dependency; DO step 3 builds atop it.
+- **Convention 1 SHAPE-not-VALUE applies to each B.6 test**: assert STRUCTURAL invariant "validator returncode = 1 on mutated input" rather than a VALUE-pinned "validator wrote exactly N FAIL lines to stdout" (the latter would fail under future legitimate validator output changes; the former is robust).
+- **Convention 2 DESIGN tag on each B.6 test file**: `DESIGN: tracks-current-state` (the canonical state being "this validator's `sys.exit(1)` returns when a known-bad row is injected"; updates only under authorized validator-contract changes).
+- **Re-snapshot policy for B.12**: any authorized parquet reshape (C8.13 dict-encoding pass; latest-year refresh per C8.2 pattern; etc.) MUST be paired with a `tests/snapshots/_build_snapshot.py` run + a sibling `v<X+1>_<UTC>_columns.csv` commit + a DECISION_LOG entry naming the cause + a `[plan-update]` commit. The test's `latest_baseline_path()` glob auto-picks the lexicographic-latest, so the test continues to gate cleanly after re-snapshot.
+- **B.11 + B.12 surface a known scope gap**: neither test runs in CI without local raw zips + parquets (B.11 SKIPs all 97 if no zips; B.12 SKIPs per-parquet if not on disk). C8.13's GitHub release artifacts (per Tier-2 plan) could re-enable B.11 + B.12 in CI by hosting the canonical zips/parquets as release assets that CI downloads at test time. Filed as forward-looking note for C8.13 design.
+
+### Session summary
+
+C8.12 DO step 2 closed in ~30 min wall time post-PRE-FLIGHT (cheap-check + B.11 authoring + B.12 builder + baseline gen + B.12 test authoring + cache-cleared pytest + DECISION_LOG + STATUS). Three of five C8.12 deliverables now substantively COMPLETE (B.7 + B.8 from DO step 1; B.11 + B.12 from this DO step). One durable defense shipped this DO step: per-column SHA snapshot regression test with sort-stable re-snapshot policy. Zero §7 halts; zero canonical-parquet mutation. Cache-cleared pytest 68 PASS + 1 XFAIL (was 59 + 1; +9 from new tests). C8.12 progress: ~60-70% of total estimated effort (B.11 + B.12 ~smaller than B.6 mutation testing in DO depth). Cumulative Phase C effort ~13.7 of 29-35 sessions (~40%). Remaining DO sessions for C8.12: 1 estimated (step 3 = B.6 mutation-test scaffolding + RECEIPT + `C8.12-complete` tag).
 
 ---
 

@@ -23,6 +23,53 @@
 
 ---
 
+## 2026-05-13T21:00:00Z — C8.12 (DO step 2, B.12 snapshot baseline) — Per-column SHA-256 snapshot stored as CSV at `tests/snapshots/v<X>_<UTC>_columns.csv`; row-group-streamed Arrow buffer hashing; re-snapshot triggered by §11 plan-update on authorized parquet reshape (resolves soft-flag (k) from C8.12 PRE-FLIGHT)
+
+**Choice (LLM at C8.12 B.12 DO step 2):** The B.12 per-column-SHA snapshot baseline ships as a single committed CSV at `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` with six columns: `parquet,column_name,column_index,arrow_type,row_count,column_sha256`. Hash function (`tests/snapshots/_build_snapshot.py::column_sha256_map`) streams each parquet row-group by row-group, projecting every column at once for sequential-read efficiency, and folds each Arrow chunk's underlying memory buffers into the per-column SHA-256 (null buffer slots fed `b"\\x00"` so type-shape contributes deterministically). The committed baseline is **frozen until an authorized §11 plan-update reshapes a parquet** (anticipated triggers: C8.13 dict-encoding pass; latest-year refresh; harmonization-rule revision). At that point a sibling `v<X+1>_<UTC>_columns.csv` is generated alongside the rebuild commit, and `tests/test_parquet_column_snapshot.py::latest_baseline_path` automatically picks the lexicographic-latest (the `v<X>_<UTC>` convention is sort-stable).
+
+The test (`tests/test_parquet_column_snapshot.py`) runs three assertions: (1) baseline anchor row count = 340 (Convention-1 STRUCTURAL invariant); (2) per-parquet column counts = 73 + 89 + 84 + 94 (Convention-1 STRUCTURAL invariant); (3) parametrized per-parquet per-column SHA-256 equality with the baseline (the VALUE-pinning part — re-snapshot-on-authorized-reshape per this entry's policy). Skip-if-parquet-missing per the established `_require()` pattern.
+
+**Alternatives considered:**
+
+1. **(A) CSV at `tests/snapshots/v<X>_<UTC>_columns.csv` with row-group-streamed Arrow buffer hashing (CHOSEN).** Pro: human-readable (open in any text editor; grep-able per column); diff-able across versions (git diff on the CSV surfaces exactly which columns drifted); lossless representation of 6 fields per row; cheap to regenerate (~90s total across 4 parquets on the canonical build machine); sort-stable filename convention via `v<X>_<UTC>`. Con: 340 rows × ~150 bytes/row = ~50KB per baseline file; one file per authorized reshape accumulates over time (~10 baselines = ~500KB across the project's expected v1.x lifecycle).
+2. **(B) JSON at `tests/snapshots/v<X>_<UTC>_columns.json`.** Pro: stronger nested-structure representation if per-column metadata grows beyond 6 fields; native arrays for any per-column histograms. Con: less human-diff-readable than CSV; no advantage at the current 6-field column-shape; harder to grep. Rejected — current scope does not need nesting.
+3. **(C) Parquet at `tests/snapshots/v<X>_<UTC>_columns.parquet`.** Pro: smaller storage (compression); native arrow type fidelity. Con: not human-diff-readable; requires pyarrow to inspect; mixes test-fixture file-format with the production parquet stack in a way that complicates audits. Rejected — the baseline is a small metadata-only file that benefits from CSV's text-friendliness.
+4. **(D) Per-column hash as a Python literal in the test module** (no separate file). Pro: no extra file in repo; baseline + test colocated. Con: 340 hex strings inline = noisy test source; cannot regenerate without editing test source code; mixes data with code; awkward to diff for the small case of "1 column drifted." Rejected — separate baseline-as-data is cleaner.
+5. **(E) Hash via `pa.compute` / pandas `hash_pandas_object` instead of Arrow buffer concatenation.** Pro: more semantically meaningful (hashes the VALUES, not the underlying memory representation). Con: dramatically slower on 138.8M-row natality (~30-60s per column instead of ~2-3s); for 84 natality columns this is 40+ minutes vs the chosen ~25s. Rejected — buffer-based hashing is deterministic per pyarrow build and per on-disk parquet, which is what we need; the "value-level semantics vs buffer-level semantics" distinction is moot here because a legitimate value change WILL change the buffer bytes too.
+
+**Reason:** Option A balances five protocol concerns: (i) §2 principle 1 cheap-before-expensive — CSV regeneration is ~90s; (ii) §3 append-only state files — each authorized re-snapshot is a NEW file at a new sort-stable name, not an overwrite of an existing baseline; (iii) Convention 1 SHAPE-not-VALUE — the structural anchor (340 rows; 73+89+84+94 per parquet) is separate from the per-row VALUE pin, so a wholesale parquet reshape (e.g., adding a column) trips the structural anchor before the value mismatch surfaces; (iv) Convention 5 commit-message brevity — re-snapshot commits ship a 5-line summary referencing this DECISION_LOG entry as the source of the policy; (v) §11 plan-update gate — re-snapshot is exactly the kind of canonical-state change that triggers §11 (per L17 SHAPE-vs-VALUE: if the SMOKE/snapshot's "VALUE" is allowed to drift under authorized change, the authorization must be explicit and logged).
+
+Three protocol justifications: (i) §8 matrix H10 row's defense (per-column hashes catch reproducibility drift that row-count and dtype checks miss); (ii) Convention 1 SHAPE-not-VALUE first-docstring tag (test file declares `DESIGN: tracks-current-state` per Convention 2); (iii) §11 plan-update gating reuses the existing pattern from C8.11's `[plan-update]` precedent (the EXPLORATION_REPORT-to-§15 transition + C8.9 [plan-update] both demonstrate the "authorized re-baseline at §11" pattern).
+
+**Source:**
+
+- `STATUS.md` 2026-05-13T20:30:00Z line 114 — recommends "per-column SHA in `tests/snapshots/v<X>_<UTC>_columns.csv`" as soft-flag (k) DO-time choice; this entry resolves the soft-flag.
+- `STATUS.md` 2026-05-13T19:30:00Z lines 114-116 — Convention 1 SHAPE-not-VALUE framing for B.12; clarifies the structural-anchor vs value-pinning distinction.
+- `PRE_FLIGHT_LOG.md` 2026-05-13T19:30:00Z — C8.12 PRE-FLIGHT 340-column sizing (73+89+84+94 across 4 parquets).
+- Test file: `tests/test_parquet_column_snapshot.py` (NEW; ~110 lines; Convention 2 `DESIGN: tracks-current-state` tag).
+- Baseline builder: `tests/snapshots/_build_snapshot.py` (NEW; ~120 lines; documented `uv run python -m tests.snapshots._build_snapshot` regeneration command).
+- Committed baseline: `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` (340 rows; sha=`b6fe22d6539849d931951e89cc3965930dabcaa88d20b2616a74fcdc85df153d`).
+
+**Verifiable by:**
+
+- `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` exists with 341 lines (header + 340 data rows); sha=`b6fe22d6…`.
+- `uv run python -m tests.snapshots._build_snapshot` regenerates the same SHAs (modulo a new sibling filename if the literal in `main()` is bumped).
+- `uv run pytest tests/test_parquet_column_snapshot.py -v` returns 6 PASS (1 anchor row count + 1 per-parquet column count + 4 parametrized per-parquet SHA), or with parquets-missing SKIPs.
+- Cache-cleared full pytest 68 PASS + 1 XFAIL (was 59 + 1 pre-DO-step-2; +3 from B.11 + +6 from B.12).
+
+**Reversible:** yes — `git revert <C8.12 DO step 2 commit>` removes `tests/test_source_zip_sha_stability.py` + `tests/test_parquet_column_snapshot.py` + `tests/snapshots/`. No parquet, validator, or canonical-data mutation; reversion would only undo the test scaffolding.
+
+**Residual risks:**
+
+- (a) **Arrow buffer hashing is sensitive to pyarrow encoding choices** (e.g., dictionary encoding on a string column changes the buffer layout even if the values are identical). Defense: `uv.lock` pins pyarrow to an exact version (per C8.5a); a future pyarrow upgrade is a §11 plan-update event that triggers re-snapshot. Currently `uv.lock` pins pyarrow 21.0.0.
+- (b) **The `column_sha256` value is NOT comparable across different parquet files even with identical content.** I.e., two parquets with the same logical data but different chunk boundaries (row group sizes) produce different SHAs. This is by design (we want a sensitive regression alarm), but it means any legitimate parquet rewrite (even with same content) is an authorized re-snapshot event.
+- (c) **B.12 cannot run in a CI environment without the 4 parquets on disk.** Skip-if-parquet-missing is the documented behavior. A future CI workflow (per C8.13 GitHub release artifacts) could download the parquets from the release and re-enable B.12 on every CI run; until then B.12 is a local-build-time gate, not a CI gate. Filed as a downstream follow-up for C8.13.
+- (d) **The Convention-1 structural anchors (340 / 73+89+84+94) are pinned in `EXPECTED_COLUMN_COUNTS`** in `tests/test_parquet_column_snapshot.py`; a future authorized schema change (e.g., adding a new derived column) requires updating the literal alongside the baseline regen. This is an explicit Convention-1 SHAPE pin; per L17 it MUST be updated under authorized canonical drift, otherwise it becomes a stale-pinning false-FAIL.
+
+**Backport scope:** None directly. C8.1-C8.11 receipts unaffected. The C8.12 PRE-FLIGHT-time soft-flag (k) is now RESOLVED by this entry.
+
+---
+
 ## 2026-05-13T20:30:00Z — C8.12 (DO step 1, B.7 L13 audit) — `fetal_death/file_inventory.csv` `record_length` convention standardized on no-terminator (matches `field_specs.py` RECORD_LEN_* + 24 EXACT inventory rows); 19-row fix-on-contact applied in-place per C8.11 precedent
 
 **Choice (LLM at C8.12 B.7 DO step 1):** Standardize the `record_length` column in `fetal_death/file_inventory.csv` on the **no-terminator convention** — i.e., the column records the byte length of the data content per record, EXCLUDING any trailing CR/LF/CRLF line terminator. This matches:
