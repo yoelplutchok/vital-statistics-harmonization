@@ -23,6 +23,75 @@
 
 ---
 
+## 2026-05-14T00:30:00Z — C8.15 PRE-FLIGHT — Routing resolutions for C.6.d (`education_gradient.ipynb`) + C.6.e (`state_reporting_quirks.ipynb`); user-resolved via AskUserQuestion 2026-05-14T00:30:00Z (C.6.d = natality+linked-only; C.6.e = read from `output/yearly_clean/` raw parquets); NO `[plan-update]` commit needed (substrate-routing-only resolutions; §15 deliverable names + halt-condition flags unchanged)
+
+**Choice (LLM at C8.15 PRE-FLIGHT 2026-05-14T00:30:00Z; user-resolved via AskUserQuestion):** The C8.15 PRE-FLIGHT Convention 3 Field-value snapshot surfaced two §7.13-shape PRE-FLIGHT-time L11s where STATUS 2026-05-13T23:45:00Z line 90's gloss on the §15 C.6.d + C.6.e deliverables conflicts with the actual substrate state. Both resolved via AskUserQuestion before any DO mutation, per the C8.10a/b/c + C8.11 routine-PRE-FLIGHT-input-re-interpretation precedent.
+
+**Resolution 1 (C.6.d data product = natality+linked-only):**
+
+The §15 C.6.d entry (NEXT_STEPS.md line 1281) names *"`education_gradient.ipynb` (within-era only, with 1989/2003 boundary explicit)"* without specifying a data product. STATUS line 90's gloss framed the substrate as fetal-death's `maternal_education_unrevised` (pre-2003) + `maternal_education` (revised; post-2003) — those are fetal-death-side column names. The natality `harmonized_schema.csv` confirms natality has only `maternal_education_cat4` (single column, both eras crosswalked via `_dmeduc_years_to_cat4` for 1990-2002 + `_meduc_to_cat4` for 2003+) + a `certificate_revision` flag. The within-era discipline still applies (per natality COMPARABILITY line 195: `certificate_revision == 'revised_2003'` filter for 2009-2013 revised-only era to avoid spurious unrevised-null mixing) but operates via a different column structure than the fetal-death side.
+
+User-resolved via AskUserQuestion 2026-05-14T00:30:00Z = **Option A (Natality+linked only, Recommended)**: notebook uses natality `maternal_education_cat4` + linked-file `maternal_education_cat4` + `certificate_revision` filter for 2009-2013 sub-analysis. The "1989/2003 boundary" framing in §15 becomes the 2003-revision boundary (since natality starts in 1990); the 2009-2013 revised-only window documented explicitly per natality COMPARABILITY.
+
+**Alternatives considered (C.6.d):**
+
+1. **(A) Natality+linked-only (CHOSEN).** Pro: cleanest "education gradient" on birth-side outcomes (preterm, LBW, IMR via linked); single within-era contract; no cross-product mixing; F4 risk localized to one column structure. Con: doesn't demonstrate fetal-death side's cleaner column split (`maternal_education` vs `maternal_education_unrevised`); fetal-death era split is illustrated in C.6.c `cross_race_fetal_mortality.ipynb` and `fetal_death/COMPARABILITY.md` instead.
+2. **(B) Fetal-death only.** Pro: matches STATUS line 90's column-name framing literally; cleaner 1989/2003 within-era split using fetal-death's separate columns. Con: an "education gradient" of fetal-mortality rate (rather than birth outcomes) is non-standard; harder to validate against published NCHS cells.
+3. **(C) Both products in one notebook.** Pro: maximally demonstrative; shows both era patterns; covers both birth outcomes and fetal mortality. Con: ~2x effort; multiplies F4 risk (two within-era contracts to maintain in one builder); larger notebook risks losing pedagogical clarity; pushes session beyond §15 2-session estimate.
+
+**Resolution 2 (C.6.e substrate = `output/yearly_clean/` raw parquets):**
+
+The §15 C.6.e entry (NEXT_STEPS.md line 1281) names *"`state_reporting_quirks.ipynb` (Oklahoma Hispanic, Maryland/Massachusetts 1992-1998, Louisiana plurality)"*. STATUS line 90 anticipated *"State-level geography NOT in public-use files (per C8.9 finding) — the notebook would need to use NCHS-reported state quirks via NVSR cross-references rather than direct state-stratification. May surface a §7.13 L11 at PRE-FLIGHT — bundle into a §11 plan-update if so."* This generalization of the C8.9 finding (DECISION_LOG 2026-05-13T10:00:00Z) was over-cautious: C8.9's C.1 drop was specifically about NATALITY public-use files. Fetal-death yearly_clean raw parquets DO retain state codes:
+- 1992-2002 V2 era: `STATEFET` + `STATERES` (verified at 1992: 198 cols inc. both)
+- 2005-2013 V1 era: `OSTATE` + `MRSTATEPSTL` (verified at 2010: 182 cols inc. both)
+- 2014+ V1 era: adds `MBSTATE_REC` (verified at 2022: 142 cols inc. all 3)
+
+This is HOW `fetal_death/COMPARABILITY.md` lines 273-275 derived the Louisiana plurality counts ("1,686 of 1,714 LA-occurrence records" — direct STATEFET=19 + DPLURAL=9 query on yearly_clean parquets). The harmonized parquet drops state codes (only `residence_status` 1-4 codes survive harmonization), but the per-year raw parquets preserve everything documented in the source layout.
+
+User-resolved via AskUserQuestion 2026-05-14T00:30:00Z = **Option A (Read from `output/yearly_clean/` raw parquets, Recommended)**: notebook routes to `output/yearly_clean/fetal_death_<YEAR>_raw.parquet` for state-code access. Departs from C.6.a-c convention (those consume harmonized parquet); C.6.e is the only notebook reading raw. Documented in builder docstring; pedagogical note in notebook markdown explaining why this notebook uses raw substrate (state codes are operationally suppressed in harmonized parquet but documented in source layout).
+
+**Alternatives considered (C.6.e):**
+
+1. **(A) Read from `output/yearly_clean/` raw parquets (CHOSEN).** Pro: substrate exists; reproduces the COMPARABILITY-cited counts directly; pedagogically demonstrates that the harmonized → raw fallback is well-defined and documented; aligns with REPRODUCING.md's framing of yearly_clean as the canonical per-year substrate. Con: departs from C.6.a-c builder convention (one-off precedent); future notebook authors may copy the pattern incorrectly; documented in builder docstring + notebook markdown to mitigate.
+2. **(B) Documentation-only mode.** Pro: preserves notebook-substrate convention; no raw-substrate departure; lightest weight. Con: less compelling than per-record demonstration; the COMPARABILITY note already does the documentation; the notebook would be redundant; pedagogical value lower.
+3. **(C) Add state columns to harmonized schema + re-derive.** Pro: makes per-state work first-class in the harmonized parquet; future state-level notebooks would have a clean substrate. Con: out of pre-submission scope per C8.13 effort-ceiling concern (Q33); would push C8.15 from 2 sessions to ~4-5; triggers schema bump + parquet SHA shift + B.12 snapshot regen + H10 reproducibility gate re-anchor; not clearly worth the cost since the use-case (5 documented state quirks) is bounded.
+4. **(D) Drop C.6.e entirely + plan-update.** Pro: analog of C8.9 C.1 drop and C8.13 F.1 drop; cleaner Tier-2 closure narrative. Con: state quirks are real onboarding friction for users (especially the Louisiana plurality + 2005-2013 plurality '5' miscoding which the COMPARABILITY note explicitly recommends a researcher recipe for); the notebook is a meaningful deliverable; dropping would be over-cautious.
+
+**Three protocol justifications:** (i) §8 matrix L11 row (stale roadmap claim) — both STATUS line 90 glosses are exactly L11 cases caught at the cheap-check moment; resolved via AskUserQuestion before any DO mutation. (ii) Convention 3 Field-value snapshot — the schema-CSV + COMPARABILITY-cite + yearly_clean column probe is the canonical Convention-3 application; the table-of-substrates in PRE_FLIGHT_LOG 2026-05-14T00:30:00Z is the artifact. (iii) Routing-only-routine-PRE-FLIGHT-decision precedent (C8.10a / C8.10b / C8.10c / C8.11) — substrate routing decisions stay in PRE_FLIGHT_LOG + DECISION_LOG when the §15 deliverable name + halt-condition flag are unchanged; no `[plan-update]` commit prefix needed.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-14T00:30:00Z Tables 1+2 — substrate verification for both notebooks; the empirical evidence.
+- `STATUS.md` 2026-05-13T23:45:00Z line 90 — the gloss being superseded.
+- `NEXT_STEPS.md` §15 C.6.d (line 1281) + C.6.e (line 1281) — the §15 deliverable names (unchanged by this resolution).
+- `natality/metadata/harmonized_schema.csv` lines (`maternal_education_cat4` + `certificate_revision` rows) — the natality column-availability evidence.
+- `natality/docs/COMPARABILITY.md` line 195 — the canonical revision-consistent subset filter for 2009-2013.
+- `fetal_death/COMPARABILITY.md` lines 162-172 + 267-269 + 273-275 — the state-quirk references (C.6.e substrate documentation).
+- `output/yearly_clean/fetal_death_{1992,2010,2022}_raw.parquet` schema probe — confirmed `STATEFET`/`STATERES` (1992) + `OSTATE`/`MRSTATEPSTL` (2010) + `MBSTATE_REC` (2022) presence.
+- AskUserQuestion 2026-05-14T00:30:00Z — user authorization for Option A × 2.
+
+**Verifiable by:**
+
+- `git tag --list 'C8.15-*'` shows `C8.15-pre-do` post-this-commit; `C8.15-complete` post-RECEIPT.
+- `notebooks/_build_education_gradient.py` references `natality_v2_harmonized_derived.parquet` + `natality_v3_linked_harmonized_derived.parquet` (and NOT fetal-death parquets).
+- `notebooks/_build_state_reporting_quirks.py` references `output/yearly_clean/fetal_death_<YEAR>_raw.parquet` (and NOT `output/harmonized/fetal_death_*.parquet`).
+- `KICKOFF.md` line 196 + `NEXT_STEPS.md` §15 C.6.d + C.6.e entries unchanged (no plan-update).
+
+**Reversible:** yes — `git revert <C8.15-pre-do commit>` removes this DECISION_LOG entry + the PRE_FLIGHT_LOG entry. No parquet, validator, or canonical-data mutation. Substrate-routing decisions are notebook-author-time only; future C8.X notebook tasks can re-route at their own PRE-FLIGHT.
+
+**Residual risks:**
+
+- (a) **Future notebook authors may copy C.6.e's raw-substrate routing pattern inappropriately**, leading to drift away from the harmonized-substrate convention. Defense: builder docstring + notebook markdown explicitly framing the raw routing as "use-case-specific (state codes operationally suppressed in harmonized parquet); see fetal_death/COMPARABILITY.md for the documented state quirks the notebook reproduces."
+- (b) **C.6.d natality-only framing may surface a follow-up question** about why the fetal-death-side education columns (`maternal_education` + `maternal_education_unrevised`) aren't demonstrated. Defense: the C.6.c `cross_race_fetal_mortality.ipynb` already exercises fetal-death within-era discipline; C.6.d covers the natality-side gradient explicitly.
+- (c) **The 2009-2013 revised-only filter (`certificate_revision == 'revised_2003'`) is an F4 contract** — if the notebook accidentally groups 2009-2013 by `maternal_education_cat4` without filtering revised-only, the unrevised 99% null records contaminate the gradient. Defense: explicit filter in the relevant section; markdown narrative documents the F4 contract; VERIFY checks.
+- (d) **The plurality '5' miscoding 2005-2013 V1 era requires the researcher recipe** (set `plurality == '5'` to blank for that year window) per fetal_death/COMPARABILITY.md line 171; the notebook should demonstrate both the raw count + the corrected count to close soft-flag (f). Defense: explicit notebook section.
+
+**Backport scope:** None. C8.15 is the final §15 Tier-2 task; closure brings Tier 2 to 7/7. No prior task affected by this routing decision.
+
+**Soft-flag (q) filed (this PRE-FLIGHT)**: WORKED_EXAMPLE_FAQ.md SHA anchor typo in STATUS 2026-05-13T23:45:00Z + RECEIPTS/C8.14_2026-05-13T23-45-00Z.md + commit-message narrative — recorded sha=`89730c31…` but on-disk + committed sha=`341c4550…`. STATUS is append-only so the typo persists; future sessions reading the C8.14 closing anchor for HALT verification will see the same mismatch and need to repeat this PRE-FLIGHT's `git diff HEAD` resolution. C8.15 RECEIPT records the corrected anchor for the C8.15 forward-looking HALTs to point at. L17-shape (STATUS pin drifted from on-disk reality at moment of writing; not a runtime mutation).
+
+---
+
 ## 2026-05-13T22:30:00Z — [plan-update] C8.13 PRE-FLIGHT — F.1 (parquet dict-encoding work) DROPPED + F.4 (GitHub Release) DEFERRED to Phase D step 3 + F.5 (timing benchmark) PROCEEDS this session; revise §15 C8.13 entry + KICKOFF.md Tier-2 line 194; effort revised 1.5-2 → ~1 session
 
 **Choice (LLM at C8.13 PRE-FLIGHT 2026-05-13T22:30:00Z; user-resolved via AskUserQuestion):** The §15 C8.13 PRE-FLIGHT cheap-check probed per-column encoding state via `pyarrow.parquet.ParquetFile.metadata.row_group(0).column(c).encodings` across all 340 columns × 4 parquets and surfaced a §7.13-shape L11 PRE-FLIGHT-time finding: the §15 plan claim "Re-write derive.py's parquet-write call with `use_dictionary=True` per column [→] typically yields 30-50% size reduction" is empirically falsified by the actual encoding state. Specifically:

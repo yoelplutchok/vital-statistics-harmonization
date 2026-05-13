@@ -8,6 +8,137 @@
 
 ---
 
+## PRE-FLIGHT for C8.15 — 2026-05-14T00:30:00Z — Worked-example notebooks 4-5 (C.6.d `education_gradient.ipynb` + C.6.e `state_reporting_quirks.ipynb`) — **RESULT: HALT (two routing-shape PRE-FLIGHT-time L11s surfaced) → user-resolved via AskUserQuestion 2026-05-14T00:30:00Z (C.6.d = natality+linked-only Recommended; C.6.e = read from `output/yearly_clean/` raw parquets Recommended); PROCEED to C8.15 DO with clarified routing; precedent: C8.5/C8.6/C8.7/C8.9/C8.10a/b/c/C8.11/C8.13 PRE-FLIGHT-time AskUserQuestion path; no `[plan-update]` commit needed (the §15 entry's "halt-condition flag F4" already anticipates the within-era discipline; routing decisions stay in this PRE-FLIGHT entry + DECISION_LOG)**
+
+### Scope summary
+
+C8.15 §15.C entry (NEXT_STEPS.md lines 1279-1295) names 2 deliverables: **(C.6.d)** `notebooks/education_gradient.ipynb` (within-era only, with 1989/2003 boundary explicit); **(C.6.e)** `notebooks/state_reporting_quirks.ipynb` (Oklahoma 1992-2002 Hispanic non-reporting, Maryland 1992-1998, Massachusetts 1992-1997, Louisiana 1992-1994 plurality). KICKOFF.md Phase C Tier-2 line 196 + STATUS 2026-05-13T23:45:00Z line 37 name C8.15 as next + final §15 Tier-2 task post-C8.14. Estimated effort 2 sessions. §15 halt-condition flag: F4 (within_era column cross-era misuse).
+
+**Session scope this PRE-FLIGHT (per "proceed" authorization 2026-05-14T00:00:00Z):** ship PRE-FLIGHT entry + tag `C8.15-pre-do` + DO sub-step 1 (C.6.d builder + executed notebook) + (potentially) DO sub-step 2 (C.6.e builder + executed notebook) + VERIFY + RECEIPT in this session if scope fits, otherwise close session at C.6.d-shipped with C.6.e deferred to a second C8.15 session per the §15 2-session estimate.
+
+### Inputs
+
+- [x] **All 9 C8.14 Forward-looking HALTs verified byte-exact**:
+  - HALT 1: `C8.14-pre-do` + `C8.14-complete` tags both present ✓
+  - HALT 2: 4 parquet SHAs byte-exact at canonical paths:
+    - `output/harmonized/fetal_death_harmonized.parquet` sha256=`38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` ✓
+    - `output/harmonized/fetal_death_derived.parquet` sha256=`185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09` ✓
+    - `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` sha256=`e16ad5323d68e28d401518f1ff56b12c09e43883e76022a9823d51a677c41d44` ✓
+    - `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet` sha256=`9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777` ✓
+  - HALT 3: `docs/WORKED_EXAMPLE_FAQ.md` present BUT actual sha256=`341c4550f8e9db37bb801540ac95967b853b0083a5d8f47e6bb4b3ed1753aab7` ≠ STATUS-recorded `89730c31…`. **Investigated**: `git diff HEAD -- docs/WORKED_EXAMPLE_FAQ.md` returns empty; `git show HEAD:docs/WORKED_EXAMPLE_FAQ.md | shasum -a 256` returns `341c4550…` (matches on-disk byte-exact). **Conclusion**: STATUS 2026-05-13T23:45:00Z + RECEIPT C8.14 + STATUS HALT #3 + commit-message-narrative all recorded the wrong sha anchor; the file IS the committed file. Filed as soft-flag (q) for the C8.15 RECEIPT (L17-shape: STATUS-recorded annotation drifted from on-disk reality at the moment of writing; not a §7 halt because no actual file mutation occurred). ⚠️ TYPO-only
+  - HALT 4: `PROJECT_STRUCTURE.md` upgraded sha=`54f75c3226a6ee8c40699fe41ccd54378122588bff22847a50bcb801b92031c7` matches anchor `54f75c32…` byte-exact; 207 lines (within "~210 line" framing) ✓
+  - HALT 5: cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returned **74 passed + 1 skipped + 1 xfailed in 230.74s** — matches expected (74 PASS + 1 SKIP + 1 XFAIL) at +20.96s variance from C8.13/C8.14 baseline 209.78s, well within the documented "~210s ±20s variance" tolerance ✓
+  - HALT 6: `paper/draft_v2_hmd_styled.md` sha=`0685fe9cec3d6ae0b33905785d58b05077d5ff5f037f949e8100c153bf1bddd1` — `git status` clean → no manuscript mutation since C8.14-complete `ebed5a9` (C8.13 PROPOSE-EDIT remains routed to Phase D step 4) ✓
+  - HALT 7: Tier 2 progress 6 of 7 §15-listed tasks COMPLETE (C8.9 + C8.10 + C8.11 + C8.12 + C8.13 + C8.14); 1 remaining (C8.15 = this task) — KICKOFF + STATUS + NEXT_STEPS all agree ✓
+  - HALT 8: dependencies (C8.10 + C8.11) satisfied:
+    - C8.10: 5 builders + 5 notebooks present at `notebooks/` (`joint_use_demo.ipynb`, `paper_companion.ipynb`, `maternal_age_stratified_imr.ipynb`, `preterm_outcomes_time_series.ipynb`, `cross_race_fetal_mortality.ipynb`) ✓
+    - C8.11: 2 migration guides present at `migrations/` (`v2.0.0-to-v2.4.0-fetal-death.md`, `v2.7.0-to-v2.8.0-natality.md`) + cross-product `docs/COMPARABILITY.md` (18.7K) present ✓
+  - HALT 9: `git status --short` empty on `main` at HEAD `ebed5a9` (C8.14-complete commit) — no KICKOFF / NEXT_STEPS edit at C8.14 close ✓
+- [x] **C8.15 substrate enumerated**:
+  - **C.6.d substrate** — natality `maternal_education_cat4` column (single 4-category recode, both eras crosswalked; null for 2009-2013 unrevised records per natality COMPARABILITY); natality `certificate_revision` flag for revised-only filtering; linked-file `maternal_education_cat4` analog (V3 LinkCO); user-authorized data-product = **natality+linked-only** per AskUserQuestion 2026-05-14T00:30:00Z.
+  - **C.6.e substrate** — fetal-death yearly_clean raw parquets at `output/yearly_clean/fetal_death_<YEAR>_raw.parquet` retain state codes (1992-2002 era: `STATEFET` + `STATERES`; 2005-2013 era: `OSTATE` + `MRSTATEPSTL`; 2014+ era: adds `MBSTATE_REC`). Verified via `pyarrow.parquet.ParquetFile.schema.names` probe across years 1992 (198 cols), 2010 (182 cols), 2022 (142 cols). User-authorized substrate routing = **read from `output/yearly_clean/` raw parquets** per AskUserQuestion 2026-05-14T00:30:00Z.
+  - **Cross-product COMPARABILITY references** for state quirks: `fetal_death/COMPARABILITY.md` lines 162-172 (plurality '5' miscoding 2005-2013 V1 era + recommended researcher recipe); lines 267-269 (Oklahoma all 11 V2 years 1992-2002 + Maryland 1992-1998 + Massachusetts 1992-1997 Hispanic non-reporting); lines 273-275 (Louisiana 1992-1994 plurality non-reporting with explicit per-record counts: 1,686 of 1,714 LA-occurrence records).
+  - C8.10 builder pattern: `_build_maternal_age_stratified_imr.py` (459 LOC; single-product linked notebook) + `_build_cross_race_fetal_mortality.py` (single-product fetal-death notebook) + `_build_preterm_outcomes_time_series.py` (cross-product notebook) — pattern: `nbformat.v4.new_notebook()` + `nbclient.NotebookClient.execute()`; DESIGN: tracks-current-state docstring tag (Convention 2); helper `md()`/`code()` cell constructors; `build()` returns notebook; `main()` executes + writes `.ipynb`.
+- [x] **No stale checkpoints**: `git status --short` empty on `main` at `ebed5a9`; `C8.15-pre-do` tag does NOT yet exist. ✓
+
+### Environment
+
+- [x] Python 3.13.9; pandas 2.3.2; pyarrow 18.1.0; uv 0.11.10; .venv matches uv.lock (all unchanged from C8.14 close).
+- [x] Working directory clean; on `main`; active tag on HEAD = `C8.14-complete`. ✓
+
+### Source documentation
+
+C8.15 is a notebook-authoring task; consumes 4 internal canonical sources + zero external NCHS PDFs:
+- `natality/docs/COMPARABILITY.md` (within-era discipline for `maternal_education_cat4`; revised-only era 2009-2013)
+- `fetal_death/COMPARABILITY.md` (state-quirk references for C.6.e)
+- `natality/metadata/harmonized_schema.csv` (column documentation for natality `maternal_education_cat4`)
+- C8.10 builder source (3 builders for the 3 shipped C8.10 notebooks; pattern reference)
+
+All L8/L9 cheap-checks satisfied at PRE-FLIGHT inputs probe (no PMID resolutions needed; no external-page WebFetches needed; substrate is internal canonical content).
+
+### Outputs
+
+- [x] **NEW files (must not exist before DO):**
+  - `notebooks/_build_education_gradient.py`: does NOT exist ✓
+  - `notebooks/education_gradient.ipynb`: does NOT exist ✓
+  - `notebooks/_build_state_reporting_quirks.py`: does NOT exist ✓ (note: scope may shift to a second C8.15 session per §15 2-session estimate)
+  - `notebooks/state_reporting_quirks.ipynb`: does NOT exist ✓
+  - `RECEIPTS/C8.15_<UTC>.md`: will be written at C8.15 RECEIPT phase
+- [x] **APPEND-ONLY state files:**
+  - `PRE_FLIGHT_LOG.md`: this entry (written before DO begins)
+  - `STATUS.md`: new dated section at top at RECEIPT close
+  - `DECISION_LOG.md`: NEW entry recording the AskUserQuestion 2026-05-14T00:30:00Z routing resolutions for C.6.d + C.6.e (per the C8.13 / C8.11 / C8.10 routing-decision precedent)
+  - `FIX_LOG.md`: no FIX entry anticipated (the WORKED_EXAMPLE_FAQ SHA typo is a soft-flag, not a fix-on-contact-able mutation since STATUS is append-only)
+  - `LESSONS.md`: NO new entry anticipated
+- [x] **NOT mutated** (forward-looking HALT for VERIFY):
+  - 4 parquets unchanged (no compute on canonical state) ✓
+  - All C8.9-C8.14 file SHAs preserved ✓
+  - test suite baseline 74 PASS + 1 SKIP + 1 XFAIL preserved ✓
+  - existing 5 notebooks unchanged ✓
+  - `paper/draft_v2_hmd_styled.md` unchanged (Phase D step 4 scope) ✓
+  - `KICKOFF.md` + `NEXT_STEPS.md` unchanged (no §11 plan-update needed; routing decisions are in-PRE-FLIGHT) ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.15 is notebook-authoring work; the canonical-state mutation is zero (notebooks are derived artifacts; the underlying parquets are not touched). The Convention 3 substrate is the **column-availability + within-era contract verification**.
+
+**Table 1: C.6.d (`education_gradient.ipynb`) substrate verification**
+
+| Field | Source | Within-era contract | Verified at PRE-FLIGHT |
+|---|---|---|---|
+| `maternal_education_cat4` (natality v2) | `natality_v2_harmonized_derived.parquet` | 1990-2002: years-of-schooling crosswalk; 2003-2008: revised + unrevised both populated; 2009-2013: revised-only (substantial null on unrevised); 2014+: revised-only nationwide | ✓ schema CSV documents the era pattern explicitly; cell value distributions match COMPARABILITY note |
+| `maternal_education_cat4` (linked v3) | `natality_v3_linked_harmonized_derived.parquet` | Same era pattern as natality v2; V3 LINKED CAVEAT for 2009-2010 (PAY_REC + FEDUC blank in LinkCO09/10) does NOT affect maternal education | ✓ schema CSV cited |
+| `certificate_revision` (natality v2) | `natality_v2_harmonized_derived.parquet` | Filter `certificate_revision == 'revised_2003'` for 2009-2013 revised-only era to avoid spurious unrevised-null mixing | ✓ COMPARABILITY note line 195 cites this filter as the canonical revision-consistent subset |
+| Within-era discipline | F4 halt-condition flag | NO cross-era groupby on `maternal_education_cat4` for 2009-2013 unless filtered to revised-only; document the boundary in markdown cells | ✓ contract enforced in notebook design |
+
+**Table 2: C.6.e (`state_reporting_quirks.ipynb`) substrate verification**
+
+| State quirk | Time window | Source columns (raw parquet path) | Documented in fetal_death/COMPARABILITY.md |
+|---|---|---|---|
+| Oklahoma Hispanic non-reporting | 1992-2002 (all 11 V2 years) | `STATEFET` + `STATERES` + `HISPMOM` (or equivalent) in `output/yearly_clean/fetal_death_<YEAR>_raw.parquet` | Line 267 |
+| Maryland Hispanic non-reporting | 1992-1998 | Same as above | Line 268 |
+| Massachusetts Hispanic non-reporting | 1992-1997 | Same as above | Line 269 |
+| Louisiana plurality non-reporting | 1992-1994 | `STATEFET` + `STATERES` + `DPLURAL` in `output/yearly_clean/fetal_death_<YEAR>_raw.parquet` | Lines 273-275 (with per-record counts: 1,686 of 1,714 LA-occurrence records) |
+| Plurality '5' miscoding (footgun for soft-flag (f)) | 2005-2013 V1 era A-version | `OSTATE` + `MRSTATEPSTL` + `DPLURAL` in `output/yearly_clean/fetal_death_<YEAR>_raw.parquet` | Lines 162-172 + recommended researcher recipe at line 171 |
+
+**Plan assumptions verified at PRE-FLIGHT (per Convention 3 second bullet; one routing amendment — user-authorized):**
+
+1. **C.6.d data product = natality+linked-only** (per AskUserQuestion 2026-05-14T00:30:00Z; supersedes STATUS line 90's column-name framing which referenced fetal-death's `maternal_education` + `maternal_education_unrevised`). Natural reading: an "education gradient" is most legible on birth-side outcomes (preterm, LBW, IMR via linked).
+2. **C.6.e substrate = `output/yearly_clean/` raw parquets** (per AskUserQuestion 2026-05-14T00:30:00Z; supersedes STATUS line 90's "may surface §7.13 L11" framing which assumed C8.9 NCHS suppression generalizes — it doesn't; the C8.9 finding was natality-specific). Departs from C.6.a-c builder convention (those consume harmonized parquet); will be the only notebook reading raw. Documented in builder docstring.
+3. **C8.10 + C8.11 dependency satisfied**: 5 worked-example notebooks + 2 migration guides + cross-product COMPARABILITY all present.
+4. **No parquet mutation**; H10 reproducibility gate unaffected.
+5. **F4 halt discipline enforced in BOTH notebooks**: C.6.d filters revised-only 2009-2013 era; C.6.e segments analyses by data_year ranges aligned with each state's quirk window.
+
+**Soft-flags surfaced at PRE-FLIGHT (NOT in-scope this session; carried forward + 1 NEW):**
+
+Carried unchanged from C8.14 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun (**C8.15-scope; in-DO this task**) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped from pre-submission scope.
+
+**NEW soft-flag (q) this PRE-FLIGHT**: WORKED_EXAMPLE_FAQ.md SHA anchor typo in STATUS 2026-05-13T23:45:00Z + RECEIPTS/C8.14_2026-05-13T23-45-00Z.md + commit-message narrative — recorded sha=`89730c31…` but on-disk + committed sha=`341c4550…`. STATUS is append-only so the typo persists; future sessions reading the C8.14 closing anchor for HALT verification will see the same mismatch and need to repeat this PRE-FLIGHT's `git diff HEAD` resolution. RECEIPT C8.15 records the corrected anchor for the C8.15 forward-looking HALTs to point at. L17-shape (STATUS pin drifted from on-disk reality at moment of writing; not a runtime mutation).
+
+### Halt conditions tripped
+
+**TWO §7.13-shape PRE-FLIGHT-time L11s surfaced + user-resolved before any DO mutation** (precedent: C8.5 / C8.6 / C8.7 / C8.9 / C8.10a / C8.10b / C8.10c / C8.11 / C8.13 PRE-FLIGHT-time AskUserQuestion path):
+
+1. **C.6.d data-product framing in STATUS line 90 vs natality schema reality**: STATUS line 90 framed C.6.d as using fetal-death's `maternal_education_unrevised` (pre-2003) + `maternal_education` (revised; post-2003), but those column names are fetal-death-side; natality has only `maternal_education_cat4` (single column, both eras crosswalked) + `certificate_revision` flag. The within-era discipline still applies (2009-2013 revised-only window) but via a different column structure. User-resolved Option A (natality+linked-only): use natality `maternal_education_cat4` + `certificate_revision` filter; document the 2003 + 2009 boundaries explicitly.
+
+2. **C.6.e substrate routing — STATUS line 90 vs fetal-death yearly_clean reality**: STATUS line 90 anticipated "State-level geography NOT in public-use files (per C8.9 finding)" but the C8.9 finding (DECISION_LOG 2026-05-13T10:00:00Z) was natality-specific. Fetal-death yearly_clean raw parquets retain `STATEFET` + `STATERES` (V2 1992-2002) + `OSTATE` + `MRSTATEPSTL` (V1 2005+) + `MBSTATE_REC` (2014+). The Louisiana plurality + Oklahoma/Maryland/Massachusetts Hispanic non-reporting findings cited in fetal_death/COMPARABILITY.md ARE reproducible from this substrate. User-resolved Option A: route C.6.e to `output/yearly_clean/` raw parquets (departs from C.6.a-c convention; one-off precedent documented in builder docstring).
+
+NO `[plan-update]` commit needed (per the C8.10a / C8.10b / C8.10c / C8.11 routine-PRE-FLIGHT-input-re-interpretation precedent — substrate-routing-only resolutions stay in PRE_FLIGHT_LOG + DECISION_LOG, not in KICKOFF/NEXT_STEPS edits, when the §15 deliverable name + halt-condition flag remain unchanged).
+
+### Result
+
+**PROCEED to C8.15 DO** in this session. Tag `C8.15-pre-do` placed post-this-PRE-FLIGHT commit; DO sub-step 1 authors `notebooks/_build_education_gradient.py` + executes to produce `notebooks/education_gradient.ipynb`; DO sub-step 2 (if scope fits this session per §15 2-session estimate) authors `notebooks/_build_state_reporting_quirks.py` + executes to produce `notebooks/state_reporting_quirks.ipynb`; VERIFY runs cache-cleared pytest baseline; RECEIPT + `C8.15-complete` tag close the task. If only C.6.d ships this session, RECEIPT + `C8.15-partial` (or equivalent) tag closes sub-step 1; second session ships C.6.e + final `C8.15-complete` tag.
+
+Recommended DO sequencing this session:
+- **Sub-step 1**: Author `notebooks/_build_education_gradient.py` + execute → `notebooks/education_gradient.ipynb`. Sections: (i) Load natality+linked parquets + apply canonical filter; (ii) 4-category education distribution by year (1990-2024); (iii) preterm rate by education-cat4 within era boundaries (1990-2002, 2003-2008, 2014+); (iv) revised-only 2009-2013 sub-analysis with `certificate_revision == 'revised_2003'` filter; (v) NCHS-comparison cells (cite `natality/docs/COMPARABILITY.md` Section X "Education within-era guidance"); (vi) F4 within-era contract markdown narrative.
+- **Sub-step 2** (if scope fits): Author `notebooks/_build_state_reporting_quirks.py` + execute → `notebooks/state_reporting_quirks.ipynb`. Sections: (i) Load fetal-death yearly_clean raw parquets for V2 era 1992-1994 (LA plurality) + 1992-2002 (OK Hispanic) + 1992-1998 (MD Hispanic) + 1992-1997 (MA Hispanic) + V1 era 2005-2013 (plurality '5' miscoding); (ii) per-state cells reproducing the COMPARABILITY-cited counts (LA 1992-1994: 1,686 of 1,714 LA-occurrence records); (iii) Oklahoma Hispanic-non-reporting demonstration; (iv) Maryland + Massachusetts; (v) plurality '5' miscoding 2005-2013 with the COMPARABILITY-cited recommended-researcher recipe; (vi) within-era + cross-era discipline narrative + soft-flag (f) closure note.
+- **Sub-step 3 (VERIFY)**: cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL preserved; both notebooks render end-to-end; markdown flags within_era columns; no cross-era groupby on within_era columns (F4 contract).
+- **Sub-step 4 (RECEIPT)**: write `RECEIPTS/C8.15_<UTC>.md` + STATUS append + DECISION_LOG entry recording the 2 routing decisions; tag `C8.15-complete` (or `C8.15-partial` if only C.6.d ships).
+
+Effort: matches §15 2-session estimate; estimated ~60-90 min per notebook (incl. iterative debugging) + ~5 min VERIFY + ~15 min RECEIPT.
+
+---
+
 ## PRE-FLIGHT for C8.14 — 2026-05-13T23:30:00Z — Worked-example FAQ + PROJECT_STRUCTURE.md upgrade (E.3 + E.6) — **RESULT: PROCEED** (zero §7 halts; zero L11s; pure cross-product docs work; no parquet/test-surface mutation; clean PRE-FLIGHT)
 
 ### Scope summary
