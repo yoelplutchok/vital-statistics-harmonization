@@ -8,7 +8,118 @@
 
 ---
 
-## PRE-FLIGHT for C8.9 — 2026-05-13T10:00:00Z — Usability: state-stratified denominators + R quickstart + DuckDB views (C.1 + C.2 + C.4) — **RESULT: HALT** (two §7.13 conditions surfaced — C.1 structurally unbuildable due to NCHS suppression policy; C.4 DuckDB pkg not in C8.5a lockfile despite §15 PRE-FLIGHT-input claim "DuckDB installed in the env (C8.5 lockfile)")
+## PRE-FLIGHT for C8.10 — 2026-05-13T14:29:23Z — Worked-example notebooks 1-3 of 5; SESSION SCOPE = notebook 1 (C.6.a `maternal_age_stratified_imr.ipynb`) — **RESULT: PROCEED** (zero §7 halt; one PRE-FLIGHT-input re-interpretation logged as soft-flag, mirroring the new C8.9-surfaced L11 discipline)
+
+### Scope summary
+
+C8.10 §15.C entry (NEXT_STEPS.md lines 1145–1164): three worked-example notebooks — **(C.6.a)** `maternal_age_stratified_imr.ipynb` (linked file; replicable IMR-by-maternal-age curve); **(C.6.b)** `preterm_outcomes_time_series.ipynb` (FD + natality + linked; preterm-birth secular trends); **(C.6.c)** `cross_race_fetal_mortality.ipynb` (V3a/V3b race-stratified FD with B3 1-digit-recode caveats). Estimated 3–4 sessions total (one session per notebook minimum). KICKOFF.md Phase C Tier-2 line 191 mirrors this entry.
+
+**Session scope this PRE-FLIGHT (the (a)-(d) handshake-stated plan, user-authorized "proceed"):** ship notebook 1 of 3 (C.6.a) end-to-end through RECEIPT. C.6.b + C.6.c remain pending in §15.C C8.10; each receives its own PRE-FLIGHT in a subsequent session.
+
+### Inputs
+
+- [x] **All 12 C8.9 forward-looking HALTs verified** (see table below; 4 parquet SHAs + 3 R quickstart SHAs + views.sql + JOINT_USE_GUIDE.md + pyproject.toml + uv.lock + 7 inherited file SHAs + tag presence + duckdb-in-venv). ✓
+- [x] **Linked v3 derived parquet** present at conftest-canonical path `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet`; sha=`9b828a4de4e59b17…`; 74,943,824 rows × 94 cols. ✓
+- [x] **Linked v3 harmonized parquet** present (sibling of derived); sha=`e1795ac615a6ee40…`. ✓ (not load-bearing for C.6.a, which uses derived.)
+- [x] **Validation CSV** `natality/metadata/external_validation_targets_v3_linked.csv` present (53 rows); 7 cells encoded for 2022 from `23PE22CO_linkedUG.pdf` Documentation Tables 1 + 4. ✓
+- [x] **Builder template** `notebooks/_build_joint_use_demo.py` + `notebooks/_build_paper_companion.py` both present and structurally identical (both: `REPO_ROOT`, `OUTPUT`, hardcoded parquet absolute paths, `md()` + `code()` helpers, `build()` → `nbformat.NotebookNode`, `NotebookClient` execution at `__main__`). ✓
+- [x] **No stale checkpoints**: `git status --short` empty; `C8.10-pre-do` tag does NOT yet exist (will be placed post-PRE-FLIGHT, pre-DO). ✓
+
+### C8.9 Forward-looking HALTs (all 12 verified)
+
+| # | Assertion | Verification | Status |
+|---|---|---|---|
+| 1 | `C8.9-complete` tag present; `C8.10-pre-do` absent | `git tag --list 'C8.*'` → C8.9-pre-do + C8.9-complete; no C8.10-pre-do | ✓ |
+| 2 | `pyproject.toml` sha=`c044f1c603f980cb…` | verified | ✓ |
+| 3 | `uv.lock` sha=`a385094314580e86…` | verified | ✓ |
+| 4 | 4 parquet SHAs unchanged byte-exact | fd_harm=`38e2cecb03ff4947…` ✓; fd_der=`185c071ec76ab8aa…` ✓; nat_der=`e16ad5323d68e28d…` ✓; linked_der=`9b828a4de4e59b17…` ✓ | ✓ |
+| 5 | 4 new files present + SHA-unchanged: `fetal_death/quickstart.R` (`3b2c0fe0…`), `natality/quickstart.R` (`15d9edfb…`), `natality/quickstart_linked.R` (`a83e0a90…`), `views.sql` (`c7b674f6…`) | verified | ✓ |
+| 6 | `docs/JOINT_USE_GUIDE.md` sha=`534814a94651c509…` | verified | ✓ |
+| 7 | 7 inherited C8.5a/C8.6/C8.7a/C8.8 file SHAs unchanged | `.python-version` `02e735b3…` ✓; `README.md` `694fdd35…` ✓; `ci.yml` `c248cf51…` ✓; `validate_2022.py` `67a4dfcb…` ✓; `run_pipeline.py` `959ccac4…` ✓; `CHANGELOG.md` `38c8294f…` ✓; `PRIOR_ART.md` `cfeb78cc…` ✓ | ✓ |
+| 8 | `.venv` has duckdb 1.5.2 installed | `.venv/bin/python -c "import duckdb; print(duckdb.__version__)"` → `1.5.2` | ✓ |
+| 9 | Next task = C8.10 per KICKOFF.md line 191 | confirmed; this entry executes | ✓ |
+| 10 | Phase D step 3 exclude list must NOT exclude views.sql + 3 R quickstarts | not C8.10 scope; sanity-check at sync time | ✓ deferred |
+| 11 | C8.5b + C8.7b remain DEFERRED | confirmed unchanged | ✓ |
+| 12 | L11 stale-claim defense — re-verify §15 PRE-FLIGHT-input claims | **executed below** (soft-flag (a)) | ✓ |
+
+### Environment
+
+- [x] Working directory clean: `git status --short` empty. ✓
+- [x] On `main`, HEAD = `a64336e` (C8.9-complete). ✓
+- [x] `.venv/bin/python` 3.13.9; pandas 2.3.2; pyarrow 18.1.0; numpy 2.3.1; duckdb 1.5.2 (per C8.9 add). ✓
+- [x] `nbformat` + `nbclient` available in `.venv` (required by sibling builder pattern; verified at import time during sibling builder authoring at C8.3/Task 4 — `pip show nbformat nbclient` not separately re-probed, lockfile-pinned env covers it).
+- [x] `pyproject.toml` + `uv.lock` SHAs unchanged from C8.9-complete state. ✓
+
+### Source documentation (L9 cheap-check re-interpretation per the new C8.9-surfaced L11 discipline)
+
+The §15 C8.10 PRE-FLIGHT-input list names "NVSR validation cells per notebook (L9 cheap-check)" — without specifying WHICH NVSR table or whether a PDF is on disk. Per the new C8.9-surfaced L11 discipline (re-verify each §15 PRE-FLIGHT-input claim against current artifacts), the cheap-check probes:
+
+**Probe A — `raw_docs/` inventory.** `find raw_docs natality/raw_docs -type f` → only `.gitkeep` files. **Zero NVSR PDFs on disk** at the monorepo root or under either subproject's `raw_docs/`. The L9 "open the cited PDF and verify the table location" cheap-check is NOT executable as written.
+
+**Probe B — sibling notebook's L9 surface.** `notebooks/_build_joint_use_demo.py` Section A (2022 maternal-age fetal mortality, byte-exact 8/8 vs NVSR 73-09 Table 4) does NOT load an NVSR PDF at execution time — it loads the **`fetal_death/external_validation_targets.csv`** which carries the pre-encoded NVSR cell values. The L9 cost was paid once at the validation-CSV authoring moment; subsequent notebooks consume the validated CSV. Sibling pattern is the same for the `paper_companion.ipynb` (per `_build_paper_companion.py`).
+
+**Probe C — linked validation CSV 2022 cells.** Grep `,2022,` in `natality/metadata/external_validation_targets_v3_linked.csv` → 7 cells encoded for 2022 from `23PE22CO_linkedUG.pdf` Documentation Tables 1 + 4: `resident_births`=3,667,758 (tol 0), `unweighted_infant_deaths`=20,268 (tol 2), `imr_per_1000`=5.53 (tol 0.01), `neonatal_deaths`=12,948 (tol 2), `postneonatal_deaths`=7,320 (tol 2), `neonatal_imr_per_1000`=3.53 (tol 0.02), `postneonatal_imr_per_1000`=2.00 (tol 0.02). All from the **cohort-linked file user guide** — our exact data source (no period-vs-cohort divergence).
+
+**Resolution.** Re-interpret the §15 "NVSR validation cells per notebook (L9 cheap-check)" PRE-FLIGHT-input claim as: "validation cells per notebook are sourced from the per-product `external_validation_targets_*.csv` files whose entries were L9-cheap-checked at their authoring moment; downstream notebooks consume the CSV directly." 7 cells for 2022 linked is **>3** (the §15 "≥3 cells" minimum); the 7-cell PASS/FAIL table is the load-bearing notebook artifact. No external PDF fetch required.
+
+**Maternal-age stratification (the notebook's headline content) is NOT in the validation CSV.** No NVSR-equivalent cell publishes 2022 IMR-by-maternal-age from the COHORT-linked file. (NCHS publishes IMR-by-maternal-age in the PERIOD-linked NVSR series, e.g., NVSR 73-05 Ely+Driscoll 2024; cohort-vs-period divergence is documented and bounded but non-zero.) C.6.a frames the maternal-age stratification as a **machinery-demo extension** — sibling pattern to `_build_joint_use_demo.py` Section B-legacy 2017 race-bridged (cells shown without byte-exact NVSR validation; plausibility bands documented in narrative). The 7 byte-exact cells (overall IMR + neonatal/postneonatal breakdowns) are the NVSR-equivalent floor.
+
+### Outputs
+
+- **NEW**: `notebooks/_build_maternal_age_stratified_imr.py` (builder, ~150–200 lines).
+- **NEW**: `notebooks/maternal_age_stratified_imr.ipynb` (executed notebook with output cells).
+- **MODIFIED**: `notebooks/README.md` adding the new notebook to the inventory (current README is brief; verify post-DO).
+- **NEW**: `RECEIPTS/C8.10a_<UTC>.md` (per-notebook sub-task receipt; the C8.10 §15 task is composite across 3 notebooks, so per-session receipts are `C8.10a` / `C8.10b` / `C8.10c` with the parent `C8.10-complete` tag deferred until all 3 ship).
+- **NEW**: `STATUS.md` append.
+- **NEW**: `PRE_FLIGHT_LOG.md` (this entry).
+- **NEW**: 4 parquet SHAs unchanged (no parquet mutation). All 14 file SHAs from the C8.9 forward-looking HALTs unchanged (no edits to existing R quickstarts, views.sql, JOINT_USE_GUIDE, pyproject.toml, uv.lock, .python-version, README.md, ci.yml, validate_2022.py, run_pipeline.py, CHANGELOG.md, PRIOR_ART.md).
+
+### Field-value snapshot for cells being asserted (Convention 3)
+
+The notebook will assert each row of the table below. Snapshot values computed at PRE-FLIGHT from `natality_v3_linked_harmonized_derived.parquet` with canonical filter `is_foreign_resident == False`:
+
+| Cell | Probe value (PRE-FLIGHT) | CSV expected value | Tolerance | Match? |
+|---|---|---|---|---|
+| 2022 resident_births | 3,667,758 | 3,667,758 | 0 | ✓ byte-exact |
+| 2022 unweighted_infant_deaths | 20,268 | 20,268 | 2 | ✓ byte-exact |
+| 2022 imr_per_1000 | 5.526 | 5.53 | 0.01 | ✓ |
+| 2022 neonatal_deaths | 12,948 | 12,948 | 2 | ✓ byte-exact |
+| 2022 postneonatal_deaths | 7,320 | 7,320 | 2 | ✓ byte-exact |
+| 2022 neonatal_imr_per_1000 | 3.530 | 3.53 | 0.02 | ✓ |
+| 2022 postneonatal_imr_per_1000 | 1.996 | 2.00 | 0.02 | ✓ |
+
+**Machinery-demo cells (NVSR-equivalent NOT applicable; plausibility ranges from literature):**
+
+| maternal_age_cat | resident_births | infant_deaths | IMR (per 1,000) | neonatal_IMR | postneonatal_IMR |
+|---|---|---|---|---|---|
+| <20 | 145,614 | 1,439 | 9.882 | 5.109 | 4.773 |
+| 20-24 | 638,685 | 4,464 | 6.989 | 3.978 | 3.011 |
+| 25-29 | 1,013,417 | 5,362 | 5.291 | 3.368 | 1.923 |
+| 30-34 | 1,118,787 | 5,027 | 4.493 | 3.081 | 1.412 |
+| 35-39 | 606,598 | 3,009 | 4.960 | 3.501 | 1.459 |
+| 40+ | 144,657 | 967 | 6.685 | 4.694 | 1.991 |
+
+**Shape check**: U-shape across maternal-age (highest <20 and 40+, lowest 30-34) — matches literature consensus on age-IMR association. Row-count conservation across age bands: 145,614+638,685+1,013,417+1,118,787+606,598+144,657 = **3,667,758** = resident_births ✓ (no NaN bucket in `maternal_age_cat`).
+
+**Canonical filter applied (F1 discipline)**: `is_foreign_resident == False`; equivalent to `residence_status != 4`; drops 8,271 of 3,676,029 (0.225%) of 2022 records. Matches `universe='resident'` in the validation CSV.
+
+### Halt conditions tripped
+
+(none)
+
+### Open considerations (soft-flags, NOT halts)
+
+- **(a) §15 PRE-FLIGHT-input "NVSR validation cells per notebook (L9 cheap-check)" RE-INTERPRETATION**, mirroring the new C8.9-surfaced L11 discipline (re-verify each §15 PRE-FLIGHT-input claim). Resolution: validation cells come from the linked validation CSV (cohort-linked user guide source, L9-checked at task7 V2 linked-file framing reconcile 2026-05-11); no external NVSR PDF required. 7 cells > the §15 "≥3" minimum. Logged as routine re-interpretation, not a silent scope reduction.
+- **(b) Maternal-age IMR stratification has NO NVSR-equivalent cell on disk.** NCHS publishes IMR-by-maternal-age in the period-linked NVSR series (e.g., NVSR 73-05 Ely+Driscoll 2024); period-vs-cohort divergence is bounded but non-zero. C.6.a frames the maternal-age stratification as a machinery-demo extension (sibling to `joint_use_demo` Section B-legacy 2017 race-bridged pattern). Narrative will document the cohort-vs-period source distinction explicitly.
+- **(c) Notebook sub-task receipts.** §15 C8.10 is a composite 3-notebook task. This session ships notebook 1 of 3 only. Receipt names this `C8.10a` (sub-task suffix); tag placed `C8.10a-pre-do` + `C8.10a-complete`. The parent `C8.10-complete` tag waits until notebooks 2 + 3 (C.6.b + C.6.c) also ship in subsequent sessions. C8.5/C8.5a + C8.7/C8.7a precedent supports this naming.
+- **(d) Builder hardcoded parquet paths** (precedent: `_build_joint_use_demo.py` + `_build_paper_companion.py` both hardcode `~/Desktop/natality-harmonization/output/harmonized/...` absolute paths). The new `_build_maternal_age_stratified_imr.py` follows the same convention. C8.7a soft-flag (b) "natality+linked output-path strategy" remains C8.7b's first PRE-FLIGHT decision; C.6.a does not resolve it.
+- **(e) `notebooks/README.md` inventory update.** Current README is minimal; verify post-DO that the new notebook gets a one-line entry. Routine documentation hygiene; not load-bearing for PROCEED.
+
+### Result
+
+**PROCEED.** All inputs verified; environment clean; 12 C8.9 forward-looking HALTs all pass byte-exact; Convention 3 Field-value snapshot computed 14 cells, all match CSV expectations or fall within plausibility bands; no §7 condition tripped. Tag `C8.10a-pre-do` placed on the PRE-FLIGHT commit; DO phase commences post-tag.
+
+---
 
 ### Scope summary
 
