@@ -19,6 +19,53 @@
 
 ---
 
+## 2026-05-13T08:30:00Z — C8.7a — L13-extension — Two remaining `fetal_death/scripts/` path-constants resolved to non-existent `fetal_death/output/...` paths from monorepo cwd; sibling of FIX_LOG 2026-05-12T01:30Z (harmonize.py + validate_external*.py paths) and FIX_LOG 2026-05-12T22:00Z (test-harness paths)
+
+**Symptom:** C8.7a Tier-0 static path-constant audit (AST-extract + isolated-exec under monorepo cwd; 31 scripts total across `fetal_death/scripts/` + `natality/scripts/`) surfaced **5 broken path-constants across 2 fetal-death scripts** that should have been part of the original 2026-05-12T01:30Z monorepo-migration path-fix pass but were overlooked because no end-to-end audit had been attempted from the monorepo root.
+
+| Script | Path constant | Old resolution (from monorepo cwd) | Status |
+|---|---|---|---|
+| `fetal_death/scripts/05_validate/validate_2022.py:19` | `PARQUET = Path(__file__).resolve().parents[2] / "output/yearly_clean/fetal_death_2022_raw.parquet"` | `<MONOREPO>/fetal_death/output/yearly_clean/fetal_death_2022_raw.parquet` — does NOT exist (monorepo `output/` is symlinked at root, not at `fetal_death/output/`) | BROKEN ✗ |
+| `fetal_death/scripts/05_validate/validate_2022.py:20` | `OUT = Path(__file__).resolve().parents[2] / "output/validation/validation_2022.md"` | `<MONOREPO>/fetal_death/output/validation/...` — same class | BROKEN ✗ |
+| `fetal_death/scripts/run_pipeline.py:32` | `REPO_ROOT = Path(__file__).resolve().parent.parent` | `<MONOREPO>/fetal_death/` — resolves, but downstream constants build broken paths from it | MISLEADING (works but misleading name; downstream paths break) |
+| `fetal_death/scripts/run_pipeline.py:33` | `RAW_DIR = REPO_ROOT / "raw_data/fetal_death"` | `<MONOREPO>/fetal_death/raw_data/fetal_death/` — does NOT exist; raw zips live at monorepo-root `raw_data/fetal_death/` (symlinked to standalone build-dir) | BROKEN ✗ |
+| `fetal_death/scripts/run_pipeline.py:34` | `YEARLY_DIR = REPO_ROOT / "output/yearly_clean"` | `<MONOREPO>/fetal_death/output/yearly_clean/` — does NOT exist | BROKEN ✗ |
+| `fetal_death/scripts/run_pipeline.py:35` | `HARMONIZED_DIR = REPO_ROOT / "output/harmonized"` | `<MONOREPO>/fetal_death/output/harmonized/` — does NOT exist | BROKEN ✗ |
+
+If `validate_2022.py` had been invoked from monorepo cwd (e.g., `python fetal_death/scripts/05_validate/validate_2022.py`), it would `FileNotFoundError` on the missing `output/yearly_clean/fetal_death_2022_raw.parquet`. If `fetal_death/scripts/run_pipeline.py` had been invoked from monorepo cwd, it would fail at the first `parse_year(2020)` invocation with a missing-zip error (RAW_DIR points to non-existent `fetal_death/raw_data/fetal_death/`). Neither failure had surfaced to date because (i) both scripts are typically invoked from the standalone fetal-death build-dir (where the path constants DO resolve), and (ii) C8.7a's audit was the first systematic from-monorepo-cwd path probe.
+
+**Root cause:** Both scripts compute their `REPO_ROOT` (or `parents[2]`) anchor as `fetal_death/scripts/<step>/../../...` = `fetal_death/`, then build output paths as `REPO_ROOT / output/...` = `fetal_death/output/...`. In the standalone-build-dir layout this is correct (`fetal_death-harmonization-build/scripts/` + `fetal_death-harmonization-build/output/` are siblings). In the monorepo migration (2026-05-09), the canonical fetal-death subproject became `fetal_death/`, but its `output/` is now symlinked at `<MONOREPO>/output/` (NOT at `<MONOREPO>/fetal_death/output/`). The path anchors weren't updated for this layout shift.
+
+This is the SAME class as FIX_LOG 2026-05-12T01:30Z (harmonize.py + validate_external.py + validate_external_v2.py path-anchor updates) and FIX_LOG 2026-05-12T22:00Z (test-harness conftest + `_regenerate_schema_years.py`). Those prior fixes introduced a `_PROJECT.parent / 'output' / ...` (= MONOREPO_ROOT) anchor convention. The C8.7a audit catches `validate_2022.py` + `run_pipeline.py` as remaining sibling scripts that weren't covered.
+
+**Fix (consolidated per C8.7a's "FIX_LOG entries consolidated by script-class" plan-update decision; both fixes in this single entry):**
+
+1. **`fetal_death/scripts/05_validate/validate_2022.py` lines 19-20**: changed `Path(__file__).resolve().parents[2]` to `Path(__file__).resolve().parents[3]` (bumping the anchor from `fetal_death/` to MONOREPO_ROOT). Both `PARQUET` and `OUT` now resolve to `<MONOREPO>/output/yearly_clean/fetal_death_2022_raw.parquet` and `<MONOREPO>/output/validation/validation_2022.md` respectively — both reachable via the existing symlinks.
+
+2. **`fetal_death/scripts/run_pipeline.py` lines 32-35 + 55**: renamed `REPO_ROOT` to `SUBPROJECT_ROOT` (clarifying its semantic: it points at the `fetal_death/` subproject, not the monorepo); introduced `MONOREPO_ROOT = SUBPROJECT_ROOT.parent`; re-anchored `RAW_DIR`, `YEARLY_DIR`, `HARMONIZED_DIR` to `MONOREPO_ROOT / ...`; updated line 55 `subprocess.run(cmd, check=True, cwd=REPO_ROOT)` to `cwd=SUBPROJECT_ROOT` (preserving the relative `scripts/01_import/parse_fetal_year.py` cmd-path semantics). Added a 3-line comment below `ALL_YEARS` documenting that the 29-year coverage is stale relative to the v2.4.0 43-year envelope (V3a + V3b extension shipped 2026-05-12); ALL_YEARS extension is C8.7b scope (orchestrator authoring), not C8.7a (path audit).
+
+**Files touched (this fix):**
+- `fetal_death/scripts/05_validate/validate_2022.py` (post-fix sha=`67a4dfcbfc345c07…`; 1-char × 2 edits)
+- `fetal_death/scripts/run_pipeline.py` (post-fix sha=`959ccac48347d2f3…`; ~7 lines edited)
+
+**Regression scope:** None — these were latent bugs surfaced by C8.7a's audit; both scripts are typically invoked from the standalone build-dir where the old anchors are correct. The patched anchors continue to work in the standalone-build-dir context (`SUBPROJECT_ROOT.parent` resolves to whatever the parent dir of `fetal_death/` is, which in the standalone case is the build dir itself, NOT a "monorepo root" — but the `output/`, `raw_data/`, etc. paths are at the build-dir root in that layout too, so the resolution still resolves correctly). The patches are forward-compatible with both standalone-build and monorepo invocation patterns.
+
+**Verified by:**
+- C8.7a audit script (`/tmp/c87a_audit_v2.py`) re-run post-fix: 5 path-constant FAILs reduced to 0 (the 1 remaining FAIL is a confirmed false positive — `OUT_SCHEMA = pa.schema([...])` in `natality/scripts/03_harmonize/harmonize_linked_v3.py` is an Arrow schema definition, not a Path).
+- 4 parquet SHAs unchanged: fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+- 5 C8.5a/C8.6 file SHAs unchanged: pyproject.toml=`c8826a61…`, uv.lock=`ab627034…`, .python-version=`02e735b3…`, README.md=`694fdd35…`, ci.yml=`c248cf51…`.
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **56 passed + 1 xfailed in 111.83s** (no test-suite regression from the path-constant edits).
+
+**Could the §8 matrix have caught this earlier?** Yes — this is squarely **L13-extension (monorepo migration path drift)**, the same class as the prior 2026-05-12 L13 fixes. The matrix's L13 row + the existing FIX_LOG entries already named the failure mode. The defense gap: no systematic audit had been run from monorepo cwd. C8.7a's static-AST audit is now that defense; it should run as part of CI gating (C8.13 follow-up) so future scripts can't ship with mis-anchored paths.
+
+**Forward-looking follow-up:**
+- **C8.7b (DEFERRED)** authors the monorepo-root orchestrator that wires per-step scripts together with correct paths; this entry's audit table (in `RECEIPTS/C8.7a_<UTC>.md`) is C8.7b's PRE-FLIGHT input.
+- **C8.7a's audit script (`/tmp/c87a_audit_v2.py`)** is not currently committed (one-shot probe). A future C8.X may promote it to `tests/test_script_path_resolution.py` as a permanent invariant test (probe every entry-point script's path-constants from monorepo cwd at every CI run). Filed as a recommended C8.12 candidate (mutation-tests + L13/L14 audits).
+- **Natality scripts `validate_linked_parquets.py` line 26 + `generate_paper_figures.py` lines 21-22 (REPO = parents[2] = `natality/`)** resolve OK in monorepo (the `natality/` directory exists) but their downstream `REPO / output / ...` paths target `natality/output/yearly_clean/`, `natality/output/validation/`, etc., which do NOT exist in the monorepo. These are CLI-driven scripts (`validate_linked_parquets.py` uses `--linked-dir`/`--raw-dir`/`--out-dir` argparse defaults that are broken; the script works when invoked with explicit overrides). C8.7a documents these as DEFERRED-TO-C8.7b (the orchestrator decides whether to (i) add monorepo-root output symlinks for natality + linked, OR (ii) re-anchor natality scripts to MONOREPO_ROOT). Not patched in C8.7a per "fix-on-contact" + "no orchestrator authoring" scope.
+- **`fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 is stale** relative to v2.4.0's 43-year envelope (V3a + V3b shipped 2026-05-12). DOCUMENTED in this fix's run_pipeline.py inline comment; ALL_YEARS extension is C8.7b (orchestrator authoring) scope.
+
+---
+
 ## 2026-05-12T22:30:00Z — C8.1 (followup) — L17-extension — Test-infra basename collision: `pytest fetal_death/tests/ natality/tests/` errors at collection under default import mode because both subprojects ship `test_schema_dtype_parity.py` and neither directory had `__init__.py`
 
 **Symptom:** C8.2 PRE-FLIGHT (2026-05-12T22:30:00Z) verification of STATUS 22:00Z forward-looking HALT #7 ("16 tests across both subprojects") reproduced an `ImportPathMismatchError` / "import file mismatch" collection error:

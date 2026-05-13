@@ -16,8 +16,8 @@ import sys
 from pathlib import Path
 from collections import OrderedDict
 
-PARQUET = Path(__file__).resolve().parents[2] / "output/yearly_clean/fetal_death_2022_raw.parquet"
-OUT = Path(__file__).resolve().parents[2] / "output/validation/validation_2022.md"
+PARQUET = Path(__file__).resolve().parents[3] / "output/yearly_clean/fetal_death_2022_raw.parquet"
+OUT = Path(__file__).resolve().parents[3] / "output/validation/validation_2022.md"
 
 
 def load():

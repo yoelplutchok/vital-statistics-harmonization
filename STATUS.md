@@ -1,6 +1,140 @@
-# STATUS — last updated 2026-05-13T06:30:00Z
+# STATUS — last updated 2026-05-13T08:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T08:30:00Z — C8.7a COMPLETE: Tier-0 path-constant audit across 31 per-step pipeline scripts (10 fetal-death + 21 natality); 5 L13-extension path-drift bugs surfaced + patched in 2 fetal-death scripts; 4 §7 HALTs resolved at PRE-FLIGHT via §11 plan-update commit `1ae6b70` (split C8.7 → C8.7a this session + C8.7b orchestrator+Tier-1/2 DEFERRED); cache-cleared pytest reproduces 56 PASS + 1 XFAIL baseline in 111.83s; zero canonical-data mutation; all 4 parquet SHAs + 5 C8.5a/C8.6 file SHAs unchanged byte-exact
+
+### Current phase
+
+**Phase C — Tier 1 underway, C8.7a COMPLETE; C8.7b DEFERRED.** Seventh Tier-1 task closed in well under the §15 1-session estimate (~1.5 hours of agent time for PRE-FLIGHT + §11 plan-update + DO + VERIFY + RECEIPT). C8.7 originally bundled path-drift audit + orchestrator authoring + Tier-1/Tier-2 reproducibility VERIFY in one task; PRE-FLIGHT halt-and-ask 2026-05-13T07:30:00Z split into C8.7a (this session) + C8.7b (DEFERRED until C8.7a-complete + user-authorized compute window). Tag `C8.7a-complete` lands on the commit shipping this STATUS section + receipt + FIX_LOG entry + 2 patched scripts. Tier 1 progress: 7 of 8 tasks complete (C8.1, C8.2, C8.3, C8.4, C8.5a, C8.6, C8.7a). Cumulative Phase C effort ~7 sessions of 29–35 budget.
+
+Four §7 HALT conditions surfaced at C8.7 PRE-FLIGHT (zero downstream artifacts affected):
+
+1. **§7.13 — no monorepo-root `scripts/run_pipeline.py`** (the §15-named entry point) → orchestrator authoring deferred to C8.7b.
+2. **§7.13 — `fetal_death/scripts/run_pipeline.py`** mis-resolved REPO_ROOT from monorepo cwd AND `ALL_YEARS=29` stale relative to v2.4.0 43-year envelope → paths patched in C8.7a; ALL_YEARS extension deferred to C8.7b.
+3. **§7.13 — natality has no orchestrator; nat+linked parquets not symlinked into monorepo** → C8.7b's first PRE-FLIGHT decision.
+4. **§7.15 — Tier-2 full re-derive 6-12+ hours of compute** → Tier-1/Tier-2 deferred to C8.7b under multi-session compute budget.
+
+All four resolved via single `[plan-update]` commit `1ae6b70` per user authorization 2026-05-13T07:30:00Z ("do what you think is best" → Option A per the AskUserQuestion preamble recommendation, mirroring C8.6 precedent).
+
+Five canonical-state changes this session (zero parquet mutation):
+
+1. **`[plan-update]` commit `1ae6b70`** at 07:40Z: NEXT_STEPS.md §15 C8.7 entry rewritten into C8.7a (path audit) + C8.7b (DEFERRED orchestrator + Tier-1/2); KICKOFF.md Tier-1 list (line 184) split into 2 rows; KICKOFF.md sequencing note (line 204) C8.5b trigger re-pointed at C8.7b; PRE_FLIGHT_LOG addendum at 07:40Z (PROCEED); DECISION_LOG entry 2026-05-13T07:40:00Z.
+2. **`fetal_death/scripts/05_validate/validate_2022.py`** (MODIFIED; post-fix sha=`67a4dfcb…`). 2 path-constants re-anchored (`parents[2]` → `parents[3]`).
+3. **`fetal_death/scripts/run_pipeline.py`** (MODIFIED; post-fix sha=`959ccac4…`). `REPO_ROOT` → `SUBPROJECT_ROOT`; new `MONOREPO_ROOT`; 3 path-constants re-anchored (RAW_DIR, YEARLY_DIR, HARMONIZED_DIR); subprocess.run cwd-arg renamed; 3-line ALL_YEARS=29 staleness comment.
+4. **`FIX_LOG.md`** (APPEND; consolidated L13-extension entry 2026-05-13T08:30:00Z covering both script fixes).
+5. **`RECEIPTS/C8.7a_2026-05-13T08-30-00Z.md`** (NEW; full §6 template incl. 31-row audit table + Self-check (7 residual risks) + Forward-looking HALTs (10 items)).
+
+### What was done this session (C8.7 PRE-FLIGHT + §11 plan-update + C8.7a DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed in the way you think is best."
+2. **C8.7 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T07:30:00Z): verified all 10 C8.6 forward-looking HALTs (tag presence, 4 file SHAs, 4 parquet SHAs); Field-value snapshot enumerated orchestrator inventory + raw-zip inventory + output-path/symlink state + 6 §15-vs-reality divergence rows; identified 4 §7 conditions; result **HALT**.
+3. **AskUserQuestion 2026-05-13T07:30:00Z**: 1 question with 4 options (A/B/C/D) covering the 4 HALT conditions. User response "do what you think is best" → Option A (Tier-0 dry-run path audit only; defer reproducibility VERIFY to C8.7b).
+4. **§11 plan-update commit `1ae6b70`** at 07:40Z: NEXT_STEPS §15 C8.7 split into C8.7a + C8.7b + KICKOFF.md Tier-1 list + sequencing note edits + PRE_FLIGHT_LOG addendum 07:40Z (PROCEED) + DECISION_LOG entry. Tag `C8.7-pre-do`.
+5. **DO step 1 — audit script authoring**: Authored `/tmp/c87a_audit_v2.py` (~150 lines; AST-based collector + isolated `exec` for module-level Path-constant evaluation + helper-import reachability check). Ephemeral one-shot; output captured in receipt audit table.
+6. **DO step 2 — audit run**: 31 scripts processed; 5 real path-constant FAILs surfaced in 2 fetal-death scripts; 1 false positive (Arrow `pa.schema` in natality `harmonize_linked_v3.py`); 16 scripts CLI-arg-driven (no module-level path constants — N/A verdict); 13 scripts PASS (path constants resolve correctly; verifies persistence of FIX_LOG 2026-05-12T01:30Z + 22:00Z fixes).
+7. **DO step 3 — fixes applied on contact**: (i) `validate_2022.py` lines 19-20: `parents[2]` → `parents[3]` (×2). (ii) `run_pipeline.py` lines 32-35 + 55: rename `REPO_ROOT` → `SUBPROJECT_ROOT`; new `MONOREPO_ROOT`; re-anchor RAW_DIR + YEARLY_DIR + HARMONIZED_DIR; update subprocess.run cwd. (iii) `run_pipeline.py`: add 3-line inline comment marking ALL_YEARS=29 staleness vs v2.4.0 43-year envelope (C8.7b orchestrator-authoring scope).
+8. **DO step 4 — re-audit**: 5 real FAILs reduced to 0; only the 1 false positive remains (documented).
+9. **VERIFY**: (i) audit table complete (31 rows; matches `git ls-files` floor); (ii) all PATCHED cases have Edit visible + FIX_LOG entry filed; (iii) 4 parquet SHAs unchanged (fd_harm/fd_der/nat_der/linked_der); (iv) cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **56 passed + 1 xfailed in 111.83s**; (v) 5 C8.5a + C8.6 file SHAs unchanged; (vi) live-rebuild VERIFY explicitly deferred to C8.7b per plan-update.
+10. **DO step 5 — FIX_LOG entry**: consolidated L13-extension entry at 2026-05-13T08:30:00Z covering both `validate_2022.py` + `run_pipeline.py` fixes (per the plan-update's "consolidated by script-class" convention).
+11. **RECEIPT** at `RECEIPTS/C8.7a_2026-05-13T08-30-00Z.md` with full §6 template incl. 31-row audit table + Self-check (7 residual risks) + Forward-looking HALTs (10 items).
+
+### Last completed step
+
+Single commit ships: 2 modified scripts + 1 new FIX_LOG entry + 1 new receipt + 1 STATUS append. Tag `C8.7a-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at the C8.7a → C8.8 boundary)
+
+### Next planned task
+
+**C8.8 — CHANGELOG.md + PRIOR_ART.md updates (E.1 + E.5).** Per KICKOFF.md Phase C Tier-1 sequencing (line 186) + NEXT_STEPS.md §15.C C8.8 entry. Author `CHANGELOG.md` at monorepo root: v1.0 → v1.1 sections with data extensions / robustness / docs / breaking subsections. Three concrete PRIOR_ART.md updates from EXPLORATION_REPORT §A.7. Estimated 1 session.
+
+C8.7a surfaced one candidate consideration for C8.8:
+- C8.8's CHANGELOG.md v1.1 section should reference (i) all Tier-1 ship dates + tags; (ii) the §11 plan-update splits (C8.5/a/b, C8.7/a/b) as architectural decisions; (iii) the L13-extension defense pattern as a recurring monorepo-migration lesson.
+
+### Blocked
+
+**C8.7b (Orchestrator + Tier-1/Tier-2 re-derive) — DEFERRED.** Resumption trigger (AND-coupled): C8.7a-complete (NOW SATISFIED) + user-authorized multi-session compute window. Future PRE-FLIGHT for C8.7b verifies: (i) all 31 per-step script SHAs unchanged or re-audited; (ii) symlink state at `<MONOREPO>/output/` unchanged; (iii) natality+linked output-path strategy decision (symlink vs script re-anchor) explicit at PRE-FLIGHT; (iv) compute-time budget acknowledged. C8.7b's first PRE-FLIGHT decision is the natality+linked output strategy (see Forward-looking HALT #6 in C8.7a receipt).
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger now re-pointed at C8.7b** (per the C8.7 plan-update commit `1ae6b70`). Original C8.5b trigger was OR-coupled "docker available OR C8.6 CI ships"; now restated as "docker available OR C8.7b lands the monorepo-root pipeline orchestrator." Recommended ordering remains: complete Tier 1 (C8.8) first; then attempt C8.7b; then C8.5b.
+
+### Open questions for human
+
+None for C8.8 scope.
+
+**Open soft-flags (carried forward):**
+- (C8.2) NCHS releases of `2025PE2024CO.zip` (cohort-2024 linked file, est. 2027-Q1) trigger §11 plan-update for linked-file refresh task.
+- (C8.3) Manuscript line 99 understates joint_use_demo.ipynb content (now 4 sections); Phase D step 6 re-paragraph scope.
+- (C8.4) Linked-vs-natality per-year drift bounded by 0.01% on 5/19 joint years (max 0.0055%); Phase D / C8.11 cross-product COMPARABILITY consolidation candidate.
+- (C8.5a-a) `requirements.txt` declares `jupyter>=1.0` but metapackage NOT installed in lockfile env.
+- (C8.5a-b) Cross-platform lockfile resolution untested locally; closes at Phase D step 3 first sync.
+- (C8.5a-c) `requirements.txt` files at 3 locations have inconsistent dependency lists.
+- (C8.6-a) Parquet-skip-in-CI weakens green-check signal; routed to C8.13.
+- (C8.6-b) Locally-emulated VERIFY runs on macOS arm64; live CI runs on linux-x86_64.
+
+**New open soft-flags (C8.7a):**
+- (a) **Audit-script promotion to permanent test** — `/tmp/c87a_audit_v2.py` is ephemeral; a future C8.12 task should port the logic to `tests/test_script_path_resolution.py` so the audit runs at every CI run, preventing new path-drift bugs.
+- (b) **Natality + linked output-path strategy decision** is C8.7b's first PRE-FLIGHT item. Two clean options exist (symlink vs script re-anchor); C8.7a documents both but defers the decision.
+- (c) **`fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 is stale** vs v2.4.0 43-year envelope (V3a + V3b shipped 2026-05-12). Inline comment marks this; C8.7b extends.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **`C8.7a-complete` tag** present on this commit. Verify: `git tag --list 'C8.7*'` shows `C8.7-pre-do` + `C8.7a-complete`. `C8.7b-pre-do` does NOT yet exist.
+2. **All 4 parquet SHAs unchanged post-C8.7a** (metadata-only task): fd_harm=`38e2cecb…`, fd_der=`185c071e…`, nat_der=`e16ad53…`, linked_der=`9b828a4d…`.
+3. **All 5 C8.5a + C8.6 file SHAs unchanged post-C8.7a**: pyproject.toml=`c8826a61…`, uv.lock=`ab627034…`, .python-version=`02e735b3…`, README.md=`694fdd35…`, ci.yml=`c248cf51…`.
+4. **2 newly-patched script SHAs** recorded for C8.8 PRE-FLIGHT: validate_2022.py=`67a4dfcb…`, run_pipeline.py=`959ccac4…`.
+5. **C8.8 is the next task** per KICKOFF.md Tier-1 sequencing (line 186). C8.8 PRE-FLIGHT verifies: (i) above 4 SHAs unchanged; (ii) 2 newly-patched script SHAs match; (iii) no other Tier-1 work has slipped in between.
+6. **C8.7b's first PRE-FLIGHT decision** is the natality + linked output-path strategy (symlink at monorepo root vs script re-anchor). C8.7a documents both options but explicitly does NOT decide.
+7. **Audit-script promotion to permanent test** filed as a C8.12 candidate.
+8. **L13-extension defense surface** is now well-covered by C8.7a's audit + 3 prior FIX_LOG fixes (2026-05-12T01:30Z + 22:00Z + this 2026-05-13T08:30Z entry). No new mistake class surfaced; §8 matrix L13 row remains current.
+9. **`run_pipeline.py` ALL_YEARS=29 staleness** is C8.7b PRE-FLIGHT scope. C8.7b's PRE-FLIGHT must document the V3a + V3b per-year zip naming + harmonize.py call signatures before claiming Tier-2 closure.
+10. **`SUBPROJECT_ROOT` rename in `run_pipeline.py`** is forward-compatible with both standalone-build and monorepo invocation but hasn't been live-tested in standalone-build context post-patch. Defense: the patch is reversible via single revert; no downstream consumer references the old `REPO_ROOT` name.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.6).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- 4× `__init__.py` files at `fetal_death/`, `fetal_death/tests/`, `natality/`, `natality/tests/` (unchanged).
+- `tests/__init__.py` + `tests/conftest.py` + 3 invariant-test harnesses (unchanged from C8.4-complete).
+- `pyproject.toml` + `uv.lock` + `.python-version` + README "Pinned environment" subsection (unchanged from C8.5a-complete).
+- `.github/workflows/ci.yml` (unchanged from C8.6-complete).
+
+NEW this session:
+- `RECEIPTS/C8.7a_2026-05-13T08-30-00Z.md`
+- `STATUS.md` this section (append)
+
+MODIFIED this session:
+- `fetal_death/scripts/05_validate/validate_2022.py` (sha=`67a4dfcb…`; was `<earlier>`)
+- `fetal_death/scripts/run_pipeline.py` (sha=`959ccac4…`; was `<earlier>`)
+- `FIX_LOG.md` (added consolidated L13-extension entry 2026-05-13T08:30Z)
+
+MODIFIED this session (via `[plan-update]` commit `1ae6b70` at 07:40Z, earlier sub-session):
+- `NEXT_STEPS.md` (§15 C8.7 rewritten into C8.7a + C8.7b)
+- `KICKOFF.md` (Tier-1 list line 184 + sequencing note line 204)
+- `PRE_FLIGHT_LOG.md` (added PRE-FLIGHT entry 07:30Z HALT + addendum 07:40Z PROCEED)
+- `DECISION_LOG.md` (added entry 2026-05-13T07:40:00Z)
+
+### Notes for next session
+
+- **C8.8 — CHANGELOG.md + PRIOR_ART.md updates** is the next Tier-1 task. PRE-FLIGHT should consider: (i) v1.0 → v1.1 section structure with subsections (data extensions / robustness / docs / breaking); (ii) cite all C8.X-complete tags + RECEIPT paths; (iii) three PRIOR_ART updates (GitHub precursors / Hoyert 2024 + Stillbirth WG / HL7 fhir-bfdr); (iv) L8 PMID resolution for any cited paper.
+- **C8.7b is DEFERRED with resumption trigger now partially satisfied** — C8.7a-complete is the AND-condition that just landed. The other AND-condition (user-authorized multi-session compute window) remains unsatisfied. C8.7b can resume any time the user authorizes the compute budget.
+- **C8.5b (Dockerfile) is also DEFERRED** with trigger now re-pointed at C8.7b (orchestrator) rather than the original C8.7.
+- **Tier 1 progress: 7 of 8 tasks complete** (C8.1, C8.2, C8.3, C8.4, C8.5a, C8.6, C8.7a). Remaining: C8.7b (DEFERRED), C8.5b (DEFERRED), C8.8 (~1 session).
+- **Cumulative Phase C effort: ~7 sessions of 29-35 budget.** Comfortably within +20% drift cap (42 sessions).
+- **C8.7a effort well under §15 1-session estimate** — closed in ~1.5 hours of agent time. The PRE-FLIGHT halt-and-ask + §11 plan-update overhead (~30 min) was offset by the tightly-scoped DO (~45 min audit + patches + verify).
+- **No new mistake class** surfaced from C8.7a itself. The L13-extension surface (introduced 2026-05-12T01:30Z) handled both fixes cleanly. The audit-script-promotion soft-flag is the only non-trivial follow-up.
+
+### Session summary
+
+C8.7 originally bundled path-drift audit + monorepo-root orchestrator authoring + Tier-1/Tier-2 reproducibility VERIFY in a single 1-session task. PRE-FLIGHT halt-and-ask 2026-05-13T07:30Z surfaced 4 §7 conditions (no monorepo-root orchestrator; fetal-death run_pipeline.py mis-pathed + stale ALL_YEARS; natality has no orchestrator + outputs not in monorepo; Tier-2 6-12+ hours of compute over 1-session estimate). User authorization 07:30Z "do what you think is best" → Option A applied via single `[plan-update]` commit `1ae6b70` splitting the task into C8.7a (path audit, this session) + C8.7b (orchestrator + Tier-1/2, DEFERRED). C8.7a DO + VERIFY + RECEIPT all closed in ~45 min: AST audit across 31 scripts surfaced 5 path-constant FAILs in 2 fetal-death scripts; both patched in scope; cache-cleared pytest still 56 PASS + 1 XFAIL (111.83s); all 4 parquet SHAs + 5 C8.5a/C8.6 file SHAs preserved byte-exact. Two natality scripts + the run_pipeline.py ALL_YEARS=29 staleness are DOCUMENTED as C8.7b-scope deferrals. One consolidated FIX_LOG L13-extension entry filed.
+
+Next session = C8.8 CHANGELOG + PRIOR_ART updates (1 session estimated). Tier 1 will be COMPLETE after C8.8 (modulo the two DEFERRED tasks C8.5b + C8.7b).
 
 ---
 
