@@ -1,6 +1,113 @@
-# STATUS — last updated 2026-05-13T18:00:00Z
+# STATUS — last updated 2026-05-13T19:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T19:30:00Z — C8.12 PRE-FLIGHT close (DO begins next session): `PRE_FLIGHT_LOG.md` 2026-05-13T19:30:00Z entry (NEW; ~200 lines; RESULT: PROCEED; all 15 C8.11 forward-looking HALTs verified byte-exact incl. cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` = **56 PASS + 1 XFAIL in 83.55s**; ZERO §7 halts; ZERO L11s; clean PRE-FLIGHT matching the §15 "Likely surfaces FIX_LOG cascades" expectation as anticipated scope rather than surprise — 3 L14-CANDIDATE validators surfaced at audit-surface enumeration (`fetal_death/scripts/05_validate/validate_2022.py` 19 FAIL surfaces no `sys.exit` + `fetal_death/scripts/05_validate/validate_external.py` 5 FAIL surfaces no `sys.exit` + `natality/scripts/05_validate/validate_linked_parquets.py` 1 FAIL surface no `sys.exit` — the third is subject to DO-time inspection per whether the `print("  FAILURES:")` corresponds to a per-row failure indicator or just a status-block header); 7 B.6 mutation-test targets identified (the 3 L14-CANDIDATE + 4 OK validators with proper SystemExit propagation: `validate_external_v2.py` + `compare_external_targets_v1.py` + `compare_external_targets_v3_linked.py` + `validate_v1_invariants.py`); 4 REPORT-ONLY validators correctly SKIP (no FAIL surface; no propagation needed: `harmonized_missingness.py` + `key_rates_from_derived_core.py` + `qa_yearly_core_parquet.py` + `validate_row_counts_vs_nchs.py`); 20 metadata CSVs enumerated for B.7 L13 audit (16 fetal-death + 4 natality); B.11 SHA-stability primary target this session = `docs/NCHS_SOURCE_MANIFEST.md` shipped at C8.11 (97 raw-zip SHA-256 rows: 43 fetal-death + 35 natality + 19 linked-cohort); `fetal_death/PROVENANCE.md` staleness (v2.0.0 tag pre-V2.1/V3a/V3b/v2.4) + absent natality PROVENANCE.md both ROUTED to Phase D step 2 per C8.11 soft-flags (a) + (b); B.12 snapshot-regression sized at 4 parquets × 73+89+84+94 = 340 columns; NEW L13 invariant candidate filed as soft-flag (j) ("file_inventory.csv years ⊆ harmonized_schema.csv years_available"; motivated by C8.11 inventory gap); soft-flags (h)-(l) carried + (k) for B.12 storage-format choice; Convention 3 Field-value snapshot 20 rows across 4 tables (11-validator audit × 20-CSV metadata × 97-zip SHA substrate × 340-column snapshot scope); no §11 plan-update needed; 4 parquet SHAs + 9 C8.11 file SHAs + 6 C8.10a/b/c file SHAs + 8 C8.9 file SHAs preserved (no DO work this session); tag `C8.12-pre-do` placed on the commit shipping this PRE-FLIGHT entry
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.12 PRE-FLIGHT complete (DO begins next session).** First sub-step of the C8.12 deliverable closed in <1 session (PRE-FLIGHT only); same pattern as the C8.10/C8.11 PRE-FLIGHT-close-then-DO-next-session precedent for multi-deliverable tasks. Tier 2 progress unchanged from C8.11: **3 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10 + C8.11); C8.12 in-progress at PRE-FLIGHT close. Cumulative Phase C effort ~13.1 of 29-35 sessions (~38%; PRE-FLIGHT-only sub-step adds ~0.1 session). Comfortably within +20% drift cap (42 sessions).
+
+This is the **6th consecutive C8.X PRE-FLIGHT** to apply the C8.9-surfaced §15 PRE-FLIGHT-input re-verification discipline cleanly (Convention 3 Field-value snapshot caught nothing scope-affecting this time; §15 PRE-FLIGHT-input claims "~13 validators" approximated correctly to 11 actual, not an L11). The pattern is durable; the most recent 5 PRE-FLIGHTs each found Convention-3-class issues (C8.9 / C8.10a / C8.10b / C8.10c / C8.11), but C8.12's PRE-FLIGHT surface is greenfield (test-authoring + audit) and matches §15 expectations.
+
+C8.12 brings 5 durable defenses against L3, L5, L11, L13, L14, H10 in one task. Estimated 3-4 sessions per §15 with anticipated FIX_LOG-cascade depth tracked at DO. Recommended DO sequencing across the next 2-3 sessions:
+
+- **Next session (DO start):** B.7 (L13 metadata-CSV audit across 20 CSVs) + B.8 (L14 `main()` exit-code audit + 3 candidate patches) + paired FIX_LOG cascade entries. Cheapest surface; surfaces cascade depth early so subsequent sessions can right-size.
+- **Session 2:** B.11 SHA-stability test (test reads `docs/NCHS_SOURCE_MANIFEST.md` + recomputes shasum on 97 raw zips) + B.12 snapshot regression test (per-column SHA across 4 parquets × 340 columns).
+- **Session 3:** B.6 mutation-test scaffolding across 7 FAIL-surface validators (`tests/mutations/test_<validator>_mutation.py`); Tier-0 AND-of-rows aggregation per L14; depends on B.8 patches landing first so the mutation-test runner can assume `sys.exit(1)` on FAIL.
+- **Session 4 (optional, if cascade depth exceeds estimate):** overflow + RECEIPT + cumulative re-probe.
+
+### What was done this session (PRE-FLIGHT only; metadata-only; no canonical-data mutation)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "proceed as you think is the best way" (matching the C8.6/C8.7 precedent phrasing where the agent interprets as Option A per the recommended path in the (c) plan).
+2. **Verified all 15 C8.11 Forward-looking HALTs byte-exact** (table in PRE_FLIGHT_LOG 2026-05-13T19:30Z entry): 9 mutated/new file SHAs + 4 parquet SHAs + 6 C8.10a/b/c file SHAs + 8 C8.9 file SHAs + tags + soft-flag preservation + pytest baseline.
+3. **Cache-cleared pytest baseline** (`find . -name __pycache__ -delete` then `uv run pytest fetal_death/tests/ natality/tests/ tests/`) returns **56 passed + 1 xfailed in 83.55s** — matches HALT #12 exactly.
+4. **B.6/B.8 validator inventory** (`for f in fetal_death/scripts/05_validate/*.py natality/scripts/05_validate/*.py; ...`): 11 validators total; surfaced 3 L14-CANDIDATE (no `sys.exit`/`SystemExit` on FAIL surfaces) + 4 OK (proper propagation) + 4 REPORT-ONLY (no FAIL surface).
+5. **B.7 L13 metadata-CSV inventory**: 20 CSVs enumerated (16 fetal-death + 4 natality); structure verified via `head -1` per file (column names).
+6. **B.11 SHA-stability surface enumeration**: `docs/NCHS_SOURCE_MANIFEST.md` confirmed at 97 SHA-256 rows in 3 markdown tables (43 fetal-death + 35 natality + 19 linked-cohort); raw-zip universe verified at canonical paths.
+7. **B.12 snapshot-regression sizing**: pyarrow probe of 4 parquet schemas returned 73 + 89 + 84 + 94 = 340 columns total.
+8. **Convention 3 Field-value snapshot built** (20 rows across 4 tables documenting validator audit + metadata CSV inventory + 97-zip SHA substrate + 340-column snapshot scope).
+9. **`PRE_FLIGHT_LOG.md`** new entry appended at top (timestamp 2026-05-13T19:30:00Z); existing C8.11 entry preserved.
+10. **STATUS.md** new section appended at top (this section).
+11. **Pending**: commit the PRE_FLIGHT_LOG + STATUS edits; tag `C8.12-pre-do` on the commit.
+
+### Last completed step
+
+Single commit ships: PRE_FLIGHT_LOG.md 2026-05-13T19:30:00Z C8.12 PRE-FLIGHT entry (NEW; ~200 lines; RESULT: PROCEED) + this STATUS.md section. Tag `C8.12-pre-do` follows.
+
+### In-progress
+
+C8.12 — Mutation tests + L13 audit + L14 audit + SHA-stability + snapshot regression (B.6 + B.7 + B.8 + B.11 + B.12). PRE-FLIGHT closed at PROCEED; DO begins next session.
+
+### Next planned task
+
+Continue C8.12 DO across 2-3 subsequent sessions per the §4 five-phase discipline. First DO session: B.7 + B.8 audit + FIX_LOG cascade entries. No other §15 task starts until C8.12 closes.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.** Recommended: revisit at Phase D step 3 or post-Tier-2.
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.** AND-coupled: C8.7a-complete (SATISFIED) + user-authorized multi-session compute window (PENDING). 6-12+ hours of compute estimated.
+
+### Open questions for human
+
+None for the C8.12 DO scope. The L11/§7 surface at PRE-FLIGHT was clean; all DO steps are within §15-budgeted scope. The B.12 snapshot storage-format choice (soft-flag (k)) is a DO-time DECISION_LOG choice the agent will make + log; pre-DO recommendation is per-column SHA in `tests/snapshots/v<X>_<UTC>_columns.csv`.
+
+**Open soft-flags (8 carried from C8.11 + (h) + (i) + 3 new from C8.12 PRE-FLIGHT):**
+
+Carried forward from C8.11 (preserved unchanged): (a) stale fetal_death/PROVENANCE.md (Phase D step 2) + (b) absent natality/PROVENANCE.md (Phase D step 2) + (c) VERSION_ROADMAP.md "Planned" section staleness (future small docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b orchestrator scope) + (e) raw_data/ symlink only links fetal-death (C8.7b) + (f) plurality footgun investigation (C8.15 candidate) + (g) PRE-FLIGHT entry "87 raw zips" typo (corrected in C8.11 receipt + STATUS + DECISION_LOG; PRE_FLIGHT_LOG entry preserved per L10) + (h) in-DO L11 year-set correction (V3b+V2.1 not V3b+2023+2024; RESOLVED at C8.11) + (i) `fetal_death/COMPARABILITY.md` title staleness ("V2.0, 1992-2022" vs v2.4.0; C8.12 OR Phase D fix-on-contact candidate).
+
+**New open soft-flags (C8.12 PRE-FLIGHT):**
+
+- (j) **NEW L13 invariant candidate**: "every year in `file_inventory.csv` ⊆ `years_available` in `harmonized_schema.csv`" — motivated by C8.11's 34-vs-43-row inventory gap that the C8.11 receipt explicitly cited as a C8.12 candidate input. DO-time scope-resolution: include in B.7 audit-shipped invariants OR defer. **Recommendation: include** (low cost; defends a known failure mode).
+- (k) **B.12 snapshot storage-format choice** (CSV/JSON/Parquet + release-versioning policy): DO-time DECISION_LOG entry required. Pre-DO recommendation: per-column SHA in CSV at `tests/snapshots/v<X>_<UTC>_columns.csv`; CI compares latest run against most-recent baseline; re-snapshot triggered by a §11 plan-update committing a new baseline (e.g., post-C8.13 dict-encoding reshape).
+- (l) **`fetal_death/scripts/05_validate/validate_2022.py` Convention-2 docstring tag**: existing module docstring may need a `DESIGN: tracks-current-state` or `DESIGN: frozen-at-validate_2022` first-docstring tag at DO. Probe at DO; bundle into the L14 patch if needed.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Per `PRE_FLIGHT_LOG.md` 2026-05-13T19:30:00Z entry; restated here at session level for cheap-check access at next session start.
+
+1. **`C8.12-pre-do` tag on this commit** present. Verify: `git tag --list 'C8.12*'` shows it.
+2. **`PRE_FLIGHT_LOG.md`** has new top entry timestamped 2026-05-13T19:30:00Z; existing C8.11 entry at 2026-05-13T17:30:00Z preserved.
+3. **All 4 parquet SHAs unchanged byte-exact**: fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad5323d…` / linked_der=`9b828a4d…`. No DO mutation this session.
+4. **All 9 C8.11 file SHAs + 6 C8.10a/b/c + 8 C8.9 file SHAs unchanged byte-exact**. No drift expected at next session start.
+5. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL** as baseline (83.55s this session; run-to-run variance ±10s).
+6. **`tests/mutations/` directory does NOT exist** — first DO step creates it.
+7. **11 validators inventoried** at PRE-FLIGHT Table 1; 3 L14-CANDIDATE patches + 7 B.6 mutation-test targets + 4 REPORT-ONLY skips.
+8. **20 metadata CSVs inventoried** at PRE-FLIGHT for B.7 L13 audit (16 fetal-death + 4 natality).
+9. **97-row SHA-256 manifest** in `docs/NCHS_SOURCE_MANIFEST.md` is B.11 substrate; raw-zip count = 43 + 35 + 19 = 97 (anchor invariant).
+10. **340-column B.12 snapshot scope** = 73 + 89 + 84 + 94 across 4 parquets.
+11. **8 carry-forward soft-flags (a)-(i) + 3 new soft-flags (j)+(k)+(l)** preserved for DO-time scope resolution + future-task resolution.
+12. **Next task = C8.12 DO** (not a different §15 task) per KICKOFF.md Phase C Tier-2 line 193 + STATUS line 49.
+13. **DO sequencing recommendation (next 2-3 sessions)**: Session 1 = B.7 + B.8 + cascade FIX_LOGs; Session 2 = B.11 + B.12 tests; Session 3 = B.6 mutation-test scaffolding (depends on B.8 patches landing first).
+14. **No §11 plan-update needed** at PRE-FLIGHT close. The §15 PRE-FLIGHT-input "~13 validators" approximation matched 11 actual; not an L11.
+15. **`validate_linked_parquets.py` L14 finding is subject to DO-time inspection** — the existing `print("  FAILURES:")` at line 248 may be a status-block header (no per-row failure indicator) rather than a propagation point. If so, the patch is a no-op; that finding gets a "NO-OP DOCUMENTED" FIX_LOG entry rather than a code-edit FIX_LOG entry.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.11).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.11 outputs unchanged (4 parquets + all docs + all test files + all migrations).
+
+NEW this session: PRE_FLIGHT_LOG.md 2026-05-13T19:30:00Z entry + this STATUS section. Tag `C8.12-pre-do` follows. No canonical-data mutation; no DO work; no §11 plan-update.
+
+### Notes for next session
+
+- **C8.12 DO PRE-FLIGHT cheap-checks at next session start**: re-verify the 15 forward-looking HALTs above byte-exact before any DO mutation. The pattern is the same as C8.10c→C8.11 cheap-check; should take ~5 min.
+- **B.7 + B.8 audit-cascade**: anticipated FIX_LOG depth = 3 L14-CANDIDATE patches + N L13 findings (N TBD; the 7 era-layout CSVs are a likely cascade source per the LESSONS 2026-05-12T01:40Z L13-extension entry). Each finding gets a paired FIX_LOG entry per the L14 + L13 patterns. If cascade depth exceeds 8 entries, escalate to a user halt-and-ask for re-prioritization.
+- **B.11 SHA-stability**: the test reads `docs/NCHS_SOURCE_MANIFEST.md` as canonical (97 rows); future latest-year refreshes (e.g., C8.X for natality 2025 release) require both manifest update AND test-baseline update — a paired §11 plan-update.
+- **B.12 snapshot regression**: storage-format choice (soft-flag (k)) is a one-time DECISION_LOG entry; once shipped, future re-snapshots are routine. The C8.13 dict-encoding reshape (next §15 task) IS the kind of authorized reshape that triggers a re-snapshot.
+- **B.6 mutation tests last**: they depend on B.8 patches landing first. Each mutation test injects a known violation (e.g., temporarily edit a copy of `harmonized_schema.csv` to claim `type=str` for an integer column; assert the validator catches via `sys.exit(1)`); the AND-of-rows aggregation per L14 means the runner verifies the validator FAILed on the specific mutated row, not just that exit-code propagated.
+- **Convention 1 (SHAPE-not-VALUE) + Convention 2 (DESIGN docstring tag)** apply to every new test file. Each `tests/mutations/test_<validator>_mutation.py` declares `DESIGN: tracks-current-state` on the first docstring line + asserts STRUCTURAL invariants (validator exit-code = 1 on mutated input).
+- **Per-product PROVENANCE refresh (soft-flags (a) + (b) + (i))** remains routed to Phase D step 2. C8.12's B.11 work establishes the test pattern; future Phase D step 2 reuses the pattern for output-artifact PROVENANCE.
+
+### Session summary
+
+C8.12 PRE-FLIGHT closed in ~30 min wall time (read-only audit + Convention 3 snapshot + entry authoring). Zero §7 halts; zero L11s; clean pattern-application of the C8.9-surfaced §15 PRE-FLIGHT-input re-verification discipline. PRE-FLIGHT identifies 5 deliverables across 11-validator audit + 20-CSV metadata + 97-zip SHA substrate + 340-column snapshot scope; matches §15 "3-4 sessions" estimate; "Likely surfaces FIX_LOG cascades" anticipated at 3+ L14-CANDIDATE patches + N L13 findings. DO begins next session per the multi-session split precedent (same as C8.10c, C8.11 PRE-FLIGHT-only-session pattern). C8.12 closure expected at Phase C cumulative ~16 of 29-35 sessions (~46%).
 
 ---
 
