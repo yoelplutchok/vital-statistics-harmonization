@@ -1,6 +1,120 @@
-# STATUS — last updated 2026-05-13T21:00:00Z
+# STATUS — last updated 2026-05-13T21:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T21:30:00Z — C8.12 COMPLETE: B.6 mutation-test scaffolding shipped for 7 FAIL-surface validators; all 5 §15 deliverables (B.6 + B.7 + B.8 + B.11 + B.12) now substantively COMPLETE; 4th Tier-2 task closed — NEW `tests/mutations/_runner.py` (~120-line shared subprocess-harness utility; `run_validator_with_module_mutation` via `importlib.util.spec_from_file_location` + harness-injected mutations + `run_validator_with_args` + `assert_mutation_caught` AND-of-rows aggregation per L14 with optional output-file FAIL-text fallback) + NEW `tests/mutations/__init__.py` (empty package init) + 7 NEW per-validator mutation tests (Convention 2 `DESIGN: tracks-current-state` first-docstring tag + Convention 1 SHAPE-not-VALUE structural assertions): `test_validate_external_mutation.py` (mutates `NVSR_FETAL_DEATHS[2022]` 20,202→999,999) + `test_validate_external_v2_mutation.py` (mutates `NVSR57_FETAL_DEATHS_GTE20[1995]` 27,294→999,999) + `test_validate_2022_mutation.py` (replaces `check()` with bump-by-+999,999 wrapper since validator uses inline literal expecteds) + `test_validate_linked_parquets_mutation.py` (mutates `_zip_implied_rows` lambda-wrap; SKIPs cleanly when `natality/output/linked/` absent per C8.11 soft-flag (e)) + `test_compare_external_targets_v1_mutation.py` (writes tempdir targets CSV with `resident_births,2005,resident,0,0`; passes `--targets <tempdir>`; asserts FAIL via output-CSV `status=fail`) + `test_compare_external_targets_v3_linked_mutation.py` (mirror of v1 pattern for V3 linked derived) + `test_validate_v1_invariants_mutation.py` (monkey-patches `pq.ParquetFile.schema_arrow.names` to drop `data_year`; triggers validator's upfront RuntimeError precondition in <5s vs ~60-120s deep-scan); cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **74 passed + 1 skipped + 1 xfailed in 209.70s** (was 68 + 1 pre-DO-step-3; +6 PASS + 1 SKIP from B.6; +50s from 7 subprocess-harness invocations); zero §7 halts; zero canonical-data mutation (4 parquet SHAs preserved byte-exact `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); zero L11s; clean PRE-FLIGHT (all 14 forward-looking HALTs from C8.12 DO step 2 verified byte-exact); 1 soft-flag RESOLVED-as-not-applicable: (l) `validate_2022.py` Convention-2 DESIGN tag → Convention 2 applies to SMOKE/test harnesses per §4.2.1 NOT production validator scripts; the new `tests/mutations/test_validate_2022_mutation.py` carries the DESIGN tag); 2 NEW soft-flags filed: (n) `test_validate_linked_parquets_mutation` end-to-end verification deferred until input dir available + (o) `validate_v1_invariants` deep-scan FAIL-surface as future C8.X mutation-test candidate; full narrative in RECEIPTS/C8.12_2026-05-13T21-30-00Z.md; tag `C8.12-complete` lands on this commit; **Tier 2 progress now 4 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10 + C8.11 + C8.12); cumulative Phase C ~14 of 29-35 sessions (~41%; comfortably within +20% drift cap of 42 sessions); next §15 task = C8.13 (performance + GitHub release artifacts)
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.12 COMPLETE.** Task closed across 4 sessions (PRE-FLIGHT 19:30Z + DO step 1 20:30Z + DO step 2 21:00Z + DO step 3 + RECEIPT 21:30Z this session). All 5 §15 deliverables substantively COMPLETE: B.6 mutation tests (this session) + B.7 L13 audit (DO step 1) + B.8 L14 audit (DO step 1) + B.11 SHA-stability test (DO step 2) + B.12 snapshot regression test (DO step 2). Five durable defenses now active against L3, L5, L11, L13, L14, H10 per §15 motivation.
+
+C8.12 cumulative effort matches the §15 "3-4 sessions" estimate at 4 sessions (PRE-FLIGHT-only-session + 3 DO sub-step sessions); Tier 2 closure trajectory on track. Cumulative Phase C effort ~14 of 29-35 sessions (~41%); 3 Tier-2 tasks remaining (C8.13 + C8.14 + C8.15).
+
+### What was done this session (DO step 3: B.6 mutation-test scaffolding)
+
+1. **PRE-FLIGHT cheap-checks** verified all 14 C8.12 DO step 2 forward-looking HALTs byte-exact (zero drift): 4 parquet SHAs unchanged; 5 NEW B.11+B.12 file SHAs present; `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…` + 341-line layout; `fetal_death/file_inventory.csv` sha=`2f2ba2c9…`; 3 L14-patched validators each carrying 1 × `sys.exit(1)`; `tests/mutations/` directory absent (good); cache-cleared `pytest` returns 68 PASS + 1 XFAIL in 160.80s (matches HALT 9 within ±20s variance). No separate per-sub-step PRE_FLIGHT_LOG entry per C8.12 DO-step precedent (the upfront 2026-05-13T19:30:00Z PRE-FLIGHT entry covered all 5 deliverables in one Convention 3 Field-value snapshot).
+2. **Validator inventory verification**: 7 FAIL-surface validators located across 2 subprojects (3 fetal-death-side: `validate_2022.py` + `validate_external.py` + `validate_external_v2.py`; 4 natality-side: `validate_linked_parquets.py` + `compare_external_targets_v1.py` + `compare_external_targets_v3_linked.py` + `validate_v1_invariants.py`). Input contracts mapped per-validator: 5 read canonical parquets directly; 2 also read a `metadata/external_validation_targets_v*.csv` (via `--targets` arg).
+3. **Input-availability probe**: 6 of 7 validators' canonical inputs PRESENT on this build; 1 ABSENT (`natality/output/linked/` per C8.11 soft-flag (e); the linked parquets live in the natality build dir, not the monorepo). The 1 ABSENT case is handled by skip-if-input-missing in the corresponding mutation test.
+4. **`tests/mutations/__init__.py` authored** (empty; package init for the imports in `_runner.py` + the 7 test files).
+5. **`tests/mutations/_runner.py` authored** (~120 lines; sha=`98ecb483ca24a66080f87a8073d7105011490817aedcb477c5c16352f427ea43`). Three entry points: `run_validator_with_module_mutation` (loads validator as a module via `importlib.util.spec_from_file_location`; applies mutations to module namespace; sets `sys.argv`; calls `v.main()` in subprocess — SystemExit propagates naturally to the child-process exit code); `run_validator_with_args` (direct subprocess invocation with CLI args; used for the 2 CSV-targets tests where the mutation is the CSV content itself); `assert_mutation_caught` (Convention 1 SHAPE-not-VALUE: non-zero returncode AND a FAIL surface in either stdout/stderr OR specified output files — the OR accommodates validators whose FAIL detail lands in a written CSV/MD report rather than stdout, e.g., `compare_external_targets_v1.py` writes per-row `status=fail` to its comparison CSV while stdout carries only `Wrote ...` paths).
+6. **7 mutation test files authored**: each <60 lines; each with Convention 2 `DESIGN: tracks-current-state` first-docstring tag + skip-if-input-missing + 1 mutation + 1 `assert_mutation_caught` call. Mutation strategies chosen per-validator: 3 validators use module-attribute patches on hardcoded dicts (`NVSR_FETAL_DEATHS`, `NVSR57_FETAL_DEATHS_GTE20`) or function wraps (`check` function); 2 use CLI-passed mutated CSVs; 1 uses `_zip_implied_rows` lambda-wrap; 1 uses `pq.ParquetFile.schema_arrow` wrapping to drop a required column.
+7. **Smoke-test the mutation suite first** (`pytest tests/mutations/ -v`): initial run surfaced 1 FAIL in `test_compare_external_targets_v1_mutation` — the validator writes "fail: N" to the output MD file, NOT stdout (which carries only "Wrote ..." paths); my initial fail_markers list only checked stdout. Fixed by extending `assert_mutation_caught` with optional `output_files_with_fail_text` parameter; both compare_external_targets tests now check the output CSV/MD for "fail" content. Post-fix: 6 PASS + 1 SKIP in 19.84s. Convention 1 SHAPE-not-VALUE preserved (still asserts on structural invariants: non-zero exit + FAIL surface presence; just allows the FAIL surface to live in stdout OR a written report file).
+8. **Cache-cleared full pytest** (`find . -name __pycache__ -delete && uv run pytest fetal_death/tests/ natality/tests/ tests/`): **74 passed + 1 skipped + 1 xfailed in 209.70s** (was 68 + 1 pre-step-3; +6 PASS + 1 SKIP from B.6).
+9. **RECEIPT.md authored** at `RECEIPTS/C8.12_2026-05-13T21-30-00Z.md` per §6 template covering all 5 §15 deliverables; 8 self-check residual risks; 14 forward-looking HALTs for next-session C8.13 PRE-FLIGHT.
+10. **STATUS.md** appended (this section).
+11. **Pending**: commit DO step 3 + RECEIPT (Convention 5 brevity ~5-line summary); tag `C8.12-complete`.
+
+### Last completed step
+
+Single commit ships: 9 NEW files (1 init + 1 runner + 7 mutation tests) + this RECEIPT + this STATUS section. Tag `C8.12-complete` follows on the commit.
+
+### In-progress
+
+None — C8.12 closed.
+
+### Next planned task
+
+**C8.13 — Performance + GitHub release artifacts (F.1 + F.4 + F.5)** per KICKOFF.md Phase C Tier-2 line 194 + NEXT_STEPS.md §15.C C8.13. Estimated 1.5-2 sessions. Halt-condition flag: **B.12 snapshot-regression interaction** — the C8.13 dict-encoding parquet reshape WILL cause `tests/test_parquet_column_snapshot.py` to FAIL on per-column SHA equality (DECISION_LOG 2026-05-13T21:00:00Z residual-risk (a) called this out). C8.13 DO must pair the reshape with: (a) re-generate baseline via `uv run python -m tests.snapshots._build_snapshot` → `tests/snapshots/v2_<UTC>_columns.csv`; (b) DECISION_LOG entry naming the cause + SHA shift; (c) `[plan-update]` commit prefix on the bundled commit.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.**
+
+### Open questions for human
+
+None blocking for C8.13. The C8.13 plan is fully specified at NEXT_STEPS.md §15.C (F.1 parquet dict-encoding + F.4 GitHub Release artifacts + F.5 timing benchmark vs manuscript claim).
+
+**Open soft-flags (9 carried + 2 NEW + 3 RESOLVED across C8.12):**
+
+Carried unchanged: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) raw_data/ symlink fetal-only (C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (h) C8.11 in-DO L11 year-set (RESOLVED earlier) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b orchestrator candidate; deferred).
+
+RESOLVED across C8.12: (j) RESOLVED at DO step 1 — encoded as `tests/test_inventory_invariants.py`; (k) RESOLVED at DO step 2 — encoded as `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` + DECISION_LOG entry; (l) RESOLVED-as-not-applicable this session — Convention 2 applies to SMOKE/test harnesses per §4.2.1, not production validator scripts.
+
+**New open soft-flags (C8.12 DO step 3):**
+
+- (n) **`test_validate_linked_parquets_mutation` end-to-end verification deferred** until `natality/output/linked/` becomes available (Phase D step 3 CI sync OR C8.7b orchestrator symlink). The mutation logic + harness pattern is identical to the 6 passing tests; manual end-to-end verification on this build was not possible. Future C8.7b authoring should re-run `pytest tests/mutations/test_validate_linked_parquets_mutation.py` and confirm PASS.
+- (o) **`validate_v1_invariants` deep-scan FAIL-surface mutation test** as future C8.X candidate. The current test exercises the upfront precondition path (RuntimeError on missing required column; <5s); the validator's deep-scan FAIL surface (`SystemExit(2)` after 138M-row invariant scan; ~60-120s) is NOT mutation-tested. Future C8.X could add a second-tier mutation test that patches `_count_true` to return a positive int, forcing every violation counter into "exceeds budget" state.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start. Full enumeration in RECEIPTS/C8.12_2026-05-13T21-30-00Z.md.
+
+1. **`C8.12-complete` tag** present on this commit. Verify: `git tag --list 'C8.12*'` shows both `C8.12-pre-do` (at `3d35dc5`) + `C8.12-complete` (at this commit's sha).
+2. **`tests/mutations/` package exists** with 9 files at documented SHAs.
+3. **`tests/mutations/__init__.py` sha=`e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`** (empty file; canonical empty-file SHA).
+4. **`tests/mutations/_runner.py` sha=`98ecb483ca24a66080f87a8073d7105011490817aedcb477c5c16352f427ea43`**.
+5. **7 mutation test file SHAs** unchanged byte-exact (full list in RECEIPT "Outputs produced").
+6. **All 4 parquet SHAs unchanged byte-exact**: fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad5323d…` / linked_der=`9b828a4d…`. No DO step 3 parquet mutation.
+7. **All C8.12 DO-step-1 + DO-step-2 file SHAs unchanged byte-exact**.
+8. **All C8.11 file SHAs unchanged byte-exact**.
+9. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL** as new C8.12-complete baseline (~210s wall time ±20s variance).
+10. **The 1 SKIP is `test_validate_linked_parquets_mutation`** because `natality/output/linked/` is absent (C8.11 soft-flag (e)).
+11. **Next task = C8.13** (performance + GitHub release artifacts) per KICKOFF.md Phase C Tier-2 line 194. Estimated 1.5-2 sessions.
+12. **C8.13 PRE-FLIGHT must anticipate B.12 snapshot regression interaction** — the dict-encoding parquet reshape WILL FAIL `tests/test_parquet_column_snapshot.py` on per-column SHAs; paired re-snapshot baseline + DECISION_LOG + `[plan-update]` commit prefix required per the C8.12 DO step 2 DECISION_LOG 2026-05-13T21:00:00Z policy.
+13. **No §11 plan-update needed at C8.12 close** — all 5 deliverables were explicit §15 DO scope.
+14. **Soft-flag (l) RESOLVED-as-not-applicable**: documented in the C8.12 RECEIPT's "Notes for next session"; no DECISION_LOG entry filed (textual §4.2.1 interpretation, not a novel choice).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- V3b/V3a/V1 baseline parquets preserved (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.12 DO outputs unchanged.
+
+NEW this session:
+- `tests/mutations/__init__.py` (NEW; empty package init; canonical empty-file SHA)
+- `tests/mutations/_runner.py` (NEW; ~120-line shared subprocess-harness utility)
+- `tests/mutations/test_validate_external_mutation.py` (NEW)
+- `tests/mutations/test_validate_external_v2_mutation.py` (NEW)
+- `tests/mutations/test_validate_2022_mutation.py` (NEW)
+- `tests/mutations/test_validate_linked_parquets_mutation.py` (NEW; SKIPs cleanly when input dir absent)
+- `tests/mutations/test_compare_external_targets_v1_mutation.py` (NEW)
+- `tests/mutations/test_compare_external_targets_v3_linked_mutation.py` (NEW)
+- `tests/mutations/test_validate_v1_invariants_mutation.py` (NEW)
+- `RECEIPTS/C8.12_2026-05-13T21-30-00Z.md` (NEW; closing C8.12 receipt)
+- This STATUS section
+
+MODIFIED this session:
+- (none) — DO step 3 ships only NEW files; no edits to existing files.
+
+### Notes for next session
+
+- **C8.13 PRE-FLIGHT cheap-checks at next session start**: re-verify all 14 forward-looking HALTs above byte-exact; should take ~5 min.
+- **C8.13 DO scope (per §15.C C8.13)**: (F.1) parquet column-dictionary tuning per low-cardinality column (re-write `derive.py`'s `pq.write_table` call with `use_dictionary=True` per column; re-derive; measure size delta); (F.4) attach parquets to GitHub Release v1.x alongside Zenodo; (F.5) pipeline timing benchmark vs manuscript "approximately six minutes" / "approximately ninety minutes" claims.
+- **C8.13 PRE-FLIGHT must verify**: (i) current parquet dict-encoding state via `pq.ParquetFile(p).metadata` or column-level metadata probe — many columns may already be dict-encoded; F.1's "30-50% size reduction" estimate from §15 needs a baseline measurement BEFORE committing to the SHA-shift event; (ii) `gh` CLI auth + write access to the public-repo Releases endpoint; (iii) timer harness scope and prior measurement source (manuscript draft cite).
+- **B.12 snapshot regression test will FAIL after C8.13 dict-encoding reshape.** Pairing required per DECISION_LOG 2026-05-13T21:00:00Z policy: (a) re-generate baseline `tests/snapshots/v2_<UTC>_columns.csv`; (b) DECISION_LOG entry naming the cause + SHA shift; (c) `[plan-update]` commit prefix.
+- **B.6 mutation tests are now CI-gated** transitively via the C8.6 GitHub Actions workflow that runs the full `pytest fetal_death/tests/ natality/tests/ tests/` suite. The `test_validate_linked_parquets_mutation` SKIP behavior is by design for environments without linked parquets on disk (typical CI).
+- **No new mistake class** surfaced from this DO. The L14 AND-of-rows aggregation expressed in `_runner.py`'s `assert_mutation_caught` is a direct application of the §8 L14 mistake-class catch; no new pattern.
+- **Tier 2 progress: 4 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10 + C8.11 + C8.12). 3 remaining (C8.13-C8.15). Cumulative Phase C ~14 of 29-35 sessions (~41%); on track for Phase D start at ~25-30 sessions cumulative.
+
+### Session summary
+
+C8.12 DO step 3 + RECEIPT closed in ~30 min wall time post-PRE-FLIGHT (cheap-check + validator inventory + 9 file authoring + smoke-test + fix-on-first-failure + cache-cleared pytest + RECEIPT + STATUS). All 5 C8.12 §15 deliverables now substantively COMPLETE (B.6 mutation tests this session; B.7 + B.8 at DO step 1; B.11 + B.12 at DO step 2). Zero §7 halts across the 4-session task; zero canonical-parquet mutation throughout; 4 parquet SHAs preserved byte-exact across all 4 C8.12 commits. Cache-cleared pytest 74 PASS + 1 SKIP + 1 XFAIL (was 68 + 1 XFAIL pre-DO-step-3). Five durable defenses now active per §15 motivation. C8.12 cumulative effort matches the §15 "3-4 sessions" estimate at 4 sessions. Cumulative Phase C effort ~14 of 29-35 sessions (~41%). Tier 2 progress 4 of 7 §15-listed tasks COMPLETE. Next §15 task = C8.13 (performance + GitHub release artifacts; estimated 1.5-2 sessions).
 
 ---
 
