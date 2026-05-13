@@ -8,6 +8,184 @@
 
 ---
 
+## PRE-FLIGHT for C8.11 — 2026-05-13T17:30:00Z — Migration guides + cross-product COMPARABILITY.md + cross-product NCHS-source-data SHA manifest (E.2 + E.4 + E.8) — **RESULT: PROCEED** (one §7.13-shape scope-affecting L11 surfaced + user-resolved via AskUserQuestion 2026-05-13T17:25:00Z Option A: extend `fetal_death/file_inventory.csv` 34 → 43 rows in C8.11 DO; three additional routine L11 PRE-FLIGHT-input re-interpretations user-authorized in-place per the C8.9/C8.10a/b/c precedent; no §11 plan-update commit needed)
+
+### Scope summary
+
+C8.11 §15.C entry (NEXT_STEPS.md lines 1168-1184) names 3 deliverables: (E.2) two migration guides — `migrations/v2.7.0-to-v2.8.0-natality.md` + (per §15) `migrations/v2.0.0-to-v2.3.0-fetal-death.md` re-targeted in PRE-FLIGHT to `migrations/v2.0.0-to-v2.4.0-fetal-death.md` (L11: §15 named v2.3.0 but actual current is v2.4.0 per fetal_death/README.md line 156 + DECISION_LOG 2026-05-13T01:30Z C8.2 latest-year refresh); (E.4) `docs/COMPARABILITY.md` at monorepo root synthesizing within_era + cross_era caveats from both subprojects; (E.8) `docs/NCHS_SOURCE_MANIFEST.md` at monorepo root containing raw-zip SHA-256 values for all 87 NCHS source files (43 fetal-death + 35 natality + 19 linked-cohort), keyed by year × raw_filename matching the inventory rows. KICKOFF.md Phase C Tier-2 line 192 + STATUS 2026-05-13T17:15:00Z line 68 name C8.11 as the next §15 task. Estimated effort 3-4 sessions per §15 (with the +30-60 min Option A inventory-extension addition).
+
+**Session scope this PRE-FLIGHT (the (a)-(d) handshake-stated plan, user-authorized "proceed in the way you think is best" + AskUserQuestion 17:25Z resolution Option A + (i)/(ii)/(iii) Proceed-in-place-per-precedent):** ship PRE-FLIGHT entry + tag `C8.11-pre-do` only; subsequent sessions will execute DO + VERIFY + RECEIPT across 4 deliverables (E.2a natality migration guide; E.2b fetal-death migration guide; E.4 cross-product COMPARABILITY; E.8a fetal_death/file_inventory.csv extension 34 → 43 rows; E.8b NCHS_SOURCE_MANIFEST.md) + 2 fix-on-contact mutations (VERSION_ROADMAP.md line 11 + 13 v2.1.0 → v2.4.0 + record count + coverage update) + cross-link edits (monorepo README.md + per-product README sections). This PRE-FLIGHT is metadata-only (PRE_FLIGHT_LOG.md addition); DO scope begins in the next session per the §4 five-phase discipline. C8.11-pre-do tag placed post-this-PRE-FLIGHT, pre-any-DO-mutation.
+
+### Inputs
+
+- [x] **All 12 C8.10c Forward-looking HALTs verified byte-exact** (see table below; 4 parquet SHAs + 3 C8.10c file SHAs + 14 C8.9 + 4 of 5 C8.10a/b file SHAs + 7 C8.10-tag presence). ✓
+- [x] **Migration source-of-truth DECISION_LOG entries present** (4 substantive migrations to document):
+  - `natality_v28_rename` — DECISION_LOG.md lines 926-1033 (2026-05-12T13:35:02Z + 2026-05-12T03:25:00Z PRE-FLIGHT findings); covers column renames (`year` → `data_year`; `restatus` → `residence_status`; `maternal_race_bridged4` → `maternal_race_bridged`; `maternal_hispanic_origin` → `hispanic_origin`); 61-string-literal rename surface; aliasing helper retained for v2.7.0 backward-compat per chosen alternative. ✓
+  - `task3_v21_fetal_death` — DECISION_LOG.md line 1099+ (2026-05-12T01:35:00Z); covers V2.1 (adds 2003 + 2004 transition years; 1351-byte + 1501-byte mixed-revision layouts) + bundled H8 dtype reconciliation (5 columns: tabulation_flag, residence_status, maternal_age, maternal_race_bridged, hispanic_origin) + data_year field rename + monorepo path drift fixes. ✓
+  - `task7_v3a` — DECISION_LOG.md line 882+ (2026-05-12T14:30:00Z); covers V3a 1989-1991 backward extension; B3 maternal_race_bridged 1989-rev MRACE 08→4 API, 09→null; 26/26 validation byte-exact. ✓
+  - `task7_v3b` — DECISION_LOG.md line 800+ + 850+ (2026-05-12T18:30:00Z × 2); covers V3b 1982-1988 backward extension; B3 1978-rev MRACE 1-digit 0-9 → 4-cat bridged with code 7 + code 9 → null; DATAYEAR 2-digit → 4-digit expansion; 33/33 validation byte-exact. ✓
+  - C8.2 latest-year refresh (2023+2024) is the implicit 5th migration step but per DECISION_LOG it's a data extension, not a schema or column-name change; surfaces in the migration guide as a "coverage extension" entry, not a "query update" entry. ✓
+- [x] **Both subproject COMPARABILITY files present** (E.4 synthesis inputs):
+  - `natality/docs/COMPARABILITY.md`: 41,736 bytes, last modified 2026-05-12 09:19. Top-level structure: Guiding policy + Comparability class definitions + certificate_revision values + Known structural breaks (line 34) + Variable decisions (line 78) + Recommended analytic subsets (line 192) + V3 Linked comparability (line 201) + Known pitfalls (line 279) + Change log (line 348). ✓
+  - `fetal_death/COMPARABILITY.md`: 26,053 bytes, last modified 2026-05-04 21:58. Top-level structure: Era structure + 12 numbered sections covering 2003 revision transition / race+ethnicity / education / cause of death / gestational age / plurality / unrevised fields / BMI + morbidity / V2 cross-era code normalizations B1-B6 / V2 state-level reporting quirks / V2 stale-guide years (1996, 2001, 2002) + Variable Availability Matrix. ✓
+- [x] **Both `file_inventory.csv` files present** (E.8 SHA-manifest inputs):
+  - `natality/metadata/file_inventory.csv`: 54 data rows, 8 columns (`year, source_url, source_org, raw_filename, file_format, doc_filename, imported, notes`); year range 1990-2024; all 54 rows show `imported=true`; raw_filenames include 35 natality (`Nat<YYYY>.zip` / `Nat<YYYY>us.zip`) + 19 linked-cohort (`<YYYY>PE<YYYY-1>CO.zip`). ✓
+  - `fetal_death/file_inventory.csv`: 34 data rows, 9 columns (`year, source_url, source_org, raw_filename, file_format, doc_filename, record_length, imported, notes`); year range 1989-2022; all 34 rows show `imported=no`. **STALE relative to v2.4.0 envelope (1982-2024 = 43 years; missing 7 V3b 1982-1988 + 2 latest-year 2023+2024 rows).** Option A resolution: extend to 43 rows in C8.11 DO; row-by-row metadata recoverable from DECISION_LOG entries above + per-zip probes. ✓ (with documented gap, scope-resolved per AskUserQuestion 17:25Z Option A)
+- [x] **Raw zip universe on disk** (E.8 SHA-manifest target):
+  - Fetal-death: 43 files at `/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/raw_data/fetal_death/Fetal<YYYY>US.zip` covering 1982-2024 inclusive (verified via `ls *.zip | wc -l`). ✓
+  - Natality: 35 files at `/Users/yoelplutchok/Desktop/natality-harmonization/raw_data/` covering 1990-2024 (`Nat<YYYY>.zip` for 1990-1993; `Nat<YYYY>us.zip` for 1994+). ✓
+  - Linked: 19 files at `/Users/yoelplutchok/Desktop/natality-harmonization/raw_data/linked/` — directory presence verified via `find -maxdepth 4 -type d -name '*linked*'`; individual file listing not enumerated in PRE-FLIGHT (DO-step responsibility) but `2024PE2023CO.zip` is the most-recent inventory row per the file_inventory.csv `raw_filename` column. ✓
+- [x] **Builder pattern templates** (E.2 + E.4 + E.8 authoring guides): `notebooks/_build_maternal_age_stratified_imr.py` + `notebooks/_build_preterm_outcomes_time_series.py` + `notebooks/_build_cross_race_fetal_mortality.py` (the C8.10a/b/c sibling builders) are NOT directly templates for C8.11 (C8.11 is docs-only, no executable builder), but their markdown-cell structure (intro + section headers + content + pass/fail summary) is a valid template for the migration-guide structure. ✓
+- [x] **No stale checkpoints**: `git status --short` empty; `C8.11-pre-do` tag does NOT yet exist (will be placed post-PRE-FLIGHT, pre-DO). ✓
+
+**C8.10c Forward-looking HALT verification table (Convention 4 carry-over):**
+
+| HALT # | Assertion | Verified | Note |
+|---|---|---|---|
+| 1 | `C8.10c-complete` + parent `C8.10-complete` tags both present | ✓ | `git tag --list 'C8.10*'` shows 7 tags |
+| 2 | `notebooks/_build_cross_race_fetal_mortality.py` sha=`aef0664f36a2a3a3…` | ✓ | matches exactly |
+| 3 | `notebooks/cross_race_fetal_mortality.ipynb` sha=`262daef19494c03a…` | ✓ | matches exactly |
+| 4 | `notebooks/README.md` sha=`6fc9b191c6a5a9d4…` | ✓ | matches (parent C8.10 marked COMPLETE) |
+| 5 | 4 parquet SHAs unchanged byte-exact | ✓ | fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad53…` / linked_der=`9b828a4d…` all match (linked parquet correct path is `natality_v3_linked_harmonized_derived.parquet`, not the C8.10c receipt's `linked_birth_infant_death_v3_cohort_derived.parquet` placeholder name — same file, different display name; sha confirms byte-identity) |
+| 6 | 14 C8.9 file SHAs + 4 of 5 C8.10a+C8.10b file SHAs unchanged | ✓ | All 14 + 4 verified; `notebooks/README.md` is the 5th C8.10a/b file (drifted intentionally to `6fc9b191…` — HALT #4 above) |
+| 7 | Next task = C8.11 | ✓ | This entry executes |
+| 8 | §15 PRE-FLIGHT-input re-verification discipline in 4th consecutive application | ✓ | Now 5th (this PRE-FLIGHT surfaces 4 L11 cases) |
+| 9 | In-PRE-FLIGHT secondary-source-validation re-interpretation pattern | ✓ | LESSONS.md backport candidate; carried forward |
+| 10 | 2014 race-coding-methodology boundary distinct from OE | ✓ | C8.11 C8.11 DO will incorporate into E.4 docs/COMPARABILITY.md synthesis |
+| 11 | `notebooks/README.md` Planned section still includes era_boundary stub | ✓ | Out of active Phase C scope; not touched here |
+| 12 | Cumulative Phase C effort ~12 of 29-35 sessions (~36%) | ✓ | C8.11 PRE-FLIGHT is ~12.1 of 29-35; comfortably within 42 cap |
+
+### Environment
+
+- [x] Python version: 3.13.9 (required ≥3.11) ✓
+- [x] R version: 4.5.0 (R quickstart fixtures landed at C8.9; not exercised by C8.11 which is docs-only)
+- [x] pandas version: 2.3.2 (required ≥2.3) ✓
+- [x] pyarrow version: 18.1.0 (required ≥18.0) ✓
+- [x] DuckDB Python: present (C8.9 lockfile addition) ✓ (not exercised by C8.11)
+- [x] Working directory clean (`git status --short` empty on `main` at `2dd19ac`): ✓
+- [x] On expected branch (`main`): ✓
+- [x] Active tags on HEAD: `C8.10c-complete` + `C8.10-complete` (verified via `git tag --points-at HEAD`) ✓
+
+### Source documentation
+
+C8.11 is docs-authoring; no new NVSR PDFs or NCHS user guides are CONSUMED beyond what's already cited via the DECISION_LOG entries. The 4 migration source-of-truth DECISION_LOG entries above are the substantive inputs. No L9 cheap-checks on external PDFs are required by this PRE-FLIGHT — all source documents are internal (DECISION_LOG entries + COMPARABILITY files + file_inventory.csv files). ✓
+
+The E.8 SHA manifest will record SHAs of raw NCHS zips by computing them at DO time; raw zips themselves are the L9 source-of-truth (NCHS canonical FTP paths recorded in each inventory's `source_url` column). Each zip's SHA-256 is computed at DO; no pre-DO L9 check required.
+
+### Outputs
+
+- [x] **NEW files (must not exist before DO):**
+  - `migrations/` (directory): does NOT exist ✓
+  - `migrations/v2.7.0-to-v2.8.0-natality.md`: does NOT exist ✓
+  - `migrations/v2.0.0-to-v2.4.0-fetal-death.md`: does NOT exist ✓ (re-targeted from §15 v2.3.0 per L11 finding (i))
+  - `docs/COMPARABILITY.md` (monorepo root): does NOT exist ✓
+  - `docs/NCHS_SOURCE_MANIFEST.md` (monorepo root): does NOT exist ✓ (E.8 filename chosen for E.8 deliverable; follows `docs/JOINT_USE_GUIDE.md` + `docs/PRIOR_ART.md` precedent of monorepo-cross-product docs at `docs/`)
+  - `RECEIPTS/C8.11_<UTC>.md`: will be written at C8.11 RECEIPT phase (next session(s))
+- [x] **MODIFIED files (explicit intent; current SHAs recorded for VERIFY phase):**
+  - `fetal_death/file_inventory.csv` (current 34 rows; target 43 rows per Option A): current size 6905 bytes, sha computed at DO baseline; rows 35-43 to be appended ✓
+  - `VERSION_ROADMAP.md` line 11 + line 13 (fix-on-contact per L11 finding (iii)): current `**v2.1.0** (adds 2003 + 2004; H8 dtype reconciliation) | v2.0.0 | 1992–2022 | 1,741,977` → target `**v2.4.0** (V2.1 2003+2004 + V3a 1989-1991 + V3b 1982-1988 + latest-year refresh 2023+2024; H8 dtype reconciliation) | v2.0.0 | 1982–2024 | 2,427,233`; line 13 substring `fetal-death v2.1.0` → `fetal-death v2.4.0` ✓
+  - `README.md` (monorepo): add cross-link to `migrations/` + `docs/COMPARABILITY.md` + `docs/NCHS_SOURCE_MANIFEST.md` in the Repository Layout section (additive only) ✓
+  - `fetal_death/README.md`: add cross-link to `../migrations/v2.0.0-to-v2.4.0-fetal-death.md` (1 line in Version Roadmap section near line 156) ✓
+  - `natality/README.md`: add cross-link to `../migrations/v2.7.0-to-v2.8.0-natality.md` (1 line near line 28 v2.8.0 mention) ✓
+- [x] **APPEND-ONLY state files** (per Anti-Pattern #1):
+  - `STATUS.md`: new dated section at top with C8.11 close
+  - `DECISION_LOG.md`: new entry recording the AskUserQuestion 17:25Z Option A authorization + three (i)/(ii)/(iii) in-place L11 resolutions
+  - `PRE_FLIGHT_LOG.md`: this entry (already written before DO begins)
+- [x] **NOT mutated** (forward-looking HALT for VERIFY):
+  - 4 parquets unchanged ✓
+  - 14 C8.9 + 5 C8.10a/b/c file SHAs unchanged ✓
+  - `harmonized_schema.csv` files unchanged (E.2 docs reference the schema but do not mutate it) ✓
+  - `external_validation_targets_*.csv` files unchanged ✓
+  - test suite 56 PASS + 1 XFAIL preserved (cache-cleared run at VERIFY) ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+Per §5 template second bullet: enumerate target rows/cells/columns + verify current values against task plan's assumed state. C8.11 is docs-authoring; the substantive "fields" are (a) the 4 NEW document contents (target schema established by §15 + Option A scope refinements); (b) the 9 NEW rows for `fetal_death/file_inventory.csv`; (c) the 2 fix-on-contact VERSION_ROADMAP.md line substitutions; (d) cross-link edits to 3 README files. Total snapshot rows: 24.
+
+**Table 1: Migration-guide content sources (E.2a + E.2b; per-migration source DECISION_LOG entries verified above)**
+
+| # | Migration | §15 named | PRE-FLIGHT-target (L11 finding (i)) | DECISION_LOG source | Status |
+|---|---|---|---|---|---|
+| 1 | Natality column renames | `v2.7.0-to-v2.8.0-natality.md` | unchanged | `natality_v28_rename` 2026-05-12T13:35:02Z + 03:25:00Z PRE-FLIGHT | ✓ source present |
+| 2 | Fetal-death V2.1 transition | `v2.0.0-to-v2.3.0-fetal-death.md` (stale §15 name) | `v2.0.0-to-v2.4.0-fetal-death.md` (covers V2.1 + V3a + V3b + latest-year as one envelope migration) | `task3_v21_fetal_death` 2026-05-12T01:35:00Z | ✓ source present |
+| 3 | Fetal-death V3a backward | (subsumed in #2) | (subsumed in #2) | `task7_v3a` 2026-05-12T14:30:00Z | ✓ source present |
+| 4 | Fetal-death V3b backward | (subsumed in #2) | (subsumed in #2) | `task7_v3b` 2026-05-12T18:30:00Z × 2 entries | ✓ source present |
+| 5 | Fetal-death latest-year 2023+2024 | (not in §15) | (subsumed in #2 as "data envelope extension") | `C8.2 latest-year refresh` 2026-05-13T01:30:00Z | ✓ source present |
+
+**Table 2: Cross-product COMPARABILITY synthesis cells (E.4; era-boundary union)**
+
+| # | Era boundary | Both products affected? | Source section(s) | Resolution |
+|---|---|---|---|---|
+| 6 | 2003 revision transition (natality + fetal-death) | both | nat COMPARABILITY §"certificate_revision values" + fd COMPARABILITY §1 "2003 Revision Transition" | E.4 synthesizes both narratives |
+| 7 | OE-based gestational age methodology shift (2014+) | natality + linked | nat COMPARABILITY §"Variable decisions" + manuscript §"OE methodology" | E.4 cross-references C8.10b notebook narrative |
+| 8 | Race-coding methodology boundary (2014; Hispanic disaggregation) | both | C8.10c notebook narrative (new this PR; not yet in either COMPARABILITY file) | E.4 imports the C8.10c narrative as the canonical source — synthesizes for the first time |
+| 9 | Bridged-race null 2018+ (natality) vs 2014+ (fetal-death) | both | nat COMPARABILITY + fd COMPARABILITY §2 "Race and Ethnicity" | E.4 unifies the era-end-dates table |
+| 10 | V1 era plurality coding (2005-2013) | fetal-death only | fd COMPARABILITY §7 "Plurality — Data Quality Caveats" | E.4 documents as fetal-death-specific |
+| 11 | V2 state-level reporting quirks (1992-2002) | fetal-death only | fd COMPARABILITY §11 | E.4 documents as fetal-death-specific |
+| 12 | 1989-1991 V3a + 1982-1988 V3b race-coding | fetal-death only | fd COMPARABILITY §2 + new DECISION_LOG 2026-05-12T14:30Z + 18:30Z + new C8.10c narrative | E.4 imports new caveats (B3 1-digit-recode for V3b code 7 + code 9 → null; V3a code 09 → null) |
+
+**Table 3: fetal_death/file_inventory.csv extension rows (E.8a per Option A; 9 NEW rows)**
+
+| # | year | raw_filename | doc_filename | record_length | imported | source DECISION_LOG |
+|---|---|---|---|---|---|---|
+| 13 | 1982 | `Fetal1982US.zip` | `1982FetalUserGuide.pdf` | 365 (probe at DO) | no | task7_v3b 2026-05-12T18:30Z |
+| 14 | 1983 | `Fetal1983US.zip` | `1983FetalUserGuide.pdf` | 365 | no | same |
+| 15 | 1984 | `Fetal1984US.zip` | `1984FetalUserGuide.pdf` | 365 | no | same |
+| 16 | 1985 | `Fetal1985US.zip` | `1985FetalUserGuide.pdf` | 365 | no | same |
+| 17 | 1986 | `Fetal1986US.zip` | `1986FetalUserGuide.pdf` | 365 | no | same |
+| 18 | 1987 | `Fetal1987US.zip` | `1987FetalUserGuide.pdf` | 365 | no | same |
+| 19 | 1988 | `Fetal1988US.zip` | `1988FetalUserGuide.pdf` | 365 | no | same |
+| 20 | 2023 | `Fetal2023US.zip` | (TBD probe at DO) | (TBD probe at DO) | no | C8.2 2026-05-13T01:30Z |
+| 21 | 2024 | `Fetal2024US.zip` | (TBD probe at DO) | (TBD probe at DO) | no | same |
+
+Record-length values: each new row's record_length will be probed at DO time via `unzip -p <zip> | head -c 1 | wc -c` or equivalent first-record-byte-length detection. The "365" placeholder for 1982-1988 is the standard 1978-revision record length per the user guides on disk; DO probe confirms. ✓
+
+**Table 4: VERSION_ROADMAP.md fix-on-contact (E.2 ancillary per L11 finding (iii))**
+
+| # | Line | Current text (verbatim) | Target text |
+|---|---|---|---|
+| 22 | 11 | `\| Fetal death \| **v2.1.0** (adds 2003 + 2004; H8 dtype reconciliation) \| v2.0.0 \| 1992–2022 \| 1,741,977 \| [10.5281/zenodo.20031571](https://doi.org/10.5281/zenodo.20031571) (v2.0.0) \|` | `\| Fetal death \| **v2.4.0** (V2.1 2003+2004 + V3a 1989-1991 + V3b 1982-1988 + latest-year refresh 2023+2024; H8 dtype reconciliation) \| v2.0.0 \| 1982–2024 \| 2,427,233 \| [10.5281/zenodo.20031571](https://doi.org/10.5281/zenodo.20031571) (v2.0.0) \|` |
+| 23 | 13 | `The natality v2.8.0 and fetal-death v2.1.0 in-repo states are pending Zenodo deposit.` | `The natality v2.8.0 and fetal-death v2.4.0 in-repo states are pending Zenodo deposit.` |
+
+**Table 5: Cross-link edits to existing READMEs (additive only)**
+
+| # | File | Line approx | Edit |
+|---|---|---|---|
+| 24 | `README.md` (monorepo) | line 22-49 Repository Layout block | append `migrations/`, `docs/COMPARABILITY.md`, `docs/NCHS_SOURCE_MANIFEST.md` entries to the tree diagram + 1-line description rows |
+
+(Per-product README cross-link edits at `fetal_death/README.md` near line 156 + `natality/README.md` near line 28 are similarly single-line additive cross-link insertions; not separately enumerated.)
+
+**Plan assumptions amended at PRE-FLIGHT (per Convention 3 second bullet + AskUserQuestion 17:25Z user authorization):**
+
+1. **(i) Migration guide filename — RESOLVED in-place per user authorization 17:25Z option "Proceed in-place per precedent."** §15 named `v2.0.0-to-v2.3.0-fetal-death.md`; PRE-FLIGHT re-targets to `v2.0.0-to-v2.4.0-fetal-death.md` since fetal-death actual current version is v2.4.0 per fetal_death/README.md line 156 + DECISION_LOG 2026-05-13T01:30Z. Routine L11 PRE-FLIGHT-input re-interpretation per the C8.9/C8.10a/b/c precedent.
+2. **(ii) E.8 SHA manifest scope — RESOLVED in-place per same user authorization.** §15 VERIFY says "SHA manifest checksums match each subproject's file_inventory.csv"; PRE-FLIGHT verified neither file_inventory.csv contains a sha256 column. Resolution: SHA manifest is NEW data (raw-zip SHAs keyed by year × raw_filename), NOT a re-export of file_inventory.csv. The "match each subproject's file_inventory.csv" criterion means the manifest's row keys (year + raw_filename) align 1:1 with each inventory's rows. Manifest target path: `docs/NCHS_SOURCE_MANIFEST.md` (following the monorepo-docs `docs/JOINT_USE_GUIDE.md` + `docs/PRIOR_ART.md` precedent).
+3. **(iii) VERSION_ROADMAP.md fetal-death version line — RESOLVED in-place per same user authorization.** Lines 11 + 13 carry stale v2.1.0 + 1992-2022 + 1,741,977 record-count claims; the actual current state is v2.4.0 + 1982-2024 + 2,427,233 records. Fix-on-contact at C8.11 DO; bundled into the E.2 fetal-death migration guide cross-link since the migration guide will reference VERSION_ROADMAP.md as the version-table source-of-truth.
+4. **(A) Inventory extension — RESOLVED via AskUserQuestion 17:25Z Option A.** `fetal_death/file_inventory.csv` will be extended from 34 → 43 rows in C8.11 DO. The 9 NEW rows cover 7 V3b years (1982-1988) + 2 latest-year (2023-2024). Row metadata derived from DECISION_LOG entries (Table 1 above) + per-zip probes at DO. ~30-60 min addition; brings C8.11 estimated effort to ~3.5-4 sessions (within §15 "3-4 sessions" envelope at the upper bound). C8.11 SHA manifest then covers the full 43-year fetal-death envelope cleanly.
+
+**Soft-flags surfaced at PRE-FLIGHT (NOT in-scope for C8.11; carried forward to Phase D pre-Zenodo):**
+
+- (a) **fetal_death/PROVENANCE.md** (4830 bytes) + **fetal_death/PROVENANCE.sha256** (33-line file) are STALE relative to v2.4.0 — last updated 2026-05-05 covering only the v2.0.0 release artifacts (file SHAs reflect pre-V2.1 + pre-V3a + pre-V3b + pre-latest-year-refresh state). The current `fetal_death_harmonized.parquet` sha=`38e2cecb…` and `fetal_death_derived.parquet` sha=`185c071e…` do NOT match the PROVENANCE.md-listed `f09beb4a…` + `90af89b9…`. The PROVENANCE.sha256 self-coverage promise ("verify everything else") fails on the current v2.4.0 build. **OUT-OF-SCOPE for C8.11** (which focuses on RAW NCHS source data, not output artifact PROVENANCE per §15 "NCHS-source-data SHA manifest" phrasing); soft-flag for Phase D step 2 (Zenodo deposit refresh) where the natural fix is re-running `shasum -a 256` on the v2.4.0 deposit-bound files and rebuilding both PROVENANCE.md + PROVENANCE.sha256 to match. Filed as Phase D pre-Zenodo deliverable.
+- (b) **Natality has NO PROVENANCE.md** (verified: `ls natality/PROVENANCE.md natality/docs/PROVENANCE.md` both "No such file or directory"). The Zenodo v2.7.0 deposit ships a PROVENANCE.md, but it's NOT in the monorepo natality/ directory (lives only in the Zenodo archive). The current monorepo state has no natality output-artifact SHA manifest at all — making cross-product output-SHA verification asymmetric. Same OUT-OF-SCOPE classification as (a); same Phase D step 2 resolution (author natality/PROVENANCE.md as part of unified Zenodo deposit).
+- (c) **VERSION_ROADMAP.md "Planned" section (lines 15-22)** still lists "Fetal death V2.1 — add 2003 and 2004 transition years" as a PLANNED item. This is more than the line-11+13 fix-on-contact authorized; the whole "Planned" section needs review since multiple items have shipped (V2.1 done; V3a done; V3b done). **OUT-OF-SCOPE for C8.11 per Anti-Pattern #8** (compressed-task avoidance); soft-flag for a future small VERSION_ROADMAP refresh task. Authorized fix-on-contact at C8.11 DO covers ONLY lines 11 + 13.
+- (d) **C8.7a documented finding** `fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 stale relative to v2.4.0's 43-year envelope; deferred to C8.7b orchestrator authoring. Soft-flag: the C8.11 fetal-death migration guide can NAME the v2.4.0 envelope explicitly to help users with legacy v2.0.0 code understand the year extension (~1 paragraph). Not a separate deliverable; integrated narrative.
+- (e) **Monorepo `raw_data/` symlink** only links `raw_data/fetal_death -> /Users/yoelplutchok/Desktop/fetal-death-harmonization-build/raw_data/fetal_death`; no natality + linked symlink (C8.7a finding). The C8.11 E.8 manifest's SHA computation will need to read 87 zips from 3 absolute paths (43 from fetal-death build dir; 35 from natality build dir; 19 from natality build dir's linked/ subdir). Not a halt — DO-step responsibility to enumerate; documented for the DO author.
+- (f) **Plurality footgun for natality**: the natality + linked file's plurality-coding anomaly (C.6.e candidate notebook from C8.15) is in scope for E.4 cross-product COMPARABILITY synthesis — fd COMPARABILITY §7 names it as fetal-death-specific, but the same NCHS sentinel pattern likely applies to natality 2005-2013. Soft-flag for E.4 author to investigate during DO; not pre-resolved.
+- (g) **Carry-forward soft-flags from C8.10c** (C8.2 NCHS 2025PE2024CO release; C8.3 manuscript line 99; C8.4 linked-vs-natality drift bound; C8.5a-a/b/c; C8.6-a/b; C8.7a-a/b/c; C8.8-a/b/c/d; C8.9-a/b/c/d/e; C8.10a-a/b/c/d/e; C8.10b-a/b/c/d; C8.10c-a/b/c/d/e). All preserved; none promoted to halt status by this PRE-FLIGHT.
+
+### Halt conditions tripped
+
+One §7.13-shape scope-affecting L11 surfaced (Option A inventory extension) + three additional routine L11 PRE-FLIGHT-input re-interpretations ((i) + (ii) + (iii)) — all four user-resolved via AskUserQuestion 2026-05-13T17:25:00Z. User selected:
+- Question 1: **(A) Extend inventory to 43 rows in C8.11 DO (Recommended)** — resolves L11 finding #4 (file_inventory.csv stale)
+- Question 2: **Proceed in-place per precedent (Recommended)** — resolves L11 findings (i)/(ii)/(iii)
+
+No unresolved §7 condition. Convention 3 Field-value snapshot above documents all 24 mutation targets + their current vs. assumed-state verification. Convention 4 carry-over verification of all 12 C8.10c Forward-looking HALTs returned byte-exact.
+
+### Result
+
+**PROCEED.** All inputs verified; environment clean; 12 C8.10c forward-looking HALTs all pass byte-exact; Convention 3 Field-value snapshot computed 24 rows across 5 tables (5 migration-content sources + 7 COMPARABILITY synthesis cells + 9 inventory-extension rows + 2 VERSION_ROADMAP fix-on-contact + 1 cross-link); one §7.13-shape condition + 3 routine L11s surfaced + user-resolved via AskUserQuestion 17:25Z (Option A inventory extension + in-place L11 resolutions per the C8.9/C8.10a/b/c precedent). Tag `C8.11-pre-do` placed on the PRE-FLIGHT commit; DO phase commences post-tag in subsequent session(s) per the §15 3-4 session estimate (with Option A +30-60 min). 7 soft-flags (a)-(g) surfaced and filed for Phase D / future-task resolution; none are PRE-FLIGHT halts.
+
+---
+
 ## PRE-FLIGHT for C8.10c — 2026-05-13T16:30:00Z — Worked-example notebook 3 of 3 (C.6.c `cross_race_fetal_mortality.ipynb`; V3a/V3b race-stratified FD demo with B3 1-digit-recode caveats + cross-era time series + 2022 single-race + Hispanic NVSR-cell cross-validation) — **RESULT: PROCEED** (one §7.13 condition surfaced + user-resolved via AskUserQuestion 2026-05-13T16:15:00Z Option A; in-PRE-FLIGHT re-interpretation per C8.9/C8.10a/b L11 discipline; no §11 plan-update commit needed; 7 NVSR-equivalent cells available via `joint_use_demo.ipynb` Section B precedent — exceeds §15 "≥3" minimum)
 
 ### Scope summary
