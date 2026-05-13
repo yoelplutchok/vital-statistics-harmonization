@@ -8,6 +8,132 @@
 
 ---
 
+## PRE-FLIGHT for C8.14 — 2026-05-13T23:30:00Z — Worked-example FAQ + PROJECT_STRUCTURE.md upgrade (E.3 + E.6) — **RESULT: PROCEED** (zero §7 halts; zero L11s; pure cross-product docs work; no parquet/test-surface mutation; clean PRE-FLIGHT)
+
+### Scope summary
+
+C8.14 §15.C entry (NEXT_STEPS.md lines 1228-1244) names 2 deliverables: **(E.3)** `docs/WORKED_EXAMPLE_FAQ.md` answering 3 named questions ("how do I compute the perinatal mortality rate?", "how do I get state-level data?", "what's the right canonical filter for my analysis?"); **(E.6)** Upgrade `PROJECT_STRUCTURE.md` with notebook-deps graph + build-order DAG + which-file-by-use-case matrix. KICKOFF.md Phase C Tier-2 line 195 + STATUS 2026-05-13T23:00:00Z line 39 name C8.14 as next §15 task post-C8.13. Estimated effort 1 session. §15 halt-condition flag: L11 (stale roadmap claims; fix-on-contact).
+
+**Session scope this PRE-FLIGHT (per "go ahead with C8.14" authorization 2026-05-13T23:30:00Z):** ship PRE-FLIGHT entry + tag `C8.14-pre-do` + DO (both docs authored) + VERIFY + RECEIPT in one session per §15 1-session estimate.
+
+### Inputs
+
+- [x] **All 16 C8.13 Forward-looking HALTs verified byte-exact** (spot-checked 9 high-signal HALTs):
+  - HALT 1: `C8.13-pre-do` + `C8.13-complete` tags present ✓
+  - HALT 2: 4 parquet SHAs byte-exact (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`) ✓
+  - HALT 3-5: `scripts/_time_pipeline.py` + 2 driver scripts present at fresh-recorded SHAs (sha=`c7809742…` / `7f48e971…` / `05fda4ae…`) ✓
+  - HALT 4: `docs/PIPELINE_TIMING_BENCHMARK.md` present at sha=`7792cb34…` ✓
+  - HALT 5: 2 per-stage CSVs present (45+6 rows) ✓
+  - HALT 9: `tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…` unchanged ✓
+  - HALT 14: `/tmp/c8_13_baseline/` removed (no stale state) ✓
+- [x] **C8.14 substrate enumerated**:
+  - 2 per-subproject FAQs present: `fetal_death/FAQ.md` (16 Q&A) + `~/Desktop/natality-harmonization/docs/FAQ.md` (24 Q&A) — the WORKED_EXAMPLE_FAQ is **cross-product complement, not duplication**
+  - `docs/JOINT_USE_GUIDE.md` present with canonical analytic filters §43-55 + perinatal mortality worked example §128-172 + R/DuckDB §174-227 — primary cross-link target
+  - 4 notebooks present: `joint_use_demo.ipynb` (32 cells; perinatal demo Section C) + `maternal_age_stratified_imr.ipynb` (23 cells; C8.10a) + `preterm_outcomes_time_series.ipynb` (24 cells; C8.10b) + `cross_race_fetal_mortality.ipynb` (26 cells; C8.10c)
+  - `PROJECT_STRUCTURE.md` current at sha=`32688930…`, 134 lines (top-level layout + per-subdir maps)
+- [x] **`docs/` directory** has 7 existing files (COMPARABILITY.md, JOINT_USE_GUIDE.md, NCHS_SOURCE_MANIFEST.md, PIPELINE_TIMING_BENCHMARK.md + 2 CSVs, PRIOR_ART.md); WORKED_EXAMPLE_FAQ.md will be the 8th. ✓
+- [x] **No stale checkpoints**: `git status --short` empty on `main` at `0155a6f`; `C8.14-pre-do` tag does NOT yet exist. ✓
+
+### Environment
+
+- [x] Python 3.13.9; pandas 2.3.2; pyarrow 18.1.0; uv 0.11.10; .venv matches uv.lock (all unchanged from C8.13 close).
+- [x] Working directory clean; on `main`; active tag on HEAD = `C8.13-complete`. ✓
+
+### Source documentation
+
+C8.14 is pure docs work; no external NVSR PDFs or NCHS user guides consumed. The cross-link surface is internal: `docs/JOINT_USE_GUIDE.md`, `docs/COMPARABILITY.md`, 2 per-subproject FAQs, 4 notebooks, `VERSION_ROADMAP.md`, `PRIOR_ART.md`. All L8/L9 cheap-checks satisfied at PRE-FLIGHT inputs probe (no PMID resolutions needed; no external-page WebFetches needed).
+
+### Outputs
+
+- [x] **NEW files (must not exist before DO):**
+  - `docs/WORKED_EXAMPLE_FAQ.md`: does NOT exist ✓
+  - `RECEIPTS/C8.14_<UTC>.md`: will be written at C8.14 RECEIPT phase
+- [x] **MAY BE MODIFIED:**
+  - `PROJECT_STRUCTURE.md` — §15-mandated upgrade (notebook-deps graph + build-order DAG + which-file-by-use-case matrix appended as new sections); current sha=`32688930…`
+- [x] **APPEND-ONLY state files:**
+  - `PRE_FLIGHT_LOG.md`: this entry (written before DO begins)
+  - `STATUS.md`: new dated section at top at RECEIPT close
+  - `DECISION_LOG.md`: NEW entry only if a non-trivial choice surfaces during DO (not anticipated; the WORKED_EXAMPLE_FAQ scope is well-defined; PROJECT_STRUCTURE upgrade is additive)
+  - `FIX_LOG.md`: no FIX entry anticipated (any L11 surfaces are fix-on-contact and bundled into the FAQ/structure edits)
+  - `LESSONS.md`: NO new entry anticipated
+- [x] **NOT mutated** (forward-looking HALT for VERIFY):
+  - 4 parquets unchanged (no compute) ✓
+  - All C8.9-C8.13 file SHAs preserved ✓
+  - test suite baseline 74 PASS + 1 SKIP + 1 XFAIL preserved ✓
+  - existing per-subproject FAQs unchanged ✓
+  - `docs/JOINT_USE_GUIDE.md` unchanged (WORKED_EXAMPLE_FAQ cross-links to it; no need to duplicate) ✓
+  - `paper/draft_v2_hmd_styled.md` unchanged (Phase D step 4 scope) ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.14 is docs-only work; no canonical-state cells mutated. The Convention 3 substrate is the **existing-content boundary check**: verify the WORKED_EXAMPLE_FAQ scope does NOT duplicate existing per-subproject FAQ content or JOINT_USE_GUIDE content.
+
+**Table 1: Cross-product FAQ scope vs existing canonical-content surfaces**
+
+| FAQ question (§15-mandated) | Existing canonical source | WORKED_EXAMPLE_FAQ role |
+|---|---|---|
+| How do I compute the perinatal mortality rate? | `docs/JOINT_USE_GUIDE.md` §128-172 "Worked example: perinatal mortality rate, 2022 (three-product joint)" + `notebooks/joint_use_demo.ipynb` Section C (6 cells) | One-paragraph distilled answer + numeric formula + cross-link to both canonical sources + caveat re NVSR 73-09 proportional-redistribution |
+| How do I get state-level data? | C8.9 PRE-FLIGHT C.1 drop + DECISION_LOG 2026-05-13T10:00:00Z + `natality/docs/FAQ.md` "Is geography included?" (4 lines) | Cross-product synthesis: NCHS state suppression in all 3 products; alternatives (RDC; Census region/division derivation; alternate data sources); explicit "not in pre-submission scope" framing |
+| What's the right canonical filter for my analysis? | `docs/JOINT_USE_GUIDE.md` §43-55 "Canonical analytic filters" + per-subproject FAQs ("How should I filter" / "What is the recommended analysis universe?") | Cross-product decision-matrix table: given (product × use-case × question type), which filter; plus the within-era vs cross-era flag |
+
+**Table 2: Additional cross-product FAQ candidates (judgement at DO)**
+
+Beyond the §15-mandated 3 questions, the FAQ should cover the most-common other cross-product friction points surfaced through C8.1-C8.13 work:
+
+- "Which product should I use for [maternal age × LBW / preterm / IMR / fetal mortality / cesarean]?" → use-case-to-product lookup
+- "How do I handle the V3a/V3b race-coding caveat (code 7 + code 9 → null)?" → cross-link to `notebooks/cross_race_fetal_mortality.ipynb` markdown caveats
+- "What's the bridged-race era and when does it end?" → cross-link to `docs/COMPARABILITY.md` bilateral race-coding methodology
+- "Which column do I use for analysis: harmonized or harmonized_derived?" → use-case → which-parquet
+- "How do I compute infant mortality rate (IMR) using the linked file?" → cross-link to `notebooks/maternal_age_stratified_imr.ipynb`
+- "How do I handle the 2003 certificate revision break?" → cross-link to `docs/COMPARABILITY.md` + `natality/docs/FAQ.md` "Which variables have known breaks?"
+- "How do I cite this resource?" → cross-link to existing CITATION.cff + per-product Zenodo DOIs
+
+Cardinality estimate: 8-12 Q&A pairs in WORKED_EXAMPLE_FAQ; bounded scope; doesn't drift toward "everything in one FAQ."
+
+**Table 3: PROJECT_STRUCTURE.md upgrade scope**
+
+§15 mandates 3 NEW sections appended to current 134-line file:
+
+| New section | Content sketch |
+|---|---|
+| Build-order DAG | Stage diagram showing parse → harmonize → derive → validate per product; cross-product flow joining all 3 products at notebooks/ + shared/helpers/; serial dependencies vs parallel branches; clean reproduce path via C8.13 F.5 drivers |
+| Notebook-deps graph | Per-notebook input parquets + helper modules + cross-product joins; mapped to the 4 notebooks present + the 2 stubs that remain (paper_companion.ipynb is now substantive post-Task 4; joint_use_demo.ipynb is post-C8.3 substantive) |
+| Which-file-by-use-case matrix | Decision table: given (analytic question type), which subproject + which parquet + which notebook + which scripts |
+
+Existing 134-line structure preserved; new sections appended at end. No top-level reorganization (avoid Anti-Pattern: re-shaping a doc when only adding).
+
+**Plan assumptions verified at PRE-FLIGHT (per Convention 3 second bullet; zero amendments):**
+
+1. The WORKED_EXAMPLE_FAQ is **NEW** (not modification of an existing FAQ); per-subproject FAQs preserved unchanged.
+2. The PROJECT_STRUCTURE upgrade is **additive** (3 new sections appended); existing 134-line structure preserved.
+3. The 3 §15-mandated FAQ questions have **clear canonical-source cross-link targets**; the FAQ is a CROSS-PRODUCT INDEX layer, not duplication.
+4. **C8.10 dependency satisfied**: 3 worked-example notebooks + `joint_use_demo.ipynb` all present at canonical paths; FAQ cross-links resolve.
+5. **No parquet mutation**; H10 reproducibility gate unaffected.
+
+**Soft-flags surfaced at PRE-FLIGHT (NOT in-scope this session; carried forward):**
+
+Carried unchanged from C8.13 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun (C8.15) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped from pre-submission scope.
+
+**No NEW soft-flags from this PRE-FLIGHT.** Pure cross-product docs work; no expected residuals beyond the carry-forward set.
+
+### Halt conditions tripped
+
+**NONE.** Zero §7 halt conditions tripped at PRE-FLIGHT. The §15 spec is well-defined; all dependencies (C8.10 notebooks) shipped; substrate inputs all present; no L11 surfaces in the §15 plan-claims (the 3 named questions have real canonical cross-link targets). No §11 plan-update required.
+
+### Result
+
+**PROCEED to C8.14 DO** in this session. Tag `C8.14-pre-do` placed post-this-PRE-FLIGHT commit; DO authors `docs/WORKED_EXAMPLE_FAQ.md` + upgrades `PROJECT_STRUCTURE.md`; VERIFY runs cache-cleared pytest baseline; RECEIPT + `C8.14-complete` tag close the task.
+
+Recommended DO sequencing this session:
+- **Sub-step 1**: Author `docs/WORKED_EXAMPLE_FAQ.md` (8-12 Q&A; cross-product index over per-subproject FAQs + JOINT_USE_GUIDE + 4 notebooks).
+- **Sub-step 2**: Append 3 new sections to `PROJECT_STRUCTURE.md` (build-order DAG + notebook-deps graph + which-file-by-use-case matrix).
+- **Sub-step 3 (VERIFY)**: cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL preserved; spot-check cross-links resolve (file paths exist; line-number cites land on intended content).
+- **Sub-step 4 (RECEIPT)**: write `RECEIPTS/C8.14_<UTC>.md` + STATUS append; tag `C8.14-complete`.
+
+Effort: matches §15 1-session estimate; estimated ~30-45 min docs authoring + ~5 min VERIFY + ~10 min RECEIPT.
+
+---
+
 ## PRE-FLIGHT for C8.13 — 2026-05-13T22:30:00Z — Performance + GitHub Release artifacts + pipeline timing benchmark (F.1 + F.4 + F.5) — **RESULT: HALT (one §7.13-shape PRE-FLIGHT-time L11 surfaced) → resolved via AskUserQuestion 2026-05-13T22:30:00Z (F.1 dropped + F.4 deferred + F.5 ACTIVE; precedent: C8.5/C8.6/C8.7/C8.9 PRE-FLIGHT-time §11 plan-update); PROCEED to C8.13 DO with narrowed scope**
 
 ### Scope summary
