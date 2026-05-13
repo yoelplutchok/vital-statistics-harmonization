@@ -155,6 +155,8 @@ A regression-protection pytest suite (`tests/`) covers the schema, row-count, an
 | V3 | Full historical depth | 1982-2022 |
 | **v2.4.0 (current)** | Latest-year refresh: 2023+2024 fetal-death | 1982-2024 (43 years complete; 90/90 NVSR validation byte-exact) |
 
+**Migration guide (v2.0.0 → v2.4.0):** [`migrations/v2.0.0-to-v2.4.0-fetal-death.md`](../migrations/v2.0.0-to-v2.4.0-fetal-death.md) covers the V2.1 + V3a + V3b + latest-year extensions, H8 dtype reconciliation, and sample query updates for users upgrading from the v2.0.0 Zenodo deposit.
+
 **Joint-use convenience layer (shipped 2026-05-11):** `stratified_denominators.csv` and the cross-product helper at [`shared/helpers/canonical_join_keys.py`](../shared/helpers/canonical_join_keys.py) provide demographic-stratified live-birth denominators for joint fetal-mortality-rate computation; see the *Companion Project* section above. Replaces the prior roadmap "V4: Natality companion product" entry.
 
 ## Principles

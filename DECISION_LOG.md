@@ -23,6 +23,56 @@
 
 ---
 
+## 2026-05-13T17:25:00Z — C8.11 — AskUserQuestion Option A: extend `fetal_death/file_inventory.csv` 34 → 43 rows in C8.11 DO (scope expansion ~30-60 min); 3 routine L11 PRE-FLIGHT-input re-interpretations user-authorized in-place per C8.9/C8.10a/b/c precedent
+
+**Choice (user at AskUserQuestion 2026-05-13T17:25:00Z, Question 1 = Option A; Question 2 = "Proceed in-place per precedent"):** Apply the file_inventory.csv extension in the C8.11 DO + apply 3 routine L11 PRE-FLIGHT-input re-interpretations in-place without separate §11 plan-update commits:
+
+1. **Option A — file_inventory.csv 34 → 43 rows.** PRE-FLIGHT cheap-checks discovered `fetal_death/file_inventory.csv` was stale relative to the v2.4.0 envelope. (At PRE-FLIGHT-write time, I believed the missing 9 rows were 7 V3b 1982-1988 + 2 latest-year 2023+2024; at DO read-time the actual missing set was confirmed as 7 V3b 1982-1988 + 2 V2.1 2003-2004 — the 2023+2024 rows were already present from C8.2. The 9-row count is correct; year-set corrected at DO start. Filed as fix-on-contact L11 (h).) Brings SHA manifest to full v2.4.0 43-year envelope cleanly. Effort impact: +30-60 min addition to C8.11 DO; ~3.5-4 sessions total. Touches `fetal_death/file_inventory.csv` (canonical-state mutation) with L13 verification of each new row's column content against DECISION_LOG sources + per-zip probes.
+
+2. **(i) Re-target migration-guide filename** `migrations/v2.0.0-to-v2.3.0-fetal-death.md` → `migrations/v2.0.0-to-v2.4.0-fetal-death.md`. §15 named v2.3.0 but actual current is v2.4.0 per `fetal_death/README.md` line 156 + DECISION_LOG 2026-05-13T01:30Z (C8.2 latest-year refresh). Routine L11 PRE-FLIGHT-input re-interpretation.
+
+3. **(ii) E.8 SHA manifest scope clarification.** §15 VERIFY criterion said "SHA manifest checksums match each subproject's file_inventory.csv" but neither inventory has a sha256 column. Resolution: SHA manifest is NEW data (raw-zip SHA-256 values keyed by `year × raw_filename`), NOT a re-export of inventory contents. Manifest target path: `docs/NCHS_SOURCE_MANIFEST.md` (follows `docs/JOINT_USE_GUIDE.md` + `docs/PRIOR_ART.md` + (now) `docs/COMPARABILITY.md` precedent for monorepo cross-product docs at `docs/`).
+
+4. **(iii) Fix-on-contact VERSION_ROADMAP.md** lines 11 + 13: `**v2.1.0**` → `**v2.4.0**`; coverage 1992-2022 → 1982-2024; records 1,741,977 → 2,427,233. Single-line touches bundled into C8.11 DO since C8.11 IS the version-table consumer (the migration guide cross-references VERSION_ROADMAP.md). Not scope creep per Anti-Pattern #8 — fix-on-contact is the established L11 §8 matrix remedy. Authorized fix scope is ONLY lines 11 + 13; the broader "Planned" section staleness (lines 15-22+) deferred to a future small docs refresh task (PRE-FLIGHT soft-flag (c)).
+
+**Alternatives considered (per AskUserQuestion 17:25Z Question 1 — file_inventory.csv):**
+
+1. **(A) Extend inventory to 43 rows in C8.11 DO (chosen).** Pro: matches actual v2.4.0 envelope; SHA manifest covers all 43 fetal-death zips cleanly; bundles inventory + manifest authoring under one task. Con: +30-60 min addition above §15's 3-4 session estimate (lands at ~3.5-4 sessions).
+2. **(B) Ship SHA manifest at 34-row state + document the gap.** Pro: preserves §15 estimate exactly. Con: manifest is incomplete; creates fresh L13 doc-data drift case. Rejected — explicitly violates §8 matrix L13 + L11 spirit.
+3. **(C) Halt C8.11; ship inventory extension as a small standalone `[plan-update]` first.** Pro: clean task boundary; mirrors C8.5/C8.7 split precedent. Con: adds ~1 small session ahead of C8.11; same eventual destination as Option A but more bookkeeping. Rejected — Option A bundling is more efficient.
+
+**(For AskUserQuestion 17:25Z Question 2 — routine L11s (i)+(ii)+(iii):** user selected "Proceed in-place per precedent" matching the C8.9 / C8.10a / C8.10b / C8.10c established routine for PRE-FLIGHT-surfaced L11 PRE-FLIGHT-input re-interpretations resolved at the cheap-check moment.)
+
+**Reason:** Option A preserves the substantive value of E.8 (cross-product NCHS-source-data SHA manifest at the full v2.4.0 envelope) while folding the inventory-staleness fix into the natural consumer task. Three protocol justifications: (i) §2 principle 1 cheap-before-expensive — discovering inventory staleness at PRE-FLIGHT cheap-check saved having to ship a partial manifest then re-do work in a follow-up task; (ii) §8 L13 matrix's "fix-on-contact" principle applies (inventory CSV stale relative to actual on-disk state); (iii) §11 plan-update threshold is "scope changes >1 session"; Option A's +30-60 min is well below.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T17:30:00Z entry — Convention 3 Field-value snapshot Tables 1-5 documenting the 24-row mutation set + the 4 L11 findings.
+- AskUserQuestion 17:25Z — Question 1 = Option A (Recommended); Question 2 = "Proceed in-place per precedent (Recommended)."
+- `fetal_death/file_inventory.csv` pre-DO (34 rows; year range 1989-2024 with gap 2003-2004) verified at PRE-FLIGHT.
+- `fetal_death/README.md` line 156 + `DECISION_LOG.md` 2026-05-13T01:30Z (C8.2 latest-year refresh): documents current fetal-death version is v2.4.0.
+- Raw zip universe on disk: 43 fetal-death + 35 natality + 19 linked-cohort = 97 raw zips total (probe-verified).
+
+**Verifiable by:**
+
+- Post-DO `fetal_death/file_inventory.csv` has 43 rows; year sequence 1982-2024 contiguous; sha=`38dc035eeccb8b80…`.
+- `docs/NCHS_SOURCE_MANIFEST.md` ships with 97 SHA-256 entries cross-referencing both `file_inventory.csv` files.
+- `migrations/v2.0.0-to-v2.4.0-fetal-death.md` shipped at the re-targeted filename (no `v2.3.0` variant created or referenced).
+- `VERSION_ROADMAP.md` lines 11 + 13 reflect v2.4.0 + record count 2,427,233 + coverage 1982-2024.
+- Tag `C8.11-complete` on this commit.
+
+**Reversible:** yes — `git revert <this commit>` restores the pre-DO state. The Option A inventory extension is the most substantive piece; reverting drops 9 rows from `file_inventory.csv` + removes the 4 NEW documents + reverts 5 MODIFIED files. The deltas are well-bounded.
+
+**Residual risks:**
+
+- (a) **Per-year `record_length` values (200 / 1350 / 1500 bytes) were probed at DO time, not cross-verified against canonical NCHS user-guide PDFs.** The 1985 user guide is the only V3b PDF on-disk-probed (per LESSONS L12-extension 2026-05-12T15:00Z); other V3b years (1982-1984, 1986-1988) inferred to match per sibling-derivation. Mitigation: the inventory `record_length` field is documentation-only; the harmonization pipeline reads `record_layout_<era>.csv` directly. Per-year cross-check vs user-guide byte ranges deferred to C8.12 (L13 audit task).
+- (b) **PRE-FLIGHT typo "87 raw zips" (corrected to 97 at DO start)** left UNFIXED in `PRE_FLIGHT_LOG.md` per L10 no-back-fill discipline. Receipt + STATUS + this DECISION_LOG document the correction.
+- (c) **The 9-row inventory extension didn't re-run any validator post-DO** (test suite is 56 PASS + 1 XFAIL; no validator currently consumes file_inventory.csv at the structural level). Mitigation: C8.12 will add an L13-class invariant test ("every row of file_inventory.csv matches a year in harmonized_schema.csv years_available"); the new V3b + V2.1 rows are pre-PASS under that invariant.
+
+**Backport scope:** None. C8.1-C8.10c receipts unaffected. Future C8.12 PRE-FLIGHT consumes the new file_inventory.csv rows + the NCHS_SOURCE_MANIFEST.md as canonical inputs.
+
+---
+
 ## 2026-05-13T10:00:00Z — [plan-update] C8.9 — Drop C.1 (state-stratified denominators) from C8.9 scope (structurally unbuildable from public-use data per NCHS suppression policy); ship C.2 (R quickstart) + C.4 (DuckDB views) only; add `duckdb` to pyproject.toml + uv.lock as authorized C8.9 DO step; revise §15 C8.9 entry + KICKOFF.md Tier-2 line 190; effort revised 2.5-3 → 1-1.5 sessions
 
 **Choice (user-authorized at C8.9 PRE-FLIGHT halt-and-ask 2026-05-13T10:00:00Z, AskUserQuestion response "Drop C.1; ship C.2+C.4 only (Recommended)"):** Apply a single `[plan-update]` commit resolving two §7.13 (validity-domain ambiguity) HALTs surfaced at C8.9 PRE-FLIGHT:

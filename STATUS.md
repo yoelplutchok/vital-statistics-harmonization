@@ -1,6 +1,152 @@
-# STATUS — last updated 2026-05-13T17:30:00Z
+# STATUS — last updated 2026-05-13T18:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-13T18:00:00Z — C8.11 COMPLETE: Migration guides + cross-product COMPARABILITY.md + cross-product NCHS-source-data SHA manifest (E.2 + E.4 + E.8) shipped — `migrations/v2.7.0-to-v2.8.0-natality.md` (NEW, ~245 lines, sha=`96bb1c54a8e812d0…`) + `migrations/v2.0.0-to-v2.4.0-fetal-death.md` (NEW, ~245 lines, sha=`90e010a78e1078b2…`; re-targeted from §15 v2.3.0 per PRE-FLIGHT L11 (i)) + `docs/COMPARABILITY.md` (NEW, ~215 lines, sha=`10cead2b9da604e1…`) + `docs/NCHS_SOURCE_MANIFEST.md` (NEW, ~140 lines, sha=`ed2a44d3117336cc…`; 97 SHA-256 rows across 3 sections = 43 fetal-death + 35 natality + 19 linked-cohort) + `fetal_death/file_inventory.csv` (MODIFIED, 34 → 43 rows per Option A; sha=`38dc035eeccb8b80…`) + `VERSION_ROADMAP.md` (MODIFIED, line 11+13 fix-on-contact v2.1.0 → v2.4.0 + records 1,741,977 → 2,427,233 + coverage 1992-2022 → 1982-2024; sha=`15f903fd0f9d382c…`) + 3 cross-link READMEs (`README.md` `b3badf143929e433…` / `natality/README.md` `d1b08976e7b06414…` / `fetal_death/README.md` `9093d85e712b694e…`); reproduces 97 raw NCHS zip SHA-256 values (43 fetal-death 1982-2024 + 35 natality 1990-2024 + 19 linked-cohort 2005-2023 covering 6,208 hex characters of integrity); E.4 cross-product COMPARABILITY documents 5 cross-product era boundaries (2003 revision transition, 2014 OE-based gestational-age methodology shift, **2014 race-coding methodology boundary NEW from C8.10c**, bridged-race null timing asymmetry FD 2018+ vs NAT 2020+, V3a/V3b backward extension caveats) + 8-item joint-use checklist + bilateral race-coding methodology cross-product pattern; E.2a + E.2b migration guides cover 4 column renames (natality) + 4 data extensions (fetal-death V2.1 + V3a + V3b + latest-year) + H8 dtype reconciliation history + sample code in pandas/pyarrow/R/DuckDB/sed/awk; 5 PRE-FLIGHT L11s + 1 in-DO L11 (h) all resolved per user authorization at AskUserQuestion 2026-05-13T17:25:00Z Option A + Proceed-in-place; zero §7 halt-at-exit; cache-cleared pytest **56 PASS + 1 XFAIL** preserved (72.69s); 4 parquet SHAs + 13 C8.9 file SHAs + 6 C8.10a/b/c file SHAs unchanged byte-exact; **TIER 2 progress 3 of 7 §15-listed tasks** (C8.9 + parent C8.10 + C8.11); cumulative Phase C ~13 of 29-35 sessions (~38%); comfortably within +20% drift cap (42 sessions); full narrative in RECEIPTS/C8.11_2026-05-13T18-00-00Z.md + DECISION_LOG.md 2026-05-13T17:25:00Z
+
+### Current phase
+
+**Phase C — Tier 2 underway, C8.11 COMPLETE.** Third Tier-2 task closed across PRE-FLIGHT + DO + VERIFY + RECEIPT in a single session (~2 hours total wall time). Tag `C8.11-complete` lands on this commit alongside tag `C8.11-pre-do` already at `e1ea09f` (PRE-FLIGHT-only commit earlier this session). Tier 2 progress: **3 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10 + C8.11). Cumulative Phase C effort ~13 of 29-35 sessions (~38% through). Comfortably within +20% drift cap (42 sessions). Tier 2 remaining: C8.12 (mutation tests + L13/L14 audits + SHA-stability + snapshot regression) + C8.13 (performance + GitHub release artifacts) + C8.14 (worked-example FAQ + PROJECT_STRUCTURE upgrade) + C8.15 (worked-example notebooks 4-5).
+
+C8.11 surfaced **the densest single-task L11 surface this project has produced** — 4 PRE-FLIGHT-time L11s (Option A inventory + (i) migration filename + (ii) E.8 manifest scope + (iii) VERSION_ROADMAP fix-on-contact) + 1 in-DO L11 (h year-set correction). All user-authorized at AskUserQuestion 2026-05-13T17:25:00Z (Question 1 = Option A; Question 2 = Proceed-in-place per precedent). The §15 PRE-FLIGHT-input re-verification discipline (the C8.9-surfaced L11 routine) is in **5th consecutive application**; pattern is durable.
+
+**In-DO L11 (h) — year-set correction.** PRE-FLIGHT entry claimed the 9 missing inventory rows were "7 V3b 1982-1988 + 2 latest-year 2023+2024." On reading the actual `fetal_death/file_inventory.csv` at DO start, 2023+2024 rows were already present (added at C8.2 latest-year refresh; verified at file_inventory.csv lines 34-35). The actual missing 9 rows are 7 V3b (1982-1988) + 2 V2.1 (2003-2004). 9-row count is correct; year-set corrected. Per L10 (no back-fill of state files), the PRE-FLIGHT entry's typo remains in PRE_FLIGHT_LOG.md as a historical record; this STATUS section + the C8.11 receipt + DECISION_LOG entry document the correction. Filed as fix-on-contact pattern application (L11 §8 matrix L11 row covers this case).
+
+Five canonical-state changes this DO (zero parquet mutation):
+
+1. **`fetal_death/file_inventory.csv`** (MODIFIED): 34 → 43 rows; 9 NEW rows for V3b 1982-1988 (1978-revision uniform; 200-byte records; per-year counts 59,343-62,352; B3 code 7+9 → null caveats per DECISION_LOG 2026-05-12T18:30Z) + V2.1 2003-2004 (mixed 1989/2003-revision transition; 1350/1500-byte records; per-year counts 54,497 / 53,285; companion `fetaldeath0304problems.pdf` doc per DECISION_LOG 2026-05-12T01:35Z).
+2. **`migrations/v2.7.0-to-v2.8.0-natality.md`** (NEW): natality migration guide; 4 column renames (`year` → `data_year`; `restatus` → `residence_status`; `maternal_race_bridged4` → `maternal_race_bridged`; `maternal_hispanic_origin` → `hispanic_origin`); 5 migration paths (version-agnostic helper, pandas direct rename, pyarrow column projection, R/arrow, DuckDB views); sed/awk recipes + Python-script-based renamer with safety warnings on the `year` rename.
+3. **`migrations/v2.0.0-to-v2.4.0-fetal-death.md`** (NEW; re-targeted from §15's `v2.0.0-to-v2.3.0-fetal-death.md`): fetal-death migration guide; 4 data-extension deltas (V2.1 + V3a + V3b + latest-year); H8 dtype reconciliation history (5 columns in v2.1; ~50 columns remain xfail-marked at v2.4 per C8.1); 3 migration paths (drop-in replacement, year-window scoping, R/arrow); validation continuity table 90/90 NVSR cells byte-exact.
+4. **`docs/COMPARABILITY.md`** (NEW): cross-product COMPARABILITY synthesis; 5 cross-product era boundaries (2003 revision, 2014 OE GA shift, **2014 race-coding methodology boundary NEW from C8.10c**, bridged-race null asymmetry FD 2018+ vs NAT 2020+, V3a/V3b backward extension); bilateral race-coding methodology recommendation (pre-2014 bridged-on-both / 2014+ NH-only-on-both); per-product-only caveat pointers (5 natality + 3 linked + 5 fetal-death); 8-item joint-use checklist; worked-example notebook pointers.
+5. **`docs/NCHS_SOURCE_MANIFEST.md`** (NEW): 97 raw NCHS zip SHA-256 manifest; 3 sections (Section 1 = 43 fetal-death; Section 2 = 35 natality; Section 3 = 19 linked-cohort with naming convention change at cohort 2015 / publication 2016 documented); cross-product invariants section; update procedure for future latest-year refreshes.
+
+Plus 2 fix-on-contact mutations (`VERSION_ROADMAP.md` lines 11 + 13) + 3 cross-link insertions (`README.md` Repository Layout + `natality/README.md` near line 28 + `fetal_death/README.md` near line 157 Version Roadmap).
+
+### What was done this session (PRE-FLIGHT + DO + VERIFY + RECEIPT)
+
+1. **Kickoff (a)-(d) handshake** executed per KICKOFF.md mandate; user authorized "PROCEED" referencing the (c) plan (continue with C8.11 DO across 4 deliverables per the PRE-FLIGHT entry's Tables 1-5). Followed by a second "PROCEED" earlier in-session for the PRE-FLIGHT half.
+2. **C8.11 PRE-FLIGHT** (PRE_FLIGHT_LOG 2026-05-13T17:30:00Z; commit `e1ea09f`; tag `C8.11-pre-do`): verified all 12 C8.10c Forward-looking HALTs byte-exact; ran 5 cheap-check probes; surfaced 4 L11 findings; halt-and-asked via AskUserQuestion 17:25Z; user-authorized Option A + Proceed-in-place; built 24-row Convention 3 Field-value snapshot across 5 tables. Result PROCEED. STATUS append at commit `6545b6a` recorded the PRE-FLIGHT close.
+3. **DO step 1 (E.8a inventory extension)**: probed V3b + V2.1 zip record-lengths via PyMuPDF zipfile-first-record-byte-count (200 / 1350 / 1500 bytes); probed per-year record counts from the v2.4.0 parquet (1982: 62,352 ... 2004: 53,285); appended 9 rows to `fetal_death/file_inventory.csv` via 2 Edit calls (V3b before 1989 row; V2.1 between 2002 and 2005). Verified year sequence 1982-2024 contiguous + 43 data rows + sha=`38dc035eeccb8b80…`. **In-DO L11 (h) surfaced**: PRE-FLIGHT entry claimed missing rows were V3b + 2023+2024, but 2023+2024 were already present (added at C8.2). Corrected year-set to V3b + V2.1; row count unchanged.
+4. **DO step 2 (E.8b SHA manifest)**: computed SHA-256 on all 97 raw NCHS zips via `shasum -a 256` in 4 parallel batches (43 fetal-death + 33 natality capital-N + 2 natality lowercase + 19 linked-cohort 8-PE+11-LinkCO). Authored `docs/NCHS_SOURCE_MANIFEST.md` with 3 sections + cross-product invariants + update procedure + filename-casing note (Nat2021us.zip + nat2021us.zip resolve to same inode 84647301 on case-insensitive APFS).
+5. **DO step 3 (fix-on-contact VERSION_ROADMAP)**: applied 2 single-line edits to `VERSION_ROADMAP.md` lines 11 + 13 (fetal-death v2.1.0 → v2.4.0 + records + coverage; "pending Zenodo deposit" line 13 substring update). Authorized scope is ONLY these 2 lines; the broader "Planned" section staleness (lines 15-22+) preserved as soft-flag (c) for future docs refresh.
+6. **DO step 4 (E.2a natality migration)**: authored `migrations/v2.7.0-to-v2.8.0-natality.md`; ~245 lines; 5 migration paths + sed/awk recipes + Python-script renamer + R/arrow + DuckDB views + backward-compat preservation rationale; cross-references DECISION_LOG 2026-05-12T13:35:02Z + 03:25:00Z.
+7. **DO step 5 (E.2b fetal-death migration)**: authored `migrations/v2.0.0-to-v2.4.0-fetal-death.md`; ~245 lines; 4 data-extension deltas + H8 dtype reconciliation history + 3 migration paths + validation continuity 90/90 byte-exact + cross-references to 4 DECISION_LOG entries + 3 FIX_LOG entries + the new docs/NCHS_SOURCE_MANIFEST.md.
+8. **DO step 6 (E.4 cross-product COMPARABILITY synthesis)**: authored `docs/COMPARABILITY.md`; ~215 lines; era-boundary timeline (ASCII art) + 5 cross-product era boundaries + bilateral race-coding methodology recommendation + per-product-only caveat pointers + 8-item joint-use checklist + worked-example notebook references.
+9. **DO step 7 (cross-link edits)**: 3 single-line/short-block additive edits to `README.md` + `natality/README.md` + `fetal_death/README.md` (no removals; all additive cross-link insertions to the 4 NEW documents).
+10. **VERIFY** (8 criteria all PASS): (i) migration guides include working sample queries; (ii) cross-product COMPARABILITY covers every era boundary; (iii) SHA manifest cross-references both file_inventory.csv files 1:1 (97 rows); (iv) cache-cleared pytest 56 PASS + 1 XFAIL preserved in 72.69s; (v) 4 parquet SHAs unchanged; (vi) 13 C8.9 file SHAs unchanged; (vii) 6 C8.10a/b/c notebook + builder SHAs unchanged; (viii) `notebooks/README.md` sha unchanged at `6fc9b191…`.
+11. **DECISION_LOG entry** at 2026-05-13T17:25:00Z appended recording the AskUserQuestion Option A + 3 in-place L11 resolutions + 5 sources + 5 verifiable artifacts + 3 residual risks.
+12. **RECEIPT** at `RECEIPTS/C8.11_2026-05-13T18-00-00Z.md` with full §6 template + 7-item Self-check + 15-item Forward-looking HALTs.
+13. Updating this STATUS section + pending commit + tag `C8.11-complete`.
+
+### Last completed step
+
+Single commit ships: 4 NEW files (2 migrations + 1 docs/COMPARABILITY + 1 docs/NCHS_SOURCE_MANIFEST) + 5 MODIFIED files (`fetal_death/file_inventory.csv` extension + `VERSION_ROADMAP.md` fix-on-contact + 3 cross-link READMEs) + 1 new receipt + 1 DECISION_LOG entry + 1 STATUS append. Tag `C8.11-complete` follows.
+
+### In-progress
+
+(none — clean checkpoint at C8.11 close; Tier 2 progress **3 of 7 §15-listed tasks COMPLETE**)
+
+### Next planned task
+
+**C8.12 — Mutation tests + L13 audit + L14 audit + SHA-stability test + snapshot regression** per KICKOFF.md Phase C Tier-2 line 193 + NEXT_STEPS.md §15.C C8.12 entry. Five durable defenses against L3, L5, L11, L13, L14 in one task: (B.6) author mutation-test scaffolding for every validator (inject known violation; assert validator catches it); (B.7) audit every metadata CSV for L13 role-vs-column claims; (B.8) audit every validator's `main()` for L14 exit-code propagation (`sys.exit(1 if FAIL else 0)`); (B.11) author SHA-stability test (e.g., assert every `docs/NCHS_SOURCE_MANIFEST.md` row matches `shasum -a 256` on disk — the manifest just shipped is the immediate test target); (B.12) per-column snapshot regression test. Estimated 3-4 sessions.
+
+C8.11 surfaced multiple candidate inputs for C8.12:
+- (i) **New L13 invariant candidate**: "every row of `file_inventory.csv` has a year that appears in `harmonized_schema.csv` years_available" (defends against future stale-inventory regressions analogous to the 34-vs-43 row gap surfaced at C8.11 PRE-FLIGHT).
+- (ii) **New SHA-stability test target**: `docs/NCHS_SOURCE_MANIFEST.md` ships 97 SHA-256 rows; a test reading the manifest and re-running `shasum -a 256` on each row's raw zip gives a continuous integrity check.
+- (iii) **PRE-FLIGHT-arithmetic-mismatch defense**: the "87 → 97" typo class is L17-extension-adjacent; consider whether to add a mutation-test scaffold that asserts PRE-FLIGHT entry numeric claims match DO-time probes (likely defer; cost > benefit at single-occurrence frequency).
+- (iv) **`fetal_death/COMPARABILITY.md` title staleness** ("V2.0, 1992-2022" despite v2.4.0; soft-flag (i) below): could be a small fix-on-contact at C8.12 OR Phase D pre-Zenodo.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.** Recommended: revisit at Phase D step 3 or post-Tier-2.
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.** AND-coupled: C8.7a-complete (SATISFIED) + user-authorized multi-session compute window (PENDING). 6-12+ hours of compute estimated.
+
+### Open questions for human
+
+None for C8.12 scope.
+
+**Open soft-flags (8 carried from C8.11 PRE-FLIGHT + 1 in-DO + carry-forward from prior C8.X):**
+
+Carried forward from C8.10c (preserved): C8.2 / C8.3 / C8.4 / C8.5a-a/b/c / C8.6-a/b / C8.7a-a/b/c / C8.8-a/b/c/d / C8.9-a/b/c/d/e / C8.10a-a/b/c/d/e / C8.10b-a/b/c/d / C8.10c-a/b/c/d/e — all preserved.
+
+**Open soft-flags from C8.11 PRE-FLIGHT (preserved):**
+
+- (a) Stale `fetal_death/PROVENANCE.md` + `fetal_death/PROVENANCE.sha256` pre-V2.1 — Phase D step 2 candidate.
+- (b) Natality has NO PROVENANCE.md — Phase D step 2 candidate.
+- (c) VERSION_ROADMAP.md "Planned" section (lines 15-22+) still lists shipped items — future small docs refresh task.
+- (d) `fetal_death/scripts/run_pipeline.py` ALL_YEARS=29 stale — C8.7b orchestrator scope.
+- (e) Monorepo `raw_data/` symlink only links fetal-death — C8.7b orchestrator scope.
+- (f) Plurality footgun for natality — C8.15 worked-example notebook candidate.
+- (g) PRE-FLIGHT entry "87 raw zips" typo — corrected to "97" in receipt + this STATUS; PRE_FLIGHT_LOG entry preserved unchanged per L10.
+
+**New open soft-flags (C8.11 DO + receipt self-check):**
+
+- (h) **In-DO L11 year-set correction** (V3b + V2.1, NOT V3b + 2023+2024): PRE-FLIGHT entry was wrong about which 9 inventory rows were missing; DO start verified actual gaps. Resolved in-place. No follow-up needed; documented in receipt + this STATUS + DECISION_LOG.
+- (i) **`fetal_death/COMPARABILITY.md` title staleness**: still says "(V2.0, 1992-2022)" despite v2.4.0 envelope. The new `docs/COMPARABILITY.md` cross-product synthesis references the per-product COMPARABILITY for product-specific details; the per-product title is outdated. Single-line fix-on-contact candidate at C8.12 OR Phase D.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Per `RECEIPTS/C8.11_2026-05-13T18-00-00Z.md` (15 items full list); restated here at session level for cheap-check access at next session start.
+
+1. **`C8.11-complete` tag on this commit + `C8.11-pre-do` on `e1ea09f`** both present. Verify: `git tag --list 'C8.11*'` shows both.
+2. **`fetal_death/file_inventory.csv` sha=`38dc035eeccb8b803451239616e5d6e489916f3339218ef45e768f8be3fe49ad`** (43 data rows; year sequence 1982-2024 contiguous).
+3. **`docs/NCHS_SOURCE_MANIFEST.md` sha=`ed2a44d3117336cccdcd372a147408455e46c77530ae52c826eefefa6fd75d68`** (97 SHA-256 rows across 3 sections).
+4. **`docs/COMPARABILITY.md` sha=`10cead2b9da604e1b97d6052080e1281a3f20e710405bbc7c7208e7dcc383af3`** (cross-product synthesis; 5 era boundaries; bilateral race-coding methodology pattern).
+5. **`migrations/v2.7.0-to-v2.8.0-natality.md` sha=`96bb1c54a8e812d03fc4152c9c35fbb0e120354a1c31f572bd4a7e1549707648`**.
+6. **`migrations/v2.0.0-to-v2.4.0-fetal-death.md` sha=`90e010a78e1078b26f2f92d1cc24df77be9f63fc27ca9161ef2963a3dfe7fd65`** (re-targeted from §15 v2.3.0 per PRE-FLIGHT L11 (i)).
+7. **`VERSION_ROADMAP.md` sha=`15f903fd0f9d382c97cd45682cdc387fa1cd1c722fb4ed76df481772aee69e37`**.
+8. **3 cross-link READMEs at post-DO SHAs**: `README.md` `b3badf143929e43358d1ae8ade4c95d658d30ecf5de33b5c706bf7df2b9f53f2` / `natality/README.md` `d1b08976e7b0641b4de57124133e9f1fd6712a41e29b07b3cab996f8ff1fb0f9` / `fetal_death/README.md` `9093d85e712b694e0fe08d3138899f8b9e7372ae517a319d876fa905a27e9050`.
+9. **All 4 parquet SHAs unchanged byte-exact**: fd_harm=`38e2cecb…` / fd_der=`185c071e…` / nat_der=`e16ad53…` / linked_der=`9b828a4d…`.
+10. **6 C8.10a/b/c notebook + builder SHAs unchanged byte-exact**.
+11. **13 C8.9 file SHAs unchanged byte-exact** (14th — `README.md` — INTENTIONALLY DRIFTED this DO for cross-link).
+12. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL** in 72.69s.
+13. **8 open soft-flags (a)-(i) preserved** for Phase D / C8.12 / future-task resolution.
+14. **Next task = C8.12** (mutation tests + L13/L14 audits + SHA-stability + snapshot regression) per KICKOFF.md Phase C Tier-2 line 193. Estimated 3-4 sessions.
+15. **All 5 PRE-FLIGHT-time L11 resolutions** ((A) inventory + (i) migration filename + (ii) E.8 manifest scope + (iii) VERSION_ROADMAP fix-on-contact + (h) in-DO year-set correction) APPLIED at this DO. No further user authorization needed.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged from C8.10c).
+- V3b/V3a/V1 baseline parquets preserved as sidecars (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad53…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.10c outputs unchanged (4 parquets + 13 C8.9 files + 6 C8.10a/b/c files + `notebooks/README.md` at C8.10c-baseline `6fc9b191…`).
+
+NEW this session:
+- `migrations/v2.7.0-to-v2.8.0-natality.md` (sha=`96bb1c54a8e812d0…`)
+- `migrations/v2.0.0-to-v2.4.0-fetal-death.md` (sha=`90e010a78e1078b2…`)
+- `docs/COMPARABILITY.md` (sha=`10cead2b9da604e1…`)
+- `docs/NCHS_SOURCE_MANIFEST.md` (sha=`ed2a44d3117336cc…`)
+- `RECEIPTS/C8.11_2026-05-13T18-00-00Z.md`
+- New DECISION_LOG entry 2026-05-13T17:25:00Z
+- New PRE_FLIGHT_LOG entry 2026-05-13T17:30:00Z (committed earlier this session at `e1ea09f`)
+- This STATUS section (append)
+
+MODIFIED this session:
+- `fetal_death/file_inventory.csv` (sha=`38dc035eeccb8b80…`; 34 → 43 rows)
+- `VERSION_ROADMAP.md` (sha=`15f903fd0f9d382c…`; line 11+13 fix-on-contact)
+- `README.md` (sha=`b3badf143929e433…`; cross-link to 4 NEW docs)
+- `natality/README.md` (sha=`d1b08976e7b06414…`; cross-link to natality migration guide)
+- `fetal_death/README.md` (sha=`9093d85e712b694e…`; cross-link to fetal-death migration guide)
+
+### Notes for next session
+
+- **C8.12 — Mutation tests + L13/L14 audits + SHA-stability + snapshot regression** is the next §15 task. PRE-FLIGHT should probe: (i) inventory the validators across both subprojects + identify per-validator mutation-test opportunities; (ii) audit `harmonized_schema.csv` `years_available` against actual parquet `data_year` distribution (L13 + L17 combo); (iii) audit each validator's `main()` for `sys.exit(1 if FAIL else 0)` per L14 row of §8 matrix; (iv) author SHA-stability test consuming `docs/NCHS_SOURCE_MANIFEST.md` shipped this session; (v) per-column snapshot regression test (B.12); (vi) consider adding L13 invariant "file_inventory.csv rows match harmonized_schema.csv years_available" as an inventory-staleness defense (motivated by C8.11's discovery of 9-row gap).
+- **The bilateral race-coding methodology** + **2014 race-coding methodology boundary** documented here in two places (this session's `docs/COMPARABILITY.md` + the C8.10c notebook). Future C8.15 worked-example notebooks (4-5) authoring should reference `docs/COMPARABILITY.md` as canonical narrative; the C8.10c notebook is the empirical demonstration.
+- **No new mistake class** surfaced from this DO. The 4 PRE-FLIGHT L11s + 1 in-DO L11 (h) are all existing L11 class members.
+- **Tier 2 progress on schedule**: 3 of 7 §15-listed tasks COMPLETE in 5 sessions of Tier-2 work (C8.9 + parent C8.10 in 3 sub-sessions + C8.11 in 1 session). Cumulative Phase C ~13 of 29-35 sessions (~38%); on track for Phase D start at ~25-30 sessions cumulative.
+- **Per-product PROVENANCE refresh (soft-flags (a) + (b) + (i))** is the next natural docs-debt cleanup, deferred to Phase D step 2 (Zenodo deposit refresh). The `docs/NCHS_SOURCE_MANIFEST.md` just shipped is the upstream-input-side complement; missing piece is per-product output-artifact SHA refresh for v2.4.0 / v2.8.0 in-repo states.
+
+### Session summary
+
+C8.11 closed in ~2 hours total wall time (PRE-FLIGHT + DO + VERIFY + RECEIPT). One §7.13-shape scope-affecting L11 + 3 routine L11 PRE-FLIGHT-input re-interpretations user-resolved at AskUserQuestion 2026-05-13T17:25:00Z (Option A inventory extension + Proceed-in-place per precedent). One in-DO L11 (h) fix-on-contact (year-set correction V3b + V2.1 instead of V3b + 2023+2024). Five canonical-state changes (4 NEW documents + 9-row inventory extension + 2-line VERSION_ROADMAP fix + 3 cross-link READMEs); zero parquet mutation; 4 parquet SHAs + 13 C8.9 + 6 C8.10a/b/c file SHAs preserved byte-exact (the 14th C8.9 file `README.md` intentionally drifted for cross-link). Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **56 passed + 1 xfailed in 72.69s** (faster than C8.10c 77.72s baseline; within run-to-run variance).
+
+The 97-zip SHA manifest (`docs/NCHS_SOURCE_MANIFEST.md`) is the **densest single-artifact integrity record this project has produced**: 6,208 hex characters covering raw NCHS source data spanning fetal-death 1982-2024 (43 zips) + natality 1990-2024 (35 zips) + linked-cohort 2005-2023 (19 zips). A downstream user replicating from scratch can verify byte-exact reproduction at the source-input boundary; the C8.10c-shipped output-side reproduction-from-validation chain is now complete from raw bytes to NVSR-published cell.
+
+**TIER 2 PROGRESS: 3 of 7 §15-listed tasks COMPLETE** (C8.9 + parent C8.10 + C8.11). Next session = **C8.12** (mutation tests + L13/L14 audits + SHA-stability + snapshot regression; estimated 3-4 sessions) per KICKOFF.md Phase C Tier-2 line 193. Tier 1 = 8 of 8 non-deferred COMPLETE; cumulative Phase C effort ~13 of 29-35 sessions (~38% through; +20% drift cap = 42 sessions, comfortably within).
 
 ---
 

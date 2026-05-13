@@ -30,7 +30,12 @@ vital-statistics-harmonization/
 ├── LICENSE                       ← CC BY 4.0 (data) / MIT (code)
 ├── docs/                         ← cross-product documentation
 │   ├── JOINT_USE_GUIDE.md        ← computing rates that need both numerator and denominator
+│   ├── COMPARABILITY.md          ← cross-product era boundaries + bilateral race-coding methodology
+│   ├── NCHS_SOURCE_MANIFEST.md   ← SHA-256 for 97 raw NCHS zips (43 fetal-death + 35 natality + 19 linked)
 │   └── PRIOR_ART.md              ← literature gap that motivates the harmonization
+├── migrations/                   ← per-subproject version-to-version migration guides
+│   ├── v2.7.0-to-v2.8.0-natality.md
+│   └── v2.0.0-to-v2.4.0-fetal-death.md
 ├── natality/                     ← natality + linked birth–infant death
 │   ├── README.md                 ← product-specific docs
 │   ├── scripts/                  ← parsing, harmonizing, validating
