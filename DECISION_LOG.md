@@ -23,6 +23,86 @@
 
 ---
 
+## 2026-05-13T10:00:00Z — [plan-update] C8.9 — Drop C.1 (state-stratified denominators) from C8.9 scope (structurally unbuildable from public-use data per NCHS suppression policy); ship C.2 (R quickstart) + C.4 (DuckDB views) only; add `duckdb` to pyproject.toml + uv.lock as authorized C8.9 DO step; revise §15 C8.9 entry + KICKOFF.md Tier-2 line 190; effort revised 2.5-3 → 1-1.5 sessions
+
+**Choice (user-authorized at C8.9 PRE-FLIGHT halt-and-ask 2026-05-13T10:00:00Z, AskUserQuestion response "Drop C.1; ship C.2+C.4 only (Recommended)"):** Apply a single `[plan-update]` commit resolving two §7.13 (validity-domain ambiguity) HALTs surfaced at C8.9 PRE-FLIGHT:
+
+1. **HALT #1 resolution — C.1 (state-stratified denominators) is structurally unbuildable.** The §15 C8.9 entry's PRE-FLIGHT-input claim "Natality derived parquet (state available 1990-2024; suppressed in fetal-death V1 era 2005+)" is factually wrong. Four cheap-check probes at PRE-FLIGHT (natality harmonized schema column inventory; natality yearly_clean per-year parquet column inventory across 11 years 1990-2024; natality FAQ + ABOUT_THIS_RELEASE explicit suppression statements; fetal-death harmonized_schema state-column check) all confirm: NCHS suppresses state-level geography in public-use files across all three products (natality + linked + fetal-death). The closest available column (`MBSTATE_REC`, 2015+) is mother's birthplace recode (3-level US/foreign/unknown), NOT state of residence. C.1's "state × race × age × Hispanic × year" deliverable cannot be built from public-use data; the upstream fix (NCHS RDC + restricted-use workflow) is well out of HVS pre-submission scope. **C.1 is dropped from C8.9 — documented as permanently-out-of-scope** in §15. Any future re-attempt requires either (i) NCHS RDC access, OR (ii) a different geographic stratification (Census region/division) which itself requires new derived-column infrastructure (state→region map) not present in the current schema.
+
+2. **HALT #2 resolution — `duckdb` Python package not in C8.5a lockfile.** The §15 C8.9 PRE-FLIGHT-input claim "DuckDB installed in the env (C8.5 lockfile)" is also factually wrong. `pyproject.toml` does not list `duckdb`; `uv.lock` has 38 packages, none named `duckdb`; `.venv/bin/python -c "import duckdb"` returns `ModuleNotFoundError`. **Resolution: `uv add duckdb` executed during C8.9 DO step 1, which updates pyproject.toml + uv.lock to canonically-pinned versions.** The SHA drift from C8.5a-recorded values (pyproject.toml=`c8826a61…`, uv.lock=`ab627034…`) is an **authorized addition**, not a regression — the C8.9 receipt's Build-artifacts-current section will record the post-add SHAs, and the Forward-looking HALTs for C8.10 PRE-FLIGHT will name the expected new values.
+
+**Plan-update applied (this commit):**
+
+1. **`NEXT_STEPS.md` §15.C C8.9 entry rewritten** (lines 1101–1119 pre-revision):
+   - Title revised: "C.1 + C.2 + C.4" → "C.2 + C.4 (C.1 dropped — public-use data does not include state-level geography)".
+   - Goal rewritten: drops C.1 entirely; expands C.2 + C.4 descriptions with concrete deliverable shapes (3 R quickstart files per product; views.sql at monorepo root with three canonical-filter views + one cross-product join view).
+   - Why-this-matters trimmed accordingly.
+   - PRE-FLIGHT inputs corrected: drops the "state available 1990-2024" claim; adds `duckdb` add as an authorized C8.9 DO step; adds R-side `arrow` + `duckdb` + `dplyr` availability check.
+   - SMOKE plan rewritten: Tier 0 R-syntax-parse + SQL-syntax-parse; Tier 1 R `arrow::read_parquet()` reads each parquet successfully; Tier 1 DuckDB view query produces same row count as Python pyarrow canonical filter on a 100-record subset.
+   - DO scope rewritten: 4 deliverables — (a) `uv add duckdb` + commit pyproject.toml + uv.lock updates; (b) 3× `quickstart.R`; (c) `views.sql`; (d) `docs/JOINT_USE_GUIDE.md` updates documenting R + DuckDB usage.
+   - VERIFY criteria rewritten: 5 criteria — (i) R quickstart loads each parquet; (ii) DuckDB views produce same record counts as Python canonical filter; (iii) cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` still 56 PASS + 1 XFAIL; (iv) 4 parquet SHAs unchanged; (v) pyproject.toml + uv.lock SHAs CHANGE in expected direction (acknowledge + record).
+   - Estimated effort revised: 2.5-3 sessions → 1-1.5 sessions.
+   - Halt-condition flags updated: F1 (canonical filter on natality side) retained; L13 (state-code dtype verification) DROPPED (no state column to verify); L11 (stale §15 PRE-FLIGHT-input claims) ADDED.
+   - Dependencies: none upstream; C8.10 onward depends on duckdb being in the lockfile.
+
+2. **`KICKOFF.md` Phase C Tier-2 line 190** revised: "C8.9 — Usability: state denominators + R + DuckDB views [2.5-3 sessions]" → "C8.9 — Usability: R quickstart + DuckDB views [1-1.5 sessions] (C.1 state-stratified DROPPED — NCHS suppression policy)".
+
+3. **`PRE_FLIGHT_LOG.md`** — PRE-FLIGHT entry at 2026-05-13T10:00:00Z (RESULT: HALT, 2 §7.13 conditions) + addendum at 2026-05-13T10:15:00Z (RESULT: PROCEED post-resolution).
+
+4. **This DECISION_LOG entry** records the §11 plan-update + Option A rationale + duckdb-addition rationale.
+
+**Alternatives considered (per AskUserQuestion 2026-05-13T10:00:00Z):**
+
+1. **(A) Drop C.1; ship C.2 + C.4 only (chosen).** Pro: honest to the public-use-data constraint; preserves the cleanly-buildable C.2 + C.4 deliverables; smallest scope; ~1-1.5 session estimated; reframes C.1 as a permanently-out-of-scope item (documented in §15) rather than a hidden deferral. Con: C8.9 ships smaller than originally planned; the "state-stratified" usability layer remains unshipped indefinitely. Mitigation: the FAQ + JOINT_USE_GUIDE updates document state suppression explicitly so end-users understand the constraint upfront.
+
+2. **(B) Re-purpose C.1 as different strata (e.g., race × age × parity × education × year).** Pro: ships a usability layer; 1 session. Con: substantial overlap with the existing `stratified_denominators.csv` (Task 1, 2026-05-11) which already covers race × age × hispanic × year; the marginal usability gain is unclear; re-purposing without a clear use-case driver is feature-creep. Rejected.
+
+3. **(C) Halt C8.9; advance C8.7b (DEFERRED orchestrator) instead.** Pro: closes a deferred Tier-1 item; reproducibility VERIFY clean. Con: needs user-authorized multi-session compute window (6-12+ hours); doesn't address the C8.9 surface; doesn't ship usability layer. Rejected — user-authorized Tier-2 launch per Q35.
+
+4. **(D) Halt C8.9; advance C8.10 (worked-example notebooks) instead.** Pro: ships meaningful user-facing content; 3-4 sessions of value. Con: doesn't ship the C.2/C.4 usability layer which IS achievable; re-plans C8.9 entirely without a clean closure narrative. Rejected.
+
+**Reason:** §11 plan-update process is the canonical path for in-Phase-C scope adjustments surfaced during PRE-FLIGHT verification (Q42 self-resolution + Convention 3 Field-value snapshot). Both HALTs were caught at the cheap-check moment before any DO mutation — exactly what PRE-FLIGHT cheap-checks are for. Option A preserves the substantive value of C8.9 (usability — R + DuckDB) while dropping the structurally-broken sub-task and acknowledging the lockfile reality.
+
+Three protocol justifications: (i) §2 principle 1 "cheap-before-expensive" — discovering the state-suppression + duckdb-missing constraints at PRE-FLIGHT saves a wasted session of attempting to build C.1 (would have surfaced mid-DO when the parser column-read returned no state column); (ii) §11 plan-update is the canonical path for in-Phase-C scope adjustments per Q42 (>1-session scope change; dropping a sub-task is a scope reduction triggering plan-update); (iii) §10 self-check encourages the LLM to surface "what could I have gotten wrong that VERIFY wouldn't catch" — in this case, the §15 PRE-FLIGHT-input claims that no prior session had verified against current data.
+
+This is the **second consecutive C8.X task** (after C8.7 split into C8.7a + C8.7b) where PRE-FLIGHT cheap-checks against §15 PRE-FLIGHT-input claims surfaced **multiple** factual errors in the §15 entry. The lesson: §15 entries authored from EXPLORATION_REPORT proposals (drafted 2026-05-12T20:30Z) contain claims about data availability + env state that the exploration author did not verify against current artifacts. **Filed as a soft-flag for the C8.X-pre-DO PRE-FLIGHT checks: always re-verify §15 PRE-FLIGHT-input claims via L9/L13 probes BEFORE the AskUserQuestion / proceeding to DO.** This is an existing L11 pattern (stale roadmap claim) — no new mistake class needed; the existing §8 matrix L11 row covers it.
+
+**Source:**
+
+- `PRE_FLIGHT_LOG.md` 2026-05-13T10:00:00Z entry documents the 4 cheap-check probes (natality harmonized schema; natality yearly_clean per-year inventory across 11 years; natality FAQ + ABOUT_THIS_RELEASE; fetal_death harmonized_schema state-column check) + the duckdb missing probe.
+- `natality/docs/FAQ.md:87-89`: explicit "No state-level identifiers" statement.
+- `natality/docs/ABOUT_THIS_RELEASE.md:70`: "No restricted-use geography or restricted-use variables are included."
+- `natality/metadata/harmonized_schema.csv` (84 + 6 derived columns, no state column).
+- `pyproject.toml` + `uv.lock` (38 packages, no duckdb).
+- STATUS 2026-05-13T09:30:00Z line 51 (pre-authorized the PRE-FLIGHT-time split decision; chosen alternative drops C.1 rather than splitting).
+- User chat 2026-05-13T10:00:00Z AskUserQuestion response: "Drop C.1; ship C.2+C.4 only (Recommended)."
+
+**Verifiable by:**
+
+- This `[plan-update]` commit's diff shows `NEXT_STEPS.md` §15 C8.9 entry rewritten + `KICKOFF.md` line 190 revised + this DECISION_LOG entry + `PRE_FLIGHT_LOG.md` PRE-FLIGHT entry (HALT) + addendum (PROCEED).
+- Tag `C8.9-pre-do` lands on this `[plan-update]` commit (PRE-FLIGHT now PROCEEDS to C8.9 DO post-resolution; mirrors C8.5 / C8.7 plan-update precedent).
+- C8.9 DO ships in a sibling commit tagged `C8.9-complete` containing R quickstart files + views.sql + JOINT_USE_GUIDE updates + pyproject.toml/uv.lock updates + receipt + STATUS append.
+
+**Reversible:** yes — `git revert <this commit>` restores the original §15 C8.9 entry. The C.1 drop is documented as a factual finding (NCHS suppression policy) rather than a contingent scope decision, so reverting wouldn't make C.1 buildable — it would just restore the wrong claim in §15.
+
+**Residual risks:**
+
+- (a) **A future user may request "state-stratified denominators" expecting the standard NCHS public-use data supports it.** Mitigation: the C8.9 DO will explicitly add a note to `docs/JOINT_USE_GUIDE.md` and to `natality/docs/FAQ.md` (if not already there) about state suppression. The FAQ already covers this at lines 87-89, so a small cross-reference update is sufficient.
+- (b) **`uv add duckdb` may pull a duckdb version with a behavior difference from R's duckdb 1.x.** Mitigation: pin to a recent stable (default `uv add` picks the latest); verify R + Python DuckDB queries produce same row counts in the SMOKE Tier 1 check.
+- (c) **The §15 PRE-FLIGHT-input authoring pattern of unverified data-availability claims may recur** in C8.10-C8.15 entries. Mitigation: filed as a soft-flag for those tasks' PRE-FLIGHT phases to explicitly re-verify each PRE-FLIGHT input claim via L9/L13 probes before AskUserQuestion / proceeding.
+- (d) **The C8.7a soft-flag (b) "Natality+linked output-path strategy decision"** carries through to C8.9 because `views.sql` must reference the natality + linked parquet paths somehow. The C8.9 DO will use relative paths from monorepo root + document the C8.7b deferral as a known gap (i.e., views.sql users outside the build dir will need to either symlink or pass `--variable PARQUET_DIR=...` to DuckDB).
+
+**Self-check (residual risks VERIFY phase wouldn't catch):**
+
+- "Drop C.1" decision rests on probes I ran today; if the natality parser were extended in a future session to extract state from the raw zips (some pre-2005 raw zips do contain state), C.1 would become buildable for those years. This isn't a current-session risk; documented as a forward note in the C8.9 receipt's "Notes for next session".
+- The DuckDB-vs-Python parity check assumes both engines apply the canonical filter identically; if DuckDB's `WHERE` clause coerces a column dtype differently from pyarrow, the row-count parity could mask a subtle dtype-coercion bug. Defense: SMOKE Tier 1 records the row count from BOTH engines for at least 3 cells (per product); any discrepancy gets surfaced.
+- R + Python parity check (one's `arrow::read_parquet()` vs the other's `pyarrow.parquet.read_table`) assumes both produce identical row counts; if R's arrow has a different default for nullability or partitioning, the counts could differ. Defense: VERIFY criterion (i) records BOTH counts per product; any discrepancy surfaces.
+- The duckdb-add is a one-line edit to pyproject.toml but `uv lock` may regenerate the WHOLE lockfile if upstream package versions have drifted since C8.5a-complete; the SHA change is then larger than just-add-duckdb. Defense: the receipt records before+after SHAs for both files + the `uv lock --check` output (or `git diff uv.lock` summary) so the change is fully auditable.
+
+**Backport scope (per §11.4):** None directly. C8.1 / C8.2 / ... / C8.8 receipts unaffected. The 2026-05-12T20:30Z EXPLORATION_REPORT §C.1 + §F.3 sections that originated the now-wrong PRE-FLIGHT-input claims are append-only frozen-state documents (per ratchet) — no edit needed there. Filed as a soft-flag for any future plan-update agent re-reading EXPLORATION_REPORT C.1 verbatim: consult this DECISION_LOG entry for the substantive resolution.
+
+---
+
 ## 2026-05-13T09:00:00Z — C8.8 — Convention 3 amendment at PRE-FLIGHT: EXPLORATION_REPORT §E.5 author label "Hoyert et al. 2024" mis-attributes PMID 38143212 (actual lead author = Gregory ECW + Barfield WD); ship citation under correct authors; load-bearing PMID unchanged
 
 **Choice (LLM at C8.8 PRE-FLIGHT 2026-05-13T09:00:00Z, no user halt-and-ask needed — Convention 3 routine amendment within the same L8 cheap-check pattern the §15 C8.8 halt-flag explicitly anticipates):** Resolve EXPLORATION_REPORT.md §E.5 item 2's citation mis-attribution by citing the PMID's actual authors (Gregory ECW, Barfield WD) rather than the (incorrect) label "Hoyert et al." Drop the "Hoyert" name from this PRIOR_ART citation. Do NOT add the separate Hoyert paper (PMID 39412872 = NVSR 73-09) to PRIOR_ART because doing so would be circular (NVSR is exactly the aggregate-publication category PRIOR_ART argues fails to fill the microdata gap).

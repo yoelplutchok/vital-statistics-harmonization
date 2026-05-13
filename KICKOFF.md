@@ -187,7 +187,7 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 
 #### Tier 2 — high-value additions (~16-20 sessions)
 
-- **C8.9** — Usability: state denominators + R + DuckDB views     [2.5-3 sessions]
+- **C8.9** — Usability: R quickstart + DuckDB views (C.1 DROPPED)  [1-1.5 sessions]
 - **C8.10** — Worked-example notebooks (3 of 5)                   [3-4 sessions]
 - **C8.11** — Migration guides + cross-product COMPARABILITY      [3-4 sessions]
 - **C8.12** — Mutation tests + L13/L14 audits + SHA stability     [3-4 sessions]

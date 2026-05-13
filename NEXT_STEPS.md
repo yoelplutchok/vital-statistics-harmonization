@@ -1098,25 +1098,47 @@ Concurrency control: `group: ci-${{ github.ref }}`, `cancel-in-progress: true`.
 
 ---
 
-### Task C8.9 — Usability: state-stratified denominators + R quickstart + DuckDB views (C.1 + C.2 + C.4)
+### Task C8.9 — Usability: R quickstart + DuckDB views (C.2 + C.4) — **C.1 DROPPED (NCHS public-use suppression policy)**
 
-**Goal.** Three usability layers: (C.1) `stratified_denominators_state.csv` adding state × race × age × Hispanic × year strata; (C.2) `quickstart.R` mirroring `quickstart.py` with `arrow::read_parquet()` round-trip; (C.4) `views.sql` defining canonical-filter views + common joins as DuckDB-compatible views over the parquets.
+**Header note (2026-05-13T10:00Z PRE-FLIGHT plan-update, DECISION_LOG 2026-05-13T10:00:00Z, KICKOFF.md line 190 in lock-step):** the original C8.9 scope bundled three sub-deliverables (C.1 state denominators + C.2 R quickstart + C.4 DuckDB views). C8.9 PRE-FLIGHT cheap-checks surfaced two §7.13 conditions: (i) **C.1 is structurally unbuildable** because NCHS suppresses state-level geography in all three products' public-use files (confirmed via 11-year column probe across natality `yearly_clean` parquets + `natality/docs/FAQ.md:87-89` + `natality/docs/ABOUT_THIS_RELEASE.md:70` + 84+6-column natality harmonized schema absence + fetal-death harmonized_schema state-column absence); the upstream fix (NCHS RDC / restricted-use workflow) is out of HVS pre-submission scope. (ii) `duckdb` Python package is NOT in `pyproject.toml`/`uv.lock` despite the original PRE-FLIGHT-input claim "DuckDB installed in the env (C8.5 lockfile)". Resolution: drop C.1; ship C.2 + C.4 only; `uv add duckdb` is an authorized C8.9 DO step (pyproject.toml + uv.lock SHA drift acknowledged + recorded). **C.1 is permanently out of HVS pre-submission scope** — any future re-attempt requires either NCHS RDC access OR a different geographic stratification (Census region/division) with state→region derived-column infrastructure that does not currently exist.
 
-**Why this matters.** State-stratified rates are a primary analytic need (state-level disparity studies). R-using community needs a worked example. DuckDB-views path means zero Python for ad-hoc analyses. Each independently directly supports the manuscript *Accessibility* claim.
+**Goal.** Two usability layers: **(C.2)** `quickstart.R` per-product (fetal_death + natality + linked) mirroring `quickstart.py` with `arrow::read_parquet()` round-trip + sample analytic queries; **(C.4)** `views.sql` at monorepo root defining canonical-filter views + one cross-product join view as DuckDB-compatible views over the parquets.
 
-**PRE-FLIGHT inputs.** Natality derived parquet (state available 1990-2024; suppressed in fetal-death V1 era 2005+); existing `quickstart.py` as R template; DuckDB installed in the env (C8.5 lockfile).
+**Why this matters.** R-using and SQL-using communities need worked examples. R quickstart shows `arrow::read_parquet()` round-trip + the canonical filter + a representative aggregate query. DuckDB-views path means zero Python for ad-hoc analyses (any DuckDB-supporting tool — CLI, R, Python, BI tools — can query the parquets via these views). Both independently support the manuscript *Accessibility* claim.
 
-**SMOKE plan.** Tier 0: `quickstart.R` runs on a single-year subset. Tier 1: state-stratified denominator for one year matches the existing race/age/Hispanic denominator's per-state sum. Tier 1: DuckDB view query produces same row count as Python filter on a 100-record subset.
+**PRE-FLIGHT inputs.**
+- Both subprojects' harmonized parquets (4 SHAs unchanged from C8.7a forward-looking HALTs).
+- Existing `fetal_death/quickstart.py` as R template (verified present per `PROJECT_STRUCTURE.md` line 95).
+- R 4.5.1 at `/usr/local/bin/R` with `arrow` + `duckdb` + `dplyr` packages installed (probed PRE-FLIGHT 2026-05-13T10:00Z).
+- **`duckdb` Python package will be added** via `uv add duckdb` as C8.9 DO step 1; pyproject.toml + uv.lock SHA drift from C8.5a-recorded values is an authorized addition.
+- `shared/helpers/canonical_join_keys.py` providing the canonical filter convention.
+- `docs/JOINT_USE_GUIDE.md` for cross-link target.
 
-**DO scope.** Author `shared/helpers/build_stratified_denominators_state.py` (mirror of existing `build_stratified_denominators.py`). Output: `natality/stratified_denominators_state.csv` (or `.parquet`). Author `quickstart.R` per-product (fetal_death + natality + linked). Author `views.sql` at monorepo root (or `shared/`). Document in `docs/JOINT_USE_GUIDE.md`.
+**SMOKE plan.**
+- **Tier 0a (R syntax parse)**: `Rscript --vanilla -e 'parse(file = "fetal_death/quickstart.R")'` returns expression list without error (analogous for natality + linked).
+- **Tier 0b (SQL syntax parse)**: `python -c "import duckdb; duckdb.connect().execute(open('views.sql').read())"` creates views without error.
+- **Tier 1 (R parquet read)**: each `quickstart.R` reads its target parquet via `arrow::read_parquet()` and prints (column count, row count, dtype summary) for the harmonized parquet. Plausible row counts vs the corresponding C8.4 `tests/test_release_smoke.py` expectations.
+- **Tier 1 (DuckDB view parity)**: each DuckDB view's row count matches the equivalent Python pyarrow filter on the same parquet for a 100-record subset. Spot-check one cell per product against an existing NVSR-equivalent validation target.
 
-**VERIFY criteria.** State-stratified sums per state-year match natality validation target. R quickstart loads each parquet successfully. DuckDB views produce same record counts as canonical filter applied in Python.
+**DO scope.**
+1. `uv add duckdb` — adds duckdb to pyproject.toml; `uv lock` regenerates uv.lock; `uv sync` installs into `.venv`.
+2. Author 3× `quickstart.R` files: `fetal_death/quickstart.R`, `natality/quickstart.R`, `linked/quickstart.R` (or unified at monorepo root if cleaner). Each: arrow + dplyr load; `arrow::read_parquet()`; sample queries; documented R package deps.
+3. Author `views.sql` at monorepo root: 3 canonical-filter views (fetal_death_canonical, natality_canonical, linked_canonical) + 1 cross-product join view (joint_use_demo). `CREATE OR REPLACE VIEW` syntax for idempotent re-runs.
+4. Update `docs/JOINT_USE_GUIDE.md` with R + DuckDB usage sections; cross-link to new quickstart files + views.sql.
+5. (Optional, if time) Update `natality/docs/FAQ.md` line 87-89 with a cross-reference back to JOINT_USE_GUIDE / EXPLORATION_REPORT for the state-suppression context.
 
-**Estimated effort.** 2.5-3 sessions.
+**VERIFY criteria.**
+1. **R quickstart loads each parquet successfully**: `Rscript fetal_death/quickstart.R` + `Rscript natality/quickstart.R` + `Rscript linked/quickstart.R` all exit 0; each prints the expected column count + row count.
+2. **DuckDB views produce same record counts as canonical filter in Python**: per-product view row count = pyarrow-filtered row count (exact match).
+3. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 56 PASS + 1 XFAIL** (unchanged from C8.7a baseline; the test suite must be unaffected by the new files + duckdb dependency).
+4. **All 4 parquet SHAs unchanged** post-C8.9 (no parquet mutation).
+5. **`pyproject.toml` + `uv.lock` SHAs change in expected direction** — both files must show duckdb in their diff; the receipt records the before+after SHAs. `.python-version` + `README.md` + `.github/workflows/ci.yml` SHAs unchanged.
 
-**Dependencies.** None upstream.
+**Estimated effort.** 1-1.5 sessions (revised from 2.5-3 after C.1 drop).
 
-**Halt-condition flags.** F1 (canonical filter on natality side), L13 (state-code dtype verification).
+**Dependencies.** None upstream. C8.10 onward depends on duckdb being in the lockfile.
+
+**Halt-condition flags.** F1 (canonical filter on natality side — must apply `residence_status != 4` in both R + DuckDB); L11 (stale roadmap claims — surfaced at PRE-FLIGHT this session, dropped from §15 here).
 
 ---
 

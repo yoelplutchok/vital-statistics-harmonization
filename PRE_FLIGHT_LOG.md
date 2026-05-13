@@ -8,6 +8,133 @@
 
 ---
 
+## PRE-FLIGHT for C8.9 — 2026-05-13T10:00:00Z — Usability: state-stratified denominators + R quickstart + DuckDB views (C.1 + C.2 + C.4) — **RESULT: HALT** (two §7.13 conditions surfaced — C.1 structurally unbuildable due to NCHS suppression policy; C.4 DuckDB pkg not in C8.5a lockfile despite §15 PRE-FLIGHT-input claim "DuckDB installed in the env (C8.5 lockfile)")
+
+### Scope summary
+
+C8.9 §15.C entry (NEXT_STEPS.md lines 1101–1119): three sub-deliverables — **(C.1)** `stratified_denominators_state.csv` adding state × race × age × Hispanic × year strata; **(C.2)** `quickstart.R` mirroring `quickstart.py` with `arrow::read_parquet()` round-trip; **(C.4)** `views.sql` defining canonical-filter views + common joins as DuckDB-compatible views over the parquets. Estimated 2.5–3 sessions. Halt-condition flags named: **F1 (canonical filter on natality side); L13 (state-code dtype verification)**.
+
+STATUS 2026-05-13T09:30:00Z line 51 explicitly flagged "Could also be split into C8.9a (state denominators alone, 1 session) + C8.9b (R + DuckDB, 1.5-2 sessions) if a single-session boundary is preferred — a PRE-FLIGHT-time split decision."
+
+### Inputs
+
+- [x] **All Tier-1 artifacts present** (4 parquet SHAs + 7 file SHAs unchanged from C8.8-complete forward-looking HALTs).
+- [x] **Natality v2.8.0 derived parquet** (existence verified at `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet`). Outside monorepo per C8.7a soft-flag (b).
+- [x] **`shared/helpers/build_stratified_denominators.py`** exists (sha=`<unverified at PRE-FLIGHT, not load-bearing for C8.9>`); 158 lines; intended template for C.1's state-stratified sibling.
+- [x] **`shared/helpers/canonical_join_keys.py`** present; provides `to_canonical_natality()` + `derive_maternal_age_band()`.
+- [x] **R 4.5.1 at `/usr/local/bin/R`**; `arrow` + `duckdb` + `dplyr` packages all installed (probed via `Rscript --vanilla -e 'requireNamespace(...)'`). ✓ for C.2.
+- [x] **Python `quickstart.py`** for fetal_death at `/Users/yoelplutchok/Desktop/vital-statistics-harmonization/fetal_death/quickstart.py` — verified present (per `PROJECT_STRUCTURE.md` line 95).
+
+### C8.8 Forward-looking HALTs (all 10 verified)
+
+| # | Assertion | Verification | Status |
+|---|---|---|---|
+| 1 | `C8.8-complete` tag present | `git tag --list 'C8.8*'` → `C8.8-pre-do` + `C8.8-complete`; `C8.9-pre-do` does NOT exist | ✓ |
+| 2 | `CHANGELOG.md` sha=`38c8294f…` | verified | ✓ |
+| 3 | `docs/PRIOR_ART.md` sha=`cfeb78cc…` | verified | ✓ |
+| 4 | 4 parquet SHAs unchanged | verified | ✓ |
+| 5 | 7 file SHAs unchanged | verified | ✓ |
+| 6 | Next task = C8.9 per KICKOFF line 190 | confirmed | ✓ this entry executes |
+| 7 | 3 GitHub URLs re-verify at Phase D step 3 | not C8.9 scope | ✓ deferred |
+| 8 | Manuscript candidate addition Phase D step 6 | not C8.9 scope | ✓ deferred |
+| 9 | EXPLORATION_REPORT §E.5 plan-text un-edited | not C8.9 scope | ✓ informational |
+| 10 | L11 KICKOFF Tier-1 line 186 reads as ✅ via tag | confirmed | ✓ |
+
+### Environment
+
+- [x] Working directory clean: `git status --short` empty. ✓
+- [x] On `main`, HEAD=`33fe70f` (C8.8-complete). ✓
+- [x] `.venv` Python 3.13.9 unchanged from C8.5a-complete (per 7-file SHA invariant).
+- [x] R 4.5.1 at `/usr/local/bin/R`; Rscript present; arrow + duckdb + dplyr packages installed at `/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library`.
+- [x] **Python `duckdb` package: NOT installed** in `.venv` (`.venv/bin/python -c "import duckdb"` → `ModuleNotFoundError`). NOT a line in `pyproject.toml` (verified). NOT in `uv.lock` (no match in 38 packages). ✗ **HALT #2 below.**
+- [x] `duckdb` CLI: NOT on PATH (`which duckdb` → not found). Acceptable; Python-package path is the canonical SMOKE invocation.
+
+### Source documentation (L8 + L9 + L13 cheap-checks for the C.1 PRE-FLIGHT input claim)
+
+The §15 C8.9 entry's PRE-FLIGHT-input claim — "**Natality derived parquet (state available 1990-2024; suppressed in fetal-death V1 era 2005+)**" — is the load-bearing factual claim that C.1 depends on. Cheap-check probes:
+
+**Probe 1 — natality harmonized schema column inventory** (`awk -F',' '{print $1}' natality/metadata/harmonized_schema.csv`): 84 harmonized + 6 derived = 90 column names. Grep for `state` / `STATE` / `FIPS` / `OSTATE` / `MRSTATE`: **zero matches** (closest matches: `residence_status` = 1|2|3|4 code, NOT state identifier; `maternal_nativity` = US-born/foreign-born flag in linked-file 2014+ only).
+
+**Probe 2 — natality per-year `yearly_clean` parquet column inventory** (11 years sampled: 1990, 1995, 2000, 2002, 2003, 2004, 2005, 2010, 2015, 2020, 2024):
+
+| Year | Column count | State-shape columns |
+|---|---|---|
+| 1990 | 38 | MRACE, MRACE3 (race only) |
+| 1995 | 38 | MRACE, MRACE3 |
+| 2000 | 38 | MRACE, MRACE3 |
+| 2002 | 38 | MRACE, MRACE3 |
+| 2003 | 36 | MRACE, MRACEREC, MRACEHISP |
+| 2004 | 37 | MRACE, MRACEREC, MRACEHISP |
+| 2005 | 44 | MRACE, MRACEREC, MRACEHISP, MRACE15 |
+| 2010 | 44 | MRACE, MRACEREC, MRACEHISP, MRACE15 |
+| 2015 | 76 | **MBSTATE_REC** (mother's birth-place code: 1=US, 2=foreign, 3=unknown — NOT state of residence), MRACE6, MRACE15, MRACEHISP |
+| 2020 | 76 | MBSTATE_REC, MRACE6, MRACE15, MRACEHISP |
+| 2024 | 76 | MBSTATE_REC, MRACE6, MRACE15, MRACEHISP |
+
+**No state-of-residence or state-of-occurrence column** appears in ANY year's parsed yearly_clean parquet. The closest is `MBSTATE_REC` (2015+), which is a 3-level birthplace recode, NOT state-level geography.
+
+**Probe 3 — natality FAQ + ABOUT_THIS_RELEASE explicit statements** (`grep -in "geograph\|state.suppress\|state of res" natality/docs/{FAQ,ABOUT_THIS_RELEASE}.md`):
+
+- `natality/docs/FAQ.md:26`: "Public-use files do **not** include sub-state geography (county/city)"
+- `natality/docs/FAQ.md:87-89`: **"## Is geography included? No. The public-use natality files do not include sub-state geography. State-level identifiers are also suppressed in the public-use linked files from 2005 onward."**
+- `natality/docs/ABOUT_THIS_RELEASE.md:70`: "No restricted-use geography or restricted-use variables are included."
+
+**Probe 4 — fetal-death harmonized schema** (`grep -i "state\|residence" fetal_death/harmonized_schema.csv`): only `residence_status` (1-4 code) + `maternal_nativity` (US-born/foreign-born). **No state-of-residence column.** Mirrors the natality situation.
+
+**Conclusion of L9 + L13 cheap-checks on §15 PRE-FLIGHT-input claim:** the claim is **factually wrong**. NCHS suppresses state-level geography in public-use files across all three products (natality + linked + fetal-death). The C8.9 PRE-FLIGHT input claim "state available 1990-2024" appears to be a §15 authoring error that no prior session verified against the actual data. C.1's "state × race × age × Hispanic × year strata" deliverable is structurally unbuildable from the public-use data this monorepo ships. The fix is upstream (a restricted-use NCHS workflow + RDC access), well out of HVS pre-submission scope.
+
+### Outputs
+
+- Intended outputs (revised post-Option-A):
+  - **DROP**: `natality/stratified_denominators_state.csv` (C.1; structurally unbuildable).
+  - **DROP**: `shared/helpers/build_stratified_denominators_state.py` (C.1 author script).
+  - **KEEP**: `quickstart.R` × 3 per-product (C.2) at `fetal_death/quickstart.R` + `natality/quickstart.R` + `linked/quickstart.R` (path TBD; may unify under one file with subcommand).
+  - **KEEP**: `views.sql` at monorepo root (C.4) defining DuckDB views over the parquets.
+  - **NEW**: edits to `pyproject.toml` (add `duckdb` to dependencies) + `uv.lock` (regenerate via `uv lock`). Acknowledged SHA change from C8.5a-recorded values.
+  - **NEW**: edits to `docs/JOINT_USE_GUIDE.md` documenting R + DuckDB usage patterns.
+  - `RECEIPTS/C8.9_<UTC>.md`, `STATUS.md` append, `PRE_FLIGHT_LOG.md` (this entry + post-resolution addendum), `DECISION_LOG.md` plan-update entry, `[plan-update]` commit shipping the C.1-drop + duckdb-add narrative.
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+| Artifact | Field / claim | Current value | Plan's assumed value | Match? |
+|---|---|---|---|---|
+| `natality/metadata/harmonized_schema.csv` columns | Has a state-of-residence column? | NO (84 + 6 derived, none are state) | YES per §15 C8.9 PRE-FLIGHT input | ✗ — **§7.13 HALT #1** |
+| `natality/yearly_clean/natality_<YYYY>_core.parquet` columns | State column for any year 1990-2024? | NO (probed 11 years; only MBSTATE_REC 2015+ which is birthplace not residence) | YES per §15 C8.9 PRE-FLIGHT input | ✗ — **§7.13 HALT #1** |
+| `fetal_death/harmonized_schema.csv` columns | State-of-residence column? | NO (only residence_status code + maternal_nativity flag) | "suppressed in fetal-death V1 era 2005+" per §15 implies present pre-2005 | ✗ — also wrong |
+| `pyproject.toml` + `uv.lock` | `duckdb` Python package | NOT installed; NOT in lockfile (38 packages, no duckdb) | "DuckDB installed in the env (C8.5 lockfile)" per §15 C8.9 PRE-FLIGHT input | ✗ — **§7.13 HALT #2** |
+| R env at `/usr/local/bin/R` | `arrow` + `duckdb` + `dplyr` R packages | All installed (R 4.5.1; library at `/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library`) | Implicit assumption R env ready | ✓ |
+
+### Halt conditions tripped
+
+- **§7.13 HALT #1 (validity-domain ambiguity)** — C.1's "state-stratified denominators" deliverable assumes state-of-residence is available in the public-use natality harmonized parquet. Probes 1+2+3 confirm state is NOT available in any year 1990-2024. The closest column (`MBSTATE_REC`, 2015+) is mother's birthplace recode (3-level US/foreign/unknown), not state of residence. C.1 cannot be built without an upstream RDC / restricted-use workflow, well out of HVS pre-submission scope.
+- **§7.13 HALT #2 (validity-domain ambiguity)** — §15 PRE-FLIGHT input claims "DuckDB installed in the env (C8.5 lockfile)" but DuckDB is NOT in pyproject.toml NOR in uv.lock NOR in the .venv. Smaller fix: install duckdb during C8.9 DO (`uv add duckdb` → regenerate lockfile; expected SHA drift documented).
+
+### Result
+
+**HALT** — surfaced to user via AskUserQuestion 2026-05-13T10:00:00Z. See post-resolution addendum below.
+
+---
+
+## PRE-FLIGHT for C8.9 — 2026-05-13T10:15:00Z — Addendum post-resolution — **RESULT: PROCEED**
+
+User authorization 2026-05-13T10:00:00Z (AskUserQuestion response: "Drop C.1; ship C.2+C.4 only (Recommended)"). Resolution applied via single `[plan-update]` commit:
+
+1. **C.1 DROPPED from C8.9 scope.** §15 C8.9 entry rewritten to enumerate only C.2 (R quickstart) + C.4 (DuckDB views). KICKOFF.md Phase C Tier-2 line 190 revised. C.1 is **NOT** simply re-deferred — it's documented as **structurally unbuildable from public-use data**; any future re-attempt requires either (i) NCHS RDC access (out of HVS scope) or (ii) a different geographic stratification axis (Census region/division) which would require a new derived column (state→region map) and is also out of current C8.9 scope. Filed as a permanently-out-of-scope item in §15.
+2. **`duckdb` added to C8.9 DO scope.** `uv add duckdb` will update `pyproject.toml` + `uv.lock`. The SHA drift from C8.5a-recorded values is an authorized addition (not a regression). C8.9 RECEIPT will record the post-add SHAs in the "Build artifacts current" section and in Forward-looking HALTs for C8.10's PRE-FLIGHT.
+3. **§15 estimated effort revised** from 2.5-3 sessions → 1-1.5 sessions (only C.2 + C.4 + duckdb add + JOINT_USE_GUIDE doc update).
+4. **DECISION_LOG entry 2026-05-13T10:00:00Z** records the §11 plan-update + alternatives considered + reason + source.
+
+### Halt conditions cleared
+
+- §7.13 HALT #1 (state suppression): RESOLVED — C.1 dropped from scope.
+- §7.13 HALT #2 (duckdb missing): RESOLVED — `uv add duckdb` is authorized as part of C8.9 DO.
+
+### Result
+
+**PROCEED** to C8.9 DO (revised scope: C.2 + C.4 only).
+
+---
+
 ## PRE-FLIGHT for C8.8 — 2026-05-13T09:00:00Z — CHANGELOG.md + PRIOR_ART.md updates (E.1 + E.5) — **RESULT: PROCEED** (one Convention 3 amendment: citation re-attribution from "Hoyert et al. 2024" → Gregory ECW + Barfield WD 2024, both at PMID 38143212; the load-bearing PMID is unchanged; no §7 halt)
 
 ### Scope summary
