@@ -23,6 +23,69 @@
 
 ---
 
+## 2026-05-14T02:30:00Z — C8.16 PRE-FLIGHT — Architectural decision: standalone `matched_multiples/` subproject (§15.D default) + effort revised 1-2 → 2-3 sessions (within Q42 +1-session tolerance; no §11 plan-update); user-resolved via AskUserQuestion 2026-05-14T02:30:00Z
+
+**Choice (user at 2026-05-14T02:30:00Z; in response to AskUserQuestion at C8.16 PRE-FLIGHT close):**
+
+- **Architecture pattern** = **Option A (standalone subproject; §15.D default; Recommended)**. New top-level `matched_multiples/` directory parallel to `natality/` + `fetal_death/`; 4th HVS data product with its own `harmonized_schema.csv` + `file_inventory.csv` (mirroring fetal_death 9-col + 10-col patterns) + 3 distinct `record_layout_<window>.csv` files (one per record-length layout) + `scripts/01_import/parse_matched_multiples.py` + per-product validation + tests. Reasons: (i) cross-product linkage nature (spans natality + fetal-death; doesn't fit cleanly under either alone); (ii) cleanest schema separation; (iii) doesn't disturb existing canonical parquet SHAs (H10 reproducibility-gate preserved on `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); (iv) easy for non-multiple-gestation users to ignore. Inventory + schema mirror fetal_death pattern (9-col inventory with `record_length`; 10-col schema with `domain`) — the most complete sibling pattern in the monorepo.
+
+- **Effort acknowledgment** = **Option A (acknowledge 2-3 session estimate; proceed)**. §15.D entry estimated 1-2 sessions assuming "mostly V1-era-sibling layout"; PRE-FLIGHT probing surfaced 3 DISTINCT record-length layouts (503-byte `sets9597.public` 1995-1997 + 755-byte `Sets9500.public` 1995-2000 + 156-byte `MULTIPLES.TXT` 2016-2020) requiring 3 separate `record_layout_<window>.csv` reconstructions from 87 PDF pages. Revised estimate: 2-3 sessions. Within Q42 +1-session tolerance from the 1-2 §15.D band (no §11 plan-update triggers). No update to §15.D entry text; PRE-FLIGHT log + this DECISION_LOG entry are the authoritative effort-revision record.
+
+**Alternatives considered:**
+
+For architecture:
+
+1. **(A) Standalone `matched_multiples/` subproject — CHOSEN.** Reasons above.
+2. **(B) Join-flag column on existing parquets.** Would add `matched_multiple_flag` boolean to existing fetal-death + linked parquets. Rejected: destroys H10 byte-exact reproducibility anchors (re-deriving 2 canonical parquets); force-fits a cross-product linkage into within-product schemas; window non-overlap (fetal-death 1982-2022; linked 2005-2023 vs matched-multiples 1995-2000 + 2016-2020) means many records would have null flags, which is misleading semantics.
+3. **(C) Fold under `natality/` as 3rd product (sibling of linked file).** Rejected: matched-multiples spans natality + fetal-death (live births + fetal deaths in multiple deliveries), not natality-only; folding under natality misrepresents the cross-product linkage.
+
+For effort:
+
+1. **(A) Acknowledge 2-3 session estimate; proceed — CHOSEN.** Reasons above.
+2. **(B) Trigger §11 plan-update; revise §15.D estimate explicitly.** Rejected: 2-3 sessions is within Q42 +1-session tolerance from the §15.D 1-2 estimate; no §11 plan-update triggers; the overhead (~15-20 min) is not warranted given the §15.D entry text already provides the 1-2 upper bound for tolerance arithmetic. The PRE-FLIGHT log + this DECISION_LOG entry suffice as authoritative effort-revision record.
+3. **(C) Trim scope: ship only 2016-2020.** Rejected: defers ~1M historical multiple-gestation records (1995-1997 + 1995-2000) to a follow-up task; conflicts with the 2026-05-14 user directive *"everything possible before uploading to zenodo"*; the maximum-coverage authorization at the plan-update commit anticipated full Tier-3+5 scope. The 2-3 session cost is within plan budget.
+
+**Reason:** §15.D explicitly named the standalone subproject as the default + recommended architecture; PRE-FLIGHT probing confirmed the matched-multiples files are a genuinely separate data product (different record formats; different methodology generations; cross-product linkage spanning natality + fetal-death). The effort revision (1-2 → 2-3) stays within Q42 tolerance and matches the actual layout-reconstruction complexity (3 distinct layouts at 503 / 755 / 156 bytes per record).
+
+**Source:**
+
+- AskUserQuestion 2026-05-14T02:30:00Z (this conversation) — user authorization for Option A architecture + Option A effort acknowledgment.
+- NEXT_STEPS.md §15.D C8.16 lines 1307-1346 (the canonical task spec; "Default recommendation: standalone subproject for clean schema").
+- NEXT_STEPS.md §8 row L1-extension (sibling-extrapolation discipline; applied to filename probing) + L12-extension (PDF text-layer probe before OCR; applied to 87-page documentation set).
+- DECISION_LOG.md 2026-05-14T02:00:00Z `[plan-update] scope_expansion_tier3_tier5` Q42 framing — "any new candidate >1 session triggers a `[plan-update]` per §11; silent in-Phase-C scope-creep forbidden." The 2-3 session estimate is within +1 session of §15.D's 1-2; no plan-update triggers.
+- HTTP 200 probe results for 3 zips + 3 PDFs at `ftp.cdc.gov/.../Datasets/DVS/matched-multiples/` + `Dataset_Documentation/DVS/matched-multiples/`; record-length samples (503 / 755 / 156 bytes) from `unzip -l` + `head -3 | awk '{print length($0)}'`.
+- PyMuPDF `page.get_text()` text-layer probe on all 3 PDFs returning 100% non-empty across 87 pages (L12-extension cheap-check PASS).
+
+**Verifiable by:**
+
+- `git log --all --format='%h %s' | grep 'C8.16 PRE-FLIGHT'` returns the commit shipping this entry.
+- `git tag --list 'C8.16-pre-do'` returns the tag (added on the close commit).
+- `matched_multiples/` directory does NOT yet exist on disk at the pre-do commit (DO authors it next session).
+- PRE_FLIGHT_LOG.md has C8.16 entry at top with `RESULT: PROCEED`.
+- STATUS.md appends a new dated section at top recording PRE-FLIGHT close + revised effort 2-3 sessions + next-session = C8.16 DO.
+
+**Reversible:** yes — `git reset --hard HEAD~1` discards the PRE-FLIGHT close commit + this DECISION_LOG entry; no canonical-state mutation. Reversibility is theoretical only after subsequent C8.16 DO commits (each authored against this PRE-FLIGHT's authorization).
+
+**Residual risks:**
+
+- (a) **Layout-reconstruction effort may inflate further at DO.** PRE-FLIGHT did not enumerate every documented field across the 3 PDF generations; if any of the 3 PDFs documents implicit / overflow / non-standard fields not yet visible from page 1 + zip header probes, the per-layout reconstruction may grow. Mitigation: Q42 trigger (>1 session beyond revised 2-3 = >3 cumulative beyond §15.D high bound) requires §11 plan-update at the next clean checkpoint.
+- (b) **Schema-design ambiguity at DO.** Whether matched-multiples harmonized schema reuses fetal-death + natality column names (e.g., `maternal_age`, `plurality`, `infant_birthweight_g`) or uses NCHS source field names verbatim was not resolved at PRE-FLIGHT. This is a DO-time decision; surfaced if it grows >1 session beyond the revised budget.
+- (c) **1995-1997 vs 1995-2000 windowing.** Both files ship; users will need clear documentation explaining the relationship (different methodology generations, not supersession). At DO: `ABOUT_SOURCE_DATA.md` must document the relationship + recommended use case for each window.
+- (d) **Cross-product validation surface.** §15.D specifies "per-file aggregate counts match NCHS documentation byte-exact" as VERIFY criterion. The documentation tables for each PDF will need to be transcribed (with sha-anchored cell-by-cell counts) at DO; if transcription surfaces additional methodology nuances (e.g., the 1995-2000 PDF has additional analytic-cohort filters not in 1995-1997), the validation surface may expand.
+- (e) **`notebooks/matched_multiples_demo.ipynb` IMR computation cohort.** §15.D names "≥1 cell vs NCHS-published table" as the demo target. Choosing which cell + which year × which cohort = which-NCHS-document is a DO-time decision; routine.
+
+**Backport scope:** None. C8.1-C8.15 are unaffected; the v2.4.0 fetal-death + v2.8.0 natality + v3 linked parquets remain canonical anchors. The 4th product ships as additive at v1.0.
+
+**Forward-looking HALTs to write in C8.16 DO PRE-FLIGHT continuation (Convention 4):**
+
+- 3 matched-multiples zip sha256 anchors will be recorded at first DO sub-step (downloading the zips to a canonical `raw_data/` location or relying on streaming-from-FTP-only) and verified against future re-runs.
+- 3 documentation PDF sha256 anchors already recorded above (`f982ad93…` / `07b7260d…` / `ed5e96ab…`); will be re-verified at each DO continuation session.
+- `matched_multiples/` directory presence + 9-col file_inventory.csv + 10-col harmonized_schema.csv + 3 record_layout CSVs at DO close.
+- 4 existing parquet SHAs remain byte-exact through C8.16 (additive scope).
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/` returns at-least-74-PASS + 1 SKIP + 1 XFAIL at C8.16 VERIFY.
+
+---
+
 ## 2026-05-14T02:00:00Z — [plan-update] scope_expansion_tier3_tier5 — Pre-Zenodo scope expanded a 6th time: Tier 3 + Tier 5 candidates (deferred per Q35 2026-05-12) re-authorized by user 2026-05-14; new tasks C8.16-C8.22 appended to §15 in user-chosen sequence (matched-multiples → natality 1968-1989 → linked 1983-2004 → perinatal-record → CODEBOOK → Stata/SAS → cross-tabs); cumulative Phase C estimate revised 29-35 → 51-71 sessions; effort-ceiling cap raised 42 → 86 (+20% of 71 high estimate); Q41 + Q40 + Q36 defaults overridden by explicit user authorization
 
 **Choice (user at 2026-05-14T02:00:00Z; in response to LLM kickoff question following C8.15 close):** Following C8.15 close (Tier 2 CLOSED 7/7 at `b6954ec`), the user requested all remaining data-generating work happen before the Zenodo deposit, restating the 2026-05-12 directive *"i would like do do everything possible … before we do the paper or the zenodo"* with explicit emphasis on data extensions ("wait did we finish all the data generating things? i want to do everything possible before uploading to zenodo"). AskUserQuestion 2026-05-14T02:00:00Z resolved both the scope authorization and the within-Tier-5 ordering question; a follow-up AskUserQuestion resolved the cross-Tier sequencing and D.1 timing.

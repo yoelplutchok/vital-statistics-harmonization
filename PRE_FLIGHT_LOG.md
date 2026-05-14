@@ -8,6 +8,145 @@
 
 ---
 
+## PRE-FLIGHT for C8.16 — 2026-05-14T02:30:00Z — Matched-multiples ancillary release (A.5; 4th HVS product); first Tier-3+5 task per 2026-05-14T02:00:00Z plan-update — **RESULT: PROCEED**; user-resolved 2 architectural questions via AskUserQuestion 2026-05-14T02:30:00Z (Architecture = Option A standalone subproject `matched_multiples/` per §15.D default; Effort = Option A acknowledge revised 2-3 session estimate, within Q42 +1-session tolerance); no `[plan-update]` commit needed (the §15.D entry already names the standalone default + the effort revision stays within Q42 tolerance; routing decisions stay in this PRE-FLIGHT entry + DECISION_LOG per the C8.15 + C8.13 + C8.11 + C8.10a/b/c PRE-FLIGHT-time decision precedent)
+
+### Scope summary
+
+C8.16 §15.D entry (NEXT_STEPS.md lines 1307-1346) names the deliverable: parse 3 NCHS matched-multiples linkage zips (`matched-multiple-birth-fetal-death-{1995-1997,1995-2000,2016-2020}.zip`) at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/matched-multiples/`; ship as 4th HVS product (standalone `matched_multiples/` subproject parallel to `natality/` + `fetal_death/`). KICKOFF.md Phase C Tier-3+5 line 202 names C8.16 as first Tier-3+5 task post-plan-update `84e7869`. Estimated §15.D effort = 1-2 sessions (revised to 2-3 at this PRE-FLIGHT per the 3-distinct-layouts finding; see below). §15.D halt-condition flags: H1 + H6 + L12-extension + L13 + L17.
+
+**Session scope this PRE-FLIGHT:** ship PRE-FLIGHT entry + DECISION_LOG entry recording the architectural decision + STATUS section + commit + tag `C8.16-pre-do`. DO begins next session (with the full 2-3 session budget); not bundled into this commit since the PRE-FLIGHT surfaced enough effort revision that the session should close at a clean checkpoint to give the next session the full budget.
+
+### Inputs
+
+- [x] **All 11 Forward-looking HALTs from STATUS 2026-05-14T02:00:00Z verified byte-exact**:
+  - HALT 1: `[plan-update] scope_expansion_tier3_tier5` commit present. `git log` shows `84e7869` (HEAD). ✓
+  - HALT 2: 4 parquet SHAs byte-exact at canonical paths:
+    - `~/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_harmonized.parquet` sha256=`38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` ✓
+    - `~/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet` sha256=`185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09` ✓
+    - `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` sha256=`e16ad5323d68e28d401518f1ff56b12c09e43883e76022a9823d51a677c41d44` ✓
+    - `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet` sha256=`9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777` ✓
+  - HALT 3: NEXT_STEPS.md §15.D NEW subsection present; 7 task entries C8.16-C8.22 at lines 1307-1567 (verified via `grep -n '^### Task C8\.'`); C8.16 at lines 1307-1346. ✓
+  - HALT 4: KICKOFF.md Tier 3+5 ACTIVE subsection present at lines 198-227 (5 new sequencing-notes bullets covering C8.16-C8.22 ordering). ✓
+  - HALT 5: DECISION_LOG entry at 2026-05-14T02:00:00Z present at lines 26-110. ✓
+  - HALT 6: cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returned **74 passed + 1 skipped + 1 xfailed in 190.91s** — count matches (74P + 1S + 1XF); wall-time below the 210-230s STATUS HALT band by ~20s (likely warmer FS cache at this moment; per Convention 1 SHAPE-not-VALUE the **count** is asserted, not wall-time; not a halt). ✓
+  - HALT 7: Soft-flag (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo carries forward; no in-PRE-FLIGHT resolution attempted (STATUS is append-only; resolution lives at next file-mutation contact). ✓ (carried)
+  - HALT 8: Soft-flag (r) NEW from C8.15 plan-update — effort-ceiling cap raised 42 → 86; defense in place (§11 plan-update process requires explicit user authorization for any further cap raise). ✓ (carried; this PRE-FLIGHT does NOT raise the cap)
+  - HALT 9: No new tag this commit (until `C8.16-pre-do` tags this PRE-FLIGHT close). Verified: `git tag --list 'C8.16*'` returns empty pre-commit. ✓
+  - HALT 10: Tier 1+2 STATUS preserved (cumulative ~17.5 done; Tier 3+5 ~21-34.5 ahead; total Phase C ~51-71). ✓
+  - HALT 11: C8.16 is first Tier-3+5 task; no other Phase C work touched. ✓
+- [x] **C8.16 substrate enumerated**:
+  - **3 NCHS source zips probed** (sibling-extrapolation per L1-extension; filename pattern `matched-multiple-birth-fetal-death-<YYYY>-<YYYY>.zip` confirmed at canonical FTP path):
+    - `matched-multiple-birth-fetal-death-1995-1997.zip` HTTP 200; content-length=9,623,601; last-modified=2024-07-10T18:18:54Z; etag=`88734a9ff5d2da1:0`; contains `sets9597.public` (163,542,960 uncompressed bytes); record length 503 → 325,135 records. ✓
+    - `matched-multiple-birth-fetal-death-1995-2000.zip` HTTP 200; content-length=21,714,082; last-modified=2024-07-10T18:18:45Z; etag=`64433d9af5d2da1:0`; contains `Sets9500.public` (528,552,864 uncompressed bytes); record length 755 → 699,938 records. ✓
+    - `matched-multiple-birth-fetal-death-2016-2020.zip` HTTP 200; content-length=11,719,909; last-modified=2024-06-04T16:57:56Z; etag=`d4dc3a59a0b6da1:0`; contains `MULTIPLES.TXT` (100,793,691 uncompressed bytes); record length 156 → 646,113 records. ✓
+    - Total raw zip size: 43,057,592 bytes (~41 MB; matches §15.D "~43 MB" estimate within rounding).
+    - Total uncompressed: 792,889,515 bytes (~756 MB; ~1.67M records).
+  - **3 documentation PDFs probed** (sibling FTP path `Dataset_Documentation/DVS/matched-multiples/`; same filename stem as zips):
+    - `matched-multiple-birth-fetal-death-1995-1997.pdf` 80,783 bytes; downloaded sha256=`f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66`; 33 pages; 100% text-extractable; total_chars=35,856. ✓
+    - `matched-multiple-birth-fetal-death-1995-2000.pdf` 111,503 bytes; downloaded sha256=`07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886`; 33 pages; 100% text-extractable; total_chars=60,687. ✓
+    - `matched-multiple-birth-fetal-death-2016-2020.pdf` 415,885 bytes; downloaded sha256=`ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be`; 21 pages; 100% text-extractable; total_chars=23,205. ✓
+    - L12-extension PASS: all 87 pages text-extractable; NO OCR needed. PyMuPDF `page.get_text()` returned non-empty on every page.
+  - **1995-1997 vs 1995-2000 relationship**: searched 1995-2000 PDF first 5 pages for references to 1995-1997 / 9597 / earlier / previous / prior / supersedes / updates / extends — **zero hits**. Different author lists (1995-1997: 4 authors; 1995-2000: 6 authors with 4 new). Different record formats (503 vs 755 bytes). Conclusion: ship all 3 as distinct generations; the 1995-1997 file is NOT a strict subset / superseded version of 1995-2000.
+- [x] **No stale checkpoints**: `git status --short` empty on `main` at `84e7869`; `C8.16-pre-do` + `C8.16-complete` tags do NOT yet exist. ✓
+
+### Environment
+
+- [x] Python 3.13.9; pandas 2.3.2; pyarrow 18.1.0; pymupdf available via `uv run python -c "import fitz"`; uv 0.11.10; .venv matches uv.lock (all unchanged from C8.15 close `b6954ec` + plan-update `84e7869`). ✓
+- [x] Working directory clean; on `main`; HEAD at `84e7869` (the plan-update commit). ✓
+- [x] `curl` (TLS-permissive `-k`) available for FTP probes; reachable to `ftp.cdc.gov` (HTTP 200 on directory listing + per-file HEAD requests). ✓
+
+### Source documentation
+
+C8.16 is a 4th-HVS-product release task; consumes 3 external NCHS documentation PDFs + zero internal canonical sources at PRE-FLIGHT (full DO will consume internal `fetal_death/file_inventory.csv` + `fetal_death/harmonized_schema.csv` patterns to mirror for the new subproject):
+
+- 3 documentation PDFs probed above (all L12-extension PASS at PRE-FLIGHT; full content read happens at DO when authoring `matched_multiples/record_layout_<window>.csv` files).
+- 3 source zips probed above (zip header inspection PASS; full unzip + record-layout reconstruction happens at DO).
+
+All L1-extension cheap-checks satisfied (sibling-extrapolation from §15.D filename pattern returned HTTP 200 on first try; no hallucinated variants attempted). All L9 cheap-checks satisfied at PRE-FLIGHT probe (zip directory listing + PDF page counts + first-page text samples verified).
+
+### Outputs
+
+- [x] **NEW files (must not exist before DO; will be authored in DO):**
+  - `matched_multiples/` subproject directory (does NOT exist) ✓
+  - `matched_multiples/README.md` (will be authored at DO)
+  - `matched_multiples/ABOUT_SOURCE_DATA.md` (will be authored at DO)
+  - `matched_multiples/harmonized_schema.csv` (will be authored at DO)
+  - `matched_multiples/file_inventory.csv` (3 rows × 9 cols per fetal_death pattern; will be authored at DO)
+  - `matched_multiples/record_layout_9597.csv` (503-byte layout reconstruction; DO)
+  - `matched_multiples/record_layout_9500.csv` (755-byte layout reconstruction; DO)
+  - `matched_multiples/record_layout_2020.csv` (156-byte layout reconstruction; DO)
+  - `matched_multiples/scripts/01_import/parse_matched_multiples.py` (DO)
+  - `matched_multiples/scripts/03_harmonize/` (DO)
+  - `matched_multiples/scripts/04_derive/` (DO)
+  - `matched_multiples/scripts/05_validate/` (DO)
+  - `matched_multiples/tests/` (DO; including `test_schema_dtype_parity.py` mirror of C8.1 pattern)
+  - `notebooks/matched_multiples_demo.ipynb` (DO worked example)
+  - `RECEIPTS/C8.16_<UTC>.md` (RECEIPT phase)
+- [x] **APPEND-ONLY state files (this PRE-FLIGHT close commit):**
+  - `PRE_FLIGHT_LOG.md`: this entry
+  - `DECISION_LOG.md`: NEW entry recording the AskUserQuestion 2026-05-14T02:30:00Z architecture + effort decisions
+  - `STATUS.md`: new dated section at top recording PRE-FLIGHT close + revised effort estimate
+- [x] **MODIFIED at DO (forward-looking; NOT touched at this PRE-FLIGHT commit):**
+  - `README.md` (extend Three-products-at-a-glance to 4 products; extend repository layout)
+  - `PROJECT_STRUCTURE.md` (extend top-level layout + add `matched_multiples/` section)
+  - `CITATION.cff` (note 4th product if applicable)
+  - `KICKOFF.md` (no edit anticipated unless C8.16 surfaces a halt requiring §11)
+  - `NEXT_STEPS.md` (no edit anticipated unless C8.16 surfaces a halt requiring §11)
+- [x] **NOT mutated** (forward-looking HALT for C8.16 VERIFY):
+  - 4 prior parquets unchanged (C8.16 is additive; existing products untouched) ✓
+  - All C8.1-C8.15 file SHAs preserved ✓
+  - Existing test suite baseline 74 PASS + 1 SKIP + 1 XFAIL preserved (new matched_multiples/tests/ adds; existing tests unchanged) ✓
+  - Manuscript draft unchanged (Phase D step 4 scope) ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.16 is a new-subproject creation task; no existing canonical state is mutated at PRE-FLIGHT. The Convention 3 substrate is the **column-pattern mirror** verification — confirming the new subproject's inventory + schema columns align with the existing fetal_death pattern (closest sibling for fixed-width-record products).
+
+**Table 1: Inventory + schema column patterns**
+
+| Source | Columns | Will be mirrored in matched_multiples/ |
+|---|---|---|
+| `fetal_death/file_inventory.csv` (canonical pattern; 9 cols) | `year, source_url, source_org, raw_filename, file_format, doc_filename, record_length, imported, notes` | ✓ Mirror exactly; matched_multiples uses windowed `year` rows (3 windows = 3 rows, e.g., `1995-1997`, `1995-2000`, `2016-2020`; or alternatively per-year-within-window rows). Decision deferred to DO. |
+| `natality/metadata/file_inventory.csv` (8 cols; lacks `record_length`) | `year, source_url, source_org, raw_filename, file_format, doc_filename, imported, notes` | NOT mirrored; less complete than fetal_death pattern. |
+| `fetal_death/harmonized_schema.csv` (10 cols; includes `domain`) | `harmonized_name, harmonized_label, domain, type, allowed_values, years_available, raw_source_by_year, comparability_class, derivation_rule, notes` | ✓ Mirror exactly; domain column useful for grouping multiple-gestation set fields vs individual-record fields. |
+| `natality/metadata/harmonized_schema.csv` (9 cols; no `domain`) | `harmonized_name, harmonized_label, type, allowed_values, years_available, raw_source_by_year, comparability_class, derivation_rule, notes` | NOT mirrored; less expressive than fetal_death pattern. |
+
+**Table 2: 3 record-length layouts (each requires a separate record_layout CSV at DO)**
+
+| Window | File | Bytes/record | Records | Documentation PDF |
+|---|---|---|---|---|
+| 1995-1997 | `sets9597.public` (163.5 MB) | 503 | 325,135 | `matched-multiple-birth-fetal-death-1995-1997.pdf` (33 pages) |
+| 1995-2000 | `Sets9500.public` (528.6 MB) | 755 | 699,938 | `matched-multiple-birth-fetal-death-1995-2000.pdf` (33 pages) |
+| 2016-2020 | `MULTIPLES.TXT` (100.8 MB) | 156 | 646,113 | `matched-multiple-birth-fetal-death-2016-2020.pdf` (21 pages) |
+
+**Plan assumptions verified at PRE-FLIGHT (per Convention 3 second bullet; one effort amendment — user-authorized):**
+
+1. **§15.D "1-2 sessions if mostly-V1-era-sibling layout" assumption is wrong**: 3 DISTINCT record-length layouts (503/755/156 bytes) requires 3 separate `record_layout_<window>.csv` reconstructions from 87 PDF pages. Revised estimate: 2-3 sessions. User authorized 2-3 estimate via AskUserQuestion 2026-05-14T02:30:00Z; within Q42 +1-session tolerance (no §11 plan-update triggers). Documented in DECISION_LOG entry.
+2. **Architecture = standalone `matched_multiples/` subproject** per §15.D default; user-authorized via AskUserQuestion 2026-05-14T02:30:00Z. Reasons: cross-product linkage nature (spans natality + fetal-death); cleanest schema; doesn't disturb existing canonical parquet SHAs (H10 reproducibility-gate preserved).
+3. **Inventory + schema patterns** = fetal_death sibling (9-col inventory with `record_length`; 10-col schema with `domain`). Most complete sibling pattern.
+4. **3 zips ship as distinct windows** (1995-1997 NOT superseded by 1995-2000; verified by absent cross-reference + different author lists + different record formats).
+5. **No parquet mutation; H10 reproducibility gate unaffected**; all 4 existing parquet SHAs will remain byte-exact through C8.16.
+6. **L12-extension cheap-check PASS**: all 87 PDF pages text-extractable; no OCR required.
+7. **L1-extension sibling-extrapolation discipline applied**: §15.D filename pattern probed first; returned HTTP 200 on first try; no hallucinated variants needed.
+
+**Soft-flags surfaced at PRE-FLIGHT (NOT in-scope this session; carried forward from STATUS 2026-05-14T02:00:00Z):**
+
+Carried unchanged from C8.15 close + 2026-05-14 plan-update: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh; TBD whether C8.16 adds matched_multiples to the v1.0 listing) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10; though note C8.16 inventory now ships **3 raw zips** so the unified count becomes 90 across HVS — to be reconciled at DO when extending top-level docs) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate; matched_multiples DO will surface whether the new subproject inherits this gap) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped from pre-submission scope + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo + (r) effort-ceiling cap raised 42 → 86 (defense: §11 plan-update for any further raise).
+
+**Soft-flag (f) plurality footgun**: OPERATIONALLY CLOSED at C8.15; carries forward for documentation-trail only.
+
+**No NEW soft-flags surfaced at C8.16 PRE-FLIGHT.** The 2-3 session effort revision is documented + user-acknowledged (within Q42 tolerance, not a soft-flag).
+
+### Halt conditions tripped
+
+None at PRE-FLIGHT close. All 11 forward-looking HALTs from STATUS 2026-05-14T02:00:00Z verified byte-exact. AskUserQuestion 2026-05-14T02:30:00Z resolved 2 PRE-FLIGHT-time decisions (architecture + effort) with user authorization for both Option A defaults.
+
+### Result
+
+**PROCEED to C8.16 DO** (next session). PRE-FLIGHT close commit lands this entry + DECISION_LOG entry + STATUS section + tag `C8.16-pre-do`. DO begins at next session entry with the full 2-3 session budget.
+
+---
+
 ## PRE-FLIGHT for C8.15 — 2026-05-14T00:30:00Z — Worked-example notebooks 4-5 (C.6.d `education_gradient.ipynb` + C.6.e `state_reporting_quirks.ipynb`) — **RESULT: HALT (two routing-shape PRE-FLIGHT-time L11s surfaced) → user-resolved via AskUserQuestion 2026-05-14T00:30:00Z (C.6.d = natality+linked-only Recommended; C.6.e = read from `output/yearly_clean/` raw parquets Recommended); PROCEED to C8.15 DO with clarified routing; precedent: C8.5/C8.6/C8.7/C8.9/C8.10a/b/c/C8.11/C8.13 PRE-FLIGHT-time AskUserQuestion path; no `[plan-update]` commit needed (the §15 entry's "halt-condition flag F4" already anticipates the within-era discipline; routing decisions stay in this PRE-FLIGHT entry + DECISION_LOG)**
 
 ### Scope summary

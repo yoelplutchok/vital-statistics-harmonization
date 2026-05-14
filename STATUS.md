@@ -1,6 +1,118 @@
-# STATUS — last updated 2026-05-14T02:00:00Z
+# STATUS — last updated 2026-05-14T02:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T02:30:00Z — C8.16 PRE-FLIGHT close — Matched-multiples ancillary release (A.5; 4th HVS product); 11 forward-looking HALTs from prior STATUS verified byte-exact; 3 NCHS zips + 3 documentation PDFs probed at canonical FTP path (sibling-extrapolation per L1-extension; HTTP 200 on first try; L12-extension PASS — all 87 PDF pages text-extractable; no OCR needed); 3 DISTINCT record-length layouts surfaced (503-byte `sets9597.public` / 755-byte `Sets9500.public` / 156-byte `MULTIPLES.TXT`); architecture = standalone `matched_multiples/` subproject (Option A per §15.D default; user-resolved via AskUserQuestion 2026-05-14T02:30:00Z); effort revised 1-2 → 2-3 sessions (within Q42 +1-session tolerance; no §11 plan-update triggers); NEW DECISION_LOG entry at 2026-05-14T02:30:00Z + NEW PRE_FLIGHT_LOG entry recording all checks; zero canonical-state mutation; tag `C8.16-pre-do` lands on this commit; DO begins at next session with full 2-3 session budget
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 PRE-FLIGHT closed; DO at next session.** First Tier-3+5 task per the 2026-05-14T02:00:00Z plan-update sequencing (matched-multiples → natality 1968-1989 → linked 1983-2004 → perinatal-record → CODEBOOK → Stata/SAS → cross-tabs). Cumulative Phase C effort ~17.5 of 51-71 sessions (~25-34%; unchanged from prior STATUS); C8.16 budget revised 1-2 → 2-3 sessions at this PRE-FLIGHT (within Q42 tolerance).
+
+### What was done this session (PRE-FLIGHT only; pure probe + decision work)
+
+1. **Kickoff handshake**: read STATUS 2026-05-14T02:00:00Z + NEXT_STEPS §1-§13 + README + PROJECT_STRUCTURE (top section) + last 10 DECISION_LOG entries + last 5 FIX_LOG entries + LESSONS.md end-to-end + KICKOFF "Current planned sequence" + NEXT_STEPS §15.D C8.16 entry. No §7 halts tripped.
+2. **Forward-looking HALTs verification** (11 of 11 PASS byte-exact): plan-update commit `84e7869` present; 4 parquet SHAs unchanged (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); NEXT_STEPS §15.D entries C8.16-C8.22 present at lines 1307-1567; KICKOFF Tier 3+5 ACTIVE subsection present at lines 198-227; DECISION_LOG entry at 2026-05-14T02:00:00Z present at lines 26-110; cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns **74 passed + 1 skipped + 1 xfailed in 190.91s** (count matches; wall-time -19s from 210-230s STATUS band, likely warmer FS cache, not a halt per Convention 1 SHAPE-not-VALUE); soft-flags (q) + (r) carried forward; no new tag pre-commit; Tier 1+2 preserved.
+3. **NCHS substrate probe** (sibling-extrapolation per L1-extension): 3 zips at `ftp.cdc.gov/.../Datasets/DVS/matched-multiples/` all HTTP 200 on first try (filename pattern from §15.D was correct).
+4. **Zip header inspection** via `unzip -l` + sample-record `length($0)`: 3 distinct layouts surfaced — 1995-1997 (`sets9597.public` 163.5 MB; **503-byte** records; 325,135 records); 1995-2000 (`Sets9500.public` 528.6 MB; **755-byte** records; 699,938 records); 2016-2020 (`MULTIPLES.TXT` 100.8 MB; **156-byte** records; 646,113 records). Total uncompressed: ~756 MB; ~1.67M records.
+5. **Documentation PDF probe** (sibling FTP path `Dataset_Documentation/DVS/matched-multiples/`): 3 PDFs all HTTP 200; downloaded to `/tmp/c8_16_pdf_probe/` with SHAs `f982ad93…` (1995-1997, 33 pages, 35,856 chars) / `07b7260d…` (1995-2000, 33 pages, 60,687 chars) / `ed5e96ab…` (2016-2020, 21 pages, 23,205 chars). **L12-extension PASS** — all 87 pages text-extractable; no OCR needed.
+6. **1995-1997 vs 1995-2000 relationship** investigated: zero cross-reference in 1995-2000 PDF first 5 pages; different author lists; different record formats. Conclusion: ship all 3 as distinct generations.
+7. **Field-value snapshot** (Convention 3): existing `fetal_death/file_inventory.csv` (9-col w/ `record_length`) + `natality/metadata/file_inventory.csv` (8-col) + `fetal_death/harmonized_schema.csv` (10-col w/ `domain`) + `natality/metadata/harmonized_schema.csv` (9-col) column structures snapshotted. fetal_death pattern is the most-complete sibling; matched-multiples mirrors it.
+8. **AskUserQuestion 2026-05-14T02:30:00Z** raised: (i) architectural pattern (3 options); (ii) effort acknowledgment (3 options). User chose **Option A both** (standalone subproject; acknowledge 2-3 session estimate).
+9. **DECISION_LOG entry** appended at 2026-05-14T02:30:00Z recording both decisions + 5 residual risks + 5 forward-looking HALTs for next-session DO continuation.
+10. **PRE_FLIGHT_LOG entry** appended per §5 template; RESULT = PROCEED.
+11. **STATUS.md** appended (this section).
+12. **Pending**: commit (Convention 5 brevity ~5-line summary; full narrative in DECISION_LOG entry); tag `C8.16-pre-do`.
+
+### Last completed step
+
+Single commit ships: PRE_FLIGHT_LOG entry + DECISION_LOG entry + this STATUS section. Tag `C8.16-pre-do` follows on the commit. **No canonical-state mutation**; pure probe + decision work.
+
+### In-progress
+
+C8.16 DO scheduled for next session start. Budget: 2-3 sessions revised. Sub-steps queued per §15.D DO scope:
+- **DO sub-step 1**: create `matched_multiples/` subproject scaffold (README + ABOUT_SOURCE_DATA + harmonized_schema.csv + file_inventory.csv + 3 record_layout_<window>.csv from PDF documentation) — likely 1 session
+- **DO sub-step 2**: author `parse_matched_multiples.py` + run on 3 zips → 3 yearly_clean parquets; harmonize + derive (if applicable) — likely 1 session
+- **DO sub-step 3**: validate against PDF documentation tables (cell-by-cell counts); author `notebooks/matched_multiples_demo.ipynb` worked example; update monorepo README + PROJECT_STRUCTURE + CITATION; VERIFY + RECEIPT — likely 1 session
+
+### Next planned task
+
+**C8.16 DO sub-step 1** (next session): create `matched_multiples/` subproject scaffold. Author 3 record_layout CSVs from the 87 PDF documentation pages (transcribe field-position tables byte-exact; L13-extension discipline: verify field semantics, not just positions). Reference materials at `/tmp/c8_16_pdf_probe/` (3 PDFs) + `/tmp/c8_16_zip_probe/` (3 zips with first-record samples).
+
+After C8.16-complete → **C8.17** (Natality 1968-1989 backward extension; 6-10 sessions) per the 2026-05-14 plan-update sequence.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied.**
+
+### Open questions for human
+
+None blocking for C8.16 DO sub-step 1. The architectural decision is settled (Option A standalone subproject); the effort budget is acknowledged (2-3 sessions; within Q42 tolerance).
+
+**Open questions deferred to in-DO incremental decisions** (not blocking PRE-FLIGHT close):
+
+1. **Schema-design pattern for harmonized columns**: reuse fetal-death + natality column names (e.g., `maternal_age`, `plurality`) vs NCHS source field names verbatim. DO-time decision; surface as soft-flag or in-DO AskUserQuestion if ambiguous.
+2. **Inventory windowing**: ship 3 rows (one per window: `1995-1997`, `1995-2000`, `2016-2020`) vs per-year-within-window expansion (e.g., 11 rows: 3 + 6 + 5 = 14 individual years). DO-time decision; likely 3-row window-level since each window is a single zip artifact.
+3. **`notebooks/matched_multiples_demo.ipynb` cohort + cell choice**: which year × which IMR cohort × which NCHS-published reference table. DO-time decision; routine.
+
+**Carried-forward open questions from C8.15 close** (still pending Phase D):
+
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — `paper/draft_v2_hmd_styled.md:68` fetal-death timing. Deferred further (Phase D now projected at ~38-52 cumulative sessions; was ~17-18 prior).
+
+**Open soft-flags (carried unchanged from STATUS 2026-05-14T02:00:00Z; no NEW this PRE-FLIGHT):**
+
+(a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun OPERATIONALLY CLOSED at C8.15 + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10; **note**: C8.16 adds 3 raw zips → unified count becomes 90 across HVS at C8.16 DO when extending top-level docs) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate; C8.16 DO may inherit) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo + (r) effort-ceiling cap 42 → 86.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start (C8.16 DO continuation). Full enumeration in DECISION_LOG 2026-05-14T02:30:00Z.
+
+1. **`C8.16-pre-do` tag present** on this commit. Verify: `git tag --list 'C8.16-pre-do'`.
+2. **`C8.16-complete` tag NOT yet present** until full RECEIPT lands. Verify: `git tag --list 'C8.16-complete'` empty pre-RECEIPT.
+3. **All 4 parquet SHAs unchanged byte-exact** (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`) — C8.16 is additive; H10 reproducibility-gate preserved.
+4. **PRE_FLIGHT_LOG entry at 2026-05-14T02:30:00Z** present at top of file with `RESULT: PROCEED`.
+5. **DECISION_LOG entry at 2026-05-14T02:30:00Z** present at top recording architecture + effort decisions.
+6. **3 NCHS zip sha256 anchors** will be recorded at first DO sub-step (downloading to canonical `raw_data/` location or streaming-from-FTP); current /tmp/c8_16_zip_probe/ probe samples may be removed before DO.
+7. **3 documentation PDF sha256 anchors** recorded: `f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66` (1995-1997) / `07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886` (1995-2000) / `ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be` (2016-2020).
+8. **3 record-length layouts confirmed at PRE-FLIGHT**: 503 / 755 / 156 bytes per record. Forward-looking VERIFY: 3 separate `record_layout_<window>.csv` files at DO close (one per layout); parser produces records matching documented lengths.
+9. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`** returns 74 PASS + 1 SKIP + 1 XFAIL (baseline preserved at this PRE-FLIGHT close). C8.16 DO close will extend to `pytest .../ matched_multiples/tests/` returning at-least-74-PASS + 1 SKIP + 1 XFAIL.
+10. **No KICKOFF.md / NEXT_STEPS.md edit at this PRE-FLIGHT close** (no §11 plan-update needed; architecture + effort decisions stay in PRE_FLIGHT_LOG + DECISION_LOG per the C8.15 / C8.13 / C8.11 / C8.10a/b/c precedent).
+11. **Soft-flag (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo carries forward** to DO continuation.
+12. **Soft-flag (r) effort-ceiling cap 42 → 86 carries forward**; this PRE-FLIGHT does NOT raise the cap further (within Q42 tolerance).
+13. **`/tmp/c8_16_pdf_probe/` + `/tmp/c8_16_zip_probe/` directories carry forward** with 3 PDFs + 1 unzipped zip sample; persistent through next session unless `/tmp` is cleaned by the OS. Re-download from FTP is cheap if needed.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.15 DO outputs unchanged.
+
+NEW this session (PRE-FLIGHT only; no canonical-state mutation):
+- `PRE_FLIGHT_LOG.md` entry at 2026-05-14T02:30:00Z (top of file)
+- `DECISION_LOG.md` entry at 2026-05-14T02:30:00Z (top of file)
+- This STATUS section
+
+Off-tree probe artifacts (not committed; transient):
+- `/tmp/c8_16_pdf_probe/{1995-1997,1995-2000,2016-2020}.pdf` (3 PDFs; ~600 KB total)
+- `/tmp/c8_16_zip_probe/{1995-1997,1995-2000,2016-2020}.zip` (3 zips; ~43 MB total)
+- `/tmp/c8_16_zip_probe/` first-record samples (zero-cost re-derivable from zips)
+
+### Notes for next session
+
+- **C8.16 DO sub-step 1 entry**: re-verify 4 parquet SHAs + cache-cleared pytest baseline (cheap; ~3-5 min). Then begin scaffolding `matched_multiples/` subproject directory structure mirroring `fetal_death/` (top-level docs at subproject root; not under `docs/`). The 3 record_layout CSVs are the long-pole work — transcribe field-position + field-name + field-semantics tables byte-exact from the 87 PDF pages (L13-extension discipline: verify field semantics not just positions; for non-trivial fields run a value-distribution sanity check on the parsed yearly_clean parquet against the user-guide's documented value range).
+- **Q42 trigger** preserved: if C8.16 DO cumulative effort exceeds 4 sessions (revised 2-3 + 1 tolerance), halt at clean checkpoint and re-ask user.
+- **Cumulative Phase C ~17.5 of 51-71 sessions** (~25-34%); C8.16 budget 2-3 brings projected post-C8.16 to ~19.5-20.5 / 51-71 (~30-40%).
+- **B.12 snapshot regression test** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) remains valid byte-exact through C8.16 (additive scope; no parquet reshape on existing products). Will re-snap at C8.17 + C8.18 + C8.19 parquet rebuilds.
+- **`notebooks/matched_multiples_demo.ipynb` worked example** at C8.16 DO sub-step 3: choose a cell from one of the 3 documentation PDFs' published tables for byte-exact reproduction. Recommended: 1995-1997 PDF Table 1 (multiple-set frequency by gestation; small dimensional space) or 2016-2020 PDF Table A (smallest layout; easiest first-pass).
+- **Schema-design pattern decision** (open Q1 above): recommend revisit at DO sub-step 1 close. Reuse-existing-column-names approach (more interoperable with natality/fetal-death harmonized parquets; users can join cross-product) vs verbatim-NCHS approach (preserves source-doc traceability; less interoperable). Likely answer: reuse-existing for matched-multiples-specific fields that have a clear sibling (`maternal_age`, `plurality`, `infant_birthweight_g`); verbatim for matched-multiples-unique fields (set-level fields with no cross-product analog).
+
+### Session summary
+
+C8.16 PRE-FLIGHT closed in ~1 hour wall-clock (kickoff handshake + probes + AskUserQuestion + DECISION_LOG + PRE_FLIGHT_LOG + STATUS). 11 forward-looking HALTs from prior STATUS verified byte-exact. 3 NCHS zips + 3 PDFs probed via sibling-extrapolation (L1-extension PASS on first try); L12-extension cheap-check PASS on all 87 PDF pages (no OCR needed). PRE-FLIGHT surfaced 3 DISTINCT record-length layouts (503 / 755 / 156 bytes) where §15.D had assumed a single shared layout; effort revised 1-2 → 2-3 sessions within Q42 +1-session tolerance (no §11 plan-update triggers). User authorized standalone-subproject architecture (Option A per §15.D default) + 2-3 session estimate (Option A) via AskUserQuestion 2026-05-14T02:30:00Z. Zero canonical-state mutation; H10 reproducibility gate preserved. Tag `C8.16-pre-do` lands on this commit. **C8.16 DO begins next session** with full 2-3 session budget.
 
 ---
 
