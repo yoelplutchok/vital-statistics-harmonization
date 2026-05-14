@@ -23,6 +23,79 @@
 
 ---
 
+## 2026-05-14T04:30:00Z — C8.16 DO sub-step 2 — Parser authored + 3 yearly_clean parquets emitted (324,490 / 699,144 / 641,934 records byte-exact); 1995-1997 CLINGEST L13-extension residual risk (a) resolved empirically (1→2 byte; 212→211 layout rows; 502-byte continuity preserved)
+
+**Choices (LLM at C8.16 DO sub-step 2 close):**
+
+1. **`parse_matched_multiples.py` authored at `matched_multiples/scripts/01_import/parse_matched_multiples.py`.** Mirrors `fetal_death/scripts/01_import/parse_fetal_year.py` structure (argparse + chunked `ParquetWriter` + iter-records generator). Single new mechanism: per-window dispatch (`_WINDOWS` dict) keyed by `--window` arg ∈ {`1995-1997`, `1995-2000`, `2016-2020`} with per-window `(layout_csv, expected_len, variable_length)` tuples. Reads `matched_multiples/record_layout_<window>.csv` at runtime as the field-position source of truth (no hard-coded constants like fetal-death's `field_specs.py`). Fields preserved as raw `latin-1` strings; numeric coercion + sentinel handling deferred to 03_harmonize/ sub-step.
+
+2. **`zip_text_stream.py` vendored byte-for-byte** at `matched_multiples/scripts/01_import/zip_text_stream.py` (copy from `fetal_death/scripts/01_import/zip_text_stream.py`). Reason: standalone-subproject architecture per the 2026-05-14T02:30:00Z PRE-FLIGHT decision; each subproject owns its own infrastructure to avoid cross-product import paths and drift. Single 81-line file; future drift is cheap to re-sync if needed.
+
+3. **Variable-length 2016-2020 handling** in parser: records exceeding 157 bytes warn-and-skip (none observed empirically); records short of 157 bytes right-pad with spaces before slicing (UCODR130 1-byte and 2-byte tail variants). Empirical row count 641,934 matches PDF Table 1 byte-exact and PRE-FLIGHT (DECISION_LOG 2026-05-14T03:30:00Z residual risk b precursor) byte-exact. Zero `bad_len` warnings on the full parse.
+
+4. **1995-1997 CLINGEST L13-extension residual risk (a) resolved empirically.** Sub-step 1 layout CSV declared CLINGEST at byte 115 (1 byte) followed by a spurious DELMETH 1-byte umbrella row at byte 116. Empirical value-distribution probe on first 1,000 records showed byte 115 holds digits `{1=39, 2=209, 3=513, 4=99, 9=140}` — the tens-digit of a 2-byte 17-47/99 field, NOT the documented 17-47 weeks values. Confirmed via raw-byte slice on rec0 bytes 115-116 = `'99'` (CLINGEST=99 unknown). 1995-1997 PDF page 11 lists `position 115 [CLINGEST] CLINICAL ESTIMATE OF GESTATION (values 17-47=weeks; 99=Unknown)` followed by `position 116 [DELMETH] METHOD OF DELIVERY` — the position-116 DELMETH entry is the descriptive umbrella header for the composite at positions 117-123 (VAGINAL/VBAC/PRIMAC/REPEAC/FORCEP/VACUUM/HYSTER) and does NOT occupy a separate byte. Edit: `record_layout_1995_1997.csv` row 54 changed `115,115,1,CLINGEST` → `115,116,2,CLINGEST`; row 55 (`116,116,1,DELMETH ... umbrella`) deleted. Net layout row count 212 → 211. Net byte budget 502 → 502 (preserved). Post-edit re-parse: CLINGEST distribution = `{37: 45926, 36: 44429, 99: 43133, 38: 40703, 35: 30273, ...}` — modal weeks 35-38 (preterm-to-term twins), 99=unknown. 64 / 324,490 records (0.02%) out-of-spec (blank/sentinel; routine missing-data, not a parser bug). Downstream byte positions (VAGINAL@117, DELMETH6@124, etc.) preserved byte-exact (verified by identical pre-edit and post-edit distributions on those fields).
+
+5. **3 yearly_clean parquets emitted** at `matched_multiples/output/yearly_clean/matched_multiples_{1995-1997,1995-2000,2016-2020}_raw.parquet` with row counts 324,490 / 699,144 / 641,934 — all byte-exact to PRE-FLIGHT empirical figures. SHAs: `5c22308bed2883b9be8e244e763c3603f700b5ba5274f3ef30388a28d39205d1` (1995-1997) / `7c682668006f3fab556b79422d34f5d84eed0bd0e1ae44702908f9f5edd61f5d` (1995-2000) / `d98b42965573530d26d72368d968c395487b2c4e4dd3bfc4ad426e966a543261` (2016-2020). Parquets are gitignored (`*.parquet` + `output/`); SHAs recorded here for sub-step 3 forward-looking HALTs.
+
+**Alternatives considered:**
+
+For #2 (zip_text_stream vendoring):
+- (A) Copy-vendor 81-line file into matched_multiples/ — CHOSEN.
+- (B) sys.path-inject `fetal_death/scripts/01_import/` from matched_multiples parser. Pro: zero duplication. Con: introduces cross-subproject import dependency; matched_multiples no longer standalone; complicates future subproject pull-out.
+- (C) Promote zip_text_stream to `shared/helpers/`. Pro: defrags. Con: requires moving the fetal-death sibling too + updating its imports + re-running its tests; scope creep beyond C8.16 DO sub-step 2.
+
+For #4 (CLINGEST resolution):
+- (A) Edit layout CSV in-place; preserve byte-budget by deleting the spurious DELMETH umbrella row — CHOSEN. Rationale: PDF page 11 confirms DELMETH at position 116 is a descriptive umbrella label, not a separate byte. Empirical rec0 bytes 113-127 = `'  9912222285222'` confirms positions 117-123 hold the VAGINAL-through-HYSTER composite indicators byte-for-byte, leaving no byte budget for an intervening DELMETH field. The 1-byte CLINGEST + 1-byte DELMETH original layout was a misread of the PDF's umbrella-header convention.
+- (B) Add an in-DO §11 plan-update commit. Rejected: the fix is an empirical resolution of a PRE-FLIGHT-flagged residual risk (a); DECISION_LOG records it; no §15.D / §11 plan text needs updating.
+- (C) Defer fix to sub-step 3 + ship 1995-1997 parquet with broken CLINGEST. Rejected: violates §2.2 fail-closed; would propagate a known bad column downstream.
+
+For #5 (parquet output path):
+- (A) `matched_multiples/output/yearly_clean/...` — CHOSEN per STATUS line 43 sub-step 2 plan + §15.D scope.
+- (B) `output/yearly_clean/matched_multiples_...` at monorepo root. Rejected: existing subprojects (fetal_death, natality) house their outputs under their own subproject root.
+
+**Reason:** Sub-step 2 closes the parser-authoring + first-parse half of the DO budget. The L13-extension empirical probe served exactly its designed function — a value-distribution sanity check on anchor fields surfaced a byte-position semantic error that the PRE-FLIGHT layout-CSV continuity check (which only verifies byte-budget arithmetic) could not catch. Per §4.5 commit-message brevity, the full narrative lives here; the commit ships a ~5-line summary.
+
+**Source:**
+- Empirical value-distribution probe on `/tmp/c8_16_smoke_1995-1997.parquet` byte 115 returning `{1, 2, 3, 4, 9}` (tens-digit pattern of 2-byte CLINGEST).
+- Raw-byte slice on rec0 bytes 115-116 = `b'99'` (CLINGEST=99 unknown).
+- 1995-1997 PDF text-layer extract `/tmp/c8_16_pdf_probe/1995-1997.txt` (sha=`f982ad93…`) page 11 lines for positions 115, 116, 117.
+- DECISION_LOG.md 2026-05-14T03:30:00Z residual risk (a) anticipating exactly this resolution at sub-step 2.
+- LESSONS.md 2026-05-12T01:40:00Z L13-extension discipline (byte-position-vs-semantics; value-distribution check is the only catch).
+- Post-edit re-parse value-distribution verification (CLINGEST modal weeks 35-38; 0.02% out-of-spec).
+- Empirical row counts: 324,490 / 699,144 / 641,934 across the 3 zips.
+
+**Verifiable by:**
+- `git log --all --format='%h %s' | grep 'C8.16 DO sub-step 2'` returns this commit.
+- `wc -l matched_multiples/record_layout_1995_1997.csv` returns 212 (1 header + 211 data rows; was 213 at sub-step 1 close).
+- `uv run python -c "import csv; ..." continuity` returns PASS with end=502 for 1995-1997 layout.
+- `shasum -a 256 matched_multiples/output/yearly_clean/*.parquet` returns the 3 SHAs above.
+- `uv run python -c "import pandas as pd; print(pd.read_parquet('matched_multiples/output/yearly_clean/matched_multiples_1995-1997_raw.parquet')['CLINGEST'].value_counts().head())"` returns weeks 35-38 modal + 99 sentinel (not tens-digits 1-4 + 9).
+- 4 canonical parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`) BYTE-EXACT preserved (H10 reproducibility gate; C8.16 remains additive).
+
+**Reversible:** yes — `git reset --hard HEAD~1` discards this sub-step's commit. The 3 yearly_clean parquets are deterministic functions of (zips + layout CSVs + parser) so re-deriving from sub-step 1 state is free.
+
+**Residual risks (sub-step 2):**
+
+- (a) **1995-2000 layout potential mirror-issue not exhaustively probed.** 1995-2000 layout was authored with 2-byte CLINGEST at 115-116 from the outset (correct per PDF) but no other fields were value-distribution-checked beyond the anchor set (BIRTHID, PLURALITY, CLINGEST, DELMETH6). If a different field in the 1995-2000 layout has an analogous byte-position-vs-semantics error (e.g., an umbrella header mistaken for a field), it would not surface until sub-step 3 NCHS-Table validation.
+- (b) **2016-2020 layout sanity-checked at anchor set only.** Same caveat. The 2016-2020 file Table 1 byte-exact match is a strong cross-validation for set-size + record-count, but does not validate per-field semantics for the 124 non-anchor fields.
+- (c) **CLINGEST out-of-spec rate 0.02-0.018%** (64 / 324,490 in 1995-1997; 123 / 699,144 in 1995-2000) — likely blank/sentinel for fetal-death records with no clinical estimate. Sub-step 3 will L13-extension-validate by cross-checking that 100% of `BIRTHID=3` records have CLINGEST in the documented sentinel set.
+- (d) **Harmonization (03_harmonize/) NOT in sub-step 2 scope.** The 3 yearly_clean parquets ship the raw NCHS columns; cross-product harmonization (sex_infant, maternal_age, plurality, etc. canonicalization) is the sub-step 3 deliverable.
+- (e) **SETID empirically blank in first 1,000 records of 1995-1997**: explained by file sort order (unmatched fetal-deaths leading the file; SETID populated only on matched complete sets). Verified at rec200000+ where SETID is 6-digit numeric. Sub-step 3 validation will confirm SETID populates iff FLGCOMP=0 (Complete set).
+
+**Backport scope:** None outside `matched_multiples/`. The CLINGEST fix is local to the 1995-1997 layout CSV; no other subproject inherits this field.
+
+**Forward-looking HALTs for sub-step 3 (Convention 4):**
+
+- 3 yearly_clean parquet SHAs at `5c22308bed2883b9…` / `7c682668006f3fab…` / `d98b42965573530d…` (re-derive should produce byte-identical output).
+- 1995-1997 layout row count 211 (was 212; CLINGEST fix preserved); 1995-2000 layout 256; 2016-2020 layout 125. All 3 continuity-PASS at 502/754/157.
+- 4 canonical parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`) BYTE-EXACT preserved (H10 reproducibility-gate).
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL ±25s wall-time. C8.16 sub-step 2 added no test surface; baseline preserved.
+- `parse_matched_multiples.py` + `zip_text_stream.py` present at `matched_multiples/scripts/01_import/`.
+- Sub-step 3 scope: author `harmonize_matched_multiples.py` (cross-product analog field canonicalization per harmonized_schema.csv) + validate against NCHS-published documentation tables byte-exact + author `notebooks/matched_multiples_demo.ipynb` worked example + update monorepo top-level docs (README + PROJECT_STRUCTURE + CITATION + NCHS_SOURCE_MANIFEST) + VERIFY + RECEIPT.
+- Cumulative Phase C progresses ~18.5 of 51-71 sessions (sub-step 2 advances ~1.0 of C8.16's 2-3 session budget).
+
+---
+
 ## 2026-05-14T03:30:00Z — C8.16 DO sub-step 1 — Subproject scaffold + 3 record_layout CSVs (212 + 256 + 125 rows) + preliminary 26-col harmonized schema + 9-col file_inventory; 5 design decisions bundled
 
 **Choices (LLM at C8.16 DO sub-step 1 close; documented at scaffold time before parser authoring):**
