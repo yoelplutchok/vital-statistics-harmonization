@@ -8,13 +8,14 @@ the SHA disagreement surfaces at CI rather than mid-pipeline. The manifest
 at docs/NCHS_SOURCE_MANIFEST.md (sha=ed2a44d3… at C8.11) is the canonical
 reference; this test verifies the on-disk universe matches it.
 
-Convention 1 SHAPE-not-VALUE: the count anchor (100 = 43 + 35 + 19 + 3) is the
+Convention 1 SHAPE-not-VALUE: the count anchor (122 = 43 + 57 + 19 + 3) is the
 structural invariant; per-row SHA assertions enforce the manifest is the
 single source of truth. The manifest is re-snapshot under authorized
 latest-year refreshes via §11 plan-update (e.g., when 2025-published
 cohort-2024 linked file lands, the manifest gains a row). The matched-
 multiples section (3 rows; 1995-1997 + 1995-2000 + 2016-2020) was added at
-C8.16 (2026-05-14).
+C8.16 (2026-05-14). The 22 pre-1990 natality rows (1968-1989) were added at
+C8.17 DO step 1 (2026-05-14).
 
 Skip-if-zip-missing per the established `_require()` pattern in
 tests/conftest.py + per-subproject conftests. CI without raw zips on disk
@@ -99,17 +100,17 @@ def _sha256_of(path: Path) -> str:
 
 
 def test_manifest_anchor_row_count() -> None:
-    """Convention-1 anchor: 100 raw-zip rows total in NCHS_SOURCE_MANIFEST.md."""
+    """Convention-1 anchor: 122 raw-zip rows total in NCHS_SOURCE_MANIFEST.md."""
     rows = _parse_manifest()
-    assert len(rows) == 100, (
-        f"expected 100 manifest rows "
-        f"(43 fetal-death + 35 natality + 19 linked + 3 matched-multiples); "
+    assert len(rows) == 122, (
+        f"expected 122 manifest rows "
+        f"(43 fetal-death + 57 natality + 19 linked + 3 matched-multiples); "
         f"got {len(rows)}"
     )
 
 
 def test_manifest_section_row_counts() -> None:
-    """Convention-1 anchor: 43 + 35 + 19 + 3 = 100 split across product sections."""
+    """Convention-1 anchor: 43 + 57 + 19 + 3 = 122 split across product sections."""
     rows = _parse_manifest()
     counts = {"fetal": 0, "natality": 0, "linked": 0, "matched_multiples": 0}
     for filename, _sha in rows:
@@ -123,17 +124,17 @@ def test_manifest_section_row_counts() -> None:
             counts["matched_multiples"] += 1
         else:
             raise AssertionError(f"unrecognized raw_filename: {filename!r}")
-    assert counts == {"fetal": 43, "natality": 35, "linked": 19, "matched_multiples": 3}
+    assert counts == {"fetal": 43, "natality": 57, "linked": 19, "matched_multiples": 3}
 
 
 def test_source_zip_sha_matches_manifest() -> None:
     """Per-zip SHA verification.
 
-    Iterates all 97 manifest rows. For each row, computes shasum -a 256 on
+    Iterates all 122 manifest rows. For each row, computes shasum -a 256 on
     the corresponding on-disk file and asserts equality with the manifest's
     SHA. Missing zips are skip-noted (not failures) so CI without raw data
-    can still gate on the other 96. If NONE of the 97 zips are present, the
-    test SKIPs entirely; that signals running outside the canonical build
+    can still gate on the others. If NONE of the manifest zips are present,
+    the test SKIPs entirely; that signals running outside the canonical build
     environment.
     """
     rows = _parse_manifest()

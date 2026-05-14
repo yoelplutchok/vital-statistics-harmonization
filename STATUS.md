@@ -1,6 +1,153 @@
-# STATUS — last updated 2026-05-14T06:30:00Z
+# STATUS — last updated 2026-05-14T07:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T07:30:00Z — **C8.17 DO step 1 close** — Download substrate + SHA-anchor + metadata extension SHIPPED — 22 NCHS natality 1968-1989 zips (1.64 GB) + 15 user-guide PDFs (87.5 MB) downloaded to `~/Desktop/natality-harmonization/raw_data/` + `raw_docs/` (sibling-of-existing per AskUserQuestion 2026-05-14T07:00:00Z Q1; Option A Recommended); `natality/metadata/file_inventory.csv` 54 → 76 rows (22 new 1968-1989 inserted before existing 1990; chronological natality block 1968-2024 contiguous; 22 rows `imported=false` + 35 rows `imported=true` + 19 linked unchanged); `docs/NCHS_SOURCE_MANIFEST.md` 100 → 122 zips (Section 2 35 → 57 rows + new Boundary notes paragraph for sample-frame + certificate-revision boundaries + C8.17 DO step 5 forward-pointer); `tests/test_source_zip_sha_stability.py` anchor 100 → 122 + natality 35 → 57 (3/3 PASS incl. per-row on-disk SHA verification of all 22 new zips byte-exact); **§7 halt-and-resolve cycle**: `test_natality_inventory_years_match_schema_years_available` initially FAIL'd because inventory_years (76 numeric incl. 1968-1989) became a superset of schema_years_available (1990-2024); user-resolved via AskUserQuestion 2026-05-14T07:00:00Z Q2 = Option A = filter on `imported=true` (~10 LOC `tests/test_inventory_invariants.py` mutation; `_read_inventory_year_set` gains `imported_only: bool = False` kwarg; natality test passes `imported_only=True`; fetal_death test retains default per new soft-flag (u) — fetal_death `imported` column = uniformly `no` vestigial); pytest 85 PASS + 1 SKIP + 1 XFAIL in 232.20s (within ±25s of 246.27s C8.17-pre-do reference); 4 canonical + 4 matched-multiples parquet SHAs preserved BYTE-EXACT (H10 gate intact); zero §7 halts remaining; no tag (intermediate DO step per C8.16 sub-step 2 precedent); full narrative in DECISION_LOG 2026-05-14T07:30:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 COMPLETE (1 of 7); C8.17 PRE-FLIGHT CLOSED; C8.17 DO step 1 CLOSED; DO step 2 queued.** Cumulative Phase C ~20.5 of 51-71 sessions (~29-40%; +1 session for DO step 1; effort-ceiling cap 86 sessions intact).
+
+### What was done this session (C8.17 DO step 1 entry to close)
+
+1. **Kickoff handshake** (~5 min): read STATUS top section + KICKOFF.md + README.md + PROJECT_STRUCTURE.md + LESSONS.md end-to-end + DECISION_LOG + FIX_LOG recent entries; produced (a)-(d) handshake; user authorized PROCEED.
+2. **14 forward-looking HALTs from STATUS 2026-05-14T06:30:00Z verified byte-exact** (~5 min):
+   - HALT 1 PASS: `C8.17-pre-do` tag at `12fc20e`; `C8.16-complete` also present.
+   - HALT 2 PASS: `C8.17-complete` tag NOT yet present.
+   - HALT 3 PASS: 4 canonical parquet SHAs byte-exact (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`).
+   - HALT 4 PASS: 4 matched-multiples parquet SHAs byte-exact (`5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`).
+   - HALT 5 PASS: cache-cleared pytest 85 PASS + 1 SKIP + 1 XFAIL in 243.90s (within ±25s of 246.27s reference).
+   - HALT 6 PASS: 22 NCHS zip URLs HTTP 200 at `ftp.cdc.gov/.../DVS/natality/Nat<YYYY>.ZIP` (and lowercase `.zip` also serves 200 — case-insensitive FTP).
+   - HALT 7 PASS: 15 NCHS PDF URLs HTTP 200 at `ftp.cdc.gov/.../Dataset_Documentation/DVS/natality/`.
+   - HALT 8 PASS: `/tmp/c8_17_probes/` 5 PDFs present with byte-exact SHAs from STATUS (`085ffced…` / `73e2d3e2…` / `0ac4733c…` / `371d1f61…` / `92dab811…`).
+   - HALT 9 PASS: `docs/NCHS_SOURCE_MANIFEST.md` first paragraph names 100 zips.
+   - HALT 10 PASS: `natality/metadata/file_inventory.csv` 54 rows.
+   - HALT 11 PASS: `git diff HEAD -- KICKOFF.md NEXT_STEPS.md` empty.
+   - HALT 12 PASS (informational): Tier 3+5 progress = 1/7 (C8.16 done).
+3. **AskUserQuestion Q1** (download location): user-selected Option A = sibling-of-existing at `~/Desktop/natality-harmonization/raw_data/Nat<YYYY>.zip` + `raw_docs/Nat<YYYY>doc.pdf` (one canonical natality raw_data location; consistent with 1990-2024 pattern + fetal_death sibling pattern).
+4. **22 zip downloads** (~10 min wall-clock for parallel 3-batch + serial-within-batch curl with --max-time 300; cumulative 1.64 GB):
+   - Batch 1 (1968-1977): 10 zips, 14 MB → 58 MB; total ~362 MB.
+   - Batch 2 (1978-1986): 9 zips, 71 MB → 113 MB; total ~889 MB.
+   - Batch 3 (1987-1989): 3 zips, 112 MB → 145 MB; total ~389 MB.
+   - All 22 SHA-256 computed (e.g., `Nat1968.zip = bd791cf5…`, `Nat1989.zip = 21e39c80…`).
+5. **15 PDF downloads** (~1 min; 87.5 MB cumulative): 13 individual + 2 joint Nat1969-71doc + Nat1972-77doc. All 15 SHAs computed; 5 match `/tmp/c8_17_probes/` byte-exact; 10 new.
+6. **`natality/metadata/file_inventory.csv` extension** 54 → 76 rows:
+   - 22 new rows inserted BEFORE the existing 1990 row (chronological order preserved).
+   - Columns 1-8: `year,source_url,source_org,raw_filename,file_format,doc_filename,imported,notes` (matches existing 8-col structure).
+   - `file_format` per row: conservative wording per Convention 2 + L17 — `"zip; ASCII fixed-width (record length TBD at C8.17 DO step 2; <sample-frame>, <certificate-revision>)"`; eras: 1968 standalone-50% / 1969-1971 joint-50% / 1972-1977 joint-100% / 1978-1988 individual-100% 1978-rev / 1989 standalone 1989-rev rollout (soft-flag (t) reconciled at DO step 4).
+   - `imported=false` for all 22 (anchored-not-yet-imported; flips to `true` at DO step 6 per row when parser ships).
+   - Empirical verification: 76 data rows × 8 cols; natality 1968-2024 contiguous (verified via Python set diff).
+7. **`docs/NCHS_SOURCE_MANIFEST.md` extension** 100 → 122 zips:
+   - Header paragraph: "100 zips total: 43 + 35 + 19 + 3" → "122 zips total: 43 + 57 + 19 + 3".
+   - Section 2 header: "(35; year 1990-2024)" → "(57; year 1968-2024)"; coverage description extended; new sentence noting C8.17 DO step 5 forward-pointer (`parse_all_pre1990_years.py`).
+   - 22 new rows inserted BEFORE the existing 1990 row in the Section 2 table.
+   - New Boundary notes paragraph appended to Section 2: filename convention boundary (1993→1994 `Nat<YYYY>us.zip` suffix); sample-frame boundary (1971→1972 50%→100%); certificate-revision boundaries (1968-rev → 1978-rev → 1989-rev); record-length TBD-at-DO-step-2 disclaimer + soft-flag (t) cross-reference.
+8. **`tests/test_source_zip_sha_stability.py` extension** anchors 100 → 122 + natality 35 → 57:
+   - Module docstring: anchor narrative updated (100 = 43 + 35 + 19 + 3 → 122 = 43 + 57 + 19 + 3; matched-multiples C8.16 lineage preserved + new "pre-1990 natality at C8.17 DO step 1" lineage added).
+   - `test_manifest_anchor_row_count`: assert 100 → 122.
+   - `test_manifest_section_row_counts`: natality 35 → 57; `assert counts == {…, "natality": 57, …}`.
+   - `test_source_zip_sha_matches_manifest` docstring: "97 manifest rows" → "122 manifest rows" (minor doc fix).
+   - `_classify()` Nat-prefix logic already handles `Nat<YYYY>.zip` filenames (no extension needed).
+   - VERIFY: `uv run pytest tests/test_source_zip_sha_stability.py -v` 3/3 PASS in 12.53s (per-row test verified all 22 new on-disk zip SHAs byte-match the manifest).
+9. **§7 halt-and-resolve cycle on `test_natality_inventory_years_match_schema_years_available`**:
+   - Initial FAIL: `inv_years - sch_years = {1968..1989}` because schema years_available documents 1990-2024 only.
+   - AskUserQuestion Q2 (test resolution): user-selected Option A = filter on `imported=true`.
+   - Implementation: `_read_inventory_year_set` gains `imported_only: bool = False` kwarg; rows are filtered when `imported != "true"` (case-insensitive); natality test passes `imported_only=True`; first-pass symmetric edit to fetal_death test REVERTED after `awk` revealed fetal_death/file_inventory.csv has all 43 rows `imported=no` (vestigial column never updated) → new soft-flag (u) documented in fetal_death test's per-test docstring + DECISION_LOG choice 6.
+   - VERIFY: `uv run pytest tests/test_inventory_invariants.py -v` 3/3 PASS in 0.02s.
+10. **Module-level docstring of `tests/test_inventory_invariants.py` extended**: documents the `imported=true` filter rationale + Convention 2 cross-reference + the "re-asserts at DO step 6" forward-looking discipline.
+11. **Full pytest baseline verification**: cache-cleared `uv run pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/ -p no:cacheprovider` returns **85 PASS + 1 SKIP + 1 XFAIL in 232.20s** (was 246.27s at C8.17 PRE-FLIGHT; -14.07s well within ±25s tolerance per Convention 1 SHAPE-not-VALUE).
+12. **H10 reproducibility gate verified post-DO step 1**: 4 canonical parquet SHAs + 4 matched-multiples parquet SHAs byte-exact preserved (zero parquet rebuild this DO step; metadata + test-surface mutations only).
+13. **DECISION_LOG entry** appended at 2026-05-14T07:30:00Z (6 design choices bundled: download location + filename casing + file_format wording + imported column value + test resolution Option A + fetal_death symmetric-edit revert).
+14. **STATUS.md** appended (this section).
+15. **Pending**: commit (Convention 5 brevity ~5-line summary; full narrative in DECISION_LOG); no tag at intermediate sub-step per Convention 5 precedent at C8.16 sub-step 2.
+
+### Last completed step
+
+Single commit ships: `natality/metadata/file_inventory.csv` (MODIFIED; 54 → 76 rows) + `docs/NCHS_SOURCE_MANIFEST.md` (MODIFIED; 100 → 122 zips + Section 2 35→57 + Boundary notes paragraph) + `tests/test_source_zip_sha_stability.py` (MODIFIED; count anchors 100→122, 35→57; module docstring lineage) + `tests/test_inventory_invariants.py` (MODIFIED; `imported_only` kwarg on helper; natality test filter; module + per-test docstrings) + DECISION_LOG entry + this STATUS section. **No tag** at DO step 1 close (intermediate sub-step per Convention 5 precedent; tag `C8.17-complete` lands only after DO step 6 + RECEIPT).
+
+### In-progress
+
+C8.17 DO step 2 scheduled for next session. DO step 2 scope: layout-CSV reconstruction for 1968 + 1969-1971 eras (~1-2 sessions per §15.D). Read `Nat1968doc.pdf` + `Nat1969-71doc.pdf` page-by-page to identify the documented byte-position table; emit `natality/metadata/record_layout_1968.csv` + `natality/metadata/record_layout_1969_1971.csv` (per-era layout CSVs paralleling the existing 1990+ layout files); empirically value-distribution-verify anchor fields at one-sample-per-era (L13-extension cheap-check; 1 random 1000-row sample per era).
+
+### Next planned task
+
+**C8.17 DO step 2 — layout-CSV reconstruction for 1968 + 1969-1971 eras** (~1-2 sessions). DO step 2 entry cheap-check (~5 min): re-verify the 14 forward-looking HALTs from DECISION_LOG 2026-05-14T07:30:00Z. Then: (i) `pymupdf.open('Nat1968doc.pdf').load_page(N).get_text()` for the byte-position table pages (likely pp 5-15 per PRE-FLIGHT page-count 9); emit `record_layout_1968.csv` paralleling `record_layout_1990.csv` 8-col structure; (ii) same for `Nat1969-71doc.pdf` (26 pages; pp 5-20 likely; one joint CSV for 1969 + 1970 + 1971 since layouts are uniform per joint user-guide convention); (iii) record-length probe per era (unzip 1 record from each year's zip; `wc -c` first record; match documented record length); (iv) value-distribution probe on 3 anchor fields (likely DATAYEAR + MAGER + RACE) per L13-extension; (v) update `natality/metadata/file_inventory.csv` `file_format` column for 1968 + 1969-1971 rows with the empirical record-length figure.
+
+After C8.17 DO step 2 ships → **C8.17 DO step 3** (layout-CSV reconstruction for 1972-1977 + 1978-1988 + 1989 eras; 1-2 sessions) per §15.D.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged.
+**C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking C8.17 DO step 2 entry. The C8.17 DO step 1 close state is fully verified.
+
+**Carried-forward open questions from C8.17 PRE-FLIGHT close (still pending Phase D):**
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — `paper/draft_v2_hmd_styled.md:68` fetal-death timing. Further deferred.
+
+**Open soft-flags (13 carried + (t) carried + (u) NEW):**
+
+Carried unchanged from C8.17 PRE-FLIGHT close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2; C8.17 will ADD pre-1990 entries) + (c) `VERSION_ROADMAP.md` "Planned" section (Phase D candidate) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun OPERATIONALLY CLOSED + (g) PRE-FLIGHT "87 raw zips" typo (now 122) + (i) `fetal_death/COMPARABILITY.md` title staleness + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test + (p) F.1 dict-encoding dropped + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo + (r) effort-ceiling cap 42 → 86 + (s) `/tmp/c8_16_zip_probe/` OS-cleanable + **(t)** §15.D "4 distinct pre-1989 layouts" vs 5 empirical era boundaries (reconciliation at C8.17 DO step 4).
+
+**NEW soft-flag (u):** `fetal_death/file_inventory.csv` `imported` column ships all 43 rows = `no` (vestigial; never updated even though every year is in the v2.4.0 shipped parquet). Future Phase D step 2 PROVENANCE refresh should also normalize the `imported` column to accurately reflect per-row pipeline-import state, mirroring the natality convention (`true`/`false` accurate). Resolution at Phase D step 2 OR a dedicated future C8.X.
+
+### Forward-looking HALTs for C8.17 DO step 2 PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check access at C8.17 DO step 2 entry. Full enumeration in DECISION_LOG 2026-05-14T07:30:00Z.
+
+1. **`C8.17-pre-do` tag at `12fc20e`** (parent commit); **`C8.17-complete` tag NOT yet present**.
+2. **4 canonical parquet SHAs byte-exact preserved** (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`) — H10 gate intact through DO step 1.
+3. **4 matched-multiples parquet SHAs byte-exact preserved** (`5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`).
+4. **`natality/metadata/file_inventory.csv` row count = 76** (35 natality `imported=true` + 22 natality `imported=false` + 19 linked); natality block (`year` ∈ {1968..2024}) contiguous; 22 new rows have `imported=false` (will flip to `true` per row at DO step 6).
+5. **`docs/NCHS_SOURCE_MANIFEST.md` row count = 122** (43 + 57 + 19 + 3); Section 2 header reads "(57; year 1968-2024)"; Boundary notes paragraph present.
+6. **`tests/test_source_zip_sha_stability.py`** count anchor = 122; natality = 57; per-row test PASS verified on all 22 new on-disk zip SHAs.
+7. **`tests/test_inventory_invariants.py::_read_inventory_year_set`** accepts `imported_only: bool = False` kwarg; natality test passes `imported_only=True`; fetal_death test uses default; soft-flag (u) documented in fetal_death per-test docstring.
+8. **22 zips present** at `~/Desktop/natality-harmonization/raw_data/Nat<YYYY>.zip` (cumulative 1.64 GB; per-zip SHAs in manifest); **15 PDFs present** at `~/Desktop/natality-harmonization/raw_docs/Nat<YYYY>doc.pdf` (cumulative 87.5 MB).
+9. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/ -p no:cacheprovider`** returns 85 PASS + 1 SKIP + 1 XFAIL ±25s of 232.20s (post-DO-step-1 reference) OR 246.27s (C8.17-pre-do reference); both within tolerance.
+10. **No KICKOFF.md / NEXT_STEPS.md edit at this DO step 1 close** (intermediate sub-step).
+11. **Tier 3+5 progress = 1.25 of 7 tasks** (C8.16 done + C8.17 PRE-FLIGHT + C8.17 DO step 1 in flight); cumulative Phase C ~20.5 of 51-71 sessions (within Q33 effort-ceiling cap of 86).
+12. **No new tags this DO step 1 close**.
+13. **DO step 2 budget**: 1-2 sessions per §15.D (layout-CSV reconstruction for 1968 + 1969-1971 eras).
+14. **Soft-flag (t) reconciliation deferred to DO step 4** (1989 layout-inheritance vs distinct-revision-tail check); DO step 2 surfaces 1968 + 1969-1971 layouts only.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (UNCHANGED).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (UNCHANGED; CHANGES at C8.17 DO step 6).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (UNCHANGED).
+- Matched-multiples 4th HVS product: 3 yearly_clean + 1 harmonized parquet (all UNCHANGED).
+- All C8.1-C8.16 DO outputs unchanged.
+- **NEW this session (additive, no canonical-parquet mutation):**
+  - 22 NCHS natality 1968-1989 zips at `~/Desktop/natality-harmonization/raw_data/Nat<YYYY>.zip` (1.64 GB).
+  - 15 NCHS user-guide PDFs at `~/Desktop/natality-harmonization/raw_docs/Nat<YYYY>doc.pdf` (87.5 MB).
+  - 22 new SHA-anchored rows in `natality/metadata/file_inventory.csv` + `docs/NCHS_SOURCE_MANIFEST.md` Section 2.
+  - 4 monorepo file mutations (file_inventory.csv + NCHS_SOURCE_MANIFEST.md + 2 test files).
+
+NEW this session (additive; no canonical-state mutation outside the 4 monorepo files + append-only DECISION_LOG + STATUS):
+- 4 MODIFIED files at `natality/metadata/`, `docs/`, `tests/`.
+- 1 NEW DECISION_LOG entry at 2026-05-14T07:30:00Z.
+- This STATUS section.
+
+### Notes for next session
+
+- **C8.17 DO step 2 entry cheap-check** (~5 min): re-verify the 14 forward-looking HALTs above. Specifically: pytest baseline 85P+1S+1XF ±25s of 232.20s or 246.27s; 4+4 parquet SHAs byte-exact; on-disk 22 zips + 15 PDFs present.
+- **C8.17 DO step 2 substrate**: `~/Desktop/natality-harmonization/raw_docs/Nat1968doc.pdf` (9 pages; 0.3 MB) + `~/Desktop/natality-harmonization/raw_docs/Nat1969-71doc.pdf` (26 pages; 1.5 MB). Both are 100% text-extractable per PRE-FLIGHT L12-ext probe.
+- **C8.17 DO step 2 deliverable**: `natality/metadata/record_layout_1968.csv` + `natality/metadata/record_layout_1969_1971.csv` (paralleling existing 1990+ layout CSVs' 8-col structure); record-length empirical figures + value-distribution anchor-field check (L13-extension); `natality/metadata/file_inventory.csv` `file_format` column update for 1968 + 1969-1971 rows.
+- **L1-extension forward**: Per LESSONS 2026-05-12T04:30:00Z + the in-PRE-FLIGHT 404-trap recovery, all future filename-variant probes for analogous NCHS files must begin with sibling-extrapolation from on-disk inventory. DO step 2 + 3 will re-apply this discipline for record-layout reconstruction (1968-revision layout is a sibling of 1990-rev layout; 1978-revision layout is a sibling of 1990+revision-A layout).
+- **L12-extension forward**: All future PDF extraction must use `pymupdf.open().load_page(N).get_text()` BEFORE inspecting bitmap content (the 1968-1989 PDFs are all Acrobat PDFWriter 3.03 + 2019-04 reprocessed; text layer present per PRE-FLIGHT L12-ext probe).
+- **L13-extension forward**: Per LESSONS 2026-05-12T01:40:00Z + C8.16 sub-step 2 precedent (1995-1997 CLINGEST 1→2 byte fix), every per-era anchor-field byte position must be value-distribution-verified at DO step 5 (parse_all_pre1990_years.py SMOKE Tier 1 phase) before declaring layouts canonical. NOT byte-position alone.
+- **L17-extension forward**: Per Convention 1 SHAPE-not-VALUE — DO step 1's `file_format` column wording deliberately omits a stale record-length figure; DO step 2 supplies the empirical figure per era.
+- **Cumulative Phase C ~20.5 of 51-71 sessions** (~29-40%); 30.5-50.5 sessions remaining in Tier 3+5 (C8.17 DO + C8.18-C8.22).
+- **No re-ask trigger** at C8.17 DO step 1 close (effort cap 86 sessions; cumulative well below).
+- **B.12 snapshot regression baseline** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) remains valid byte-exact through C8.17 DO step 1 (additive scope; no parquet reshape this session). Will re-snap at C8.17 DO step 6 + C8.18 + C8.19 parquet rebuilds.
+
+### Session summary
+
+C8.17 DO step 1 SHIPPED in 1 session (~50 min wall-clock incl. downloads); clean PROCEED to DO step 2 next session. 14 forward-looking HALTs from STATUS 2026-05-14T06:30:00Z verified byte-exact at session start. 22 NCHS natality 1968-1989 zips downloaded (1.64 GB) + 15 user-guide PDFs (87.5 MB) to `~/Desktop/natality-harmonization/raw_data/` + `raw_docs/` (sibling-of-existing per AskUserQuestion Q1 Option A). All 37 SHA-256 anchored: 22 in `natality/metadata/file_inventory.csv` (54 → 76 rows; 22 new at `imported=false`) + 22 in `docs/NCHS_SOURCE_MANIFEST.md` (100 → 122 zips; Section 2 35 → 57 + Boundary notes paragraph). `tests/test_source_zip_sha_stability.py` count anchors updated 100 → 122 + natality 35 → 57; per-row SHA verification PASS on all 22 new on-disk zips byte-exact. §7 halt-and-resolve cycle: `test_natality_inventory_years_match_schema_years_available` initially FAIL'd (inventory_years became superset of schema_years_available); user-resolved via AskUserQuestion Q2 Option A = filter on `imported=true` (~10 LOC `tests/test_inventory_invariants.py` mutation; fetal_death sibling test deliberately NOT given symmetric edit per new soft-flag (u) — fetal_death `imported` column is uniformly `no` vestigial). Full pytest baseline 85 PASS + 1 SKIP + 1 XFAIL in 232.20s (within ±25s of 246.27s C8.17-pre-do reference). H10 reproducibility gate intact: 4 canonical + 4 matched-multiples parquet SHAs byte-exact preserved. Zero §7 halts remaining; zero canonical-parquet mutation; zero schema mutation; zero test-surface mutation outside the 1 helper + 2 test docstring updates. **C8.17 DO step 2 (layout-CSV reconstruction for 1968 + 1969-1971 eras; 1-2 sessions per §15.D) queued for next session.** No tag at intermediate DO step 1 per Convention 5 precedent.
 
 ---
 

@@ -1,6 +1,6 @@
 # NCHS source-data SHA manifest
 
-> **Scope.** SHA-256 checksums for every raw NCHS public-use zip that this monorepo's harmonization pipelines consume. 100 zips total: 43 fetal-death + 35 natality + 19 linked-cohort + 3 matched-multiples.
+> **Scope.** SHA-256 checksums for every raw NCHS public-use zip that this monorepo's harmonization pipelines consume. 122 zips total: 43 fetal-death + 57 natality + 19 linked-cohort + 3 matched-multiples.
 >
 > **Purpose.** A downstream user re-running the pipeline from a fresh NCHS download can verify that their inputs are byte-identical to what produced the shipped harmonized parquets. If a zip's SHA differs from this manifest, the user's download is either truncated, corrupted, or NCHS has silently re-released the file with the same name. Either case is a signal to halt and re-resolve before proceeding.
 >
@@ -78,12 +78,34 @@ Coverage envelope: V3b (1982-1988, 1978-revision uniform) + V3a (1989-1991, 1989
 
 ---
 
-## Section 2 — Natality raw zips (35; year 1990-2024)
+## Section 2 — Natality raw zips (57; year 1968-2024)
 
-Coverage envelope: 35 years contiguous. Filename convention: `Nat<YYYY>.zip` (1990-1993) → `Nat<YYYY>us.zip` (1994+). All produce one parquet per year via `natality/scripts/01_import/`.
+Coverage envelope: 57 years contiguous. Filename convention: `Nat<YYYY>.zip` (1968-1993) → `Nat<YYYY>us.zip` (1994+). All produce one parquet per year via `natality/scripts/01_import/`. Pre-1990 pipeline scaffolding lands at C8.17 DO step 5 (`parse_all_pre1990_years.py`); the 22 pre-1990 zips are SHA-anchored here at C8.17 DO step 1 but are not yet parser-consumed (each `file_inventory.csv` row has `imported=false` until DO step 5).
 
 | Year | raw_filename | SHA-256 |
 |---|---|---|
+| 1968 | `Nat1968.zip` | `bd791cf53de5b55bea293ea9db5a6347fbc6facbd59ddb71de1b0957b8cbda20` |
+| 1969 | `Nat1969.zip` | `1a36e591748def54c77a5a609d03b0fe658d63c8fd3277b1f7c14a2ecdf8d757` |
+| 1970 | `Nat1970.zip` | `328d6fca738794820591b61c820057926c5984f04cd03dab758a9ccc0483d9d2` |
+| 1971 | `Nat1971.zip` | `c3e44a73c9d323832cd1f16cf21ddd529b75f022d6bc1043ae5815ebd8ee0673` |
+| 1972 | `Nat1972.zip` | `b4de8ffa0a68920d93fb9e2b0277da4dbc786f06ef54c2117f52e5ba51512403` |
+| 1973 | `Nat1973.zip` | `5675bddf7a155d272e497d55914044f964d0b2ef82f2ba42e3ac4e9ea1bd1243` |
+| 1974 | `Nat1974.zip` | `0543600a969aa5dbb047da2b2abf84846bf05469aa1b8570d120de9f2a52fd81` |
+| 1975 | `Nat1975.zip` | `f6a6fffc9451804afc0f158076f82f08ee305de155935abf11cb53c1e63ca500` |
+| 1976 | `Nat1976.zip` | `f76a04cd0b7e79a9c5091efad579015648ed13aad71e7828a0d14b38c513c084` |
+| 1977 | `Nat1977.zip` | `356a4044966a3962a5127664e7d354b7f9b0e88a7e1f4a23358a7b907aefc29b` |
+| 1978 | `Nat1978.zip` | `9d9a9e52c9e4a3d0605f15620e4a31529a8f159fdfbf32bbaa4ba7b7bd552cc0` |
+| 1979 | `Nat1979.zip` | `11a71bc761e9f8185d025952e2c64ffaf4248291d55d7c53d2904abb530313b2` |
+| 1980 | `Nat1980.zip` | `e7afa568e2431bf1a4e02b43d8fcc5141e7483170c533f7474a9f714459f800f` |
+| 1981 | `Nat1981.zip` | `02618389ec8f84d0282dfb8e8a08091e583366610070c6258b8193e941584e4e` |
+| 1982 | `Nat1982.zip` | `7721362f6fd0df946d791cb1556b4e31839518d36b3a09eda91b1e28f5b750f3` |
+| 1983 | `Nat1983.zip` | `ce5762494fb4cbcbefd6ebee7cbe2a974399ea30234c6a8127b968f54871f13d` |
+| 1984 | `Nat1984.zip` | `37aec54d0bc11090f5f86de4051b2da99f6558aded0675e5d1064cb0480249f0` |
+| 1985 | `Nat1985.zip` | `e7e93ba09ef0096ee4a7b258b643eabee1d4d9cd4d1d8fcef189fc1ecc18ed7a` |
+| 1986 | `Nat1986.zip` | `24ccdaf5efea34b1ca8109dfb301061e5ab4e5b835148c84b620ab4e4d6ddfee` |
+| 1987 | `Nat1987.zip` | `461ad32f7ef10fca9882f2c7bd813d3341b3002e67befbf352a08280b00aa903` |
+| 1988 | `Nat1988.zip` | `5599d3685141a55651e497d2828db92395c2e5343b02199e8901ed3cc4bda4b2` |
+| 1989 | `Nat1989.zip` | `21e39c8040981148d1ea2bb7236f14ca499c1651d30032f7507de0a959630ed3` |
 | 1990 | `Nat1990.zip` | `c27320794b267d0745d16a427a2928a709890811556bffe0ba06c37e0004d59b` |
 | 1991 | `Nat1991.zip` | `c4081fbc546489aff8a31418a627b0caaf50d94ff4c61302ee806a4b7a53bd68` |
 | 1992 | `Nat1992.zip` | `75fe64963335998113dbe48d75312812b4c1fcac81905dc32af4545a30ac550c` |
@@ -120,7 +142,9 @@ Coverage envelope: 35 years contiguous. Filename convention: `Nat<YYYY>.zip` (19
 | 2023 | `Nat2023us.zip` | `4474daab3475af096397e26ed5fdb541b1df59ee9b555fc0b31db84c44d83663` |
 | 2024 | `Nat2024us.zip` | `8ce1c61bc055b3327311985f918db5387ea6a1ed7d34b367afe30f468b92225a` |
 
-**Filename casing note.** The on-disk filenames for the 2021 + 2022 natality zips are lowercase (`nat2021us.zip` + `nat2022us.zip`) on the original NCHS download; on the case-insensitive macOS filesystem they resolve to the same inode as the inventory-recorded capital-N convention (`Nat2021us.zip` + `Nat2022us.zip`). The inventory's capital-N casing is the canonical reference; any downstream user on a case-sensitive filesystem may need to rename the on-disk files to match.
+**Filename casing note.** The on-disk filenames for the 2021 + 2022 natality zips are lowercase (`nat2021us.zip` + `nat2022us.zip`) on the original NCHS download; on the case-insensitive macOS filesystem they resolve to the same inode as the inventory-recorded capital-N convention (`Nat2021us.zip` + `Nat2022us.zip`). The inventory's capital-N casing is the canonical reference; any downstream user on a case-sensitive filesystem may need to rename the on-disk files to match. The 22 pre-1990 zips were downloaded with `.ZIP` upstream extension served by the NCHS FTP and saved lowercase `.zip` to match the canonical inventory convention.
+
+**Boundary notes.** Filename changes from `Nat<YYYY>.zip` (1968-1993) to `Nat<YYYY>us.zip` (1994+) at the 1994 publication-suffix introduction. Sample-frame changes at 1972 (50% sample for 1968-1971 → 100% for 1972+). Certificate-revision boundaries: 1968-revision (1968-1977) → 1978-revision (1978-1988) → 1989-revision (1990+ canonical; 1989 is the rollout-year standalone, reconciled at C8.17 DO step 4 per soft-flag (t)). Record lengths for the 22 pre-1990 zips are TBD at C8.17 DO step 2 (layout-CSV reconstruction); the 35 1990-2024 record lengths follow the existing per-era `natality/scripts/01_import/` codepath. All 22 pre-1990 zips are SHA-anchored here at C8.17 DO step 1 with `imported=false` in `natality/metadata/file_inventory.csv` (becomes `true` at C8.17 DO step 5 when `parse_all_pre1990_years.py` lands).
 
 ---
 

@@ -11,6 +11,7 @@ caught at CI gate rather than at next-task PRE-FLIGHT cheap-check.
 
 Each test compares two facts that SHOULD agree by construction:
   - The set of years documented in the subproject's file_inventory.csv
+    (filtered to imported=true rows; see below)
   - The set of years claimed by the harmonized_schema.csv years_available
     column (union across all column rows).
 
@@ -22,6 +23,17 @@ When the two sets disagree, EITHER:
       year, or an out-of-scope ETL-only year).
 
 Either case is an L13-class staleness bug warranting a fix-on-contact patch.
+
+The `imported=true` filter (added 2026-05-14 at C8.17 DO step 1) is the
+load-bearing semantic: SHA-anchored-but-not-yet-imported inventory rows
+(e.g., the 22 pre-1990 natality rows added at C8.17 DO step 1; their
+schema years_available bump lands at C8.17 DO step 6) are excluded from
+this parity invariant by design. Convention 2 first-line tag remains
+`DESIGN: tracks-current-state` — the invariant tracks what is currently
+shipped, not what is currently anchored. The parity assertion re-asserts
+when the imported flag flips true (i.e., when DO step 6 ships pre-1990
+parquets, this test will require schema years_available to extend
+backward in lock-step).
 """
 
 from __future__ import annotations
@@ -35,16 +47,23 @@ import pytest
 _REPO = Path(__file__).resolve().parents[1]
 
 
-def _read_inventory_year_set(path: Path) -> set[int]:
+def _read_inventory_year_set(path: Path, imported_only: bool = False) -> set[int]:
     """Return the set of integer years in a file_inventory.csv.
 
     Skips rows with non-integer year keys (e.g., the natality inventory's
     `<YYYY>_linked` cohort-year keys, which point to the linked-cohort
     product, not the natality-births product).
+
+    When `imported_only=True`, also skips rows with `imported != "true"`
+    (case-insensitive). Used by the schema-parity invariants so
+    SHA-anchored-but-not-yet-imported rows do not falsely trip the test
+    before the harmonized parquet ships.
     """
     years: set[int] = set()
     with open(path, newline="") as fh:
         for row in csv.DictReader(fh):
+            if imported_only and (row.get("imported") or "").strip().lower() != "true":
+                continue
             try:
                 years.add(int(row["year"]))
             except (KeyError, ValueError):
@@ -87,7 +106,16 @@ def _read_schema_years_available_union(path: Path) -> set[int]:
 
 
 def test_fetal_death_inventory_years_match_schema_years_available():
-    """fetal_death/file_inventory.csv year-set must equal harmonized_schema.csv years_available union."""
+    """fetal_death/file_inventory.csv year-set must equal harmonized_schema.csv years_available union.
+
+    Note: fetal_death's `imported` column ships uniformly "no" across all 43
+    rows (vestigial; never updated even though every year is shipped in the
+    v2.4.0 harmonized parquet). The parity invariant on fetal_death therefore
+    uses the full year-set (no `imported_only` filter). The natality sibling
+    test uses `imported_only=True` because natality's `imported` column is
+    accurately maintained (1990-2024 + linked = true; 1968-1989 = false as
+    of C8.17 DO step 1 SHA-anchor).
+    """
     inv = _REPO / "fetal_death" / "file_inventory.csv"
     sch = _REPO / "fetal_death" / "harmonized_schema.csv"
     if not inv.is_file() or not sch.is_file():
@@ -109,17 +137,21 @@ def test_fetal_death_inventory_years_match_schema_years_available():
 
 
 def test_natality_inventory_years_match_schema_years_available():
-    """natality/metadata/file_inventory.csv numeric-year keys must equal harmonized_schema.csv years_available union.
+    """natality/metadata/file_inventory.csv imported=true numeric-year keys must equal harmonized_schema.csv years_available union.
 
     The `<YYYY>_linked` rows are skipped — they belong to the linked-cohort
     product, which uses a sibling schema (external_validation_targets_v3_linked.csv
     + the harmonize_linked_v3.py / derive_linked_v3.py pipeline).
+
+    The imported=true filter (added at C8.17 DO step 1, 2026-05-14) excludes
+    the 22 SHA-anchored pre-1990 rows whose schema years_available bump
+    lands at C8.17 DO step 6.
     """
     inv = _REPO / "natality" / "metadata" / "file_inventory.csv"
     sch = _REPO / "natality" / "metadata" / "harmonized_schema.csv"
     if not inv.is_file() or not sch.is_file():
         pytest.skip(f"missing input: {inv} or {sch}")
-    inv_years = _read_inventory_year_set(inv)
+    inv_years = _read_inventory_year_set(inv, imported_only=True)
     sch_years = _read_schema_years_available_union(sch)
 
     missing_from_schema = inv_years - sch_years
