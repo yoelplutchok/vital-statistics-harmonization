@@ -23,6 +23,77 @@
 
 ---
 
+## 2026-05-14T03:30:00Z — C8.16 DO sub-step 1 — Subproject scaffold + 3 record_layout CSVs (212 + 256 + 125 rows) + preliminary 26-col harmonized schema + 9-col file_inventory; 5 design decisions bundled
+
+**Choices (LLM at C8.16 DO sub-step 1 close; documented at scaffold time before parser authoring):**
+
+1. **`applies_to` column added to record_layout CSVs as a controlled 1-column extension to the fetal-death sibling pattern.** Fetal-death `record_layout_*.csv` ships 8 columns (`position_start, position_end, length, field_name, description, version, values_summary, notes`). Matched-multiples layouts ship 8 columns with `version` replaced by `applies_to` ∈ {`all`, `FD`, `ID`} indicating which record types (live-birth-survivor + fetal-death + infant-death; fetal-death-only; infant-death-only) the field applies to. Reason: matched-multiples files contain ALL THREE record types per file (unlike fetal_death which is fetal-death-only), so per-field record-type applicability is information that disambiguates parsing. Sibling-symmetry preserved at 8 columns; semantic clarity preserved by replacing a per-file-constant column (`version`) with a per-field variable column (`applies_to`).
+
+2. **Hybrid harmonized-schema column naming**: cross-product analog column names (`maternal_age`, `maternal_race_hispanic`, `maternal_education_cat4`, `gestation_weeks`, `birthweight_g`, `sex_infant`, `residence_status`, `tabulation_flag`) for fields with a clear natality/fetal-death sibling; matched-multiples-specific column names (`data_window`, `record_type`, `set_id`, `set_size`, `set_complete`, `set_order`, `cause_of_death_icd`, `cause_of_death_icd_revision`) for fields without a clean cross-product analog. Reason: STATUS line 111 recommendation; maximizes cross-product joinability for the analog fields while preserving matched-multiples-specific semantic clarity for the set-level + cause-of-death-revision fields.
+
+3. **Schema column `years_available` renamed to `windows_available`** (with values like `1995-1997,1995-2000,2016-2020`) and `raw_source_by_year` renamed to `raw_source_by_window`. Reason: matched-multiples files are window-level publications (multi-year per file), not year-level. The natality/fetal-death year-level convention doesn't map cleanly. Trade-off: schema columns now differ slightly from the natality/fetal-death sibling pattern (10 columns with two renamed). Within-subproject readability gains > cross-subproject symmetry loss.
+
+4. **2016-2020 file format = VARIABLE-LENGTH (155-157 bytes per record); `record_length=157` (documented end position) in `file_inventory.csv`.** PRE-FLIGHT (STATUS 2026-05-14T02:30:00Z) recorded 156 bytes which counted content-plus-`\r` (no `\n` stripped). Empirical probe via Python `zipfile.ZipFile(...).open(...).readline().rstrip(b'\r\n')` reveals: 634,863 records at 155 bytes content (survivors+fetal-deaths or 1-digit UCODR130); 4,089 records at 156 bytes (2-digit UCODR130); 2,982 records at 157 bytes (3-digit UCODR130) — total 641,934 MATCHES PDF Table 1 byte-exact. The variable-length tail is caused by NCHS right-trimming trailing blanks in `UCODR130` (positions 155-157) on a per-record basis. Parser at sub-step 2 will handle by reading each line as text + slicing fixed positions 1-154 + right-padding `UCODR130`. Documented in `record_layout_2016_2020.csv` notes for `UCODR130` row + `ABOUT_SOURCE_DATA.md` "Variable-length file handling" section.
+
+5. **Empirical record counts** corrected vs PRE-FLIGHT estimates: 1995-1997 = 324,490 (was 325,135 by file-size/length division); 1995-2000 = 699,144 (was 699,938); 2016-2020 = 641,934 (was 646,113). The PRE-FLIGHT estimates were `unzip -l` uncompressed-size divided by record-length-including-`\r`; empirical counts use Python file iteration. 2016-2020's 641,934 matches PDF Table 1 byte-exact (a strong cross-validation). Recorded in `file_inventory.csv` notes.
+
+**Alternatives considered:**
+
+For #1 (`applies_to` column):
+- (A) 8 cols with `applies_to` replacing `version` (CHOSEN). Pro: minimizes sibling-pattern deviation; clean semantic mapping.
+- (B) 9 cols adding `applies_to` (keeping `version`). Pro: most general. Con: deviates from sibling pattern more substantially; `version` is per-file-constant so it's redundant within a single layout CSV.
+- (C) 8 cols matching sibling exactly; encode `applies_to` info in `notes` field. Pro: zero sibling-pattern deviation. Con: loses structured queryability of FD/ID applicability; harder to validate at parser stage.
+
+For #2 (schema naming):
+- (A) Hybrid (CHOSEN). Pro: maximizes interoperability for cross-product analyses; preserves matched-multiples-specific semantic clarity for set-level fields.
+- (B) Verbatim NCHS names (`PLURAL`, `MULTID`, `MAGER`, etc.). Pro: source-doc traceability. Con: zero cross-product interoperability; users would have to manually rename for joint analyses with natality/linked.
+- (C) Full analog-only naming (force all fields into cross-product names). Pro: maximal interop. Con: forces semantically-unique matched-multiples concepts (`set_id`, `set_complete`) into ill-fitting analog names.
+
+For #4 (variable-length record handling):
+- (A) `record_length=157` (max content per doc end position; CHOSEN). Pro: matches documentation byte-exact; parser uses position 157 as the slice upper bound.
+- (B) `record_length=155` (modal content, 98.9% of records). Pro: most common. Con: parser would silently truncate 1-2 bytes for 7,071 records (infant deaths with 2-3 digit UCODR130).
+- (C) `record_length="155-157"` (range). Pro: most accurate. Con: violates fetal-death sibling pattern (integer-only `record_length`); breaks `tests/test_inventory_invariants.py::test_fetal_death_inventory_record_length_populated_for_all_rows` extension to matched_multiples.
+
+**Reason:** Five design decisions documented at scaffold time so sub-step 2 (parser) and sub-step 3 (validation + worked-example notebook) inherit a fully-specified design context. Per §4.5 commit-message brevity, the full narrative lives here in DECISION_LOG; the commit ships a ~5-line summary.
+
+**Source:**
+- PyMuPDF `page.get_text()` extraction of all 3 PDFs (87 pages total; L12-extension PASS at PRE-FLIGHT preserved).
+- Python `zipfile.ZipFile(...).open(...).readline().rstrip(b'\r\n')` empirical probe + `len(content)` distribution per record.
+- 2016-2020 PDF Table 1 cell match (641,934 records empirical = 633,734 birth + 8,200 fetal death documented).
+- L13-extension cheap-check (LESSONS 2026-05-12T01:40:00Z): field SEMANTICS not just positions. The 2016-2020 SEX field empirically verified at position 104 (1-indexed) matching documentation; positions 1-104 of the file align byte-exact with the PDF doc.
+- STATUS line 111 recommendation for hybrid schema naming.
+- C8.16 PRE-FLIGHT DECISION_LOG entry (2026-05-14T02:30:00Z) Option A standalone-subproject architecture authorization.
+
+**Verifiable by:**
+- `git log --all --format='%h %s' | grep 'C8.16 DO sub-step 1'` returns the commit shipping this entry.
+- Working tree post-commit: `matched_multiples/` directory present with 7 files (3 layout CSVs + 1 inventory + 1 schema + README + ABOUT) + scripts/01_import/, 03_harmonize/, 04_derive/, 05_validate/ + tests/ + output/* (empty placeholders).
+- `python3 -c "import csv; ..."` validation of layout CSVs returns continuity-PASS + no-overlap-PASS for all 3 layouts.
+- 4 parquet SHAs preserved (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`); no canonical-state mutation outside `matched_multiples/`.
+- 2016-2020 file Table 1 match: PDF says total=641,934, empirical Python row count = 641,934. ✓
+
+**Reversible:** yes — `git reset --hard HEAD~1` (combined with the C8.16-pre-do tag at `2b7139a`) discards this sub-step's scaffold + decisions. The /tmp/c8_16_pdf_probe/ + /tmp/c8_16_zip_probe/ artifacts persist for re-derivation.
+
+**Residual risks (sub-step 1):**
+
+- (a) **1995-1997 CLINGEST byte-position ambiguity carries forward.** Doc says 1 byte at position 115 (with DELMETH at 116); 1995-2000 doc has CLINGEST at 2 bytes (115-116). The layout CSVs reflect the doc as-stated (1-byte for 1995-1997; 2-byte for 1995-2000). Sub-step 2 parser will value-distribution probe to resolve.
+- (b) **Harmonized schema is a SKELETON not a final schema.** 26 columns covering the obvious cross-product analogs + matched-multiples-specifics. Sub-step 2 (parser) may surface additional fields worth promoting to harmonized; sub-step 3 (validation) may surface columns that need fine-grained recodes.
+- (c) **`cause_of_death_icd_revision` derivation logic** for 1995-2000 records depends on `data_year` — but `data_year` is not in the raw file (window-implicit). Sub-step 2 parser must impute `data_year` from per-record date fields OR via cohort-linked-by-set logic. If neither is available, ICD revision flagging may be limited.
+- (d) **set_complete normalization** introduces a 1->3 shift: 1995-X uses 0/1/2 (with 2=unmatched); 2016-2020 uses 1=complete + 2=incomplete + COUNT=1=unmatched. The harmonized canonical maps to 1=complete / 2=incomplete / 3=unmatched. Schema notes this; parser implements.
+- (e) **`record_length` invariant test extension** (carry-forward from C8.7b soft-flag `m`): the existing `tests/test_inventory_invariants.py::test_fetal_death_inventory_record_length_populated_for_all_rows` does not yet cover matched_multiples. A future sub-step (likely sub-step 3 or C8.20+) may extend.
+
+**Backport scope:** None. Pure additive scaffold; no existing parquet, validator, test, or canonical data touched.
+
+**Forward-looking HALTs for sub-step 2 (Convention 4):**
+
+- 3 record_layout CSVs present at the SHAs recorded post-commit; continuity validated (no gaps / no overlaps / position-sum=length per row).
+- `file_inventory.csv` ships 3 rows (one per window) with SHA-256 anchors recorded in `notes` for each zip + doc PDF.
+- 26-col preliminary `harmonized_schema.csv` skeleton present.
+- 4 existing parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`) BYTE-EXACT preserved (no harm to H10 reproducibility gate).
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL (matched_multiples/tests/ has no tests yet so adding to pytest command would be no-op).
+- Sub-step 2 (parser authoring) begins at next iteration; produces 3 yearly_clean parquets at `output/yearly_clean/matched_multiples_<window>_raw.parquet` + harmonize.py emitting `output/harmonized/matched_multiples_harmonized.parquet`.
+
+---
+
 ## 2026-05-14T02:30:00Z — C8.16 PRE-FLIGHT — Architectural decision: standalone `matched_multiples/` subproject (§15.D default) + effort revised 1-2 → 2-3 sessions (within Q42 +1-session tolerance; no §11 plan-update); user-resolved via AskUserQuestion 2026-05-14T02:30:00Z
 
 **Choice (user at 2026-05-14T02:30:00Z; in response to AskUserQuestion at C8.16 PRE-FLIGHT close):**

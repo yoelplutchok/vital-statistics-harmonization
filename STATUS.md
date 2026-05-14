@@ -1,6 +1,117 @@
-# STATUS — last updated 2026-05-14T02:30:00Z
+# STATUS — last updated 2026-05-14T03:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T03:30:00Z — C8.16 DO sub-step 1 close — `matched_multiples/` subproject scaffold + 3 record_layout CSVs (212 + 256 + 125 rows) authored from PDF documentation (87 pages probed) + preliminary 26-col harmonized_schema.csv skeleton + 9-col file_inventory.csv (3 rows; SHA-anchored) + README + ABOUT_SOURCE_DATA; empirical record counts captured (324,490 / 699,144 / 641,934 — 2016-2020 matches PDF Table 1 BYTE-EXACT); 2016-2020 file confirmed VARIABLE-length 155-157 bytes per record (UCODR130 trailing-blank-stripped; pattern documented in layout CSV + ABOUT); 5 design decisions bundled into 1 DECISION_LOG entry; zero canonical-state mutation outside `matched_multiples/`; 4 parquet SHAs preserved byte-exact; sub-step 2 (parser authoring) queued for next iteration
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 DO sub-step 1 closed; sub-step 2 (parser authoring) queued.** Sub-step 1 shipped in ~1 hour wall-clock (3 PDF reads + 3 layout-CSV authoring + skeleton schema + inventory + README/ABOUT + validation + log + commit). Cumulative Phase C ~18 of 51-71 sessions (~25-35%; +0.5 sub-step session from PRE-FLIGHT baseline 17.5).
+
+### What was done this sub-step
+
+1. **Cheap-check verification at session start (~5 min)**: re-verified `C8.16-pre-do` tag present; `/tmp/c8_16_pdf_probe/` + `/tmp/c8_16_zip_probe/` artifacts present with PDF SHAs byte-exact (`f982ad93…` / `07b7260d…` / `ed5e96ab…`); PRE_FLIGHT_LOG + DECISION_LOG entries at top.
+2. **Directory scaffold**: `matched_multiples/` with `scripts/{01_import,03_harmonize,04_derive,05_validate}/`, `tests/`, `output/{yearly_clean,harmonized,validation}/`; `__init__.py` + `tests/__init__.py` per L17 (test-collection namespacing fix from FIX_LOG 2026-05-12T22:30:00Z).
+3. **PDF text extraction** via PyMuPDF (L12-extension PASS preserved): 3 PDFs (87 pages total) → text files in `/tmp/c8_16_pdf_probe/`.
+4. **Empirical record probing** via Python: confirmed 1995-1997 = 502-byte fixed (324,490 records); 1995-2000 = 754-byte fixed (699,144 records); **2016-2020 = VARIABLE 155-157 bytes** (634,863 / 4,089 / 2,982 split; total 641,934 = PDF Table 1 byte-exact). SHA-256 of 3 source zips computed (`5675d57d…` / `8315dd24…` / `4e45d531…`).
+5. **L13-extension value-distribution check** on 2016-2020: SEX field empirically verified at position 104 (1-indexed) per documentation; positions 1-104 align byte-exact between doc + actual file.
+6. **3 record_layout CSVs authored** with 8-column structure: `position_start, position_end, length, field_name, description, applies_to, values_summary, notes`. `applies_to` ∈ {`all`, `FD`, `ID`} is a controlled 1-column extension to the fetal-death sibling pattern (replacing per-file-constant `version` with per-field-variable `applies_to`). 212 + 256 + 125 = 593 total field rows.
+7. **Layout-CSV validation** via Python: continuity-PASS (no gaps / no overlaps / position-sum=length) for all 3 layouts; last positions match expected end-of-file documented bytes (157 / 502 / 754).
+8. **Preliminary harmonized_schema.csv skeleton**: 26 columns covering cross-product analogs (`maternal_age`, `maternal_race_hispanic`, `maternal_education_cat4`, `sex_infant`, `gestation_weeks`, `birthweight_g`, `residence_status`, `tabulation_flag`) + matched-multiples-specific (`data_window`, `record_type`, `set_id`, `set_size`, `set_complete`, `set_order`) + infant-death surface (`age_at_death_days`, `age_at_death_recode5`, `cause_of_death_icd`, `cause_of_death_icd_revision`). 10-column schema structure with `windows_available` replacing `years_available` and `raw_source_by_window` replacing `raw_source_by_year` (window-level not year-level publication).
+9. **file_inventory.csv** (3 rows; window-level): SHA-256 anchors for 3 zips + 3 doc PDFs; record_length 502 / 754 / 157 (max content per doc end); empirical record counts in `notes`.
+10. **README.md** (93 lines) + **ABOUT_SOURCE_DATA.md** (101 lines): subproject overview + 3-window methodology-generation comparison + L13-extension caveat (1995-1997 CLINGEST 1-byte vs 1995-2000 2-byte) + L12-extension preserve + variable-length 2016-2020 handling explained.
+11. **DECISION_LOG entry** appended at 2026-05-14T03:30:00Z recording 5 design decisions + 5 residual risks + forward-looking HALTs.
+12. **STATUS.md** appended (this section).
+13. **Pending**: commit (Convention 5 brevity ~5-line summary; no tag at intermediate sub-step per Convention 5 precedent).
+
+### Last completed step
+
+Single commit ships: new `matched_multiples/` subdirectory (7 files + 7 empty subdirs + 2 `__init__.py`) + DECISION_LOG entry + this STATUS section. **No tag** at sub-step 1 close (tag `C8.16-complete` lands only at full RECEIPT after sub-step 3).
+
+### In-progress
+
+C8.16 DO sub-step 2 scheduled for next session start. Sub-step 2 = parser authoring + harmonize.py + 3 yearly_clean parquets. Carry-forward inputs: 3 record_layout CSVs (validated); 3 source zips in `/tmp/c8_16_zip_probe/` (re-downloadable from canonical FTP if cleaned); preliminary harmonized_schema.csv (subject to refinement).
+
+### Next planned task
+
+**C8.16 DO sub-step 2** (next session): author `matched_multiples/scripts/01_import/parse_matched_multiples.py`. Sub-tasks:
+- Implement `parse_window(window: str, zip_path: Path) -> pd.DataFrame` reading the appropriate layout CSV + slicing bytes per documented positions.
+- Handle 2016-2020 variable-length tail (right-pad `UCODR130` before integer conversion).
+- L13-extension VALUE-DISTRIBUTION CHECK per field at first parse (anchor fields: `PLURAL` / `SETID` / `RESTATUS` / `MAGER` / `SEX` / `BIRTHID` / `UCODR130`). Halt on any implausible distribution.
+- Output 3 yearly_clean parquets at `output/yearly_clean/matched_multiples_{1995-1997,1995-2000,2016-2020}_raw.parquet`.
+- Resolve 1995-1997 CLINGEST byte-position ambiguity (DECISION_LOG 2026-05-14T03:30:00Z residual risk a) via empirical value-distribution probe.
+
+Then **C8.16 DO sub-step 3** (likely same session if sub-step 2 closes in <2h): harmonize.py + validate against PDF Table 1 + worked-example notebook + monorepo top-level updates + VERIFY + RECEIPT.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged.
+**C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking for C8.16 DO sub-step 2. Sub-step 1 design decisions are settled (DECISION_LOG 2026-05-14T03:30:00Z).
+
+**Open questions deferred to in-DO incremental decisions** (carry-forward from PRE-FLIGHT; not blocking sub-step 2 entry):
+1. **Demo notebook cohort + cell choice** (sub-step 3): which year × which IMR cohort × which NCHS-published reference table. Routine.
+
+**Carried-forward open questions from PRE-FLIGHT close** (still pending Phase D):
+1. C8.13 PROPOSE-EDIT timing (Phase D step 4 manuscript re-pass; further deferred).
+
+**Open soft-flags (12 carried + (q) + (r) unchanged from PRE-FLIGHT):**
+(a) stale `fetal_death/PROVENANCE.md` + (b) absent `natality/PROVENANCE.md` + (c) `VERSION_ROADMAP.md` "Planned" + (d) `run_pipeline.py` ALL_YEARS=29 + (e) `natality/output/linked/` absent + (f) plurality footgun OPERATIONALLY CLOSED + (g) PRE-FLIGHT "87 raw zips" typo (now 90 across HVS at sub-step 3 monorepo doc update) + (i) `fetal_death/COMPARABILITY.md` title staleness + (m) `record_length` invariant test does not check vs-actual-zip parity + (n) `test_validate_linked_parquets_mutation` E2E + (o) `validate_v1_invariants` deep-scan mutation + (p) F.1 dict-encoding dropped + (q) WORKED_EXAMPLE_FAQ STATUS-anchor typo + (r) effort-ceiling cap 42 → 86.
+
+### Forward-looking HALTs for sub-step 2 (Convention 4)
+
+Restated for cheap-check at next session start. Full enumeration in DECISION_LOG 2026-05-14T03:30:00Z.
+
+1. **`C8.16-pre-do` tag still present** (from PRE-FLIGHT commit `2b7139a`). Verify: `git tag --list 'C8.16*'` returns only the pre-do tag (complete not yet present).
+2. **All 4 parquet SHAs unchanged byte-exact**: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`.
+3. **`matched_multiples/` directory** present at the post-commit SHAs (this sub-step's commit).
+4. **3 record_layout CSVs validate**: continuity-PASS via `python3 -c "import csv; ..."` (no gaps / no overlaps / position-sum=length).
+5. **`matched_multiples/file_inventory.csv`** has 3 rows + zip SHA-256 anchors + doc PDF SHA-256 anchors in notes.
+6. **`matched_multiples/harmonized_schema.csv`** has 26 preliminary skeleton rows; column structure 10-col with `windows_available` + `raw_source_by_window` (not `years_available`/`raw_source_by_year`).
+7. **`matched_multiples/__init__.py` + `tests/__init__.py`** present (per L17 namespacing).
+8. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`** returns 74 PASS + 1 SKIP + 1 XFAIL ±25s wall-time (unchanged from PRE-FLIGHT baseline; new subproject adds no test surface yet).
+9. **PRE_FLIGHT_LOG.md** unchanged (no new entry at sub-step 1; C8.16-level PRE-FLIGHT @ 2026-05-14T02:30:00Z still authoritative per §4.1 option a).
+10. **2016-2020 variable-length tail handling** documented in `record_layout_2016_2020.csv` UCODR130 notes + ABOUT_SOURCE_DATA.md.
+11. **1995-1997 CLINGEST L13-extension caveat** documented in ABOUT_SOURCE_DATA.md; parser at sub-step 2 will resolve.
+12. **No KICKOFF.md / NEXT_STEPS.md edit at sub-step 1 close** (no §11 plan-update triggers per Q42 tolerance).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- All C8.1-C8.15 DO outputs unchanged.
+
+NEW this sub-step (additive scaffold; no canonical-state mutation outside `matched_multiples/`):
+- `matched_multiples/README.md` (93 lines)
+- `matched_multiples/ABOUT_SOURCE_DATA.md` (101 lines)
+- `matched_multiples/file_inventory.csv` (4 lines; 1 header + 3 data rows)
+- `matched_multiples/harmonized_schema.csv` (27 lines; 1 header + 26 data rows)
+- `matched_multiples/record_layout_1995_1997.csv` (213 lines)
+- `matched_multiples/record_layout_1995_2000.csv` (257 lines)
+- `matched_multiples/record_layout_2016_2020.csv` (126 lines)
+- `matched_multiples/__init__.py` (empty)
+- `matched_multiples/tests/__init__.py` (empty)
+- `matched_multiples/{scripts/01_import,03_harmonize,04_derive,05_validate,tests,output/yearly_clean,output/harmonized,output/validation}/` (empty dirs; will be tracked when first file lands at sub-step 2)
+- `DECISION_LOG.md` entry at 2026-05-14T03:30:00Z
+- This STATUS section
+
+### Notes for next session
+
+- **Sub-step 2 entry cheap-check** (~5 min): re-verify 12 forward-looking HALTs above. Then begin parser authoring at `matched_multiples/scripts/01_import/parse_matched_multiples.py`.
+- **/tmp/c8_16_pdf_probe/ + /tmp/c8_16_zip_probe/ artifacts** carry forward (persistent through next session unless `/tmp` is cleaned by OS). Re-download from FTP is cheap if needed.
+- **Schema-design DECISION_LOG entry** (2026-05-14T03:30:00Z residual risk b): preliminary schema is a SKELETON. Sub-step 2 parser may surface fields worth promoting; surface as in-DO AskUserQuestion if material.
+- **L13-extension discipline mandatory** at first parse: value-distribution anchor-field check per LESSONS 2026-05-12T01:40:00Z (MAGER vs MAGER41 precedent).
+- **Cumulative Phase C ~18 of 51-71 sessions** (~25-35%); sub-step 1 advanced ~0.5 of the 2-3 session C8.16 budget.
+
+### Session summary
+
+C8.16 DO sub-step 1 closed in ~1 hour wall-clock. Scaffold + 3 record_layout CSVs (593 total field rows) + preliminary 26-col harmonized_schema + 9-col file_inventory + README + ABOUT all authored from the 87 PDF pages probed at PRE-FLIGHT (L12-extension preserved). 5 design decisions documented (applies_to column extension; hybrid schema naming; windows_available rename; variable-length 2016-2020 record handling; empirical record counts correcting PRE-FLIGHT divisions). 2016-2020 PDF Table 1 reproduced BYTE-EXACT (641,934 records empirical = 633,734 birth + 8,200 fetal death documented) — strong cross-validation. Zero canonical-state mutation outside `matched_multiples/`; 4 parquet SHAs preserved byte-exact. **Sub-step 2 (parser authoring) queued for next session** with full L13-extension value-distribution-check discipline.
 
 ---
 
