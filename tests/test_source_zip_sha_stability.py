@@ -8,11 +8,13 @@ the SHA disagreement surfaces at CI rather than mid-pipeline. The manifest
 at docs/NCHS_SOURCE_MANIFEST.md (sha=ed2a44d3… at C8.11) is the canonical
 reference; this test verifies the on-disk universe matches it.
 
-Convention 1 SHAPE-not-VALUE: the count anchor (97 = 43 + 35 + 19) is the
+Convention 1 SHAPE-not-VALUE: the count anchor (100 = 43 + 35 + 19 + 3) is the
 structural invariant; per-row SHA assertions enforce the manifest is the
 single source of truth. The manifest is re-snapshot under authorized
 latest-year refreshes via §11 plan-update (e.g., when 2025-published
-cohort-2024 linked file lands, the manifest gains a row).
+cohort-2024 linked file lands, the manifest gains a row). The matched-
+multiples section (3 rows; 1995-1997 + 1995-2000 + 2016-2020) was added at
+C8.16 (2026-05-14).
 
 Skip-if-zip-missing per the established `_require()` pattern in
 tests/conftest.py + per-subproject conftests. CI without raw zips on disk
@@ -38,6 +40,10 @@ MANIFEST_PATH = MONOREPO_ROOT / "docs/NCHS_SOURCE_MANIFEST.md"
 FETAL_RAW_DIR = Path.home() / "Desktop/fetal-death-harmonization-build/raw_data/fetal_death"
 NATALITY_RAW_DIR = Path.home() / "Desktop/natality-harmonization/raw_data"
 LINKED_RAW_DIR = Path.home() / "Desktop/natality-harmonization/raw_data/linked"
+# Matched-multiples zips were probed-and-cached at /tmp/c8_16_zip_probe/ during
+# C8.16 PRE-FLIGHT. A persistent canonical raw_data/ location is a follow-up
+# (sub-step 3 carry-forward); until then, this test reads from /tmp.
+MATCHED_MULTIPLES_RAW_DIR = Path("/tmp/c8_16_zip_probe")
 
 # Capture filename + 64-hex-char SHA from any manifest table row. The
 # manifest format is stable across all three sections; this regex pulls
@@ -45,13 +51,21 @@ LINKED_RAW_DIR = Path.home() / "Desktop/natality-harmonization/raw_data/linked"
 _ROW_RE = re.compile(r"`([^`]+\.zip)`.*?`([0-9a-f]{64})`")
 
 
+_MATCHED_MULTIPLES_FILENAMES = frozenset({
+    "1995-1997.zip",
+    "1995-2000.zip",
+    "2016-2020.zip",
+})
+
+
 def _classify(filename: str) -> Path:
     """Map a raw_filename to its on-disk directory by filename prefix.
 
-    Fetal*  → fetal-death tree
-    Nat*    → natality tree
-    *PE*CO* → linked tree (post-2016-publication naming convention)
-    LinkCO* → linked tree (pre-2017-publication naming convention)
+    Fetal*           → fetal-death tree
+    Nat*             → natality tree
+    *PE*CO*          → linked tree (post-2016-publication naming convention)
+    LinkCO*          → linked tree (pre-2017-publication naming convention)
+    1995-* / 2016-*  → matched-multiples tree (publication-window keyed)
     """
     if filename.startswith("Fetal"):
         return FETAL_RAW_DIR / filename
@@ -59,6 +73,8 @@ def _classify(filename: str) -> Path:
         return NATALITY_RAW_DIR / filename
     if filename.startswith("LinkCO") or "PE" in filename and "CO" in filename:
         return LINKED_RAW_DIR / filename
+    if filename in _MATCHED_MULTIPLES_FILENAMES:
+        return MATCHED_MULTIPLES_RAW_DIR / filename
     raise ValueError(f"unrecognized raw_filename: {filename!r}")
 
 
@@ -83,18 +99,19 @@ def _sha256_of(path: Path) -> str:
 
 
 def test_manifest_anchor_row_count() -> None:
-    """Convention-1 anchor: 97 raw-zip rows total in NCHS_SOURCE_MANIFEST.md."""
+    """Convention-1 anchor: 100 raw-zip rows total in NCHS_SOURCE_MANIFEST.md."""
     rows = _parse_manifest()
-    assert len(rows) == 97, (
-        f"expected 97 manifest rows (43 fetal-death + 35 natality + 19 linked); "
+    assert len(rows) == 100, (
+        f"expected 100 manifest rows "
+        f"(43 fetal-death + 35 natality + 19 linked + 3 matched-multiples); "
         f"got {len(rows)}"
     )
 
 
 def test_manifest_section_row_counts() -> None:
-    """Convention-1 anchor: 43 + 35 + 19 = 97 split across product sections."""
+    """Convention-1 anchor: 43 + 35 + 19 + 3 = 100 split across product sections."""
     rows = _parse_manifest()
-    counts = {"fetal": 0, "natality": 0, "linked": 0}
+    counts = {"fetal": 0, "natality": 0, "linked": 0, "matched_multiples": 0}
     for filename, _sha in rows:
         if filename.startswith("Fetal"):
             counts["fetal"] += 1
@@ -102,9 +119,11 @@ def test_manifest_section_row_counts() -> None:
             counts["linked"] += 1
         elif filename.startswith(("Nat", "nat")):
             counts["natality"] += 1
+        elif filename in _MATCHED_MULTIPLES_FILENAMES:
+            counts["matched_multiples"] += 1
         else:
             raise AssertionError(f"unrecognized raw_filename: {filename!r}")
-    assert counts == {"fetal": 43, "natality": 35, "linked": 19}
+    assert counts == {"fetal": 43, "natality": 35, "linked": 19, "matched_multiples": 3}
 
 
 def test_source_zip_sha_matches_manifest() -> None:

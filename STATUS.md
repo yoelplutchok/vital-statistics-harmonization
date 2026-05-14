@@ -1,6 +1,130 @@
-# STATUS — last updated 2026-05-14T04:30:00Z
+# STATUS — last updated 2026-05-14T05:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T05:30:00Z — **C8.16 COMPLETE** — Matched-multiples ancillary release (4th HVS product) shipped — `harmonize_matched_multiples.py` (308 LOC) + `validate_matched_multiples.py` (240 LOC; L14 propagating) + 11-test smoke suite (SHAPE-not-VALUE per Convention 1; `DESIGN: tracks-current-state` per Convention 2) + 17-cell worked-example notebook (`matched_multiples_demo.ipynb`) + 5 monorepo top-level doc updates (README "Three → Four"; PROJECT_STRUCTURE; CITATION; NCHS_SOURCE_MANIFEST 97→100 zips; SHA-stability test 97→100 anchor); 1,665,568-row harmonized parquet (24 cols) at sha=`adbec108…`; 13/13 validation targets PASS incl. 5 byte-exact PDF Table 1 cells + complete-twin-set IMR 10.14/1,000 reproduced byte-exact; pytest 74P→85P (+11 new matched_multiples tests) in 270.74s cache-cleared; 4 canonical parquet SHAs preserved BYTE-EXACT (H10 gate intact); cumulative Phase C ~19.5 of 51-71 sessions (~27-38%); **C8.17 (Natality 1968-1989; 6-10 sessions) queued next**; tag `C8.16-complete` lands on this commit; full narrative in RECEIPTS/C8.16_2026-05-14T05-30-00Z.md + DECISION_LOG 2026-05-14T05:30:00Z
+
+### Current phase
+
+**Phase C — Tier 3+5 active; 1 of 7 tasks complete; C8.17 (Natality 1968-1989 backward extension) queued next.** C8.16 shipped in 3 sub-steps over 3 sessions, matching the revised 2-3 session budget from PRE-FLIGHT. Cumulative Phase C ~19.5 of 51-71 sessions (~27-38%); effort-ceiling cap 86 sessions intact.
+
+### What was done this session (DO sub-step 3 + VERIFY + RECEIPT)
+
+1. **Cheap-check entry** (~5 min): all 12 forward-looking HALTs from STATUS 04:30Z verified byte-exact (C8.16-pre-do tag present at `2b7139a`; 4 canonical parquet SHAs unchanged; 3 yearly_clean SHAs unchanged; layout row counts 211/256/125 continuity-PASS; parser + zip_text_stream present; cache-cleared pytest 74P+1S+1XF in 206.38s — within ±25s tolerance).
+2. **`matched_multiples/scripts/03_harmonize/harmonize_matched_multiples.py` authored** (308 LOC; `DESIGN: tracks-current-state`): per-window dispatch (`_harmonize_1995x` shared for 1995-1997 + 1995-2000; `_harmonize_2016_2020` distinct for the 2003-revision file) → 1 unified 24-col harmonized parquet (1,665,568 rows total).
+3. **Schema refined 26 → 24 cols** at sub-step 3 entry per sub-step 1 residual risk (b) anticipation: dropped `data_year` (not derivable cross-window; window-implicit redundant with `data_window`) + `maternal_age_recode9` (only 2016-2020; users can derive from `maternal_age`). Renamed `maternal_race_hispanic_within` → `maternal_race_hispanic` to align with schema row 12 + cross-product sibling naming.
+4. **Harmonize run** produces `matched_multiples/output/harmonized/matched_multiples_harmonized.parquet` (sha=`adbec108…`; 1,665,568 rows × 24 cols). Schema-parquet column parity verified byte-exact.
+5. **`matched_multiples/scripts/05_validate/validate_matched_multiples.py` authored** (240 LOC; L14 exit-code propagating per §8 L14 + C8.12 B.8 precedent): 13 validation targets — 3 row-count conservation (one per window) + 5 byte-exact PDF Table 1 *Total*-column cells (641,934 / 633,734 / 626,541 / 7,193 / 8,200) + 5 structural invariants (no quadruplets in 1995-1997; residence_status suppressed in 2016-2020; harmonized total = 1,665,568; cause_of_death only on infant_death; cause coverage ≥0.95 on ID rows). **All 13 PASS** (no FAILs; cause coverage = 100%).
+6. **`matched_multiples/tests/test_release_smoke.py` authored** (11 tests; SHAPE-not-VALUE per Convention 1; `DESIGN: tracks-current-state` first-docstring line): row+col shape pin; schema↔parquet column parity; 3-window coverage; per-window row counts; record_type domain; PDF Table 1 5-cell reproduction; residence_status suppression; cause-of-death scoping; layout-CSV continuity (3 parameterized; one per window). All 11 PASS.
+7. **Validator output path moved to subproject root** (`matched_multiples/validation_results.{csv,md}`) to match the fetal_death sibling pattern + ensure validation results are TRACKED in git (the `output/` symlink + `.gitignore` rule made the prior `output/validation/` path un-committable).
+8. **`notebooks/_build_matched_multiples_demo.py` authored** (211 LOC builder; deterministic nbformat + nbclient.NotebookClient pattern; `DESIGN: tracks-current-state`) + executed → **`notebooks/matched_multiples_demo.ipynb`** (17 cells): cross-validation header + 6 sections covering parquet load + 2016-2020 PDF Table 1 (5 byte-exact cells) + per-plurality IMR (complete-twin-set 10.14/1,000 reproduced byte-exact; triplet/quad informational) + cross-window plurality coverage + ICD-revision split (1995-2000 mixed window) + within-era comparability caveats.
+9. **Monorepo top-level docs updated**:
+   - `README.md`: "Three products at a glance" → "Four"; new row with `matched_multiples/` 1995-1997 + 1995-2000 + 2016-2020 + 1,665,568 records + 24 cols + validation cells; root-tree adds `matched_multiples/` subproject scaffold; NCHS manifest count 97 → 100.
+   - `PROJECT_STRUCTURE.md`: top-level layout adds `matched_multiples/`; new `## matched_multiples/` section paralleling `## fetal_death/` (14 path/purpose rows); notebooks-deps table adds `matched_multiples_demo.ipynb` row.
+   - `CITATION.cff`: abstract mentions matched-multiples + the documentation-table validation backbone; keywords += matched multiples, twins.
+   - `docs/NCHS_SOURCE_MANIFEST.md`: header count 97 → 100; NEW Section 4 (3 zip rows + 3 doc-PDF SHA-anchored rows; window-keyed + multi-year publication explanation); cross-product invariants paragraph updated for the 4th-product ancillary tier.
+   - `matched_multiples/README.md`: validation output path corrected (`output/validation/` → `validation_results.{csv,md}` at subproject root); Status section rewritten for C8.16-complete state.
+10. **`tests/test_source_zip_sha_stability.py` updated**: anchor count 97 → 100; section counts add `matched_multiples: 3`; `_classify()` recognizes the 3 matched-multiples literal filenames; `MATCHED_MULTIPLES_RAW_DIR = /tmp/c8_16_zip_probe`. **Per-zip SHA verification ran byte-exact against all 3 matched-multiples zips on disk** (manifest agrees with empirical SHAs; no skip).
+11. **VERIFY**: cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/` returns **85 PASS + 1 SKIP + 1 XFAIL in 270.74s** (was 74P+1S+1XF in 246.66s; +11 matched_multiples tests; +21s wall-time within ±25s tolerance from 230s reference band).
+12. **H10 reproducibility gate verified**: 4 canonical parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`) byte-exact preserved through C8.16-complete.
+13. **RECEIPT** at `RECEIPTS/C8.16_2026-05-14T05-30-00Z.md` (~190 lines; full §6 template incl. Verify results table + Forward-looking HALTs subsection + 6-point self-check).
+14. **DECISION_LOG entry** appended at 2026-05-14T05:30:00Z (6 design choices bundled: schema refinement 26→24; column rename; validator output path; IMR validation backbone; L14 propagation; SHA-stability test extension).
+15. **STATUS.md** appended (this section).
+16. **Pending**: commit (Convention 5 brevity ~5-line summary; full narrative in RECEIPT + DECISION_LOG); tag `C8.16-complete`.
+
+### Last completed step
+
+Single commit ships: `matched_multiples/scripts/03_harmonize/harmonize_matched_multiples.py` (NEW; 308 LOC) + `matched_multiples/scripts/05_validate/validate_matched_multiples.py` (NEW; 240 LOC) + `matched_multiples/tests/test_release_smoke.py` (NEW; 11 tests) + `matched_multiples/validation_results.csv` + `matched_multiples/validation_results.md` (NEW; 13 PASS) + `notebooks/_build_matched_multiples_demo.py` (NEW; 211 LOC) + `notebooks/matched_multiples_demo.ipynb` (NEW; 17 cells) + `matched_multiples/harmonized_schema.csv` (MODIFIED; 26 → 24 rows) + `matched_multiples/README.md` (MODIFIED; status + validation-path correction) + `README.md` (MODIFIED; Three → Four products) + `PROJECT_STRUCTURE.md` (MODIFIED; new matched_multiples section) + `CITATION.cff` (MODIFIED; abstract + keywords) + `docs/NCHS_SOURCE_MANIFEST.md` (MODIFIED; +Section 4; count 97→100) + `tests/test_source_zip_sha_stability.py` (MODIFIED; anchor 97→100) + `DECISION_LOG.md` entry + this STATUS section + the RECEIPT. **Tag `C8.16-complete` lands on this commit.**
+
+### In-progress
+
+None — C8.16-complete closes Tier 3+5 task 1 of 7. **C8.17 (Natality 1968-1989 backward extension; 6-10 sessions) is the next session's task** per the 2026-05-14T02:00:00Z plan-update sequence.
+
+### Next planned task
+
+**C8.17 — Natality 1968-1989 backward extension** (6-10 sessions). 22 new years of natality data spanning two NCHS revision generations: 1968-revision (1968-1971 50% sample + 1972-1977 100%) + 1978-revision (1978-1988 100%). Sibling of the V3b fetal-death backward extension shipped 2026-05-12 (`task7_v3b-complete` at `b0c8b4a`). C8.17 PRE-FLIGHT will:
+
+- Probe NCHS canonical FTP path (`ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/`) for per-year zips + user-guide PDFs via sibling-extrapolation from `Nat1990US.zip` naming convention (L1-extension discipline).
+- L12-extension cheap-check on per-year user-guide PDFs (`page.get_text()` returns non-empty body pages before declaring OCR-needed).
+- Determine zip + record-layout structure per era (1968-revision 50% sample format vs 1978-revision 100% format).
+- Per-year row-count + record-length probes; canonical inventory + harmonized-schema scaffold.
+
+After C8.17-complete → **C8.18** (Linked birth-infant death 1983-2004 backward extension; 8-14 sessions) per the 2026-05-14 plan-update sequence.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged.
+**C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking for C8.17 entry. The C8.16-complete state is fully verified.
+
+**Carried-forward open questions from C8.15 close** (still pending Phase D):
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — `paper/draft_v2_hmd_styled.md:68` fetal-death timing. Further deferred (Phase D now projected at ~38-52 cumulative sessions).
+
+**Open soft-flags (12 carried + (q) + (r) + (s)):**
+
+Carried unchanged from C8.16 sub-step 2 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (Phase D candidate; matched-multiples is now its 4th product) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun OPERATIONALLY CLOSED at C8.15 (matched-multiples adds reinforcement at notebook section 3) + (g) PRE-FLIGHT "87 raw zips" typo (now 100 across HVS; future C8.17 brings to 122 or similar) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding dropped + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo + (r) effort-ceiling cap 42 → 86.
+
+**NEW soft-flag (s):** `/tmp/c8_16_zip_probe/` 3 matched-multiples zips are OS-cleanable. `tests/test_source_zip_sha_stability.py::test_source_zip_sha_matches_manifest` will skip the 3 matched-multiples rows if `/tmp` is cleaned. Future C8.X may promote to a canonical `raw_data/matched_multiples/` location for persistence. Resolves at C8.7b orchestrator authoring OR a Phase D step 2 inventory consolidation.
+
+### Forward-looking HALTs for C8.17 PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check access at C8.17 PRE-FLIGHT entry. Full enumeration in RECEIPTS/C8.16_2026-05-14T05-30-00Z.md + DECISION_LOG 2026-05-14T05:30:00Z.
+
+1. **`C8.16-complete` tag present** on this commit. Verify: `git tag --list 'C8.16-complete'`.
+2. **`C8.17-pre-do` tag NOT yet present** until C8.17 PRE-FLIGHT lands.
+3. **4 canonical parquet SHAs byte-exact preserved** (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`) — H10 gate intact through C8.16.
+4. **3 matched-multiples yearly_clean parquet SHAs byte-exact preserved** (`5c22308b…` / `7c682668…` / `d98b4296…`).
+5. **1 matched-multiples harmonized parquet SHA byte-exact preserved** (`adbec108…`).
+6. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/`** returns 85 PASS + 1 SKIP + 1 XFAIL ±25s of 270.74s.
+7. **`docs/NCHS_SOURCE_MANIFEST.md` row count = 100** (43 + 35 + 19 + 3). C8.17 will add ~22 (1968-1989 natality rows; final count depends on 1968-1971 50% sample's zip packaging).
+8. **`README.md` "Four products at a glance"** is the current canonical headline shape. C8.17 will extend the natality row's year range; no 5th product added.
+9. **`tests/test_source_zip_sha_stability.py::_classify()`** recognizes 4 filename families (Fetal*, Nat*, LinkCO*/*PE*CO*, matched-multiples literals). C8.17 will extend to handle 1968-1989 natality filenames.
+10. **No KICKOFF.md / NEXT_STEPS.md edit at this RECEIPT close** (C8.17-C8.22 task entries already exist at NEXT_STEPS.md §15.D from 2026-05-14T02:00:00Z plan-update commit).
+11. **Tier 3+5 progress = 1 of 7 tasks complete** (C8.16 done; C8.17-C8.22 remaining). Cumulative Phase C ~19.5 of 51-71 sessions (within Q33 effort-ceiling cap of 86).
+12. **/tmp/c8_16_zip_probe/ + /tmp/c8_16_pdf_probe/** artifacts may be OS-cleaned; re-downloadable from FTP if needed.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged).
+- Matched-multiples 4th HVS product:
+  - 3 yearly_clean parquets at SHAs `5c22308b…` (324,490 × 212) / `7c682668…` (699,144 × 257) / `d98b4296…` (641,934 × 126); gitignored.
+  - 1 harmonized parquet at sha `adbec108…` (1,665,568 × 24); gitignored.
+  - 11-test smoke suite (all PASS).
+  - 13-target validator (13 PASS).
+  - `matched_multiples_demo.ipynb` worked-example notebook.
+- All C8.1-C8.15 DO outputs unchanged.
+
+NEW this session (additive; no canonical-state mutation outside `matched_multiples/` + 5 monorepo top-level docs + 1 SHA-stability test):
+- 6 NEW files at `matched_multiples/scripts/03_harmonize/` + `scripts/05_validate/` + `tests/` + subproject root.
+- 1 NEW harmonized parquet at `matched_multiples/output/harmonized/` (gitignored).
+- 2 NEW files at `notebooks/_build_matched_multiples_demo.py` + `notebooks/matched_multiples_demo.ipynb`.
+- 5 MODIFIED files at monorepo top level (`README.md`, `PROJECT_STRUCTURE.md`, `CITATION.cff`, `docs/NCHS_SOURCE_MANIFEST.md`, `matched_multiples/README.md`).
+- 1 MODIFIED file at `matched_multiples/harmonized_schema.csv` (26 → 24 rows; column rename).
+- 1 MODIFIED file at `tests/test_source_zip_sha_stability.py` (97 → 100 anchor; matched_multiples classification).
+- 1 NEW RECEIPT at `RECEIPTS/C8.16_2026-05-14T05-30-00Z.md`.
+- 1 NEW DECISION_LOG entry at 2026-05-14T05:30:00Z.
+- This STATUS section.
+
+### Notes for next session
+
+- **C8.17 entry cheap-check** (~5 min): re-verify the 12 forward-looking HALTs above. Then begin C8.17 PRE-FLIGHT.
+- **C8.17 substrate**: NCHS canonical FTP at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/` (sibling-extrapolation from existing 1990+ paths). 1968-revision (1968-1971 50% sample + 1972-1977 100%) + 1978-revision (1978-1988 100%) = 22 zips (or similar; final count depends on 1968-1971 packaging). User-guide PDFs at `Dataset_Documentation/DVS/natality/` sibling path.
+- **C8.17 sibling pattern**: V3b fetal-death backward extension shipped 2026-05-12 at `task7_v3b-complete` (`b0c8b4a`). Same era boundary discipline (1978-revision uniform; 1989-revision uniform pre-2003-revision). Sibling files at `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` document the approach for V3b. Expect 6-10 sessions per the 2026-05-14 plan-update sequence (revised from EXPLORATION_REPORT Q36 default).
+- **Cumulative Phase C ~19.5 of 51-71 sessions** (~27-38%); 31.5-51.5 sessions remaining in Tier 3+5 (C8.17-C8.22).
+- **No re-ask trigger** at C8.16-complete (effort cap 86 sessions; cumulative well below).
+- **B.12 snapshot regression test** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) remains valid byte-exact through C8.16 (additive scope; no parquet reshape on existing products). Will re-snap at C8.17 + C8.18 + C8.19 parquet rebuilds.
+- **Matched-multiples is a 4th HVS product** in the project schema vocabulary. Future Tier-3 docs/usability work (C8.20 CODEBOOK extensions; C8.22 cross-tabs) should include matched-multiples cells.
+
+### Session summary
+
+C8.16 COMPLETE — Matched-multiples ancillary release shipped in 3 DO sub-steps + VERIFY + RECEIPT over 3 sessions (within the revised 2-3 session PRE-FLIGHT budget). Sub-step 3 (this session) shipped `harmonize_matched_multiples.py` (308 LOC; 24-col schema refined from 26 via sub-step 1 residual risk b anticipation) → 1,665,568-row harmonized parquet at sha=`adbec108…` reproducing 5 of 5 byte-exact 2016-2020 PDF Table 1 *Total*-column cells + complete-twin-set IMR (10.14/1,000) byte-exact. Validator (240 LOC; L14 exit-code propagating) returns 13/13 PASS. 11-test smoke suite (SHAPE-not-VALUE per Convention 1) extends pytest baseline 74P → 85P in 270.74s cache-cleared. 17-cell worked-example notebook reproduces all validated cells inline + documents cross-window within-era discipline. 5 monorepo top-level docs updated additively (README "Three → Four"; PROJECT_STRUCTURE; CITATION; NCHS_SOURCE_MANIFEST +Section 4 → 100 zips; SHA-stability test 97→100 anchor with matched-multiples classification + 3-zip SHA verification PASS). H10 reproducibility gate intact: 4 canonical parquet SHAs (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`) byte-exact preserved through the full C8.16 lifecycle. Tier 3+5 advances 0/7 → 1/7; cumulative Phase C ~19.5 of 51-71 sessions (~27-38%); effort-ceiling cap 86 intact. **C8.17 (Natality 1968-1989 backward extension; 6-10 sessions) queued for next session.**
 
 ---
 

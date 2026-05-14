@@ -1,0 +1,14 @@
+target_id,source,description,expected,actual,status,diff,pdf_sha256
+window_1995-1997_count,Row-count conservation across harmonize step,Harmonized rows for window 1995-1997 match yearly_clean,324490,324490,PASS,0,
+window_1995-2000_count,Row-count conservation across harmonize step,Harmonized rows for window 1995-2000 match yearly_clean,699144,699144,PASS,0,
+window_2016-2020_count,Row-count conservation across harmonize step,Harmonized rows for window 2016-2020 match yearly_clean,641934,641934,PASS,0,
+total,2016-2020 PDF Table 1 'Total' column,All records (2016-2020),641934,641934,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
+live_birth,2016-2020 PDF Table 1 'Total' column,Live births: survivor + infant_death (2016-2020),633734,633734,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
+survivor,2016-2020 PDF Table 1 'Total' column,Survivors (2016-2020),626541,626541,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
+infant_death,2016-2020 PDF Table 1 'Total' column,Infant deaths (2016-2020),7193,7193,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
+fetal_death,2016-2020 PDF Table 1 'Total' column,Fetal deaths (2016-2020),8200,8200,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
+no_quadruplets_1995_1997,1995-1997 PDF p1 + ABOUT_SOURCE_DATA.md (quadruplets excluded by confidentiality),1995-1997 window has no set_size=4 records,0,0,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+residence_status_suppressed_2016_2020,2016-2020 PDF doc + harmonized_schema.csv,2016-2020 residence_status is fully NaN (suppressed),0,0,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
+harmonized_total_rows,Row-count conservation across harmonize step,Harmonized parquet total rows = sum of 3 yearly_clean parquets,1665568,1665568,PASS,0,
+cause_of_death_only_on_infant_death,Schema constraint (cause_of_death applies_to=ID per layout CSVs),Non-infant-death rows have NaN cause_of_death_icd,0,0,PASS,0,
+cause_of_death_coverage_on_id,Heuristic: 95%+ of infant_death rows carry a coded UCOD,Coverage of cause_of_death_icd on infant_death rows,≥0.95,1.0000,PASS,,

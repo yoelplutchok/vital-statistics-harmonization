@@ -16,6 +16,7 @@ vital-statistics-harmonization/
 ├── docs/                     Cross-product documentation
 ├── natality/                 Natality + linked birth–infant death subproject
 ├── fetal_death/              Fetal death subproject
+├── matched_multiples/        Matched-multiples subproject (4th HVS product; C8.16)
 ├── notebooks/                Cross-product worked examples
 ├── paper/                    Data Resource Profile manuscript drafts
 ├── figures/                  Cross-product figures
@@ -95,6 +96,30 @@ Fetal death 1992–2022 (with 2003–2004 deferred to V2.1), mirrored from the [
 | `fetal_death/quickstart.py` | First-load demo |
 | `fetal_death/figures/` | fig1_nvsr_counts, fig2_fmr_trend, fig3_within_era_demo, companion figs |
 
+## matched_multiples/
+
+Matched-multiples (twins / triplets / quadruplets with linked infant deaths and fetal deaths), shipped at C8.16 (2026-05-14). Three NCHS publication windows: 1995-1997 (`sets9597.public`; 502-byte fixed-width; ICD-9 only; twins+triplets), 1995-2000 (`Sets9500.public`; 754-byte fixed-width; mixed ICD-9/10; twins+triplets+quadruplets), 2016-2020 (`MULTIPLES.TXT`; variable 155-157-byte; ICD-10 only; twins+triplets+quadruplets). Total: 1,665,568 records across 3 windows. The subproject stands parallel to `natality/` + `fetal_death/` — same scaffold (top-level docs at subproject root) but window-keyed inventory (not year-keyed).
+
+| Path | Purpose |
+|---|---|
+| `matched_multiples/README.md` | Subproject overview, 4 windows, why a 4th HVS product |
+| `matched_multiples/ABOUT_SOURCE_DATA.md` | NCHS source files, methodology-generation differences, variable-length 2016-2020 handling |
+| `matched_multiples/harmonized_schema.csv` | 24-column authoritative schema (`data_window`, `record_type`, `set_id`, `set_size`, `set_complete`, `set_order`, `tabulation_flag`, `residence_status`, `maternal_age`, `maternal_race_hispanic`, `maternal_education_cat4`, `nativity`, `marital_status`, `plurality_imputed`, `sex_infant`, `gestation_weeks`, `birthweight_g`, `birthweight_recode12`, `apgar_5_min`, `delivery_method`, `age_at_death_days`, `age_at_death_recode5`, `cause_of_death_icd`, `cause_of_death_icd_revision`) |
+| `matched_multiples/file_inventory.csv` | Source-zip + doc-PDF SHA-256 checksums per publication window (3 rows; cross-referenced in `docs/NCHS_SOURCE_MANIFEST.md` Section 4) |
+| `matched_multiples/record_layout_1995_1997.csv` | Field-by-field byte positions for `sets9597.public` (211 fields; 502-byte content; `applies_to` column ∈ {`all`, `FD`, `ID`}) |
+| `matched_multiples/record_layout_1995_2000.csv` | Field-by-field byte positions for `Sets9500.public` (256 fields; 754-byte content) |
+| `matched_multiples/record_layout_2016_2020.csv` | Field-by-field byte positions for `MULTIPLES.TXT` (125 fields; variable 155-157-byte content; UCODR130 right-trimmed) |
+| `matched_multiples/scripts/01_import/parse_matched_multiples.py` | Parse 3 zips → 3 yearly_clean parquets |
+| `matched_multiples/scripts/01_import/zip_text_stream.py` | Vendored zip-streaming helper (byte-for-byte copy from `fetal_death/scripts/01_import/`) |
+| `matched_multiples/scripts/03_harmonize/harmonize_matched_multiples.py` | Per-window field mapping + sentinel coercion → 1 unified harmonized parquet (24 cols × 1,665,568 rows) |
+| `matched_multiples/scripts/05_validate/validate_matched_multiples.py` | Reproduce 5 byte-exact PDF Table 1 cells + 8 structural invariants; exit-code propagating (L14) |
+| `matched_multiples/tests/test_release_smoke.py` | 11 SHAPE-not-VALUE smoke tests (Convention 1; `DESIGN: tracks-current-state`) covering row/col shape, schema parity, PDF cell parity, layout continuity |
+| `matched_multiples/output/yearly_clean/matched_multiples_<window>_raw.parquet` | Parsed raw records preserving every documented source field (gitignored; reproducible) |
+| `matched_multiples/output/harmonized/matched_multiples_harmonized.parquet` | Canonical harmonized parquet (SHIPPED artifact) |
+| `matched_multiples/output/validation/validation_results.{csv,md}` | Per-target PASS/FAIL tables |
+
+The C8.16 release adds `notebooks/matched_multiples_demo.ipynb` (worked example reproducing the 5 PDF Table 1 *Total* cells byte-exact + the prose-level 10.14/1,000 complete-twin-set IMR byte-exact). Builder: `notebooks/_build_matched_multiples_demo.py`.
+
 ## paper/
 
 Data Resource Profile manuscript drafts.
@@ -114,6 +139,7 @@ Cross-product worked examples. Each notebook should be runnable end-to-end again
 |---|---|---|
 | `joint_use_demo.ipynb` | Stub | Compute fetal mortality rate by maternal race using all three products jointly. To be filled in. |
 | `paper_companion.ipynb` | Stub | Reproduce every numeric claim in the paper from the parquets. To be filled in. |
+| `matched_multiples_demo.ipynb` | C8.16 | Reproduce 5 PDF Table 1 *Total* cells (Total / Birth / Survivor / Infant death / Fetal death) byte-exact + complete-twin-set IMR (10.14/1,000) byte-exact + cross-window plurality coverage. |
 
 ## shared/helpers/
 

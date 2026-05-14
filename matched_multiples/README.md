@@ -43,7 +43,7 @@ scripts/04_derive/                             derived analytic indicators (TBD)
        │
        ▼
 scripts/05_validate/                           validate against PDF documentation tables (Table 1 of each PDF)
-                                               outputs: output/validation/*.{csv,md}
+                                               outputs: validation_results.{csv,md} at subproject root
 ```
 
 ## Canonical filter (preliminary; subject to validation refinement)
@@ -80,14 +80,15 @@ Each PDF includes one or more published tables that the harmonized parquet shoul
 
 Cell-by-cell validation lands at C8.16 DO sub-step 3.
 
-## Status (as of C8.16 DO sub-step 1)
+## Status (as of C8.16-complete; 2026-05-14)
 
-- Subproject scaffolded; 3 record_layout CSVs authored from PDF documentation (87 PDF pages probed at PRE-FLIGHT per L1-extension + L12-extension); preliminary harmonized schema skeleton (25 columns) drafted.
-- Parser + harmonizer NOT YET authored. No `output/` parquets exist.
-- Open: schema validation against parser-surfaced value distributions; final canonical-filter spec; cross-product joint-use guide entry.
+C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). The harmonized parquet (1,665,568 rows × 24 cols) reproduces 5 of 5 PDF Table 1 *Total* cells byte-exact for the 2016-2020 window plus 8 structural invariants (cause-of-death scoping; quadruplet exclusion; residence_status suppression; row-count conservation; cross-window plurality coverage).
 
-Subsequent sub-steps:
-- **DO sub-step 2**: author `scripts/01_import/parse_matched_multiples.py`; produce 3 yearly_clean parquets; harmonize.
-- **DO sub-step 3**: validate against PDF Table 1 of each window; author `notebooks/matched_multiples_demo.ipynb`; update monorepo top-level docs.
+Pipeline artifacts:
 
-C8.16 budget revised at PRE-FLIGHT to 2-3 sessions (within Q42 +1-session tolerance from §15.D 1-2 estimate).
+- `output/yearly_clean/matched_multiples_<window>_raw.parquet` (3 files; gitignored; reproducible). Row counts: 324,490 / 699,144 / 641,934.
+- `output/harmonized/matched_multiples_harmonized.parquet` (1 file; gitignored; reproducible). 1,665,568 rows × 24 cols.
+- `validation_results.{csv,md}` at subproject root (tracked).
+- `tests/test_release_smoke.py` (11 tests; SHAPE-not-VALUE per Convention 1).
+
+Cross-window comparability: `within_era` for race / education / delivery-method (different revision-era field semantics); `full` for set-level identifiers + record-type + sex_infant + age-at-death.

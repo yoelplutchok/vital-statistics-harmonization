@@ -23,6 +23,85 @@
 
 ---
 
+## 2026-05-14T05:30:00Z — C8.16-complete — Harmonize + validate + worked-example notebook + monorepo top-level docs; 1,665,568-row harmonized parquet ships at sha `adbec108…`; 5 byte-exact PDF Table 1 cells + 8 structural invariants PASS; pytest 74→85 PASS; 4 canonical SHAs preserved (H10 gate intact)
+
+**Choices (LLM at C8.16 DO sub-step 3 / RECEIPT close):**
+
+1. **Harmonized schema refined 26 → 24 cols.** Dropped `data_year` (not derivable across 1995-2000 mixed-year window without cohort-linked logic; window-implicit for 1995-1997 + 2016-2020 makes it redundant with `data_window`) + `maternal_age_recode9` (only 2016-2020 has it; users can derive from `maternal_age` if needed). Sub-step 1 anticipated this in residual risk (b): "Preliminary schema is a SKELETON; sub-step 3 may surface fields worth promoting/demoting."
+
+2. **`maternal_race_hispanic_within` → `maternal_race_hispanic` rename** to match the schema CSV row 12 canonical name and align with cross-product sibling naming (natality + fetal_death also use `maternal_race_hispanic`). The `_within` suffix was carried over from preliminary draft. The `comparability_class=within_era` in the schema row already flags the cross-window comparability caveat; the name no longer needs to.
+
+3. **Validator output path = subproject root (not `output/validation/`).** Aligns with `fetal_death/validation_results.csv` sibling pattern. Reason: validator output is informational metadata that should be TRACKED in git (committed alongside source code); the `output/` symlink at the monorepo root + `.gitignore *.parquet output/` rule make `output/validation/` files un-trackable. Moving to subproject root satisfies both goals. Trade-off: not symmetric with natality's `output/validation/` (which is gitignored); future C8.X may consolidate.
+
+4. **Per-plurality IMR validation backbone = complete twin set IMR (10.14/1,000) byte-exact.** The PDF prose mentions 10.82 (twins) / 29.17 (triplets) / 46.98 (quads) for "complete and incomplete sets" but the PyMuPDF text extraction renders Table 1's column headers ambiguously (the denominator definition for "complete and incomplete" is not unambiguously parseable). The PDF also explicitly states "complete sets of twins = 10.14" — this figure IS reproducible byte-exact from `set_complete ∈ {1, 2}` ∧ `set_size = 2` in the harmonized parquet. The notebook reproduces 10.14 as the validation backbone and documents 10.82 / 29.17 / 46.98 as PDF prose for context without code-level assertion. Future audits with unambiguous Table 1 extraction may add the broader assertions.
+
+5. **L14 propagation: validator exits 1 on `n_fail > 0`.** Per §8 matrix L14 ("a reproduction / validation script's per-row CSV has FAIL rows, but main() returns 0; CI / PRE-FLIGHT reads exit code only and reports PASS"). The new `validate_matched_multiples.py` follows the C8.12 B.8 audit pattern: per-row results CSV is the data; main() returns exit code based on `n_fail` count; stderr prints the FAIL count for human inspection.
+
+6. **`tests/test_source_zip_sha_stability.py` extended for matched-multiples.** Anchor count 97 → 100; section counts add `matched_multiples: 3`; `_classify()` recognizes the 3 matched-multiples literal filenames; `MATCHED_MULTIPLES_RAW_DIR = /tmp/c8_16_zip_probe`. Test runs against the actual zip SHAs and all 3 PASS (no skip). Future C8.X may promote the 3 zips to a canonical `raw_data/matched_multiples/` location for persistence.
+
+**Alternatives considered:**
+
+For #1 (schema refinement):
+- (A) Drop `data_year` + `maternal_age_recode9` (24 cols total) — CHOSEN.
+- (B) Keep all 26 columns; mark `data_year` and `maternal_age_recode9` as `windows_available=2016-2020 only` (single-window populated). Rejected: forces user code to handle the null cases for fields that have no cross-window analog; the schema is cleaner without them.
+- (C) Drop only `data_year`; keep `maternal_age_recode9`. Rejected: same cleanliness argument applies symmetrically; users wanting age recode can derive from `maternal_age`.
+
+For #4 (IMR validation):
+- (A) Use 10.14 complete-twin-set IMR as the byte-exact backbone — CHOSEN. Reproduces exactly under `set_complete ∈ {1, 2}` filter; the PDF text uses this exact figure unambiguously.
+- (B) Strict assertion on PDF prose 10.82 / 29.17 / 46.98 figures. Rejected: text-extraction column-header ambiguity means the denominator definition cannot be unambiguously specified; my filter yields 10.14 / 28.44 / 45.77, which match the alternate "complete only" prose figure for twins (10.14) and may have approximated those denominators for triplets/quads. Strict assertion would fail.
+- (C) No IMR assertions in notebook; defer to a future audit pass. Rejected: the 10.14 complete-twin-set figure is unambiguous and provides genuine cross-validation of the harmonize logic (record_type + set_size + set_complete semantics all exercised in one cell).
+
+For #5 (L14 propagation):
+- (A) Stderr print + `sys.exit(1)` on FAIL branch — CHOSEN. Sibling pattern with `validate_external_v2.py` + the C8.12 B.8 patches.
+- (B) Stderr print only; preserve `sys.exit(0)` behavior. Rejected: violates §8 matrix L14 explicitly; future CI gating cannot detect validator FAIL.
+
+**Reason:** Sub-step 3 closes C8.16 with the harmonize + validate + notebook + docs deliverables, advancing Tier 3+5 from 0/7 → 1/7. Schema refinement (#1) realizes the residual risk (b) anticipated at sub-step 1. The IMR validation backbone (#4) demonstrates byte-exact analytic fidelity at the prose-cell level; the PDF prose ambiguity (#4 rejection of B) is a real limitation acknowledged with a forward-looking audit pointer. L14 propagation (#5) extends the C8.12 B.8 discipline to the new validator. The SHA-stability test extension (#6) closes the L13-extension class for the matched-multiples manifest entries (audit caught the test failure before commit; fixed in this same sub-step per fix-on-contact). Per §4.5 commit-message brevity, the full narrative lives here in DECISION_LOG; the commit ships a ~5-line summary.
+
+**Source:**
+
+- Empirical post-harmonize value distributions (per-window record_type splits matching raw BIRTHID distributions; per-window set_size splits matching raw PLURALITY/PLURAL; cause-of-death coverage = 100% on infant_death rows across all 3 windows).
+- 2016-2020 PDF Table 1 cells transcribed from `/tmp/c8_16_pdf_probe/2016-2020.txt` (lines 1668-1743; PyMuPDF extraction of `2016-2020.pdf` sha=`ed5e96ab…` page 15).
+- 2016-2020 PDF prose IMR figures from `/tmp/c8_16_pdf_probe/2016-2020.txt` (lines 69-72: "the mortality rate was 10.82 deaths per 1,000 births..."; line 72: "for compete [sic] sets of twins the infant mortality rate for twins in complete sets was 10.14").
+- §8 matrix L14 row (added 2026-05-11T16:32:34Z via NHANES protocol-sync; reinforced at C8.12 B.8 audit 2026-05-13T20:00:00Z).
+- §8 matrix L13/L13-extension rows (added 2026-05-12T01:40:00Z; the schema-rename harmonize → schema-CSV parity issue surfaced at sub-step 3's first harmonize-output validation).
+- Validator test result: 13 PASS / 0 FAIL across 13 targets.
+- Pytest extension: 74 → 85 PASS (+11 matched_multiples smoke tests) in 270.74s cache-cleared.
+
+**Verifiable by:**
+
+- `git log --all --format='%h %s' | grep 'C8.16-complete'` returns this commit.
+- `git tag --list 'C8.16-*'` returns `C8.16-pre-do` + `C8.16-complete`.
+- `shasum -a 256 matched_multiples/output/harmonized/matched_multiples_harmonized.parquet` returns `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549`.
+- `uv run python matched_multiples/scripts/05_validate/validate_matched_multiples.py; echo $?` returns 0.
+- `uv run pytest matched_multiples/tests/ -q` returns 11 PASS.
+- `uv run pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/ -q` returns 85 PASS + 1 SKIP + 1 XFAIL in ~250-280s.
+- Cache-cleared baseline check: 4 canonical parquet SHAs unchanged (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`).
+- `wc -l matched_multiples/harmonized_schema.csv` returns 25 (1 header + 24 data rows).
+- `grep -c '^| 19' docs/NCHS_SOURCE_MANIFEST.md` + `grep -c '^| 1995-\|^| 2016-' docs/NCHS_SOURCE_MANIFEST.md` returns total 100 manifest rows.
+
+**Reversible:** yes — `git reset --hard C8.16-pre-do` (commit `2b7139a`) discards the 3 DO sub-step commits. The off-tree /tmp probe artifacts persist for re-derivation if needed.
+
+**Residual risks (C8.16-complete):**
+
+- (a) **Cross-product joinability of `maternal_race_hispanic` is `within_era`.** A user joining matched-multiples 1995-1997 records (`NH_Other` ≈ AIAN+Asian+NHOPI+multiple from 4-cat ORRACEM) with natality 1990-1997 records (`NH_Other` ≈ same 4-cat ORRACEM) is fine; joining to matched-multiples 2016-2020 records (`NH_Other` ≈ AIAN+Asian+NHOPI+multiple from 8-cat MRACEHISP collapse) requires understanding the boundary. Notebook section 5 + schema row's `comparability_class=within_era` flag this.
+- (b) **1995-2000 file is NOT strict supersession of 1995-1997.** Concatenating both files would double-count the overlapping 1995-1997 years with different matching methodologies. ABOUT_SOURCE_DATA.md "Methodology differences" + notebook Section 5 document this; the harmonized parquet's `data_window` column is the discriminator.
+- (c) **`cause_of_death_icd_revision` derivation assumes UCOD9/UCOD10 blocks are mutually exclusive per record.** If NCHS data has both blocks populated for any record, my UCOD10-priority rule shadows the ICD-9 code. Cross-tab in notebook section 4 shows clean 14,504 ICD-9 + 7,715 ICD-10 = 22,219 infant deaths in 1995-2000 (no double-counting; no missing); the rule appears correct empirically.
+- (d) **`/tmp/c8_16_zip_probe/` is OS-cleanable.** `tests/test_source_zip_sha_stability.py::test_source_zip_sha_matches_manifest` will skip the 3 matched-multiples rows if `/tmp` is cleaned. Future C8.X may promote to `raw_data/matched_multiples/` for persistence.
+- (e) **The harmonized schema lists `birthweight_g` as null for all 2016-2020 records** (only the 12/14-category BWTR12/BWTR14 recodes ship for the 2003-revision file). Users wanting single-gram birthweight pre-2003-revision must use the 1995-X windows. ABOUT_SOURCE_DATA.md notes this; the schema row's `windows_available=1995-1997 (DBIRWT@106-109); 1995-2000 (DBIRWT@106-109)` flags it.
+
+**Backport scope:** None outside `matched_multiples/` + the 5 monorepo top-level docs + 1 SHA-stability test. The harmonize logic is local; the SHA-stability test extension is the only test-surface mutation (additive; existing 97-row anchor would still pass without the extension, but the new 100-row anchor is what reflects current state).
+
+**Forward-looking HALTs for C8.17 (Convention 4):**
+
+- 4 canonical parquet SHAs + 4 matched-multiples parquet SHAs (3 yearly_clean + 1 harmonized) byte-exact preserved at session entry.
+- `C8.16-complete` tag present; `C8.17-pre-do` tag NOT yet present.
+- Cache-cleared pytest baseline = 85 PASS + 1 SKIP + 1 XFAIL ±25s of 270.74s.
+- `docs/NCHS_SOURCE_MANIFEST.md` row count = 100. C8.17 will add 22 (or similar; depends on the 1968-1971 50% sample's zip packaging).
+- `README.md` "Four products at a glance" header is current canonical; C8.17 extends natality row's year range.
+- `tests/test_source_zip_sha_stability.py::_classify()` will need to extend to recognize 1968-1989 natality filenames (PRE-FLIGHT probe deliverable for C8.17).
+
+---
+
 ## 2026-05-14T04:30:00Z — C8.16 DO sub-step 2 — Parser authored + 3 yearly_clean parquets emitted (324,490 / 699,144 / 641,934 records byte-exact); 1995-1997 CLINGEST L13-extension residual risk (a) resolved empirically (1→2 byte; 212→211 layout rows; 502-byte continuity preserved)
 
 **Choices (LLM at C8.16 DO sub-step 2 close):**
