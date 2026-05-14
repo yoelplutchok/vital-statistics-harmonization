@@ -1296,6 +1296,300 @@ Concurrency control: `group: ci-${{ github.ref }}`, `cancel-in-progress: true`.
 
 ---
 
+# §15.D Phase C Tier 3 + Tier 5 tasks (authorized 2026-05-14 per `[plan-update] scope_expansion_tier3_tier5`)
+
+The C8.16-C8.22 entries below were appended at the 2026-05-14T02:00:00Z `[plan-update]` commit (DECISION_LOG 2026-05-14T02:00:00Z). They expand pre-Zenodo scope to include Tier 3 (matched-multiples + CODEBOOK + Stata/SAS + cross-tabs) + Tier 5 (natality 1968-1989 + linked 1983-2004 + perinatal-record) per user authorization, in the sequence matched-multiples → natality 1968-1989 → linked 1983-2004 → perinatal-record → CODEBOOK → Stata/SAS → cross-tabs.
+
+Each task uses the §4 five-phase discipline; halts on any §7 condition; tagged `<task_id>-pre-do` and `<task_id>-complete`. Effort-ceiling cap is now 86 sessions (raised from 42); Q33 re-ask invariant triggers if cumulative drift exceeds 86.
+
+---
+
+### Task C8.16 — Matched-multiples ancillary release (A.5; 4th HVS product)
+
+**Goal.** Parse 3 NCHS matched-multiples linkage files (matched-multiple-birth-fetal-death-1995-1997 + 1995-2000 + 2016-2020) at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/matched-multiples/`. Ship as a 4th HVS data product (`matched_multiples/` subproject parallel to `natality/` + `fetal_death/`) with per-file harmonized parquet + harmonized schema + validation against the NCHS documentation tables for each file. ~43 MB total raw.
+
+**Why this matters.** Adds a 4th HVS data product covering multiple-gestation IMR + fetal-mortality analyses that currently require manual NCHS-side joining. The 1995-1997 + 1995-2000 + 2016-2020 windows are the only published NCHS matched-multiples linkages; canonically these are tested by the multiple-gestation research community but not currently distributed alongside HVS. Independent of C8.17 + C8.18 (matched-multiples files don't share an era with the natality 1968-1989 or linked 1983-2004 work).
+
+**PRE-FLIGHT inputs.**
+- 3 NCHS source zips at the matched-multiples FTP path (probe via `curl -sIk` for HTTP 200 + size + Last-Modified + ETag; record SHAs).
+- 3 documentation PDFs at `ftp.cdc.gov/.../Dataset_Documentation/DVS/matched-multiples/` (probe via L12-extension `page.get_text()` text-layer check before assuming OCR is needed).
+- Field-value snapshot (Convention 3): existing `fetal_death/file_inventory.csv` + `natality/metadata/file_inventory.csv` schemas (column structure to mirror for the new `matched_multiples/metadata/file_inventory.csv`); existing `harmonized_schema.csv` formats (column structure for new `matched_multiples/harmonized_schema.csv`); `PROJECT_STRUCTURE.md` top-level layout (to extend with new subproject directory).
+- Architectural decision substrate: does the matched-multiples parquet ship as (i) standalone product with its own harmonized schema + canonical filter, or (ii) joined-into-existing-products as a `matched_multiple_flag` boolean column on fetal-death + linked? PRE-FLIGHT records the design decision with a DECISION_LOG entry.
+
+**SMOKE plan.**
+- Tier 0: 100-record parse of each of 3 files; verify record-length + column-count matches documentation.
+- Tier 1: full-file parse of each; per-year + per-file aggregate counts match NCHS documentation tables (page-X cell-by-cell).
+- Tier 2: cross-product join sanity check (matched-multiples records' maternal-demographics + state + delivery-year reconcile against fetal-death + natality + linked of the same year/cohort).
+
+**DO scope.**
+1. Architectural decision (PRE-FLIGHT artifact, DECISION_LOG entry): standalone subproject vs join-flag column. Default recommendation: standalone subproject for clean schema; future task can derive a join-flag if needed.
+2. Create `matched_multiples/` subproject layout: README.md + GETTING_STARTED.md + ABOUT_SOURCE_DATA.md + harmonized_schema.csv + file_inventory.csv + scripts/01_import/parse_matched_multiples.py + scripts/03_harmonize/ + scripts/04_derive/ + scripts/05_validate/ + tests/.
+3. Author parser; harmonize; derive (if applicable); validate against documentation tables.
+4. Add a `notebooks/matched_multiples_demo.ipynb` worked example showing a multiple-gestation IMR computation (≥1 cell vs NCHS-published table).
+5. Update monorepo top-level README.md, PROJECT_STRUCTURE.md, CITATION.cff to reflect 4th HVS product.
+
+**VERIFY criteria.**
+- Per-file aggregate counts match NCHS documentation byte-exact.
+- `pytest matched_multiples/tests/` returns 100% PASS (new test directory).
+- C8.1's dtype-parity test pattern extended to matched-multiples (`matched_multiples/tests/test_schema_dtype_parity.py`).
+- `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/` returns at-least-74-PASS + 1 SKIP + 1 XFAIL (the existing baseline preserved + new tests added).
+- 4 prior parquet SHAs unchanged (matched-multiples work is additive; existing products untouched).
+
+**RECEIPT requirement.** Standard. Forward-looking HALTs: new matched-multiples parquet SHAs; new `matched_multiples/` directory presence + file inventory; documentation PDF SHAs; architectural decision artifact at DECISION_LOG.
+
+**Estimated effort.** **1-2 sessions** (1 if architectural decision = standalone with mostly-V1-era-sibling layout; 2 if join-flag-column approach or substantial layout reconstruction).
+
+**Dependencies.** None. First Tier-3+5 task per the 2026-05-14 plan-update sequencing.
+
+**Halt-condition flags.** H1 (field-position drift; new layouts), H6 (row-count conservation across new pipeline), L12-extension (PDF text-layer probe before OCR assumption), L13 (inventory CSV column-content verification at write time), L17 (any new SMOKE harness asserts SHAPE-not-VALUE; carries `DESIGN:` tag).
+
+---
+
+### Task C8.17 — Natality 1968-1989 backward extension (A.2; 22 new years; 4 distinct layouts)
+
+**Goal.** Extend natality coverage from 1990-2024 (35 yrs) to **1968-2024 (57 yrs)** by parsing the 22 pre-1990 NCHS public-use natality files at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/`. Reconstruct 4 distinct pre-1989 layouts (1968 / 1969-1971 / 1972-1977 / 1978-1988 / 1989). Re-harmonize natality from 1968-2024 (current schema + per-era era_tag extensions). Bump natality v2.8.0 → v2.9.0 (or v3.0.0 if cert-revision boundary triggers major bump per H10 reproducibility-gate cascade).
+
+**Why this matters.** Largest single "more data" win identified by Phase B (per EXPLORATION_REPORT §A.2 + §G.5). Doubles natality coverage to 57 yrs. Pairs with fetal-death 1982-2024 to push joint analyses backward to 1982 (limited by FD floor; symmetric earlier extension blocked by RDC per §A.4). Substantial manuscript Coverage paragraph re-paragraph at D.4; manuscript *Future developments* "Annual extension" framing gains a sibling.
+
+**PRE-FLIGHT inputs.**
+- 22 NCHS source zips (probe HTTP 200 + size + Last-Modified per LESSONS L1-extension sibling-derivation: `Nat<YYYY>.zip` for 1969+; `Nat1968.ZIP` uppercase for 1968).
+- ~17 user-guide PDFs at `ftp.cdc.gov/.../Dataset_Documentation/DVS/natality/Nat<YYYY>doc.pdf` + 2 multi-year joint docs (`Nat1969-71doc.pdf`, `Nat1972-77doc.pdf`). L12-extension `page.get_text()` text-layer probe BEFORE OCR assumption per the 1985 fetal-death precedent (LESSONS 2026-05-12T15:00Z).
+- Layout-CSV substrate: existing `natality/metadata/record_layout_*.csv` patterns; sibling-derive byte-position layouts for 4 new eras.
+- Era-boundary registry: 1968 (50% sample alone) / 1969-1971 (50% sample multi-year joint doc) / 1972-1977 (mixed sample fraction; multi-year joint doc) / 1978-1988 (1978-revision birth cert 100% file from 1985) / 1989 (1989-revision birth cert; sibling of 1990-2002 V2 era).
+- Field-value snapshot (Convention 3): `natality/metadata/harmonized_schema.csv` `years_available` cells (will need union-extension to 1968); `natality/metadata/file_inventory.csv` (currently 35 yrs + 19 linked rows; will need +22 rows); existing parquet SHAs (forward-stability anchor preservation).
+
+**SMOKE plan.**
+- Tier 0: byte-position layout-CSV reconstruction for 4 new eras; sibling-derive from existing 1990+ layouts where applicable; verify anchor fields (year, sex, race, birthweight, gestation) align with the user-guide documentation pages per L9 cheap-check.
+- Tier 1: 100-record parse of one year per layout (1968 + 1971 + 1975 + 1985 + 1989); assert plausible value distributions per L13-extension (don't trust byte positions alone; value-distribution-verify each anchor field).
+- Tier 2: full-year parse of each of 22 years; per-year aggregate counts match NCHS *Vital Statistics of the United States* annual-volume control counts (paper-only; OCR friction acknowledged per EXPLORATION_REPORT §A.2).
+- Tier 3: re-harmonize 1968-2024 natality; 1990-2024 byte-clean regression (0/N column drift on the post-1989 slice vs current parquet); per-era within-era invariants pass.
+
+**DO scope (multi-sub-step; expect ~6-10 sub-step commits).**
+1. **DO step 1 (1 session)**: download 22 source zips + 17 user-guide PDFs; record SHAs; SHA-verify against documentation.
+2. **DO step 2 (1-2 sessions)**: layout-CSV reconstruction for 1968 + 1969-1971 (2 layouts; 50%-sample-fraction handling).
+3. **DO step 3 (1-2 sessions)**: layout-CSV reconstruction for 1972-1977 (mixed sample fraction; multi-year joint doc; highest-risk single artifact).
+4. **DO step 4 (1-2 sessions)**: layout-CSV reconstruction for 1978-1988 + 1989 (1978-revision birth cert; 100% file from 1985).
+5. **DO step 5 (1 session)**: parser + harmonize.py extensions per era; B3-style 1-digit MRACE recodes (analogue of 2026-05-12T14:30Z task7_v3a + 2026-05-12T18:30Z task7_v3b precedents); Hispanic-origin null pre-1978 convention.
+6. **DO step 6 (1 session)**: re-harmonize 1968-2024 full pipeline; preserve v2.8 parquet as `.v28_baseline.parquet` forward-stability anchor; bump natality v2.8.0 → v2.9.0 (or v3.0.0 if cert-revision boundary triggers major).
+7. **DO step 7 (0.5-1 session)**: update CITATION.cff + .zenodo.json + ABOUT_THIS_RELEASE.md + README.md + monorepo PROJECT_STRUCTURE.md; refresh smoke EXPECTED_ROW_COUNT + EXPECTED_YEARS + EXPECTED_YEAR_ROWS (C8.1's `DESIGN: tracks-current-state` smoke pins re-anchor).
+
+**VERIFY criteria.**
+- Per-year counts 1968-1989 match NCHS-published annual-volume control counts.
+- 1990-2024 byte-clean regression: 0/N columns drift on the post-1989 slice vs current parquet (anchor preserved per L5).
+- C8.1's dtype-parity test PASSes on the v2.9.0 parquet (and any new era-specific columns added).
+- B.12 snapshot regression baseline re-snaps post-rebuild; new `tests/snapshots/v2_<UTC>_columns.csv`.
+- External validation grid: existing 183/183 NVSR cells preserved; new pre-1990 cells added incrementally.
+
+**RECEIPT requirement.** Standard + Forward-looking HALTs covering: 22 source zip SHAs; 17 user-guide PDF SHAs; new layout-CSV SHAs; v2.9.0 parquet SHAs; B.12 snapshot baseline shift; C8.1 smoke re-pin status; whether the v2.8 baseline anchor preserved byte-exact on the 1990-2024 slice.
+
+**Estimated effort.** **6-10 sessions** (lower if layouts sibling-derive cleanly; higher if 1972-1977 mixed-sample joint-doc handling inflates).
+
+**Dependencies.** C8.16 (matched-multiples; non-blocking but should ship first for plumbing-validation reasons). C8.18 (linked 1983-2004) benefits modestly from this task's 1978-cert layout work but does not block.
+
+**Halt-condition flags.** H1, H6, H7 (sibling-pipeline drift; natality's harmonized schema must agree with fetal-death's on shared concepts), L1-extension (sibling-derive ALL filename probes; per LESSONS L1-extension), L12-extension (PDF text-layer probe before OCR), L13-extension (value-distribution verify each anchor field), L17 (smoke pins shift; tracks-current-state DESIGN tag). Convention 1 SHAPE-not-VALUE on every new SMOKE.
+
+**Sub-Q42 triggers.** Any sub-step >1 session beyond its DO step estimate triggers a §11 plan-update. Specifically: if 1972-1977 mixed-sample handling requires >2 sessions, file [plan-update] sub-entry; if Hispanic-origin pre-1978 handling surfaces an unanticipated B-recode, file [plan-update] sub-entry.
+
+---
+
+### Task C8.18 — Linked birth-infant death 1983-2004 backward extension (A.3; 19 new years; 1992-1994 gap)
+
+**Goal.** Extend linked coverage from 2005-2023 (19 yrs) to **1983-2023 (41 yrs with permanent 1992-1994 gap)** by parsing 29 NCHS source files: cohort-linked 1983-1991 (9 yrs; `LinkCO83.zip`-`LinkCO91.zip`) + cohort-linked 1995-2004 (10 yrs; `LinkCO95US.zip`-`LinkCO04US.zip`) + period-linked 1995-2004 (10 yrs; `LinkPE95US.zip`-`LinkPE04US.zip`). Resolve the cohort-vs-period publishing-design decision (methodology-paper-level). Re-harmonize linked 1983-2023 (with documented 1992-1994 gap). Bump linked v3 → v4.
+
+**Why this matters.** Second-largest "more data" win. Doubles linked coverage to 41 yrs. Three distinct boundary types intersect (cert-revision 1989→2003, ICD-9→ICD-10 1998→1999, linkage-method cohort-vs-period) → cohort/period publishing-design is the methodology-paper-level question. Largest single-task effort in the project (8-14 sessions). Strong support for the manuscript's "single-revision-window forced" framing.
+
+**PRE-FLIGHT inputs.**
+- 29 NCHS source zips (probe HTTP 200 + sizes per EXPLORATION_REPORT §A.3 sizes). Note filename convention: no `US` suffix pre-1995; `<verb>CO<YY>` / `<verb>CO<YY>US` / `<verb>PE<YY>US` patterns.
+- ~25 user-guide PDFs at `ftp.cdc.gov/.../Dataset_Documentation/DVS/{cohortlinked,periodlinked}/Link*UserGuide.pdf`. L12-extension text-layer probe per the natality 2007-08 / fetal 2009-01 re-OCR-batch precedent.
+- 1992-1994 gap: permanent; NCHS suspended linkage. Must surface loud in schema (`years_available` cells include the gap), CODEBOOK, and manuscript per EXPLORATION_REPORT §A.3 risk (a).
+- Cohort-vs-period publishing-design substrate: existing post-2005 HVS-linked ships period-format only; backward extension forces a design decision (per EXPLORATION_REPORT §A.3): (i) ship cohort + period as separate parquets; (ii) reconcile via a derived "period-equivalent" view of cohort data; (iii) stop the backward extension at 1995 and ship period-only. Each has manuscript implications. PRE-FLIGHT records the design decision via AskUserQuestion + DECISION_LOG entry.
+- ICD-9 vs ICD-10 cause-of-death substrate: 1983-1998 ships ICD-9; 1999+ ships ICD-10. Simplest harmonization: ship `cause_icd10` null for 1983-1998 (per EXPLORATION_REPORT §A.3 risk (c) default). More-complete: build 9→10 crosswalk (defer to dedicated derivation task post-C8.18).
+
+**SMOKE plan.**
+- Tier 0: cohort-vs-period design decision (DECISION_LOG entry; AskUserQuestion if PRE-FLIGHT-time material ambiguity surfaces).
+- Tier 0: byte-position layout-CSV reconstruction per era (1983-1988 cohort 1978-rev + ICD-9; 1989-1991 cohort 1989-rev + ICD-9; 1995-1998 cohort 1989-rev + ICD-9; 1999-2002 cohort 1989-rev + ICD-10; 2003-2004 cohort 1989+2003-rev mix + ICD-10; period 1995-2004 same boundary pattern).
+- Tier 1: 100-record parse per era; anchor-field value-distribution verify per L13-extension.
+- Tier 2: full-year parse; per-year + per-cohort/period aggregate counts match NCHS Linked File reports cell-by-cell.
+- Tier 3: re-harmonize linked 1983-2023; 2005-2023 byte-clean regression (0/N column drift on the post-2005 slice vs current parquet; H10 gate per Q38 default-validity-anchor preservation).
+
+**DO scope (multi-sub-step; expect ~8-14 sub-step commits).**
+1. **DO step 1 (1 session)**: cohort-vs-period publishing-design decision; AskUserQuestion if PRE-FLIGHT-time substrate is ambiguous.
+2. **DO step 2 (1 session)**: download 29 source zips + 25 user-guide PDFs; SHA-verify.
+3. **DO step 3 (2-3 sessions)**: layout-CSV reconstruction for cohort 1983-1991 (1978-rev birth + ICD-9; sibling of natality 1978-1988 from C8.17's DO step 4).
+4. **DO step 4 (1-2 sessions)**: layout-CSV reconstruction for cohort + period 1995-1998 (1989-rev birth + ICD-9).
+5. **DO step 5 (1-2 sessions)**: layout-CSV reconstruction for cohort + period 1999-2004 (1989-rev birth + ICD-10; 2003-2004 cohort 1989+2003-rev mix).
+6. **DO step 6 (1-2 sessions)**: parser + harmonize_linked.py extensions per era; ICD-9 vs ICD-10 cause-of-death handling per the design decision.
+7. **DO step 7 (1 session)**: re-harmonize linked 1983-2023; preserve v3 parquet as `.v3_baseline.parquet` forward-stability anchor; bump linked v3 → v4.
+8. **DO step 8 (0.5-1 session)**: update CITATION.cff + ABOUT_THIS_RELEASE.md + README.md + PROJECT_STRUCTURE.md + manuscript references; refresh smoke pins.
+
+**VERIFY criteria.**
+- Per-year + per-cohort/period counts 1983-2004 match NCHS Linked File report tables byte-exact.
+- 2005-2023 byte-clean regression: 0/N columns drift on the post-2005 slice (anchor preserved per L5 + H10).
+- 1992-1994 gap documented in `harmonized_schema.csv` `years_available` cells + CODEBOOK + ABOUT_THIS_RELEASE.md + manuscript Coverage paragraph.
+- C8.1's dtype-parity test PASSes on v4 parquet.
+- B.12 snapshot regression baseline re-snaps post-rebuild.
+- External validation grid: existing 33/35 + 2 docs preserved; new pre-2005 cells added incrementally.
+
+**RECEIPT requirement.** Standard + Forward-looking HALTs covering: 29 source zip SHAs; 25 user-guide PDF SHAs; new layout-CSV SHAs; v4 parquet SHAs; cohort-vs-period design decision artifact at DECISION_LOG; B.12 snapshot baseline shift; whether the v3 baseline anchor preserved byte-exact on the 2005-2023 slice; ICD-9 vs ICD-10 handling at DO step 6 (cause_icd10 null pre-1999 default + future crosswalk task framing).
+
+**Estimated effort.** **8-14 sessions** (lower if cohort/period design decision = period-only-from-1995; higher if both-formats-shipped + ICD-9-to-10-crosswalk pursued).
+
+**Dependencies.** C8.17 modestly (1978-cert layout knowledge from natality 1978-1988 work). Independent of C8.16. Largest single-task effort in pre-Zenodo Phase C.
+
+**Halt-condition flags.** H1, H6, H7 (linked schema must agree with natality on shared concepts), F1 (canonical filter must be year-and-cohort-or-period aware), F4 (within-era for ICD-9/10), L1-extension, L9 (NVSR + Linked File report cell-validation at PRE-FLIGHT), L12-extension, L13-extension, L17. Convention 1 SHAPE-not-VALUE.
+
+**Sub-Q42 triggers.** Cohort/period publishing-design = methodology-paper-level decision; if PRE-FLIGHT-time substrate is materially ambiguous, AskUserQuestion + [plan-update] sub-entry. ICD-9→10 crosswalk if pursued >1 session beyond default-null handling triggers [plan-update].
+
+---
+
+### Task C8.19 — Perinatal-record pre-joined parquet (C.8; methodology research)
+
+**Goal.** Produce a validated pre-joined "perinatal record" parquet: one row per linked-file infant with fetal-death sibling records flagged (via maternal demographics + state + year join keys, since NCHS suppresses direct identifiers). Limited by suppression; join success rate may be low. Ship as a derived 5th parquet alongside the three existing products. Validate against any published NCHS perinatal-record tabulations.
+
+**Why this matters.** Genuine research-grade derivation. Pairs the linked file's infant-death surface with the fetal-death sibling surface in one record. If successful, substantial manuscript contribution. If join success rate is too low (NCHS identifier suppression limits joinability), task PRE-FLIGHT may surface as too-sparse-to-be-useful and DEFER to v1.1 methodology-paper subproject. Per EXPLORATION_REPORT §C.8: "manuscript-level contribution if it works; zero if it doesn't."
+
+**PRE-FLIGHT inputs.**
+- All three (now four including matched-multiples) parquets at post-C8.16 + C8.17 + C8.18 SHAs.
+- Maternal-identifier proxy strategy: maternal demographic columns (age + race + Hispanic + education + nativity) + state + delivery year + gestation. PRE-FLIGHT computes the join-key entropy + expected uniqueness; if join-key collisions are dense, surfaces a §7 halt for human review.
+- Field-value snapshot (Convention 3): linked-file derived parquet columns + fetal-death derived parquet columns; intersect on join-key proxies; record on-disk count of plausible match candidates per year.
+- NCHS-published perinatal-record tabulations (if any exist; PRE-FLIGHT verifies via WebFetch on NCHS canonical pages).
+
+**SMOKE plan.**
+- Tier 0: join-key entropy analysis on a 1-year fixture (e.g., 2020 linked + 2020 fetal-death); compute expected match rate; if <5% halt for human review (Q42 trigger; defer to v1.1 methodology-paper subproject).
+- Tier 1: full-year 2020 join; count matches; compute matched-vs-unmatched rates by maternal demographic stratum.
+- Tier 2: multi-year join (2005-2023 linked × 2005-2023 fetal-death); per-year + per-stratum match counts.
+- Tier 3: validation against any NCHS-published perinatal-record tabulations (likely none direct; sub-component validations against fetal-mortality + early-neonatal rate tables).
+
+**DO scope.**
+1. Architectural decision (DECISION_LOG entry): join-key proxy strategy; threshold for plausible vs implausible matches; how to flag uncertain matches (`perinatal_match_confidence` column?).
+2. Author `scripts/04_derive/build_perinatal_record.py` producing `output/harmonized/perinatal_record_derived.parquet`.
+3. Validation grid: per-year + per-stratum match counts vs expected (NCHS-published fetal-mortality + ENN rate sub-components).
+4. Worked-example notebook `notebooks/perinatal_record_demo.ipynb` (within-era only).
+5. Update CITATION.cff + ABOUT_THIS_RELEASE.md + manuscript references; document the join-key proxy methodology + the suppression-induced limitations.
+
+**VERIFY criteria.**
+- Join success rate ≥ documented threshold (set at PRE-FLIGHT per Tier-0 analysis).
+- Per-year match counts within ±5% of NCHS-published fetal-mortality + ENN sub-component cells.
+- C8.1 dtype-parity test PASSes on perinatal_record parquet.
+- No regression on existing 4 parquets (this task is purely additive).
+
+**RECEIPT requirement.** Standard + Forward-looking HALTs + join-key methodology DECISION_LOG entry + suppression-induced-limitations documentation.
+
+**Estimated effort.** **2-3 sessions** (lower if architecture decision is clear at PRE-FLIGHT; higher if join-key proxy strategy requires iterative refinement).
+
+**Dependencies.** C8.17 (post-extension natality + linked parquets at v2.9 + v4 SHAs).
+
+**Halt-condition flags.** H6 (row-count conservation across the new join), F2 (cross-product join without canonical filter on both sides), H9, L7 ("looks reasonable" without explicit threshold), L9 (NCHS perinatal-record cell location must be cited if available). Sub-Q42 trigger: PRE-FLIGHT Tier-0 entropy analysis may surface a §7.13 halt → defer to v1.1.
+
+---
+
+### Task C8.20 — CODEBOOK extensions (E.7; per-variable historical distributions + sentinel disambiguation + era diffs)
+
+**Goal.** Extend per-product CODEBOOK.md with three new per-variable subsections: (i) historical-value-distribution panels (per-era code-frequency tables); (ii) sentinel-code disambiguation tables (e.g., MAGER 99 vs 999 vs blank semantics per era); (iii) era-by-era coding-scheme diff (which fields changed semantics at 1989 / 2003 / etc. cert-revision boundaries). Cover both `fetal_death/CODEBOOK.md` and `natality/docs/CODEBOOK.md`.
+
+**Why this matters.** Current CODEBOOK gives variable definitions but not the per-era code-distribution evidence that lets researchers decide whether to use a variable across a boundary. Extends manuscript *Comparability classification* claim. EXPLORATION_REPORT §E.7 priority = medium; diminishing returns vs existing CODEBOOK.
+
+**PRE-FLIGHT inputs.**
+- Per-product harmonized_schema.csv (variable list).
+- Per-product COMPARABILITY.md (era-boundary catalog).
+- Final post-C8.16 + C8.17 + C8.18 + C8.19 parquets (so distributions reflect the full envelope).
+- Field-value snapshot (Convention 3): current CODEBOOK.md line counts + structure; sample existing variable-section format to mirror.
+
+**SMOKE plan.**
+- Tier 0: render 1 example variable's historical-distribution panel + sentinel-disambiguation table; verify rendering + cell-content + cross-link integrity.
+- Tier 1: render all variables for one product (fetal-death first as smaller surface).
+- Tier 2: render all variables for both products; verify total line count + cross-link target integrity (no broken internal references).
+
+**DO scope.**
+1. Author `scripts/_build_codebook_extensions.py` (per-product deterministic builder).
+2. Render fetal-death CODEBOOK extensions (per-variable historical-distribution + sentinel + era-diff).
+3. Render natality CODEBOOK extensions.
+4. Update each product's docs/FAQ.md with pointers to the new CODEBOOK sections.
+
+**VERIFY criteria.**
+- Both per-product CODEBOOK.md files extended with the three new subsections per variable.
+- Cross-link integrity: all internal anchors resolve.
+- C8.20-shipped tables reconcile against parquet distributions (deterministic builder; re-running produces identical CODEBOOK byte-exact).
+- No regression in test suite (pure docs task).
+
+**RECEIPT requirement.** Standard + Forward-looking HALTs covering: new CODEBOOK.md SHAs; builder script SHAs.
+
+**Estimated effort.** **2-4 sessions** (lower if final envelope from C8.17 + C8.18 doesn't add new per-variable historical patterns; higher if new pre-1990 natality + pre-2005 linked variables require novel sentinel-disambiguation work).
+
+**Dependencies.** C8.17 + C8.18 + C8.19 (final envelope must be settled for the historical-distribution panels to reflect the v1.0 release state).
+
+**Halt-condition flags.** H8 (docs vs data drift; CODEBOOK numbers must auto-derive from the parquets), L6 (no invented numbers in docs; every cell traces to parquet computation). Convention 1 SHAPE-not-VALUE (CODEBOOK extension assertions are SHAPE: structural-class).
+
+---
+
+### Task C8.21 — Stata + SAS quickstart pointer files (C.3)
+
+**Goal.** Author half-page pointer files for Stata + SAS users explaining how to load the parquet artifacts. Stata 17+ supports `import parquet`; older Stata + SAS need a conversion path (Python or DuckDB). Files ship as `quickstart.do` (Stata) + `quickstart.sas` (SAS) or `STATA_SAS_QUICKSTART.md` (pointer; deferred full worked examples per EXPLORATION_REPORT §C.3).
+
+**Why this matters.** Stata + SAS users currently have no entry point. Pointer files lower the barrier even without full worked examples (which would need Stata/SAS licenses on the build machine). EXPLORATION_REPORT §C.3 priority = medium.
+
+**PRE-FLIGHT inputs.**
+- Published Stata 17+ `import parquet` documentation.
+- Published SAS PROC IMPORT documentation (or PROC PARQUET if available).
+- One DuckDB-based conversion path (parquet → CSV via `duckdb`).
+
+**SMOKE plan.**
+- Tier 0: render the pointer text; verify the Stata + SAS code samples are syntactically plausible (cite published examples).
+
+**DO scope.**
+1. Author `STATA_SAS_QUICKSTART.md` (or sibling per-language `quickstart.do` + `quickstart.sas`).
+2. Update `docs/WORKED_EXAMPLE_FAQ.md` "Load the data in R / Stata / SAS" matrix entry to reference the new pointer file.
+3. Update monorepo README.md if needed.
+
+**VERIFY criteria.**
+- Pointer file exists at canonical path.
+- Cross-link from WORKED_EXAMPLE_FAQ.md matrix resolves.
+- No test-surface regression (pure docs).
+
+**Estimated effort.** **0.5 sessions**.
+
+**Dependencies.** None.
+
+**Halt-condition flags.** L6 (cite published syntax; don't invent), L9 (verify named Stata/SAS doc anchors exist).
+
+---
+
+### Task C8.22 — Pre-computed cross-tab CSVs (C.5)
+
+**Goal.** Generate `csv/published_tabulations/` folder with the top-10 most-cited NVSR-equivalent tabulations as pre-computed CSVs: per-year × per-state × per-race counts; per-year × age-band fertility rates; per-year × race fetal mortality rates; per-year × race IMR; etc. Lets users cite HVS without loading the parquet.
+
+**Why this matters.** Convenience layer for non-Python users. Pure derivation from the parquets; deterministic builder. Maintenance tax: every parquet bump regenerates these.
+
+**PRE-FLIGHT inputs.**
+- Final post-C8.16 + C8.17 + C8.18 + C8.19 parquets (envelope settled).
+- Canonical-filter definitions from `docs/JOINT_USE_GUIDE.md`.
+- Top-N NVSR-cited tabulation list (curated from manuscript references + existing validation_results.csv).
+
+**SMOKE plan.**
+- Tier 0: generate 1 example cross-tab CSV; verify rendering + filter application + per-cell count vs known NVSR cell.
+
+**DO scope.**
+1. Curate top-N tabulation list (~10 cross-tabs).
+2. Author `scripts/_build_published_tabulations.py` (deterministic builder; one function per tabulation).
+3. Generate `csv/published_tabulations/<tab_name>.csv` for each tabulation.
+4. Author `csv/published_tabulations/README.md` describing each tabulation + the canonical filter applied.
+5. Update monorepo README.md + PROJECT_STRUCTURE.md + WORKED_EXAMPLE_FAQ.md with pointers.
+
+**VERIFY criteria.**
+- All N cross-tab CSVs present at canonical path.
+- Each CSV's cells reconcile against the corresponding NVSR cell (where validated NVSR cells exist).
+- Deterministic builder: re-running produces byte-identical CSVs.
+
+**RECEIPT requirement.** Standard + Forward-looking HALTs covering: cross-tab CSV SHAs; builder script SHA; SHA stability across re-run.
+
+**Estimated effort.** **1 session**.
+
+**Dependencies.** C8.17 + C8.18 + C8.19 (final envelope must be settled for the cross-tabs to reflect v1.0 release state).
+
+**Halt-condition flags.** F1 (canonical filter applied per tab), F2 (cross-product joins use canonical filter on both sides), H6 (row-count conservation), L6 (no invented numbers; every cell auto-derived).
+
+---
+
 # §16. Cross-cutting concerns
 
 ### What NOT to change without consulting the user

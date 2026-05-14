@@ -23,6 +23,94 @@
 
 ---
 
+## 2026-05-14T02:00:00Z — [plan-update] scope_expansion_tier3_tier5 — Pre-Zenodo scope expanded a 6th time: Tier 3 + Tier 5 candidates (deferred per Q35 2026-05-12) re-authorized by user 2026-05-14; new tasks C8.16-C8.22 appended to §15 in user-chosen sequence (matched-multiples → natality 1968-1989 → linked 1983-2004 → perinatal-record → CODEBOOK → Stata/SAS → cross-tabs); cumulative Phase C estimate revised 29-35 → 51-71 sessions; effort-ceiling cap raised 42 → 86 (+20% of 71 high estimate); Q41 + Q40 + Q36 defaults overridden by explicit user authorization
+
+**Choice (user at 2026-05-14T02:00:00Z; in response to LLM kickoff question following C8.15 close):** Following C8.15 close (Tier 2 CLOSED 7/7 at `b6954ec`), the user requested all remaining data-generating work happen before the Zenodo deposit, restating the 2026-05-12 directive *"i would like do do everything possible … before we do the paper or the zenodo"* with explicit emphasis on data extensions ("wait did we finish all the data generating things? i want to do everything possible before uploading to zenodo"). AskUserQuestion 2026-05-14T02:00:00Z resolved both the scope authorization and the within-Tier-5 ordering question; a follow-up AskUserQuestion resolved the cross-Tier sequencing and D.1 timing.
+
+- **Scope authorization** = Option A (Maximum coverage; Tier 3 + Tier 5 all). Adds matched-multiples ancillary release + natality 1968-1989 backward extension + linked 1983-2004 backward extension + perinatal-record pre-joined parquet + CODEBOOK extensions + Stata/SAS pointer files + pre-computed cross-tab CSVs. ~21-34.5 additional sessions; cumulative Phase C total estimate now ~51-71 sessions (was 29-35).
+- **Tier 5 within-ordering** = Option A (Natality 1968-1989 first, then linked 1983-2004). Per EXPLORATION_REPORT Q36 default; natality is shorter (6-10 sessions vs 8-14), simpler revision-boundary story, sibling of just-shipped V3b; the 1978-cert layout work modestly benefits the 1983-1991 cohort-linked phase.
+- **Cross-Tier sequencing** = Option 1 (proposed sequence confirmed): matched-multiples FIRST as cheap independent early win (1-2 sessions; tests post-Tier-2 plumbing on small new product); then the user-chosen big data extensions (natality 1968-1989 → linked 1983-2004); then perinatal-record (depends on both above); then docs/usability ancillaries (CODEBOOK → Stata/SAS → cross-tabs). Manuscript Coverage paragraph re-paragraphed ONCE at D.4 after all data lands.
+- **D.1 timing** = Option 1 (D.1 stays at end after C8.22). Per current KICKOFF Phase D ordering; redirect notices ship in one batch with v1.x public-repo sync. Final notice text references the actual maximum-coverage envelope.
+
+This is the **6th pre-submission scope expansion** since the 2026-05-09 monorepo migration:
+- 1st-4th: pre-2026-05-12 (V2.1, V3a, V3b, latest-year refreshes inside Phase A).
+- 5th: 2026-05-12T19:15:00Z (insertion of Phase B + Phase C between Phase A and Phase D).
+- 6th: this entry (grows Phase C by Tier 3 + Tier 5 candidates explicitly deferred at the 2026-05-12T21:00:00Z Q35 authorization moment).
+
+**Alternatives considered:**
+
+1. **(A) Maximum coverage — Tier 3 + Tier 5 all (CHOSEN).** Pro: closes every pre-submission data-extension candidate in one v1.0 release; manuscript Coverage section re-paragraphed once; Zenodo deposit ships maximum envelope; no v1.1/v2.0 follow-up data work needed; no IJE *Update* note required for backward extensions. Con: ~6-12 weeks additional pre-submission work at ~one-session-per-half-day cadence; largest manuscript Coverage re-paragraph friction; substantial effort-ceiling expansion (Q33 cap raised 42 → 86 sessions).
+2. **(B) Tier 5 only (no Tier 3).** Pro: gets the big "more data" wins (natality 1968-1989 + linked 1983-2004; ~16-24 sessions). Con: defers matched-multiples ancillary product + leaves cross-tabs + Stata/SAS pointers + CODEBOOK extensions for a v1.1 follow-up.
+3. **(C) Matched-multiples + light Tier 3 only.** Pro: cheapest add (~5-9 sessions); ships 4th HVS product (matched-multiples) at v1.0; minimum re-paragraph friction. Con: misses the natality 22-year backward and linked 19-year backward extensions which are the biggest "more data" wins; user's "everything possible" framing not honored.
+4. **(D) Keep current scope; ship Phase D now.** Pro: fastest path to manuscript submission (~3-4 sessions); v1.1/v2.0 ships backward extensions as IJE *Update* note + Zenodo concept-DOI patches. Con: misses user's restated "everything possible" directive; ships a v1.0 with envelope known-stale-at-ship-time when v1.1 with backward extensions is plainly imminent.
+
+User chose Option A.
+
+**Reason:** The 2026-05-12T19:15:00Z plan-update introduced Phase B+C to maximize pre-submission scope; the user's 2026-05-14 directive sharpens that to "everything possible including backward extensions and ancillaries." Maximum coverage closes the data-envelope question definitively at v1.0 rather than deferring half of it to a v1.1 release; matches the precedent set by the V3a/V3b backward extensions (which were already cumulative scope expansion vs the original 2026-05-11 plan). The cross-Tier sequencing (matched-multiples → natality → linked → perinatal-record → docs) minimizes manuscript Coverage re-paragraph friction by deferring all docs work until the final envelope is settled. The Tier-5 within-ordering (natality 1968-1989 before linked 1983-2004) preserves the EXPLORATION_REPORT Q36 default rationale (shorter task first; modest 1978-cert layout knowledge reuse for cohort-linked 1983-1991 phase).
+
+**Effort revisions:**
+
+- **Tier 1+2 (DONE)**: ~17.5 sessions actual (within §15 estimate; cumulative Phase C ~52% complete at C8.15 close). Unchanged.
+- **Tier 3+5 (NEW)**: ~21-34.5 sessions estimate.
+  - **C8.16** A.5 matched-multiples (4th HVS product): 1-2 sessions
+  - **C8.17** A.2 natality 1968-1989 backward extension: 6-10 sessions
+  - **C8.18** A.3 linked 1983-2004 backward extension: 8-14 sessions
+  - **C8.19** C.8 perinatal-record pre-joined parquet (methodology research): 2-3 sessions
+  - **C8.20** E.7 CODEBOOK extensions (per-variable historical distributions): 2-4 sessions
+  - **C8.21** C.3 Stata/SAS quickstart pointer files: 0.5 sessions
+  - **C8.22** C.5 pre-computed cross-tab CSVs (published_tabulations/): 1 session
+- **Total cumulative Phase C estimate**: 51-71 sessions (revised from 29-35).
+- **Effort-ceiling cap (Q33)**: raised 42 → 86 sessions (+20% of 71 high estimate). Re-ask trigger preserved: if cumulative effort drifts >86 sessions, halt at next clean checkpoint and re-ask the user.
+
+**Source:**
+
+- AskUserQuestion 2026-05-14T02:00:00Z (this conversation) — user authorization for Option A scope + Tier 5 ordering A + sequence Option 1 + D.1 timing Option 1.
+- User chat 2026-05-14: *"wait did we finish all the data generating things? i want to do everything possible before uploading to zenodo"* — the 2026-05-12 directive restated with data-extension emphasis.
+- KICKOFF.md line 198 (pre-this-commit): the "Tier 3 (5 candidates) and Tier 5 (3 candidates) deferred" framing being superseded by this plan-update.
+- EXPLORATION_REPORT.md §A.2 (lines 68-103; natality 1968-1989) + §A.3 (lines 105-145; linked 1983-2004) + §A.5 (lines 172-191; matched-multiples) + §C.8 (lines 560-574; perinatal-record) + §E.7 (lines 767-781; CODEBOOK extensions) + §C.3 (lines 482-496; Stata/SAS) + §C.5 (lines 514-528; cross-tabs) — the candidate-specific scope sources.
+- EXPLORATION_REPORT.md §G.4 (lines 981-997; Tier 3 + Tier 5 effort estimates) + §G.5 (lines 999-1007; maximalist recommendation tradeoff).
+- DECISION_LOG.md 2026-05-12T21:00:00Z (`phase_c_authorized`) — the Q35 = Tier 1+2 authorization being superseded for Tier 3+5 work.
+
+**Verifiable by:**
+
+- `git log --all --format='%h %s' | grep '\[plan-update\] scope_expansion_tier3_tier5'` returns this commit.
+- `git tag --list 'C8.{16,17,18,19,20,21,22}*'` empty at this commit; non-empty progressively as each task ships (pre-do + complete tags per Convention 4).
+- KICKOFF.md Phase C section reflects "Tier 3 + Tier 5 ACTIVE" replacing line 198's prior "deferred" framing.
+- NEXT_STEPS.md §15.C extended with new C8.16-C8.22 entries (line numbers recorded post-commit at the next session's PRE-FLIGHT).
+- STATUS.md appends a new dated section at top recording the plan-update + revising "Next planned task" to C8.16.
+- Cumulative effort at next session start: ~17.5 done / ~51-71 estimated = ~25-34% complete (was ~52% under prior 29-35 estimate; the scope expansion mechanically reduces the percentage-complete metric).
+
+**Reversible:** yes — `git revert <this plan-update commit>` restores the prior Q35 = Tier 1+2-only authorization. No canonical-data, parquet, validator, or test-surface mutation in this commit. Reversibility is theoretical only after subsequent C8.X DO commits (which would also need reverting in dependency order: C8.22 → C8.21 → C8.20 → C8.19 → C8.18 → C8.17 → C8.16 → this).
+
+**Residual risks:**
+
+- (a) **Effort ceiling**: the new total of 51-71 sessions is ~2x the original 29-35 estimate (which was already a scope expansion from the original Phase-A-only plan). User awareness is explicit (the AskUserQuestion preview surfaced full effort totals before authorization). Q33 re-ask invariant satisfied by this very plan-update; new cap = 86 sessions; re-ask triggers if cumulative drift exceeds 86. Re-ask is BINDING per the KICKOFF "Always-on Phase C discipline" framing.
+- (b) **Schema-version cascade**: each backward extension triggers a schema-version bump: C8.17 natality v2.8 → v2.9 (or v3.0 if the 1968-rev / 1978-rev / 1989-rev era boundary surfaces require a major bump); C8.18 linked v3 → v4 (if the cohort/period publishing-design boundary requires a major bump, which it likely does). H10 reproducibility-gate re-anchors at each bump; B.12 snapshot-regression baseline re-snaps; PROVENANCE.md refresh per task. Manuscript Coverage paragraph re-paragraphed ONCE at D.4 after all data lands.
+- (c) **C8.17 A.2 natality 1968-1989 risk**: 4 distinct pre-1989 layouts (1968 / 1969-71 / 1972-77 / 1978-88 / 1989) is ~4x the V3b layout-CSV cost; 1968 50%-sample handling + 1972-77 mixed sample fraction + Hispanic-origin field absence pre-1978 add complexity. EXPLORATION_REPORT §A.2 estimate is 6-10 sessions; effort may inflate. Q42 trigger applies if a sub-step inflates >1 session beyond the §15 entry estimate.
+- (d) **C8.18 A.3 linked 1983-2004 risk**: cohort/period publishing-design decision is methodology-paper-level; effort 8-14 sessions; 1992-1994 gap must be loud in schema. Largest single-task effort in the project. Risk of further scope inflation if cohort/period sub-design surfaces as bigger than estimated; Q42 trigger.
+- (e) **C8.19 C.8 perinatal-record parquet risk**: NCHS identifier-suppression limits join success rate; results may be too sparse to be useful (per EXPLORATION_REPORT §C.8: "manuscript-level contribution if it works; zero if it doesn't"). The PRE-FLIGHT will surface this; if too sparse, the task may be deferred to a v1.1 methodology-paper subproject rather than completed inline. Q42 trigger if sub-step inflates >1 session.
+- (f) **C8.20 E.7 CODEBOOK extensions risk**: large surface (per-variable for both fetal-death + natality); 2-4 sessions may inflate if the final envelope from C8.17 + C8.18 adds substantially more per-variable historical-value-distribution panels than current scope anticipates. Q42 trigger.
+- (g) **Phase D timing slip**: Phase D entry projected at ~38-52 cumulative sessions; calendar slip of ~6-12 weeks vs the Phase D-now alternative (Option D above). User has accepted this tradeoff explicitly.
+- (h) **C8.16 matched-multiples publishing-design**: 4th HVS product introduces a `matched_multiples/` subproject parallel to natality/ and fetal_death/. PRE-FLIGHT may surface architectural decisions (separate parquet vs joined-into-fetal-death; schema design; SHA manifest). Effort estimate 1-2 sessions may inflate if architectural decisions take more than one session.
+
+**Backport scope:** None. C8.1-C8.15 are unaffected (already shipped at Tier-1+2 scope; the v2.4.0 fetal-death parquet at SHAs `38e2cecb…` / `185c071e…` + v2.8.0 natality parquet at `e16ad5323d…` + v3 linked parquet at `9b828a4d…` are preserved as forward-stability anchors). The V3b extension precedent (DECISION_LOG 2026-05-12T18:30:00Z B3 1-digit MRACE recode + 2-digit→4-digit DATAYEAR expansion) guides C8.17 natality 1968-1988 pre-1989-rev work; the 1985 user-guide text-extractable PDF discovery (LESSONS L12-extension 2026-05-12T15:00:00Z) generalizes to all the 2007-08-24 / 2009-01-08 NCHS re-OCR-batch PDFs that cover the natality 1968-1989 and linked 1983-1991 documentation surfaces.
+
+**Forward-looking HALTs to write in C8.16 PRE-FLIGHT (Convention 4):**
+
+- 7 new §15 entries C8.16-C8.22 present at NEXT_STEPS.md line numbers recorded post-this-commit.
+- KICKOFF.md Phase C section reflects Tier 3+5 ACTIVE; line 198's prior "deferred" framing superseded.
+- DECISION_LOG entry at 2026-05-14T02:00:00Z present (this entry) at line numbers recorded post-this-commit.
+- STATUS.md section appended at top recording the plan-update + Next-planned-task = C8.16.
+- No parquet, validator, test-surface, or canonical-data mutation in this commit.
+- 4 parquet SHAs unchanged from C8.15 close: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`.
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/` returns 74 PASS + 1 SKIP + 1 XFAIL ±25s wall-time variance (pure docs/plan work).
+- Soft-flag (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo from C8.15 PRE-FLIGHT carries forward to C8.16 PRE-FLIGHT.
+- Tag `C8.15-complete` from prior commit unaffected; this commit adds no new task tag (plan-updates don't tag).
+
+**Soft-flag (r) filed (this plan-update)**: Effort-ceiling cap raised 42 → 86 represents a substantial expansion. Future agents reading the kickoff sequence should be aware that this 86-cap is the second post-expansion cap (first was 35 → 42 implicit at 2026-05-12T21:00:00Z; now 42 → 86 explicit at this entry). Successive scope expansions risk cap-creep without re-grounding; future plan-updates should re-justify the cap rather than auto-expand. Defense: §11 plan-update process requires explicit user authorization for any further scope-expansion-driven cap raise.
+
+---
+
 ## 2026-05-14T00:30:00Z — C8.15 PRE-FLIGHT — Routing resolutions for C.6.d (`education_gradient.ipynb`) + C.6.e (`state_reporting_quirks.ipynb`); user-resolved via AskUserQuestion 2026-05-14T00:30:00Z (C.6.d = natality+linked-only; C.6.e = read from `output/yearly_clean/` raw parquets); NO `[plan-update]` commit needed (substrate-routing-only resolutions; §15 deliverable names + halt-condition flags unchanged)
 
 **Choice (LLM at C8.15 PRE-FLIGHT 2026-05-14T00:30:00Z; user-resolved via AskUserQuestion):** The C8.15 PRE-FLIGHT Convention 3 Field-value snapshot surfaced two §7.13-shape PRE-FLIGHT-time L11s where STATUS 2026-05-13T23:45:00Z line 90's gloss on the §15 C.6.d + C.6.e deliverables conflicts with the actual substrate state. Both resolved via AskUserQuestion before any DO mutation, per the C8.10a/b/c + C8.11 routine-PRE-FLIGHT-input-re-interpretation precedent.

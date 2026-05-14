@@ -1,6 +1,102 @@
-# STATUS — last updated 2026-05-14T01:15:00Z
+# STATUS — last updated 2026-05-14T02:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T02:00:00Z — [plan-update] scope_expansion_tier3_tier5 — Pre-Zenodo scope expanded a 6th time per user directive 2026-05-14 *"i want to do everything possible before uploading to zenodo"*; Tier 3 + Tier 5 ACTIVATED (was deferred per Q35 2026-05-12); 7 new tasks C8.16-C8.22 appended to §15.D (NEW subsection) in sequence matched-multiples → natality 1968-1989 → linked 1983-2004 → perinatal-record → CODEBOOK → Stata/SAS → cross-tabs; cumulative Phase C estimate revised 29-35 → 51-71 sessions; effort-ceiling cap raised 42 → 86; full narrative in DECISION_LOG 2026-05-14T02:00:00Z
+
+### Current phase
+
+**Phase C — Tier 1+2 closed (17.5 sessions done); Tier 3+5 ACTIVE (~21-34.5 sessions ahead).** Plan-update commit ships KICKOFF.md edits (new Tier 3+5 ACTIVE subsection replacing line 198's prior "deferred" framing + new sequencing notes) + NEXT_STEPS.md §15.D NEW subsection with 7 C8.16-C8.22 task entries + DECISION_LOG entry + this STATUS section. Pure docs/plan work; zero parquet, validator, test-surface, or canonical-data mutation.
+
+### What was done this session (plan-update only)
+
+1. **PRE-FLIGHT-equivalent (kickoff handshake)**: read STATUS 2026-05-14T01:15:00Z + NEXT_STEPS §7 + §8 + last 10 DECISION_LOG entries + last 5 FIX_LOG entries + LESSONS.md end-to-end + KICKOFF "Current planned sequence" + EXPLORATION_REPORT §A.2/A.3/A.5/C.8/E.7/C.3/C.5/G.4/G.5. No §7 halt conditions tripped from reads.
+2. **User directive received**: *"wait did we finish all the data generating things? i want to do everything possible before uploading to zenodo"* — explicit restatement of 2026-05-12 directive with data-extension emphasis.
+3. **AskUserQuestion 1**: scope authorization (4 options) + Tier 5 ordering (3 options). User chose Option A (Maximum coverage) + Option A (Natality 1968-1989 first then linked 1983-2004).
+4. **AskUserQuestion 2**: cross-Tier sequencing (3 options) + D.1 timing (2 options). User chose Option 1 (proposed sequence; matched-multiples first) + Option 1 (D.1 stays at end).
+5. **DECISION_LOG entry** appended at 2026-05-14T02:00:00Z recording the §11 plan-update authorization + alternatives considered + effort revisions + 8 residual risks + forward-looking HALTs.
+6. **NEXT_STEPS.md §15.D NEW subsection** appended with 7 task entries C8.16-C8.22 (each at C8.4-class brevity ~40-80 lines per entry; full PRE-FLIGHT/SMOKE/DO/VERIFY/RECEIPT/halt-flag framing per §4).
+7. **KICKOFF.md** edited: replaced line 198's "Tier 3 + Tier 5 deferred" framing with new Tier 3+5 ACTIVE subsection; appended 5 new sequencing-notes bullets covering C8.16-C8.22 ordering rationale.
+8. **STATUS.md** appended (this section).
+9. **Pending**: commit (Convention 5 brevity ~5-line summary; full narrative in DECISION_LOG entry; `[plan-update]` commit prefix per §11).
+
+### Last completed step
+
+Single commit ships: DECISION_LOG entry + NEXT_STEPS.md §15.D NEW subsection (7 entries) + KICKOFF.md 2 edits (replacement + sequencing-notes append) + this STATUS section. **No tag this commit** — plan-update commits don't carry a task-specific tag per Convention 5 precedent (2026-05-12T19:15:00Z + 2026-05-13T22:30:00Z + 2026-05-13T10:00:00Z + 2026-05-13T07:40:00Z + 2026-05-13T05:45:00Z + 2026-05-13T04:30:00Z plan-update commits). Tags resume at C8.16-pre-do / C8.16-complete.
+
+### In-progress
+
+None — plan-update closed at this commit.
+
+### Next planned task
+
+**C8.16 — Matched-multiples ancillary release (A.5; 4th HVS product)** per the 2026-05-14 plan-update + NEXT_STEPS.md §15.D C8.16. Estimated 1-2 sessions. Independent of all other Phase C work; first Tier-3+5 task per the user-chosen sequence (cheap independent early win; tests post-Tier-2 plumbing on small new product before tackling the big 6-10 + 8-14 session backward extensions C8.17 + C8.18).
+
+C8.16 PRE-FLIGHT scope per §15.D: probe 3 NCHS matched-multiples zips + 3 documentation PDFs; L12-extension text-layer check; architectural decision (standalone subproject vs join-flag column); Field-value snapshot of existing inventory + schema substrates.
+
+### Blocked
+
+**C8.5b (Dockerfile) — DEFERRED, resumption trigger unchanged.**
+
+**C8.7b (Orchestrator + Tier-1/2 re-derive) — DEFERRED, resumption trigger half-satisfied** (unchanged from C8.13/14/15 close).
+
+### Open questions for human
+
+None blocking for C8.16 — the C8.16 plan is fully specified at NEXT_STEPS.md §15.D C8.16. The architectural decision (matched-multiples standalone subproject vs join-flag column) is a PRE-FLIGHT-time decision per the §15.D entry; not blocking session entry.
+
+**Carried-forward open questions from C8.15 close** (still pending Phase D):
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — confirm `paper/draft_v2_hmd_styled.md:68` edit `approximately six minutes` → `approximately five minutes` (or keep `approximately six` with companion-notebook citation). NOW deferred further: Phase D entry projected at ~38-52 cumulative sessions (was ~17-18 under prior estimate).
+
+**Open soft-flags (12 carried + (f) operationally closed + (q) NEW C8.15 + (r) NEW this plan-update):**
+
+Carried unchanged from C8.15 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2) + (c) `VERSION_ROADMAP.md` "Planned" section (future docs refresh; touched lightly by this plan-update for Tier 3+5 framing but main Planned section unchanged) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (g) PRE-FLIGHT "87 raw zips" typo (preserved per L10) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding permanently dropped from pre-submission scope + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo.
+
+**NEW soft-flag (r) this plan-update**: effort-ceiling cap raised 42 → 86 represents the second successive cap expansion (first was implicit 35 → 42 at 2026-05-12T21:00:00Z; now 42 → 86 explicit at this entry). Future agents reading the kickoff sequence should be aware that successive scope expansions risk cap-creep. Defense: §11 plan-update process requires explicit user authorization for any further cap raise. Filed at DECISION_LOG 2026-05-14T02:00:00Z.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Restated for cheap-check access at next session start. Full enumeration in DECISION_LOG 2026-05-14T02:00:00Z.
+
+1. **`[plan-update] scope_expansion_tier3_tier5` commit present** in `git log`. Verify: `git log --all --format='%h %s' | grep 'scope_expansion_tier3_tier5'`.
+2. **All 4 parquet SHAs unchanged byte-exact** from C8.15 close: `38e2cecb…` / `185c071e…` / `e16ad5323d…` / `9b828a4d…`.
+3. **NEXT_STEPS.md §15.D NEW subsection** present at line numbers recorded post-commit; 7 task entries C8.16-C8.22.
+4. **KICKOFF.md Tier 3+5 ACTIVE subsection** present (replaces prior "deferred" framing at line 198); sequencing-notes section extended with 5 new bullets.
+5. **DECISION_LOG entry at 2026-05-14T02:00:00Z** present recording the plan-update.
+6. **Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/`** returns 74 PASS + 1 SKIP + 1 XFAIL (~210-230s wall-time; pure docs/plan work).
+7. **Soft-flag (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo carries forward** to C8.16 PRE-FLIGHT.
+8. **Soft-flag (r) NEW this plan-update**: effort-ceiling cap raised 42 → 86; future cap raises require explicit user authorization.
+9. **No new tag this commit** (plan-update commits don't carry task tags); next tag = `C8.16-pre-do` on the C8.16 PRE-FLIGHT close commit.
+10. **Tier 1+2 STATUS preserved**: cumulative ~17.5 sessions done; Tier 3+5 ~21-34.5 ahead; total Phase C ~51-71 sessions.
+11. **C8.16 first Tier-3+5 task**: independent of all other Phase C work; ready to begin at next session.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (unchanged).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (unchanged; will rev to v2.9 or v3.0 at C8.17 close).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (unchanged; will rev to v4 at C8.18 close).
+- All C8.1-C8.15 DO outputs unchanged.
+
+NEW this session (plan-update only; no data artifacts):
+- DECISION_LOG.md entry at 2026-05-14T02:00:00Z
+- NEXT_STEPS.md §15.D NEW subsection (7 task entries C8.16-C8.22)
+- KICKOFF.md 2 edits (Tier 3+5 ACTIVE subsection + 5 sequencing-notes bullets)
+- This STATUS section
+
+### Notes for next session
+
+- **C8.16 PRE-FLIGHT cheap-checks at next session start**: re-verify all 11 forward-looking HALTs above byte-exact; should take ~5 min.
+- **Cumulative Phase C ~17.5 of 51-71 sessions** (~25-34%; was ~52% under prior 29-35 estimate; the scope expansion mechanically reduces percentage-complete). Well within the new +20% drift cap of 86 sessions.
+- **Manuscript Coverage paragraph** re-paragraphed ONCE at D.4 after all data lands per the user-chosen sequence Option 1; not at every C8.X close.
+- **C8.13 PROPOSE-EDIT** (`paper/draft_v2_hmd_styled.md:68` fetal-death timing -13.1% drift) still pending Phase D step 4 manuscript re-pass; further deferred by this plan-update (Phase D now projected at ~38-52 cumulative sessions vs ~17-18 prior).
+- **Tier 3 candidate C.7 (CLI tool) remains out-of-scope** per the 2026-05-14 plan-update (replaced by C.4 DuckDB views shipped at C8.9). Re-authorization needed if reconsidered.
+- **B.12 snapshot regression test** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv`) remains valid byte-exact through this plan-update (no parquet reshape under docs/plan scope); will re-snap at C8.17 + C8.18 + C8.19 parquet rebuilds.
+- **Phase B-2 trigger (Q42)** preserved: any new candidate >1 session triggers a §11 plan-update; in-Tier-3+5 scope-creep forbidden. Sub-Q42 triggers documented per-task at C8.16-C8.22 §15.D entries.
+
+### Session summary
+
+Plan-update commit shipped a 6th pre-submission scope expansion in response to user directive *"i want to do everything possible before uploading to zenodo"*. 7 new tasks C8.16-C8.22 appended to NEXT_STEPS.md §15.D (NEW subsection) covering matched-multiples ancillary release + natality 1968-1989 backward extension (22 new years; 4 layouts) + linked 1983-2004 backward extension (19 new years; 1992-1994 gap) + perinatal-record pre-joined parquet (methodology research) + CODEBOOK extensions + Stata/SAS pointer files + pre-computed cross-tab CSVs. User-chosen sequence: cheap independent early win first (matched-multiples), then big data extensions in user-chosen order (natality before linked), then perinatal-record, then docs/usability. Manuscript Coverage paragraph re-paragraphed ONCE at D.4 after all data lands. Cumulative Phase C estimate revised 29-35 → 51-71 sessions; effort-ceiling cap (Q33) raised 42 → 86; Q41 + Q40 + Q36 EXPLORATION_REPORT defaults overridden. Zero parquet, validator, test-surface, or canonical-data mutation. **Next planned task = C8.16** (Matched-multiples ancillary release; 1-2 sessions).
 
 ---
 

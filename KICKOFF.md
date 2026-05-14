@@ -195,7 +195,21 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 - **C8.14** — Worked-example FAQ + PROJECT_STRUCTURE upgrade      [1 session]
 - **C8.15** — Notebooks 4-5 (education, state quirks)             [2 sessions]
 
-**Tier 3 (5 candidates) and Tier 5 (3 candidates) deferred** per user authorization. Tier 3 reconsidered at Phase D close (Q41 default = defer all to post-v1); Tier 5 framed as a post-v1 v1.1/v2.0 release (Q40 default = single submission after Tier 2, Tier 5 ships as Zenodo concept-DOI patch with IJE *Update* note). Re-authorization needed before any Tier 3 / Tier 5 task starts.
+#### Tier 3 + Tier 5 — ACTIVE (authorized 2026-05-14 per `[plan-update] scope_expansion_tier3_tier5`; ~21-34.5 sessions)
+
+Authorized 2026-05-14 in response to user directive *"i want to do everything possible before uploading to zenodo"* restating the 2026-05-12 mandate with explicit data-extension emphasis. Q35 = Tier 1+2 authorization (2026-05-12T21:00:00Z) is superseded for Tier 3+5 work; Q41 + Q40 + Q36 defaults overridden. Sequence: matched-multiples first as cheap independent early win; then big data extensions in user-chosen order (natality 1968-1989 then linked 1983-2004); then perinatal-record; then docs/usability ancillaries. Manuscript Coverage paragraph re-paragraphed ONCE at D.4 after all data lands.
+
+- **C8.16** — A.5 Matched-multiples ancillary release (4th HVS product)  [1-2 sessions]
+- **C8.17** — A.2 Natality 1968-1989 backward extension (22 new years; 4 layouts) [6-10 sessions]
+- **C8.18** — A.3 Linked 1983-2004 backward extension (19 new years; 1992-94 gap) [8-14 sessions]
+- **C8.19** — C.8 Perinatal-record pre-joined parquet (methodology research)  [2-3 sessions]
+- **C8.20** — E.7 CODEBOOK extensions (per-variable historical distributions)  [2-4 sessions]
+- **C8.21** — C.3 Stata/SAS quickstart pointer files                          [0.5 sessions]
+- **C8.22** — C.5 Pre-computed cross-tab CSVs (`csv/published_tabulations/`) [1 session]
+
+**Cumulative Phase C estimate revised**: Tier 1+2 done at ~17.5 sessions; Tier 3+5 adds ~21-34.5 sessions; total ~51-71 sessions (was 29-35). **Effort-ceiling cap (Q33) raised 42 → 86 sessions** (+20% of 71 high estimate). Re-ask triggers if cumulative drift exceeds 86.
+
+**Tier 3 candidates not in scope**: C.7 CLI tool (replaced by C.4 DuckDB views shipped at C8.9; re-authorization needed if reconsidered).
 
 #### Sequencing notes within Phase C
 
@@ -206,6 +220,10 @@ Per Phase B `EXPLORATION_REPORT.md` §G.4 (drafted 2026-05-12T20:30Z) and user a
 - **C8.8 last in Tier 1**: PRIOR_ART updates + CHANGELOG land after Tier 1 work supplies the evidence to cite.
 - **C8.9-C8.11 ordering within Tier 2**: usability (C8.9, C8.10) ships before docs (C8.11) so migration guides can reference live R/DuckDB examples.
 - **C8.12 mutation tests last in Tier 2**: defends every prior validator; surfaces FIX_LOG cascades if any validator rubber-stamps.
+- **C8.16 first in Tier 3+5** (2026-05-14 plan-update sequence Option 1): matched-multiples is a cheap independent early win (1-2 sessions; 4th HVS product); tests post-Tier-2 plumbing on a small new product before tackling the big 6-10 + 8-14 session backward extensions.
+- **C8.17 before C8.18** within Tier 5 (EXPLORATION_REPORT Q36 default; user-confirmed 2026-05-14): natality 1968-1989 is shorter (6-10 vs 8-14 sessions), simpler revision-boundary story (sibling of just-shipped V3b fetal-death), and its 1978-cert layout work modestly benefits the cohort-linked 1983-1991 phase in C8.18.
+- **C8.19 after C8.17 + C8.18**: perinatal-record pre-joined parquet depends on the final natality + linked envelopes.
+- **C8.20-C8.22 last in Tier 3+5**: docs/usability ancillaries (CODEBOOK + Stata/SAS + cross-tabs) run AFTER data work for one-pass authoring against the final envelope; minimizes re-paragraph friction.
 
 #### Always-on Phase C discipline
 
