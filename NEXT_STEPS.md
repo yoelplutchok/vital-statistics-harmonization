@@ -1354,21 +1354,21 @@ Each task uses the §4 five-phase discipline; halts on any §7 condition; tagged
 **PRE-FLIGHT inputs.**
 - 22 NCHS source zips (probe HTTP 200 + size + Last-Modified per LESSONS L1-extension sibling-derivation: `Nat<YYYY>.zip` for 1969+; `Nat1968.ZIP` uppercase for 1968).
 - ~17 user-guide PDFs at `ftp.cdc.gov/.../Dataset_Documentation/DVS/natality/Nat<YYYY>doc.pdf` + 2 multi-year joint docs (`Nat1969-71doc.pdf`, `Nat1972-77doc.pdf`). L12-extension `page.get_text()` text-layer probe BEFORE OCR assumption per the 1985 fetal-death precedent (LESSONS 2026-05-12T15:00Z).
-- Layout-CSV substrate: existing `natality/metadata/record_layout_*.csv` patterns; sibling-derive byte-position layouts for 4 new eras.
+- Layout substrate: natality 1990+ layouts live in `natality/scripts/01_import/field_specs.py` as Python `list[tuple[str, int, int]]` (not CSV — fetal_death + matched_multiples use CSV, natality uses Python; substrate-format reconciliation resolved at C8.17 DO step 2 entry via AskUserQuestion 2026-05-14 Q1 Option A = extend `field_specs.py`). DO steps 2-4 extend this Python substrate with `PUBLIC_US_<era>_FIELDS` lists + `RECORD_LEN_<era>` constants per era; sibling-derive byte positions from the 1968 + 1969-71 + 1972-77 + 1978-88 + 1989 user-guide PDFs cross-verified empirically against actual record bytes (L13-extension).
 - Era-boundary registry: 1968 (50% sample alone) / 1969-1971 (50% sample multi-year joint doc) / 1972-1977 (mixed sample fraction; multi-year joint doc) / 1978-1988 (1978-revision birth cert 100% file from 1985) / 1989 (1989-revision birth cert; sibling of 1990-2002 V2 era).
 - Field-value snapshot (Convention 3): `natality/metadata/harmonized_schema.csv` `years_available` cells (will need union-extension to 1968); `natality/metadata/file_inventory.csv` (currently 35 yrs + 19 linked rows; will need +22 rows); existing parquet SHAs (forward-stability anchor preservation).
 
 **SMOKE plan.**
-- Tier 0: byte-position layout-CSV reconstruction for 4 new eras; sibling-derive from existing 1990+ layouts where applicable; verify anchor fields (year, sex, race, birthweight, gestation) align with the user-guide documentation pages per L9 cheap-check.
+- Tier 0: byte-position layout reconstruction for 4 new eras as `PUBLIC_US_<era>_FIELDS` extensions in `field_specs.py` (Python substrate per substrate-format reconciliation above); sibling-derive from existing 1990+ layouts where applicable; verify anchor fields (year, sex, race, birthweight, gestation) align with the user-guide documentation pages per L9 cheap-check.
 - Tier 1: 100-record parse of one year per layout (1968 + 1971 + 1975 + 1985 + 1989); assert plausible value distributions per L13-extension (don't trust byte positions alone; value-distribution-verify each anchor field).
 - Tier 2: full-year parse of each of 22 years; per-year aggregate counts match NCHS *Vital Statistics of the United States* annual-volume control counts (paper-only; OCR friction acknowledged per EXPLORATION_REPORT §A.2).
 - Tier 3: re-harmonize 1968-2024 natality; 1990-2024 byte-clean regression (0/N column drift on the post-1989 slice vs current parquet); per-era within-era invariants pass.
 
 **DO scope (multi-sub-step; expect ~6-10 sub-step commits).**
 1. **DO step 1 (1 session)**: download 22 source zips + 17 user-guide PDFs; record SHAs; SHA-verify against documentation.
-2. **DO step 2 (1-2 sessions)**: layout-CSV reconstruction for 1968 + 1969-1971 (2 layouts; 50%-sample-fraction handling).
-3. **DO step 3 (1-2 sessions)**: layout-CSV reconstruction for 1972-1977 (mixed sample fraction; multi-year joint doc; highest-risk single artifact).
-4. **DO step 4 (1-2 sessions)**: layout-CSV reconstruction for 1978-1988 + 1989 (1978-revision birth cert; 100% file from 1985).
+2. **DO step 2 (1-2 sessions)**: `field_specs.py` extension for 1968 (81-byte) + 1969-1971 (215-byte) layouts; 35 + 71 anchor fields authored at C8.17 DO step 2 close (2026-05-14T08:30:00Z); 50%-sample-fraction handling unchanged.
+3. **DO step 3 (1-2 sessions)**: `field_specs.py` extension for 1972-1977 (mixed sample fraction; multi-year joint doc; highest-risk single artifact).
+4. **DO step 4 (1-2 sessions)**: `field_specs.py` extension for 1978-1988 + 1989 (1978-revision birth cert; 100% file from 1985; soft-flag (t) reconciliation at this step).
 5. **DO step 5 (1 session)**: parser + harmonize.py extensions per era; B3-style 1-digit MRACE recodes (analogue of 2026-05-12T14:30Z task7_v3a + 2026-05-12T18:30Z task7_v3b precedents); Hispanic-origin null pre-1978 convention.
 6. **DO step 6 (1 session)**: re-harmonize 1968-2024 full pipeline; preserve v2.8 parquet as `.v28_baseline.parquet` forward-stability anchor; bump natality v2.8.0 → v2.9.0 (or v3.0.0 if cert-revision boundary triggers major).
 7. **DO step 7 (0.5-1 session)**: update CITATION.cff + .zenodo.json + ABOUT_THIS_RELEASE.md + README.md + monorepo PROJECT_STRUCTURE.md; refresh smoke EXPECTED_ROW_COUNT + EXPECTED_YEARS + EXPECTED_YEAR_ROWS (C8.1's `DESIGN: tracks-current-state` smoke pins re-anchor).
@@ -1380,7 +1380,7 @@ Each task uses the §4 five-phase discipline; halts on any §7 condition; tagged
 - B.12 snapshot regression baseline re-snaps post-rebuild; new `tests/snapshots/v2_<UTC>_columns.csv`.
 - External validation grid: existing 183/183 NVSR cells preserved; new pre-1990 cells added incrementally.
 
-**RECEIPT requirement.** Standard + Forward-looking HALTs covering: 22 source zip SHAs; 17 user-guide PDF SHAs; new layout-CSV SHAs; v2.9.0 parquet SHAs; B.12 snapshot baseline shift; C8.1 smoke re-pin status; whether the v2.8 baseline anchor preserved byte-exact on the 1990-2024 slice.
+**RECEIPT requirement.** Standard + Forward-looking HALTs covering: 22 source zip SHAs; 15 user-guide PDF SHAs (revised from 17 at PRE-FLIGHT per empirical doc-PDF inventory); new `PUBLIC_US_<era>_FIELDS` field counts + `RECORD_LEN_<era>` constants in `field_specs.py`; v2.9.0 parquet SHAs; B.12 snapshot baseline shift; C8.1 smoke re-pin status; whether the v2.8 baseline anchor preserved byte-exact on the 1990-2024 slice.
 
 **Estimated effort.** **6-10 sessions** (lower if layouts sibling-derive cleanly; higher if 1972-1977 mixed-sample joint-doc handling inflates).
 
