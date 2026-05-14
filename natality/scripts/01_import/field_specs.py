@@ -4,6 +4,8 @@ Fixed-field positions for NCHS U.S. public-use natality (subset of variables).
 Layouts used in this repo:
 - **81-byte** record: 1968 (`PUBLIC_US_1968_FIELDS`; 50% sample, 1968-revision certificate, standalone year)
 - **215-byte** record: 1969–1971 (`PUBLIC_US_1969_1971_FIELDS`; 50% sample, 1968-revision certificate, joint user-guide)
+- **215-byte** record: 1972–1973 (`PUBLIC_US_1972_1977_FIELDS`; mixed sample fraction per-state, 1968-revision certificate, joint 1972-1977 user-guide)
+- **213-byte** record: 1974–1977 (same field list, same joint 1972-1977 user-guide; trailing 2 RESERVED bytes at pos 214-215 dropped from on-disk records)
 - **350-byte** record: 1990–2002 (`PUBLIC_US_1990_2002_FIELDS`; unrevised 1989 certificate)
 - **1350-byte** record: 2003 (`PUBLIC_US_2003_FIELDS`)
 - **1500-byte** record: 2004–2005 (`PUBLIC_US_2004_FIELDS` / `PUBLIC_US_2005_2010_FIELDS`)
@@ -12,9 +14,9 @@ Layouts used in this repo:
   User Guides. For 2016+ the URF_DIAB/CHYPER/PHYPER tail block at 1331–1333 is filler;
   the harmonizer's RF_PDIAB/RF_GDIAB/RF_PHYPE/RF_GHYPE fallback covers these years.)
 
-The 1972–1977 (100% sample, joint user-guide), 1978–1988 (100% sample, 1978-revision
-certificate), and 1989 (1989-revision rollout, standalone year) layouts are authored at
-C8.17 DO step 3 + DO step 4. See `STATUS.md` 2026-05-14 for sequencing.
+The 1978–1988 (100% sample, 1978-revision certificate) and 1989 (1989-revision rollout,
+standalone year) layouts are authored at C8.17 DO step 4. See `STATUS.md` 2026-05-14 for
+sequencing.
 
 Sources:
   1990–2004 positions: NBER Stata dictionaries (natl{year}.dct) + CDC documentation
@@ -26,17 +28,29 @@ Sources:
     (per LESSONS L13-extension 2026-05-12T01:40:00Z — value-distribution
     verification on anchor fields DATAYEAR, CSEX, DMAGE, DBIRWT, DPLURAL,
     MRACE, BIRATTND at 5,000-record sample per file; all PASS).
+  1972–1977 positions (C8.17 DO step 3): CDC documentation
+    (`Nat1972-77doc.pdf` 29 pp; "DVS-PB 1972-1977 NATALITY PROCESSING — Outline of
+    Items and Codes Arranged by Location in the Final Detail BIRTH Record") cross-verified
+    empirically against `Natl1972.pub` (1,749,402 records) / `Natl1973.pub` (1,839,736) /
+    `Natl74.pb` (2,029,150) / `Natl75.pb` (2,232,406) / `Natl76.pb` (2,463,852) /
+    `Natl77.pb` (2,772,206) at a 5,000-record value-distribution probe (L13-extension)
+    on 17 anchor fields. Year-specific PDF claims confirmed byte-exact: PLACE OF DELIVERY
+    (pos 80) BLANK 1972-1974 / populated 1975+ ("Effective 1975"); MOTHER'S PLACE OF
+    BIRTH (pos 138-139) '99' for 1972 / populated 1973+ ("1973-1977 ONLY"); PERSON IN
+    ATTENDANCE (pos 176) BLANK 1972-1974 / populated 1975+ ("Effective 1975").
 
 Positions are 1-based inclusive (NCHS convention).
 
-File terminators: 1968 + 1969–1971 raw `.PUB` files use \\r\\n line terminators
-(stripped on read). The byte positions below are the **data-only** positions
-(81 bytes for 1968, 215 bytes for 1969–1971); the on-disk record-block size
-is the data length + 2 terminator bytes.
+File terminators: 1968 + 1969–1971 + 1972–1977 raw `.PUB` / `.pub` / `.pb` files use \\r\\n
+line terminators (stripped on read). The byte positions below are the **data-only**
+positions (81 bytes for 1968; 215 bytes for 1969–1971 + 1972–1973; 213 bytes for 1974–1977);
+the on-disk record-block size is the data length + 2 terminator bytes.
 """
 
 RECORD_LEN_1968 = 81         # 1968 50%-sample, 1968-revision cert, standalone year
 RECORD_LEN_1969_1971 = 215   # 1969–1971 50%-sample, 1968-revision cert, joint user-guide
+RECORD_LEN_1972_1973 = 215   # 1972–1973 mixed-sample-by-state, 1968-revision cert, joint 1972-1977 doc
+RECORD_LEN_1974_1977 = 213   # 1974–1977 same layout as 1972-1973 truncated 2 trailing RESERVED bytes
 RECORD_LEN_1990 = 350        # 1990–2002 unrevised certificate
 RECORD_LEN_2003 = 1350       # 2003 (first year of dual certificate transition)
 RECORD_LEN_2004 = 1500       # 2004 (same as 2005)
@@ -232,6 +246,167 @@ PUBLIC_US_1969_1971_FIELDS: list[tuple[str, int, int]] = [
     ("DATE_LNM_STATE", 148, 148),    # Date of Last Normal Menses by State
     # pos 149+: Month Prenatal Care Began by State + additional state-specific items;
     # not exposed in this MVP layout — DO step 5 may extend if harmonization requires.
+]
+
+# --- 1972-1977: 1968-revision certificate, mixed-sample-fraction (per-state), joint user-guide ---
+# Record length 215 bytes data (+ \\r\\n) on disk for 1972-1973; 213 bytes data (+ \\r\\n)
+# for 1974-1977 (the trailing 2 RESERVED bytes at positions 214-215 are dropped).
+#
+# Authored at C8.17 DO step 3 (2026-05-14) from `Nat1972-77doc.pdf` (29 pp; "DVS-PB 1972-1977
+# NATALITY PROCESSING — Outline of Items and Codes Arranged by Location in the Final Detail
+# BIRTH Record"). Empirically cross-verified (L13-extension) at 5,000-record per-year samples
+# against PDF-documented anchor positions DATAYEAR / CSEX / BIRATTND / FRACE / MRACE / DMAGE /
+# DBIRWT / BIRWT_R3 / PLDEL / DPLURAL / DOB_MONTH / DMEDUC / MPLACEB / PERSATT / SAMPWT
+# (17 fields × 6 years = 102 PASS).
+#
+# Year encoding in DATAYEAR @ pos 1 (single digit):
+#   "2" → 1972 ; "3" → 1973 ; "4" → 1974 ; "5" → 1975 ; "6" → 1976 ; "7" → 1977
+# (Harmonize.py: ord(raw[0])-ord('0') + 1970 for the joint 1972-1977 era; pair with on-disk
+# file year to disambiguate from sibling 1968-1971 + 1978-1988 single-digit-encoding eras.)
+#
+# Mixed sample fraction: per PDF page 2 §1.2, "Beginning with the 1972 data year, 100 percent
+# of the births occurring in certain States were processed. Births occurring in all other
+# States were coded on a 50 percent basis. A record weight factor of 1 (for 100% States) or 2
+# (for 50% States) appears in tape location 208." Harmonize.py at DO step 5 must consume the
+# per-record SAMPWT @ pos 208 to produce correctly weighted control counts; the per-state
+# per-year 100%-vs-50% mapping lives in PDF Appendix A (page 29).
+#
+# Year-specific differences (all empirically confirmed at C8.17 DO step 3):
+#   - PLACE OF DELIVERY (pos 80): "Effective 1975" per PDF page 14. BLANK 1972-1974
+#     (5,000-rec sample uniformly space ' ' across each year); populated 1975+ with codes
+#     1=Hospital/Institution, 2=Clinic/Center/Home, 3=Named places (Dr's offices), 4=Street
+#     address, 9=Not classifiable. (Empirically: 1975 = 84% code 1; 1976 = 86% code 1;
+#     1977 = 76% code 1 + 21% code 2 — suggests progressive home-birth reporting expansion.)
+#   - MOTHER'S PLACE OF BIRTH (pos 138-139): "1973-1977 ONLY" per PDF page 24. For 1972 data,
+#     the field is uniformly '99' = "Not Classifiable" (functional-BLANK); for 1973-1977 the
+#     field is populated with 01-51 (US states + DC), 52-59 (foreign), 99=Not Classifiable.
+#   - PERSON IN ATTENDANCE (pos 176): "Effective 1975" per PDF page 26. BLANK 1972-1974;
+#     populated 1975+ with codes 1=Physician, 2=Midwife, 3=Status specified-other,
+#     9=Status unknown / not specified / not classified. Supplements BIRATTND (pos 36;
+#     populated all years 1972-1977) with a distinct codification.
+#   - DETAIL MONTH OF PRENATAL CARE BEGAN (pos 109): 1972 uses codes Y/2-9/0/X where "2 =
+#     1st & 2nd Months combined"; 1973-1977 uses Y/1-9/0/X where "1 = 1st Month" discrete
+#     (per PDF page 19; this is a 1973+ refinement of the 1972 coding).
+#   - DATE OF LMP - YEAR (pos 92): per PDF page 15, single-digit code with year-specific
+#     mapping (1972 data uses 1=1971/2=1972; 1973 data uses 2=1972/3=1973; etc.; "X" = NS;
+#     "8" = non-reporting state). Harmonize.py must consume file-year context.
+#   - DATE OF LAST LIVE BIRTH - YEAR (pos 115-116): same year-specific 2-digit coding pattern;
+#     "OO-72/73/74" stated year per file year; "77" = No Previous Live Birth (per PDF page 20).
+#   - DATE OF LAST FETAL DEATH - YEAR (pos 127-128): same year-specific pattern as DOLLB_YEAR.
+#   - BIRTH INJURIES reporting flag (pos 156, 169): "Not applicable for 1972" per PDF
+#     page 25-26; populated 1973-1977 as 0/1 reporting flags.
+#
+# Trailing RESERVED bytes (pos 213-215, 1972-1973 ONLY): per PDF page 28 "213-215 RESERVED
+# POSITIONS". Empirically uniform 3-byte spaces for 1972-1973; absent from 1974-1977 files
+# (which truncate the on-disk record at byte 213). NOT exposed as fields.
+PUBLIC_US_1972_1977_FIELDS: list[tuple[str, int, int]] = [
+    ("DATAYEAR", 1, 1),         # Single-digit data year (2=1972, 3=1973, 4=1974, 5=1975, 6=1976, 7=1977)
+    ("SHIPNUM", 2, 3),          # Shipment Number (internal processing)
+    ("REPAREA", 4, 4),          # Reporting Area code (NYC boroughs, Chicago, other; PDF page 3)
+    # pos 5-10: CERTIFICATE NUMBER, blank in PUF
+    ("RECTYPE", 11, 11),        # Record Type (1=Resident, 2=Nonresident)
+    ("RESTATUS", 12, 12),       # Resident Status (1=Resident, 2=Intrastate nonres, 3=Interstate nonres, 4=Foreign Resident)
+    ("STATERES", 13, 14),       # Place of Residence — State (01-51 US + DC; 52-59 foreign)
+    ("CNTYRES", 15, 17),        # Place of Residence — County (foreign coded ZZZ)
+    ("CITYRES", 18, 20),        # Place of Residence — City (999=balance, foreign ZZZ)
+    ("POPSIZE", 21, 21),        # Population Size of place of residence (0-6, 9, Z=foreign)
+    ("SMSA_RES", 22, 24),       # SMSA (residence) — 1970-Census 001-229; 000=non-metro; ZZZ=foreign
+    ("METRORES", 25, 25),       # Metro/Nonmetro County Code (1=Metro, 2=Nonmetro, Z=foreign)
+    ("DIVRES", 26, 27),         # Division + Subcode (residence) — Division 1-9, Subcode within
+    ("STATEOCC", 28, 29),       # Place of Occurrence — State (01-51)
+    ("CNTYOCC", 30, 32),        # Place of Occurrence — County
+    ("DIVOCC", 33, 34),         # Division + Subcode (occurrence)
+    ("CSEX", 35, 35),           # Sex of child (1=Male, 2=Female)
+    ("BIRATTND", 36, 36),       # Attendant at Birth (1=Phys Hosp, 2=Phys not hosp, 3=Midwife, 4=Other/NS)
+    ("FRACE", 37, 37),          # Detail Race of Father (0=Guamian, 1=White, 2=Negro, 3=Indian, 4=Chinese, 5=Japanese, 6=Hawaiian, 7=Other, 8=Filipino, 9=NS)
+    ("MRACE", 38, 38),          # Detail Race of Mother (same codes as FRACE)
+    ("CRACE", 39, 39),          # Detail Race of Child (no 9 since computed from parents)
+    ("CRACE_R3", 40, 40),       # Race of Child Recode 3 (1=White, 2=All Other excl Negro, 3=Negro)
+    ("DMAGE", 41, 42),          # Detail Age of Mother (10-49 single years; 99=NS)
+    ("MAGER_R36", 43, 44),      # Age of Mother Single Years Recode 36 (01=<15, 02-36 = 15-49)
+    ("MAGER_R15", 45, 46),      # Age of Mother Recode 15 (01-17 categorical)
+    ("MAGER_R12", 47, 48),      # Age of Mother Recode 12 (01-13 categorical)
+    ("MAGER_R8", 49, 49),       # Age of Mother Recode 8 (1-8 categorical)
+    ("MAGER_R7", 50, 50),       # Age of Mother Recode 7 (1-7 categorical)
+    ("MAGER_R6", 51, 51),       # Age of Mother Recode 6 (1-6 categorical)
+    ("CBA_NL", 52, 53),         # Children Born Alive, Now Living (00-54, 55/66/77/99 sentinels)
+    ("CBA_ND", 54, 55),         # Children Born Alive, Now Dead (same codes as CBA_NL)
+    ("CBA_FD", 56, 57),         # Children Born Dead = Fetal Deaths (same codes)
+    ("TBORD", 58, 59),          # Total Birth Order Detail (01-54, 99=NS)
+    ("TBORD_R9", 60, 60),       # Total Birth Order Recode 9 (1-9)
+    ("DLIVBORD", 61, 62),       # Detail Live Birth Order (01-54, 99=NS)
+    ("LBORD_R9", 63, 63),       # Live Birth Order Recode 9
+    ("LBORD_R8", 64, 64),       # Live Birth Order Recode 8
+    ("LBORD_R7", 65, 65),       # Live Birth Order Recode 7
+    ("LBORD_R6", 66, 66),       # Live Birth Order Recode 6
+    ("LBORD_R3", 67, 67),       # Live Birth Order Recode 3
+    # pos 68: undocumented in PDF page 13 OCR; sibling 1969-71 layout names this COMBOFLG
+    # ("77 & 77 combination flag"); not exposed as a field in this MVP — DO step 5 may extend.
+    ("DFAGE", 69, 70),          # Detail Age of Father (10-98 single years; 99=NS)
+    ("FAGER_R11", 71, 72),      # Age of Father Recode 11 (01-11 categorical)
+    ("DBIRWT", 73, 76),         # Birthweight Detail in grams (0227-8165, 9999=NS)
+    ("BIRWT_R12", 77, 78),      # Birthweight Recode 12 (01-11 g-categories, 12=NS)
+    ("BIRWT_R3", 79, 79),       # Birthweight Recode 3 (1=≤2500, 2=≥2501, 3=NS)
+    ("PLDEL", 80, 80),          # PLACE OF DELIVERY (Effective 1975; BLANK 1972-1974)
+    ("DPLURAL", 81, 81),        # Plurality Detail (1=Single, 2=Twin, 3=Triplet, 4=Quad, 5=Quint)
+    ("DPLURAL_R3", 82, 82),     # Plurality Recode 3 (1=Single, 2=Twin, 3=Other Multiple)
+    ("DPLURAL_R2", 83, 83),     # Plurality Recode 2 (1=Single, 2=Multiple)
+    ("DOB_MONTH", 84, 85),      # Birth Date — Month (01-12)
+    ("DOB_DAY", 86, 87),        # Birth Date — Day (01-31, 99=NS)
+    ("LMP_MONTH", 88, 89),      # Date of LMP — Month (88=non-reporting state, 01-12, 99=NS)
+    ("LMP_DAY", 90, 91),        # Date of LMP — Day (88=non-reporting, 01-31, 99=NS)
+    ("LMP_YEAR", 92, 92),       # Date of LMP — Year (single digit; year-specific codes per header note)
+    ("DGESTAT", 93, 94),        # Detail Gestation in Weeks (00=non-reporting, 17-52, 99=NS)
+    ("GESTREC10", 95, 96),      # Gestation Recode 10 (00=non-reporting, 01-09 categories, 10=NS)
+    ("GESTREC3", 97, 97),       # Gestation Recode 3 (0=non-reporting, 1=<37wk, 2=37+wk, 3=NS)
+    ("DMEDUC", 98, 99),         # Mother's Education Detail (88=non-reporting, 00-17 yrs, 66/77/99 sentinels)
+    ("MEDUC_R14", 100, 101),    # Mother's Education Recode 14 (00=non-reporting, 01-13 cat, 14=NS)
+    ("MEDUC_R6", 102, 102),     # Mother's Education Recode 6 (0=non-reporting, 1-5 cat, 6=NS)
+    ("DFEDUC", 103, 104),       # Father's Education Detail (same code structure as DMEDUC)
+    ("FEDUC_R14", 105, 106),    # Father's Education Recode 14
+    ("LEGITIM", 107, 107),      # Detail Legitimacy (8=non-reporting, 1=Legit, 2=Illegit, 9=NS)
+    ("LEGITIM_R3", 108, 108),   # Legitimacy Recode 3 (0=non-reporting, 1=Legit incl NS, 2=Illegit)
+    ("MONPRE", 109, 109),       # Month Prenatal Care Began Detail (Y=non-rpt; 1972: 2-9 + 0/X; 1973+: 1-9 + 0/X)
+    ("MONPRE_R10", 110, 111),   # Month Prenatal Care Began Recode 10 (00=non-rpt, 01-09 month, 10=NS)
+    ("MONPRE_R6", 112, 112),    # Month Prenatal Care Began Recode 6 (0=non-rpt, 1-5 cat, 6=NS)
+    ("DOLLB_MONTH", 113, 114),  # Date of Last Live Birth — Month (88=non-rpt, 01-12, 99=NS, 77=No prev LB)
+    ("DOLLB_YEAR", 115, 116),   # Date of Last Live Birth — Year (88=non-rpt, year-specific 2-digit code)
+    ("INTLLB", 117, 119),       # Detail Months Interval Since Last Live Birth (888=non-rpt, 000-500, 999=NS, 777=No prev LB)
+    ("INTLLB_R17", 120, 121),   # Interval Since Last Live Birth Recode 17 (00=non-rpt+No prev LB)
+    ("INTLLB_R10", 122, 123),   # Interval Since Last Live Birth Recode 10
+    ("INTLLB_R8", 124, 124),    # Interval Since Last Live Birth Recode 8
+    ("DOLFD_MONTH", 125, 126),  # Date of Last Fetal Death — Month (88=non-rpt, 01-12, 99=NS, 77=No prev FD)
+    ("DOLFD_YEAR", 127, 128),   # Date of Last Fetal Death — Year (88=non-rpt, year-specific code)
+    # pos 129: used for internal processing only
+    ("INTLFD", 130, 132),       # Detail Interval Since Last Fetal Death (888=non-rpt, 000-500, 999=NS, 777=No prev FD)
+    ("INTLTERMP", 133, 135),    # Detail Interval Since Termination of Last Pregnancy
+    ("INTLTERMP_R9", 136, 136), # Interval Since Termination of Last Pregnancy Recode 9
+    ("OUTPREG_LAST", 137, 137), # Outcome of Last Pregnancy (0=non-rpt/no prev preg, 1=Live, 2=FD, 3=Unknown)
+    ("MPLACEB", 138, 139),      # Mother's Place of Birth (1973-1977 ONLY; '99'/uniform for 1972)
+    ("TPRENVIS", 140, 141),     # Total Number of Prenatal Visits (88=non-rpt, 00=none, 01-49, 99=NS)
+    # pos 142-145: used for internal processing only (3 + 1 bytes)
+    ("FLAG_LEGITIM_STATE", 146, 146),    # Reporting flag (residence): Legitimacy by State (0=NOT rpt, 1=IS rpt)
+    ("FLAG_EDU_STATE", 147, 147),        # Reporting flag (residence): Education of Parents by State
+    ("FLAG_LNM_STATE", 148, 148),        # Reporting flag (residence): Date of Last Normal Menses by State
+    ("FLAG_MONPRE_STATE", 149, 149),     # Reporting flag (residence): Month Prenatal Care Began by State
+    ("FLAG_DOLLB_STATE", 150, 150),      # Reporting flag (residence): Date of Last Live Birth by State
+    ("FLAG_DOLFD_STATE", 151, 151),      # Reporting flag (residence): Date of Last Fetal Death by State
+    ("FLAG_LEGITIM_SMSA", 152, 152),     # Reporting flag (residence): Legitimacy by SMSA
+    ("FLAG_EDU_SMSA", 153, 153),         # Reporting flag (residence): Education by SMSA
+    ("FLAG_CONGMAL_STATE", 154, 154),    # Reporting flag (residence): Congenital Malformations by State
+    ("FLAG_PRENVIS_STATE", 155, 155),    # Reporting flag (residence): Number of Prenatal Visits by State
+    ("FLAG_BIRINJ_STATE", 156, 156),     # Reporting flag (residence): Birth Injuries by State (1973-1977 only; "Not applicable for 1972")
+    # pos 157-160: 4-byte RESERVED for possible later use
+    # pos 161-169: occurrence-side reporting flags (sibling-symmetric to 146-156 residence-side);
+    # not exposed in this MVP layout — DO step 5 may extend if harmonization requires.
+    # pos 170-175: 6-byte RESERVED POSITIONS / USED FOR INTERNAL PROCESSING ONLY
+    ("PERSATT", 176, 176),                # Person in Attendance (Effective 1975; BLANK 1972-1974; 1=Phys, 2=Midwife, 3=Other, 9=Unk)
+    # pos 177-207: 31-byte RESERVED POSITIONS / USED FOR INTERNAL PROCESSING ONLY
+    ("SAMPWT", 208, 208),                 # Record Weight: 1=100% State record; 2=50% State record (per-state per-year; PDF Appendix A)
+    ("NPRENVIS_R28", 209, 210),           # Number of Prenatal Visits Recode 28 (00=non-rpt, 01-28 categories)
+    ("NPRENVIS_R12", 211, 212),           # Number of Prenatal Visits Recode 12 (00=non-rpt, 01-12 categories)
+    # pos 213-215 (1972-1973 ONLY): 3-byte RESERVED POSITIONS, uniform spaces empirically;
+    # absent from 1974-1977 on-disk records (which truncate at byte 213). NOT exposed.
 ]
 
 # --- 1990–2002: Unrevised 1989 Standard Certificate of Live Birth ---
