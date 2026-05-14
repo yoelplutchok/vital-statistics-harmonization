@@ -23,6 +23,84 @@
 
 ---
 
+## 2026-05-14T06:30:00Z — C8.17 PRE-FLIGHT — Natality 1968-1989 backward extension; 22 zips + 15 PDFs probed (all HTTP 200; L1-extension sibling-derive PASS after one corrected PDF-path 404 trap); L12-extension PASS on 5-sample (100% text-extractable; Acrobat PDFWriter 3.03 + 2019-04 reprocessing signature); 5 era boundaries empirically confirmed (1968 / 1969-1971 / 1972-1977 / 1978-1988 / 1989) vs §15.D "4 distinct pre-1989 layouts" wording — terminology soft-flag (t) carried; effort estimate 6-10 sessions per §15.D unchanged (cheap-check confirms); zero §7 halts; zero AskUserQuestion needed; tag `C8.17-pre-do` on this commit
+
+**Choices (LLM at C8.17 PRE-FLIGHT close; no AskUserQuestion required):**
+
+1. **PRE-FLIGHT close as separate commit + tag** (C8.16 precedent at `2b7139a`): the data extension involves ~1.64 GB raw + 4-5 layout reconstructions + 22 zip downloads; the PRE-FLIGHT close gets its own commit so DO begins next session with the full 6-10 session budget. No DO work bundled into this commit.
+
+2. **§15.D "4 distinct pre-1989 layouts" wording stands**: cheap-check empirically surfaces **5 era boundaries** (1968 standalone PDF; 1969-1971 joint PDF; 1972-1977 joint PDF; 1978-1988 individual PDFs; 1989 standalone PDF). Resolution = §15.D wording is correct if 1989 inherits the 1990+ V2-era layout (already canonical for natality 1990-2002) — the cheap-check at DO step 4 will confirm. Soft-flag (t) carries forward; NO §11 plan-update triggered (terminology, not scope; effort estimate unchanged).
+
+3. **PDF documentation path correction (logged for forensic L12 traceability):** first-pass probe used `Datasets/DVS/Dataset_Documentation/natality/Nat<YYYY>doc.pdf` (path-component order wrong) → 404 across all 22 candidates. Corrected via cross-reference to on-disk `~/Desktop/natality-harmonization/raw_docs/Nat<YYYY>doc.pdf` for 1990-2004 + WebFetch on `cdc.gov/nchs/data_access/vitalstatsonline.htm` → corrected path = `Dataset_Documentation/DVS/natality/Nat<YYYY>doc.pdf`. Re-probe returned 200 across all 15 sibling candidates (13 individual 1968 + 1978-1989, 2 joint 1969-71 + 1972-77). The L12 cheap-check (cross-reference to on-disk inventory) caught the trap in one round-trip; NO hallucinated filename variants attempted after the path correction (L1-extension discipline preserved).
+
+4. **L12-extension cheap-check on 5-PDF sample sufficient for PRE-FLIGHT**: per LESSONS 2026-05-12T15:00:00Z, `page.get_text()` returning non-empty on any body page is the cheap-check moment to confirm OCR is not needed. All 5 samples returned 100% non-empty pages with the Acrobat PDFWriter 3.03 + 2019-04-25 reprocessing signature shared with the 1985 fetal-death PDF precedent. The remaining 10 of 15 PDFs (1978-1984, 1986, 1987, 1988) inherit this finding by sibling-extrapolation; full per-PDF text-extraction happens at DO when authoring record_layout CSVs.
+
+**Alternatives considered:**
+
+For #1 (commit timing):
+
+1. **(A) PRE-FLIGHT close as separate commit + tag — CHOSEN.** Aligns with C8.16 precedent (`2b7139a`); preserves clean checkpoint; DO begins next session with full 6-10 session budget. Convention 5 brevity ~5-line commit summary.
+2. **(B) Bundle PRE-FLIGHT + DO step 1 (download 22 zips + 15 PDFs; record SHAs).** Rejected: bundling violates the §15 task-segmentation discipline; DO step 1 is a 1-session commit per §15.D; bundling collapses the cheap-checkpoint that the C8.16 precedent demonstrated value of.
+3. **(C) Defer PRE-FLIGHT close until DO step 1 ships.** Rejected: §10 L10 discipline forbids backfilled PRE-FLIGHT entries; PRE-FLIGHT must commit before first DO mutation.
+
+For #2 (terminology):
+
+1. **(A) Soft-flag (t); §15.D wording stands; DO step 4 cheap-check resolves — CHOSEN.** Reason: 5-era vs 4-layout is terminology, not scope. §15.D's "4 distinct pre-1989 layouts" wording can be reconciled at DO step 4 either as "5 era boundaries collapse to 4 layouts when 1989 inherits V2" OR as "5 layouts; §15.D wording is loose." No §11 plan-update; defer to DO step 4 cheap-check.
+2. **(B) Trigger §11 plan-update revising §15.D wording.** Rejected: terminology revision absent a substantive scope/effort change is plan-update overhead with no decision benefit; per Q42 trigger framing, plan-updates are reserved for >1-session scope drifts.
+3. **(C) AskUserQuestion at PRE-FLIGHT close.** Rejected: terminology question is not user-visible; LLM-resolvable at DO step 4 cheap-check.
+
+**Reason:** C8.17 PRE-FLIGHT is a routine input-substrate verification task for a large data extension. All 12 forward-looking HALTs from STATUS 2026-05-14T05:30:00Z verified byte-exact; the 22 zip + 15 PDF probe cycle confirms NCHS resource availability; the L12-extension PASS confirms no OCR friction; the effort estimate (6-10 sessions per §15.D) stands. The one cheap-check surprise (PDF path 404 trap) was resolved in-PRE-FLIGHT by cross-reference to on-disk inventory — exactly the L1-extension discipline mandated by LESSONS 2026-05-12T04:30:00Z. The terminology soft-flag (t) is a forensic-traceability entry, not a blocker. Convention 3 Field-value snapshot captures 5 tables of pre-DO state (inventory CSV row count + structure; harmonized_schema column count + `years_available` cell distribution; 4 canonical parquet SHAs; README + PROJECT_STRUCTURE prose; C8.1 smoke EXPECTED_YEAR_ROWS anchors); these substrate snapshots anchor C8.17 VERIFY at session close.
+
+**Source:**
+
+- C8.16-complete state per STATUS 2026-05-14T05:30:00Z (12 forward-looking HALTs verified byte-exact this session).
+- NEXT_STEPS.md §15.D C8.17 lines 1348-1392 (the canonical task spec).
+- NEXT_STEPS.md §8 row L1-extension (sibling-extrapolation discipline; applied to filename probing) + L12-extension (PDF text-layer probe before OCR; applied to 15 PDFs by 5-sample inference) + L13-extension (value-distribution verification at DO; deferred to DO step 2-4 per the matched-multiples precedent at C8.16 sub-step 2).
+- HTTP 200 probe results for 22 zips at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/Nat<YYYY>.ZIP` (uniform uppercase pattern; all Last-Modified 2007-08-24 / 2007-08-27 / 2007-08-28; cumulative ~1.64 GB).
+- HTTP 200 probe results for 15 PDFs at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/natality/` (13 individual `Nat<YYYY>doc.pdf` for 1968, 1978-1989 + 2 joint `Nat1969-71doc.pdf` + `Nat1972-77doc.pdf`).
+- PyMuPDF `page.get_text()` text-layer probe on 5 samples (Nat1968: 9 pages, 7,742 chars; Nat1969-71: 26 pages, 31,244 chars; Nat1972-77: 29 pages, 33,890 chars; Nat1985: 226 pages, 380,085 chars; Nat1989: 285 pages, 502,631 chars) — all 100% non-empty; same Acrobat PDFWriter 3.03 / 2019-04-25 reprocessing signature as the 1985 fetal-death PDF (LESSONS 2026-05-12T15:00:00Z).
+- LESSONS 2026-05-12T04:30:00Z (L1-extension) + LESSONS 2026-05-12T15:00:00Z (L12-extension) — the two discipline rows that governed this PRE-FLIGHT's probe sequence.
+
+**Verifiable by:**
+
+- `git log --all --format='%h %s' | grep 'C8.17 PRE-FLIGHT'` returns the commit shipping this entry.
+- `git tag --list 'C8.17-pre-do'` returns the tag (added on the close commit).
+- `git tag --list 'C8.17-complete'` returns EMPTY (DO not yet started).
+- PRE_FLIGHT_LOG.md top entry is C8.17 with `RESULT: PROCEED`.
+- STATUS.md top section is dated 2026-05-14T06:30:00Z naming PRE-FLIGHT close + next-session = C8.17 DO step 1.
+- `git diff HEAD~1 -- KICKOFF.md NEXT_STEPS.md` returns empty (no §11 plan-update; soft-flag (t) does not trigger one).
+- `shasum -a 256 /tmp/c8_17_probes/Nat1968doc.pdf` returns `085ffcedd8dbed350ae54e241f49754f8af94fc16e7dd7e749367d37504d9456`.
+- `shasum -a 256 /tmp/c8_17_probes/Nat1989doc.pdf` returns `92dab8115baec71eec3633239cbd042b2079ad6b80bd1b3a3a43c3276ac3a7cb`.
+- 4 canonical parquet SHAs unchanged: `38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`.
+- Cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/ -p no:cacheprovider` returns 85 PASS + 1 SKIP + 1 XFAIL in 246.27s (within ±25s of 270.74s C8.16-complete baseline).
+
+**Reversible:** yes — `git reset --hard HEAD~1` discards the PRE-FLIGHT close commit + this DECISION_LOG entry; no canonical-state mutation. Reversibility is theoretical only after subsequent C8.17 DO commits (each authored against this PRE-FLIGHT's authorization).
+
+**Residual risks:**
+
+- (a) **DO step 4 may surface 1989 as its own pre-V2 layout, not a sibling of 1990+ V2.** §15.D names "1989 (1989-revision birth cert; sibling of 1990-2002 V2 era)" but the 1989 file is the first year of the 1989-revision cert and may carry NCHS-side rollout artifacts (e.g., partial state coverage, transition-year coding quirks) not present in 1990+. Mitigation: DO step 4 cheap-check on bytes 1-30 of a Nat1989 sample vs `record_layout_v2.csv` sibling positions. If divergence, soft-flag (t) elevates to a 5th layout count + §15.D wording reconciled.
+- (b) **1972-1977 mixed-sample-fraction handling.** §15.D names this as the highest-risk single artifact in C8.17 (DO step 3). PRE-FLIGHT did not enumerate the per-year sample fraction (50% / 100% / etc.) for the 6-year joint-doc era; the joint PDF `Nat1972-77doc.pdf` (29 pages, 33,890 chars; text-extractable) will need careful reading at DO step 3 to surface per-year sample-fraction semantics. Risk: per-year row-count expectations + canonical filter applicability may vary across the 1972-1977 range. Mitigation: §15.D sub-Q42 trigger framing — if DO step 3 grows >2 sessions, file `[plan-update]` sub-entry.
+- (c) **Hispanic-origin pre-1978 handling.** §15.D names this as a DO step 5 decision (Hispanic-origin column null pre-1978 by default). PRE-FLIGHT did not enumerate the exact NCHS-side reporting introduction year; if the 1985 user guide or 1978-1988 era has Hispanic-origin coverage earlier than expected, the harmonization may need a B-style 1-digit-recode (analogue of `task7_v3a` B3 recode). Mitigation: §15.D sub-Q42 trigger framing — file `[plan-update]` sub-entry if pre-1978 Hispanic handling surfaces an unanticipated B-recode.
+- (d) **`record_length` field invariant across pre-1989 eras unknown.** Existing 1990+ natality records are 350 bytes (per file_inventory.csv); pre-1989 record lengths are unknown at PRE-FLIGHT. The cheap-check at DO step 2-4 (first 3 bytes of zip header inspection + unzip + `head -1 | wc -c`) will surface each era's record length. Risk: 4-5 distinct record-length layouts (vs §15.D "4 distinct pre-1989 layouts" wording) may inflate parser authoring effort. Mitigation: parser dispatch keyed on `--era` arg, same pattern as C8.16's `parse_matched_multiples.py` `--window` arg.
+- (e) **H10 reproducibility-gate cascade if 1990-2024 byte-clean regression fails.** §15.D VERIFY criterion "1990-2024 byte-clean regression: 0/N columns drift on the post-1989 slice vs current parquet" requires the new v2.9/v3.0 parquet to preserve byte-exact the 1990+ slice. If the harmonization rework introduces any column drift on the existing slice, that is a §7.18 reproducibility regression. Mitigation: forward-stability anchor `.v28_baseline.parquet` preserved per §15.D plan; cell-by-cell column-vs-column diff at DO step 6 close.
+
+**Backport scope:** None at C8.17 PRE-FLIGHT. C8.16 unaffected; the 4 canonical parquet SHAs + 4 matched-multiples parquet SHAs remain byte-exact through C8.17 PRE-FLIGHT close.
+
+**Forward-looking HALTs for C8.17 DO step 1 entry (Convention 4):**
+
+- `C8.17-pre-do` tag present on the PRE-FLIGHT close commit. Verify: `git tag --list 'C8.17-pre-do'`.
+- `C8.17-complete` tag NOT yet present.
+- 4 canonical parquet SHAs byte-exact preserved (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`).
+- 4 matched-multiples parquet SHAs byte-exact preserved (`5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`).
+- Cache-cleared pytest baseline 85 PASS + 1 SKIP + 1 XFAIL ±25s of 246.27s reference (or 270.74s C8.16-complete reference — both are valid C8.16-baseline values).
+- `/tmp/c8_17_probes/` directory present with 5 sample PDFs at known SHAs (carry forward unless OS-cleans `/tmp`; re-downloadable from FTP).
+- 22 NCHS zip URLs HTTP-200 reachable (verified at PRE-FLIGHT; re-probe at DO step 1).
+- 15 NCHS PDF URLs HTTP-200 reachable (verified at PRE-FLIGHT; re-probe at DO step 1).
+- DO step 1 scope: download 22 zips + 15 PDFs to a canonical `raw_data/natality_pre1990/` directory (or per-year subdirs; sibling pattern of `fetal_death/raw_data/` if it exists; TBD at DO step 1); SHA-anchor each download; add 22 rows to `natality/metadata/file_inventory.csv`; emit `natality/V3_PRE1990_LAYOUT_DECISIONS.md` if needed.
+- DO step 1 budget: 1 session per §15.D.
+
+---
+
 ## 2026-05-14T05:30:00Z — C8.16-complete — Harmonize + validate + worked-example notebook + monorepo top-level docs; 1,665,568-row harmonized parquet ships at sha `adbec108…`; 5 byte-exact PDF Table 1 cells + 8 structural invariants PASS; pytest 74→85 PASS; 4 canonical SHAs preserved (H10 gate intact)
 
 **Choices (LLM at C8.16 DO sub-step 3 / RECEIPT close):**

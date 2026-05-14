@@ -8,6 +8,191 @@
 
 ---
 
+## PRE-FLIGHT for C8.17 — 2026-05-14T06:30:00Z — Natality 1968-1989 backward extension (A.2; 22 new years; 5 era boundaries; second Tier-3+5 task) — **RESULT: PROCEED** (zero §7 halts; zero AskUserQuestion needed; one minor terminology soft-flag (t) on §15.D "4 distinct pre-1989 layouts" wording vs cheap-check-empirical 5 era boundaries 1968 / 1969-1971 / 1972-1977 / 1978-1988 / 1989; resolution = §15.D wording stands as cumulative-count framing, soft-flag carried for DO step 1 reconciliation; no `[plan-update]` commit needed)
+
+### Scope summary
+
+C8.17 §15.D entry (NEXT_STEPS.md lines 1348-1392) names the deliverable: extend natality coverage from 1990-2024 (35 yrs) to **1968-2024 (57 yrs)** by parsing 22 pre-1990 NCHS public-use natality zips at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/`. Reconstruct 4-5 pre-1989 layouts. Re-harmonize natality 1968-2024 with the existing schema (per-era era_tag extensions). Bump natality v2.8.0 → v2.9.0 (or v3.0.0 if cert-revision boundary triggers major bump per H10 cascade — DO step 6 decision; not PRE-FLIGHT). KICKOFF.md Phase C Tier-3+5 line 203 names C8.17 as second Tier-3+5 task post-C8.16-complete (`974c310`). Estimated §15.D effort = **6-10 sessions** (cheap-check confirms estimate stands; no surprises drive a Q42 revision). §15.D halt-condition flags: H1 + H6 + H7 + L1-extension + L12-extension + L13-extension + L17 + Convention 1 SHAPE-not-VALUE.
+
+**Session scope this PRE-FLIGHT:** ship PRE-FLIGHT entry + DECISION_LOG entry + STATUS section + commit + tag `C8.17-pre-do`. DO begins at next session entry with the full 6-10 session budget. C8.16 precedent (`2b7139a` `C8.16-pre-do` was its own commit; DO began next session) applied here for the same reason — 22 zips + 15 PDFs + ~1.64 GB raw + 4-5 layout reconstructions warrants a clean checkpoint to give DO the full budget.
+
+### Inputs
+
+- [x] **All 12 Forward-looking HALTs from STATUS 2026-05-14T05:30:00Z verified byte-exact** (STATUS lines 78-89):
+  - HALT 1: `C8.16-complete` tag present. `git tag --list 'C8.1[67]*'` returns `C8.16-complete` + `C8.16-pre-do`. ✓
+  - HALT 2: `C8.17-pre-do` tag NOT yet present at PRE-FLIGHT entry. ✓
+  - HALT 3: 4 canonical parquet SHAs byte-exact:
+    - `~/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_harmonized.parquet` sha256=`38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` ✓
+    - `~/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet` sha256=`185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09` ✓
+    - `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` sha256=`e16ad5323d68e28d401518f1ff56b12c09e43883e76022a9823d51a677c41d44` ✓
+    - `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet` sha256=`9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777` ✓
+  - HALT 4: 3 matched-multiples yearly_clean parquet SHAs byte-exact:
+    - `matched_multiples/output/yearly_clean/matched_multiples_1995-1997_raw.parquet` sha256=`5c22308bed2883b9be8e244e763c3603f700b5ba5274f3ef30388a28d39205d1` ✓
+    - `matched_multiples/output/yearly_clean/matched_multiples_1995-2000_raw.parquet` sha256=`7c682668006f3fab556b79422d34f5d84eed0bd0e1ae44702908f9f5edd61f5d` ✓
+    - `matched_multiples/output/yearly_clean/matched_multiples_2016-2020_raw.parquet` sha256=`d98b42965573530d26d72368d968c395487b2c4e4dd3bfc4ad426e966a543261` ✓
+  - HALT 5: matched-multiples harmonized parquet sha256=`adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549` ✓
+  - HALT 6: cache-cleared `pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/ -p no:cacheprovider` returns **85 PASS + 1 SKIP + 1 XFAIL in 246.27s** — count exact; wall-time 24.47s below 270.74s baseline, well within ±25s tolerance (Convention 1 SHAPE-not-VALUE asserts COUNT not wall-time; not a halt). ✓
+  - HALT 7: `docs/NCHS_SOURCE_MANIFEST.md` first paragraph names 100 zips (43 fetal-death + 35 natality + 19 linked-cohort + 3 matched-multiples). `grep -c "^| " docs/NCHS_SOURCE_MANIFEST.md` returns 108 (100 zip rows + 8 column headers across 4 sections). ✓
+  - HALT 8: `README.md` line 14 reads "## Four products at a glance" ✓
+  - HALT 9: `tests/test_source_zip_sha_stability.py::_classify()` recognizes 4 filename families (Fetal* default branch; Nat* prefix → NATALITY_RAW_DIR; LinkCO*/LinkPE* + 2005-2022 linked prefixes → LINKED_RAW_DIR; matched-multiples 3 literal filenames → MATCHED_MULTIPLES_RAW_DIR). ✓
+  - HALT 10: `git diff HEAD -- KICKOFF.md NEXT_STEPS.md` returns empty (no edits to either since `974c310`). ✓
+  - HALT 11: Tier 3+5 progress = 1 of 7 tasks (C8.16 complete; C8.17-C8.22 remaining). Cumulative Phase C ~19.5 of 51-71 sessions (within Q33 effort-ceiling cap of 86). ✓
+  - HALT 12: `/tmp/c8_16_zip_probe/` (3 zips: 1995-1997.zip + 1995-2000.zip + 2016-2020.zip) and `/tmp/c8_16_pdf_probe/` (3 PDFs + 3 text files) both present (NOT OS-cleaned). ✓ — informational only, not a HALT condition for C8.17.
+
+- [x] **C8.17 substrate enumerated** (sibling-extrapolation per L1-extension; per LESSONS 2026-05-12T04:30:00Z; existing on-disk inventory `~/Desktop/natality-harmonization/raw_docs/Nat<YYYY>doc.pdf` for 1990-2004 confirmed sibling pattern; the 2005+ era switches to `UserGuide<YYYY>.pdf`):
+  - **22 NCHS source zips probed** (uniform `Nat<YYYY>.ZIP` uppercase pattern at `ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/`; all HTTP 200; all Last-Modified 2007-08-24 / 2007-08-27 / 2007-08-28 — uniform 2007-08 batch upload). Cumulative content-length ~1.64 GB:
+    - 1968: 14,648,626 B (14.6 MB; 50%-sample-alone era)
+    - 1969-1971: 35,298,000 + 38,608,225 + 35,093,001 = 109,000 KB (3-yr 50%-sample joint-doc era)
+    - 1972-1977: 35,276,162 + 39,003,176 + 43,456,076 + 48,153,444 + 53,675,278 + 60,350,112 = 280,000 KB (6-yr mixed-sample joint-doc era)
+    - 1978-1988: 71,134,938 + 88,429,944 + 90,619,688 + 97,323,732 + 102,038,747 + 100,930,190 + 102,130,621 + 102,103,191 + 106,461,058 + 115,743,731 + 119,067,351 = 1,095,000 KB (11-yr 100%-file era; 1978-revision cert)
+    - 1989: 141,007,082 B (141.0 MB; 1989-revision cert; will inherit V2-era layout from existing 1990+ via sibling-extrapolation)
+  - **15 documentation PDFs probed** (path `ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/natality/` — NOT under `Datasets/DVS/`; corrected after first-pass 404 trap; sibling pattern `Nat<YYYY>doc.pdf` for 1978-1989 + `Nat<YYYY>-<YY>doc.pdf` for the 2 joint multi-year docs); all HTTP 200:
+    - Standalone: `Nat1968doc.pdf` (0.3 MB; 9 pages); `Nat1978doc.pdf` (2.0 MB); `Nat1979doc.pdf` (1.1 MB); `Nat1980doc.pdf` (6.6 MB); `Nat1981doc.pdf` (4.3 MB); `Nat1982doc.pdf` (9.8 MB); `Nat1983doc.pdf` (9.3 MB); `Nat1984doc.pdf` (9.1 MB); `Nat1985doc.pdf` (9.2 MB; 226 pages); `Nat1986doc.pdf` (8.9 MB); `Nat1987doc.pdf` (7.6 MB); `Nat1988doc.pdf` (8.5 MB); `Nat1989doc.pdf` (12.0 MB; 285 pages) — 13 individual PDFs.
+    - Joint: `Nat1969-71doc.pdf` (1.5 MB; 26 pages) covers 1969-1971; `Nat1972-77doc.pdf` (1.6 MB; 29 pages) covers 1972-1977 — 2 joint PDFs.
+    - Total: 15 PDFs covering 22 years.
+    - All Last-Modified 2007-08-24 / 2007-08-26 / 2007-08-27 / 2007-08-28 (same 2007-08 batch upload as the zips).
+  - **L12-extension PASS on 5-PDF sample** (Convention per LESSONS 2026-05-12T15:00:00Z; PyMuPDF `page.get_text()`):
+    - `Nat1968doc.pdf`: 9 pages, 100% non-empty, 7,742 chars total. Producer=`Acrobat PDFWriter 3.03 for Windows`, creation=`D:20000616084509`, mod=`D:20190425194257`.
+    - `Nat1969-71doc.pdf`: 26 pages, 100% non-empty, 31,244 chars. Producer=empty (likely older OCR'd scan with text layer added), creation=`D:20000331084345`, mod=`D:20190425194259`.
+    - `Nat1972-77doc.pdf`: 29 pages, 100% non-empty, 33,890 chars. Producer=empty (same OCR'd scan pattern), creation=`D:20000331085417`, mod=`D:20190425194258`.
+    - `Nat1985doc.pdf`: 226 pages, 100% non-empty, 380,085 chars. Producer=`Acrobat PDFWriter 3.03 for Windows`, creation=`D:20000128110732`, mod=`D:20190425194333`.
+    - `Nat1989doc.pdf`: 285 pages, 100% non-empty, 502,631 chars. Producer=`Acrobat PDFWriter 3.03 for Windows`, creation=`D:20000128105658`, mod=`D:20190425194348`.
+    - **Conclusion**: 100% of probed pages text-extractable; **NO OCR needed**. All 5 samples share the 2000-era Acrobat PDFWriter 3.03 + 2019-04-25 reprocessing signature (sibling of the 1985 fetal-death PDF precedent LESSONS 2026-05-12T15:00:00Z). The 1969-71 + 1972-77 joint docs have empty producer fields and show slight text-extraction noise (slash-separated tokens; OCR'd from older scans) but are STILL text-extractable; full record-layout reconstruction can proceed at DO without OCR. Sample SHA-256s recorded in `/tmp/c8_17_probes/`:
+      - Nat1968doc.pdf sha256=`085ffcedd8dbed350ae54e241f49754f8af94fc16e7dd7e749367d37504d9456`
+      - Nat1969-71doc.pdf sha256=`73e2d3e233a53efc44c3d8b16e91f79bed619f34a7225719c183f3ad11a2a3be`
+      - Nat1972-77doc.pdf sha256=`0ac4733c6c73cf78102589fbbb6490d6704dcaf2c4c9208d8d5153a7e80aca5c`
+      - Nat1985doc.pdf sha256=`371d1f61265a6fcff11db9ec2fa4ee6907c349d537c2c7dfe6c9d8bc904c5b12`
+      - Nat1989doc.pdf sha256=`92dab8115baec71eec3633239cbd042b2079ad6b80bd1b3a3a43c3276ac3a7cb`
+  - **Era boundary count clarification (soft-flag (t)):** §15.D line 1350 says "4 distinct pre-1989 layouts (1968 / 1969-1971 / 1972-1977 / 1978-1988 / 1989)" — the parenthetical lists 5 era boundaries. The cheap-check confirms 5 distinct PDF documentation eras (1 standalone 1968 + 2 joint 1969-71 + 1972-77 + 1 multi-year-individual 1978-1988 + 1 standalone 1989). Whether 1989 inherits the 1990+ V2-era layout (reducing to 4 NEW layouts) or has its own pre-V2 1989-revision-rollout artifacts (5 NEW layouts) is a DO step 4 cheap-check; PRE-FLIGHT defers. Logged as soft-flag (t) for DO step 1 reconciliation. NO §11 plan-update triggered (terminology, not scope).
+- [x] **No stale checkpoints**: `git status --porcelain` empty on `main` at `974c310`; `C8.17-pre-do` + `C8.17-complete` tags do NOT yet exist. ✓
+
+### Environment
+
+- [x] Python 3.13.9; pandas + pyarrow + pymupdf available via `uv run python -c "import pandas, pyarrow, pymupdf"`; uv lockfile unchanged (from C8.16 close `974c310`). ✓
+- [x] Working directory clean; on `main`; HEAD at `974c310` (the C8.16-complete commit). ✓
+- [x] `curl` (TLS-permissive `-k`) available for FTP probes; reachable to `ftp.cdc.gov` (HTTP 200 on all 22 zip + 15 PDF probes). ✓
+
+### Source documentation
+
+C8.17 is a data-extension task; consumes 15 external NCHS documentation PDFs + 22 source zips at PRE-FLIGHT (probe-level only). Full content read (record_layout_*.csv reconstruction from documentation pages 13-22-style anchor-field tables) happens at DO steps 2-4:
+
+- 15 PDFs probed above (5-sample L12-extension PASS at PRE-FLIGHT; full content read happens at DO when authoring `natality/metadata/record_layout_<era>.csv` files — sibling pattern of the existing `record_layout_*.csv` files in `fetal_death/`).
+- 22 source zips probed above (HTTP HEAD + content-length + last-modified verified; full unzip + record-layout reconstruction happens at DO step 1 + 2-4).
+
+All L1-extension cheap-checks satisfied (sibling-extrapolation from §15.D filename pattern `Nat<YYYY>.zip` returned HTTP 200 on the uniform uppercase `.ZIP` variant; one filename-variant probe trap encountered at first pass — wrong PDF subpath `Datasets/DVS/Dataset_Documentation/natality/` returned 404 across all 22 candidates; corrected on second probe to `Dataset_Documentation/DVS/natality/` which is the path used by `vitalstatsonline.htm` link inventory; both probes logged here for forensic traceability per L12 discipline — the 404 trap was caught by sibling-cross-check, NOT by retrying hallucinated variants). All L9 cheap-checks satisfied (PDF page counts + first-page text samples verified per the 5-PDF L12-extension probe above).
+
+### Outputs
+
+- [x] **NEW files (must not exist before DO; will be authored in DO):**
+  - `natality/metadata/record_layout_1968.csv` (DO step 2; 50%-sample era; small)
+  - `natality/metadata/record_layout_1969_1971.csv` (DO step 2; joint 3-yr era)
+  - `natality/metadata/record_layout_1972_1977.csv` (DO step 3; joint 6-yr era; mixed-sample-fraction handling)
+  - `natality/metadata/record_layout_1978_1988.csv` (DO step 4; 100% file; 1978-revision cert)
+  - `natality/metadata/record_layout_1989.csv` (DO step 4; 1989-revision cert pre-1990 sibling)
+  - 22 new rows in `natality/metadata/file_inventory.csv` (DO step 1; 54 → 76 rows)
+  - `natality/scripts/01_import/parse_all_pre1990_years.py` (DO step 5; sibling of existing `parse_all_v1_years.py`)
+  - Possibly `natality/V3_PRE1990_LAYOUT_DECISIONS.md` (DO step 1; sibling of `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md`)
+  - `tests/snapshots/v2_<UTC>_columns.csv` (DO step 7; B.12 snapshot re-snap)
+  - `RECEIPTS/C8.17_<UTC>.md` (RECEIPT phase)
+- [x] **APPEND-ONLY state files (this PRE-FLIGHT close commit):**
+  - `PRE_FLIGHT_LOG.md`: this entry
+  - `DECISION_LOG.md`: NEW entry recording C8.17 PRE-FLIGHT close + 5-era empirical finding + soft-flag (t) terminology disposition
+  - `STATUS.md`: new dated section at top recording PRE-FLIGHT close + DO step plan
+- [x] **MODIFIED at DO (forward-looking; NOT touched at this PRE-FLIGHT commit):**
+  - `natality/metadata/harmonized_schema.csv` (DO step 5/7; `years_available` cells `1990-2024` / within-era subsets extended union-wise to `1968-2024` / within-era subsets; preserved comparability_class boundaries)
+  - `natality/metadata/file_inventory.csv` (DO step 1; +22 rows)
+  - `natality_v2_harmonized_derived.parquet` (DO step 6; CURRENT preserved as `.v28_baseline.parquet` forward-stability anchor per §15.D plan; new v2.9/v3.0 parquet authored)
+  - `natality/output/harmonized/parse_all_pre1990_years.parquet` (DO step 5; per-era 1968-1989 yearly_clean parquets)
+  - `README.md` "Natality" row (1990–2024 / 35 yrs / 138,819,655 → 1968–2024 / 57 yrs / ~165M records — exact count TBD at DO; cols TBD)
+  - `PROJECT_STRUCTURE.md` natality section (1990-2024 → 1968-2024)
+  - `docs/NCHS_SOURCE_MANIFEST.md` (100 → 122 zips; +22 natality 1968-1989 rows)
+  - `tests/test_source_zip_sha_stability.py` (100 → 122 anchor; `_classify()` extended to recognize 1968-1989 natality filenames — they all match the existing `Nat*` prefix logic via `NATALITY_RAW_DIR` so the classifier may need NO extension beyond `EXPECTED_FILENAMES` set; cheap-check defer to DO step 7)
+  - `CITATION.cff` (keywords update; possibly v2.9 reference)
+  - `KICKOFF.md` "Current data envelope" (line 58: 35-yr → 57-yr natality)
+  - `notebooks/_build_*.py` builders may need EXPECTED_YEAR_ROWS dict updates (C8.1 `DESIGN: tracks-current-state` smokes per L17)
+- [x] **NOT mutated** (forward-looking HALT for C8.17 VERIFY):
+  - 2 fetal_death parquet SHAs unchanged (C8.17 touches natality only; H10 gate for fetal-death side ✓)
+  - 1 linked parquet SHA unchanged (C8.17 touches natality 1968-1989 only; linked extension is C8.18 ✓)
+  - 4 matched-multiples parquet SHAs unchanged (C8.17 is additive to natality only; matched_multiples untouched ✓)
+  - All C8.1-C8.16 file SHAs preserved
+  - Manuscript draft unchanged (Phase D step 4 scope)
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+C8.17 mutates 4 categories of canonical state: (i) natality metadata CSVs; (ii) natality harmonized parquet (with v2.8 baseline preserved); (iii) monorepo top-level docs reflecting natality envelope; (iv) test-suite anchors (B.12 snapshot + SHA-stability count + smoke EXPECTED_YEAR_ROWS).
+
+**Table 1: Current natality metadata state (pre-DO)**
+
+| Artifact | Current rows | Current cols | Post-C8.17 expected |
+|---|---|---|---|
+| `natality/metadata/file_inventory.csv` | 54 (35 natality 1990-2024 + 19 linked 2005-2023) | 8 (`year, source_url, source_org, raw_filename, file_format, doc_filename, imported, notes`) | 76 (+22 natality 1968-1989); no col extension at PRE-FLIGHT |
+| `natality/metadata/harmonized_schema.csv` | 95 (header + 94 column rows) | 9 (`harmonized_name, harmonized_label, type, allowed_values, years_available, raw_source_by_year, comparability_class, derivation_rule, notes`) | 95+ (additive cells in `years_available` + `raw_source_by_year`; possibly new pre-1990-specific rows if era introduces new columns; TBD at DO step 5) |
+| `natality/metadata/record_layout_*.csv` (existing) | per-era V2/V3 files | varies | +4-5 new pre-1989 era files |
+
+**Table 2: Current natality `years_available` cell distribution (sample)**
+
+Captured via `awk -F, 'NR==1{for(i=1;i<=NF;i++)if($i=="years_available")c=i}; NR>1{print $c}' natality/metadata/harmonized_schema.csv | sort -u`:
+
+- `1990-2024` (dominant; cross-era columns)
+- `1990-2019` (within-era V1 to pre-2020 only)
+- `1990-1994` (V0 → V1 transition era)
+- `2005-2013` (V2 era subset)
+- `2005-2023 (linked)` (linked-file column)
+- `2005-2024` (V2 era cross-natality+linked)
+- `2009-2024`, `2014-2024` (post-2009 / post-2014 additions)
+- One quoted-string cell with `2=VBAC` — likely an embedded comma-separated allowed_values cell that broke the CSV parse; non-mutating for C8.17 (will surface at DO step 5 if `years_available` cell-level edit operates on this row)
+
+All 8 distinct `years_available` cell forms above are CURRENT VALUES; C8.17 DO step 5 expands them all union-wise to include the 1968-1989 envelope where applicable. The `1990-2024` cells become `1968-2024` for cross-era columns; within-era cells stay unchanged.
+
+**Table 3: Current 4 canonical parquet SHAs (preserved through C8.17 except natality main)**
+
+| Path | Current SHA | Post-C8.17 |
+|---|---|---|
+| `fetal_death_harmonized.parquet` | `38e2cecb…` | **UNCHANGED** (C8.17 touches natality only) |
+| `fetal_death_derived.parquet` | `185c071e…` | **UNCHANGED** |
+| `natality_v2_harmonized_derived.parquet` | `e16ad53…` | **CHANGES** at DO step 6 → preserved as `.v28_baseline.parquet`; new v2.9/v3.0 parquet authored |
+| `natality_v3_linked_harmonized_derived.parquet` | `9b828a4d…` | **UNCHANGED** (linked extension is C8.18, not C8.17) |
+
+**Table 4: Current README + PROJECT_STRUCTURE natality prose**
+
+- `README.md` line 16: `| **Natality** | 1990–2024 (35 years) | 138,819,655 | 84 (71 harmonized + 13 derived) | 183/183 *Births: Final Data* targets byte-exact | [`natality/`](natality/) |`
+- `PROJECT_STRUCTURE.md` line 17: `├── natality/                 Natality + linked birth–infant death subproject`
+- `PROJECT_STRUCTURE.md` line 39: `Natality 1990–2024 plus linked birth–infant death 2005–2023, mirrored from the [yoelplutchok/natality-harmonization](...) repo (v2.8.0 in-repo state, last Zenodo deposit v2.7.0).`
+
+C8.17 DO step 7 updates these to reflect 1968-2024 (57 years; record count TBD; column count TBD).
+
+**Table 5: Current C8.1 `DESIGN: tracks-current-state` smoke anchors**
+
+- `natality/tests/test_release_smoke.py` (if it exists; will inherit C8.1 dtype-parity pattern): `EXPECTED_ROW_COUNT` + `EXPECTED_YEARS` + `EXPECTED_YEAR_ROWS` dicts pinned to 1990-2024 envelope per Convention 1 SHAPE-not-VALUE; C8.17 DO step 7 re-pins these to 1968-2024 envelope per the `tracks-current-state` discipline. (Not a FAIL — this IS the expected behavior per L17 + Convention 2; pinning is bundled in the same commit as the parquet rebuild.)
+
+**Plan assumptions verified at PRE-FLIGHT (per Convention 3 second bullet):**
+
+1. **§15.D "22 new years; 4 distinct layouts" wording is loose**: cheap-check finds **5 era boundaries** (1968 / 1969-1971 / 1972-1977 / 1978-1988 / 1989). Resolution = §15.D wording can stand as "4 NEW pre-1989 layouts" if 1989 inherits the 1990+ V2-era layout (already canonical); cheap-check at DO step 4 will confirm. Soft-flag (t) carries forward; no §11 plan-update triggered (terminology, not scope).
+2. **PDF documentation path** = `Dataset_Documentation/DVS/natality/` (NOT `Datasets/DVS/Dataset_Documentation/natality/`). First-pass probe (using the latter path) returned 404 across all 22 candidates; corrected via cross-reference to existing on-disk 1990+ doc filenames + WebFetch on `vitalstatsonline.htm`. The on-disk inventory pattern is the L1-extension sibling-derive backbone.
+3. **L12-extension PASS on 5-sample** (Nat1968 / Nat1969-71 / Nat1972-77 / Nat1985 / Nat1989); all 100% text-extractable; NO OCR needed. Acrobat PDFWriter 3.03 + 2019-04 reprocessing signature shared across all 5.
+4. **Effort estimate 6-10 sessions stands**: §15.D DO step 1 (1 session) + step 2 (1-2 sessions) + step 3 (1-2 sessions) + step 4 (1-2 sessions) + step 5 (1 session) + step 6 (1 session) + step 7 (0.5-1 session) = 6.5-10 sessions. Cumulative Phase C ~19.5 + 6-10 = ~25.5-29.5 / 51-71. Effort-ceiling cap 86 intact.
+5. **L1-extension sibling-extrapolation discipline applied**: existing on-disk `~/Desktop/natality-harmonization/raw_docs/Nat<YYYY>doc.pdf` for 1990-2004 is the sibling backbone; pre-1990 sibling extrapolation returned 200 on first try at the corrected path. NO hallucinated filename variants attempted.
+6. **No new schema bump pre-decided**: §15.D names v2.8.0 → v2.9.0 (or v3.0.0 if cert-revision boundary cascade) — DO step 6 decision; not PRE-FLIGHT. The H10 reproducibility-gate forward-looking HALT for C8.17-complete: v2.8 baseline preserved byte-exact on the 1990-2024 slice.
+
+**Soft-flags surfaced at PRE-FLIGHT (NEW + carried from C8.16-complete):**
+
+NEW:
+- (t) **§15.D terminology**: "4 distinct pre-1989 layouts" wording vs cheap-check-empirical 5 era boundaries. Resolution = DO step 4 cheap-check (does 1989 inherit V2-era layout?); carries soft-flag for forensic traceability; no §11 plan-update triggered.
+
+Carried unchanged from C8.16-complete: (a) stale `fetal_death/PROVENANCE.md` + (b) absent `natality/PROVENANCE.md` (both Phase D step 2; C8.17 will ADD pre-1990 entries to natality PROVENANCE when it is authored) + (c) `VERSION_ROADMAP.md` "Planned" section (Phase D candidate; will need pre-1990 natality + matched-multiples + linked 1983-2004 entries by Phase D step 2) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (g) PRE-FLIGHT "87 raw zips" typo (now 100; C8.17 will bring to 122) + (i) `fetal_death/COMPARABILITY.md` title staleness (Phase D candidate) + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test (future C8.X) + (p) F.1 dict-encoding dropped + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo + (r) effort-ceiling cap 42 → 86 + (s) `/tmp/c8_16_zip_probe/` OS-cleanable.
+
+Soft-flag (f) plurality footgun: OPERATIONALLY CLOSED at C8.15; carries for documentation-trail only.
+
+### Halt conditions tripped
+
+None at PRE-FLIGHT close. All 12 forward-looking HALTs from STATUS 2026-05-14T05:30:00Z verified byte-exact. Two cheap-check findings (PDF-path 404 trap; 5-era vs 4-layout terminology) resolved in-PRE-FLIGHT without §11 plan-update or AskUserQuestion — both routine PRE-FLIGHT-time disambiguations per the C8.16 PRE-FLIGHT precedent. NO §7 HALT condition triggered.
+
+### Result
+
+**PROCEED to C8.17 DO step 1** (next session). PRE-FLIGHT close commit lands this entry + DECISION_LOG entry + STATUS section + tag `C8.17-pre-do`. DO begins at next session entry with the full 6-10 session budget. Forward-looking HALTs for next session's PRE-FLIGHT cheap-check listed in STATUS section 2026-05-14T06:30:00Z + the DECISION_LOG entry of same timestamp.
+
+---
+
 ## PRE-FLIGHT for C8.16 — 2026-05-14T02:30:00Z — Matched-multiples ancillary release (A.5; 4th HVS product); first Tier-3+5 task per 2026-05-14T02:00:00Z plan-update — **RESULT: PROCEED**; user-resolved 2 architectural questions via AskUserQuestion 2026-05-14T02:30:00Z (Architecture = Option A standalone subproject `matched_multiples/` per §15.D default; Effort = Option A acknowledge revised 2-3 session estimate, within Q42 +1-session tolerance); no `[plan-update]` commit needed (the §15.D entry already names the standalone default + the effort revision stays within Q42 tolerance; routing decisions stay in this PRE-FLIGHT entry + DECISION_LOG per the C8.15 + C8.13 + C8.11 + C8.10a/b/c PRE-FLIGHT-time decision precedent)
 
 ### Scope summary
