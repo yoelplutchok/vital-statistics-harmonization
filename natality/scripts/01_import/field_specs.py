@@ -97,7 +97,7 @@ RECORD_LEN_2014_2015 = 1345  # 2014–2020 (and likely later revised-era years)
 # Authored at C8.17 DO step 2 (2026-05-14) from `Nat1968doc.pdf` (9 pp; "NATALITY TAPE
 # FILE FOR CALENDAR YEAR 1968 — Outline of Items and Codes Arranged by Location in the
 # Final Birth Tape Record"). Field semantics cross-verified empirically against
-# `/tmp/c8_17_step2/NATL1968.PUB` (1,772,133 records; ~50% US sample) at a
+# `/tmp/c8_17_step2/NATL1968.PUB` (1,750,782 records; ~50% US sample) at a
 # 5,000-record value-distribution probe per LESSONS L13-extension. All seven anchor
 # fields (DATAYEAR, CSEX, DMAGE, DBIRWT, DPLURAL, MRACE, BIRATTND) match documented
 # code ranges within population-plausible bounds.

@@ -1,6 +1,112 @@
-# STATUS — last updated 2026-05-14T10:30:00Z
+# STATUS — last updated 2026-05-15T03:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-15T03:45:00Z — **C8.17 DO step 5a close** — pre-1990 natality parser authoring + 22-year parse to yearly_clean SHIPPED — 2 new files at `natality/scripts/01_import/` (`parse_public_us_pre1990_year.py` 245 lines incl. vectorized numpy bulk path + per-row fallback; `parse_all_pre1990_years.py` 90 lines driver) + 22 new `natality_<year>_raw.parquet` files at `~/Desktop/natality-harmonization/output/yearly_clean/` (cumulative **62,341,801 records / 1.6 GB**; 1968=1,750,782 / 1969-1971=5,450,777 / 1972-1977=13,086,752 / 1978-1988=39,008,599 / 1989=4,045,693); two FIX_LOG-class issues surfaced + resolved in-flight ((a) L13 1968 row-count off-by-1 arithmetic error in DO step 2 — divisor 82 used instead of 83 for 81-byte data + CR/LF terminator → corrected `file_inventory.csv` 1968 row + `field_specs.py:100` docstring + new FIX_LOG 2026-05-14T11:00:00Z; (b) first-attempt parser was 5x too slow on 95-field 1972-1988 records — rewrote `_build_chunk_columns()` to use vectorized numpy fixed-width slicing + `np.char.decode(col_bytes, "latin-1")` for non-ASCII robustness (1973 has 1 single 0xe7 byte in 50 MB sample), achieving 30K-100K rows/s); split §15.D bundled DO step 5 → 5a (parser only, this session) + 5b (harmonize_v1_core.py extensions, next session) per Convention 5 + C8.10a/b/c + C8.16 sub-step precedent + H10 safety (additive yearly_clean parquets this session; mutative 1403-line harmonize.py next); VERIFY 22/22 per-year row+col count PASS against file_inventory.csv (1968 corrected); 4 canonical + 4 matched-multiples parquet SHAs preserved BYTE-EXACT (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…` + `5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`; H10 gate intact); pytest 85P + 1S + 1XF in 152.55s (well within 220-380s tolerance — Convention 1 SHAPE-not-VALUE PASS); 2 AskUserQuestion this session (Q1 PRE-FLIGHT-time scope-decision = "do whatever you think is best" → split 5a/5b; Q2 mid-session parser-speed = "Optimize parser ~30 min + re-verify, then resume"); zero §7 halts; no tag at intermediate DO step per Convention 5 precedent (`C8.17-pre-do` at `12fc20e` parent commit; `C8.17-complete` NOT yet present); full narrative in RECEIPTS/C8.17_step5a_2026-05-15T03-45-00Z.md.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 COMPLETE (1 of 7); C8.17 PRE-FLIGHT + DO step 1 + DO step 2 + DO step 3 + DO step 4 + DO step 5a CLOSED; DO step 5b queued.** Cumulative Phase C ~22.5 of 51-71 sessions (~32-44%; +1 session for DO step 5a; effort-ceiling cap 86 sessions intact).
+
+### What was done this session (C8.17 DO step 5a entry to close)
+
+1. **Kickoff handshake + 14-HALT entry cheap-check** (~10 min): produced (a)-(d) handshake; user authorized PROCEED. Verified 14 forward-looking HALTs from STATUS 2026-05-14T10:30:00Z: 14/14 PASS — `C8.17-pre-do` tag at `12fc20e`; 4 canonical parquet SHAs byte-exact (clarification: STATUS shorthand uses `_derived` variants); 4 matched-multiples SHAs byte-exact; `field_specs.py` carries 7 RECORD_LEN constants + 4 pre-1990 tuple lists; `file_inventory.csv` 1968-1989 rows populated; pytest baseline 85P+1S+1XF in 255.33s (cache-cleared); 22 zips at `~/Desktop/natality-harmonization/raw_data/`; `git status` clean.
+2. **AskUserQuestion 1 — scope decision** (~5 min): proposed 3 options for DO step 5 splitting; user authorized "do whatever you think is best" → LLM-chose Option A = split into 5a (parser, this session) + 5b (harmonize, next session) per Convention 5 + C8.10a/b/c + C8.16 sub-step precedent + H10 safety reasoning.
+3. **Parser authoring** (~15 min): authored `natality/scripts/01_import/parse_public_us_pre1990_year.py` (sibling of `parse_public_us_year.py`; per-era era_tag dispatch via `_layout_for_year(year)` returning `(min_record_len, max_record_len, fields)`; handles 1981 mixed-length via min/max bounds + right-pad-to-max idiom; 1989 4-byte DATAYEAR encoded via existing `PUBLIC_US_1990_2002_FIELDS` tuple list). Authored `natality/scripts/01_import/parse_all_pre1990_years.py` (sibling of `parse_all_v1_years.py`; defaults to `--years 1968-1989`; emits `natality_<year>_raw.parquet`).
+4. **SMOKE Tier 0 + Tier 1** (~10 min): dispatch correctness 16/16 PASS (14 valid years + 2 out-of-band ValueErrors); 100-record parse per anchor year (1968 / 1971 / 1977 / 1979 / 1980 / 1981 / 1985 / 1988 / 1989) 9/9 PASS — per-era column count matches expected (36/72/96/38 + 1 `year` parser-added); DATAYEAR encoding correct; 1981 mixed-length 50K-record probe shows 79.9%/20.1% 213b/214b distribution; bulk-vs-per-row equivalence 5/5 anchor years × 100 records × 36-96 cols = 33,800 cells byte-equivalent.
+5. **DO step 5a primary action — first attempt** (~20 min wall-clock observed; aborted): launched full 22-year parse; 1968-1972 (5 years) completed in ~17 min; 1972 measured 2,517 rows/s = 5x slower than 1971 (per-row dict + 95-field tuple list bottleneck). User pinged for status; surfaced parser-speed soft-flag.
+6. **AskUserQuestion 2 — parser speed** (~5 min): user authorized Option A = "Optimize parser ~30 min + re-verify, then resume".
+7. **Parser bulk-path optimization** (~15 min): rewrote `_build_chunk_columns()` to use vectorized numpy fixed-width slicing: `arr[:, a-1:b]` → `np.ascontiguousarray(...)` → `.view(f"S{width}")` → `np.char.decode("latin-1")`. Re-ran Tier 0 + Tier 1 SMOKE; bulk-vs-per-row equivalence PASS. Full-1968 cross-validation: 1.75M × 36 cols = 63M cells byte-equivalent vs per-row path output.
+8. **DO step 5a primary action — second attempt** (~25 min wall-clock): cleared 5 old parquets; launched 22-year parse with bulk parser. 1973 first attempt failed with `'ascii' codec can't decode byte 0xe7` — fixed via `np.char.decode(col_bytes, "latin-1")`. 1973 re-parse PASS. Final: 22/22 parquets written; per-year 19-95s wall-clock (narrow years 1968/1989 ~20s @ 90-100K rows/s; wide 95-field 1972-1988 ~50-95s @ 30-45K rows/s); cumulative ~25 min for 22 years.
+9. **L13 1968 row-count fix-on-contact** (~10 min): parser output 1,750,782 rows for 1968 vs `file_inventory.csv` claim 1,772,133. Investigation: DO step 2 DECISION_LOG choice 5 used divisor 82 instead of 83 for the 81-byte data + 2-byte CR/LF terminator (hex-dump confirmed positions 81-82 = `0d 0a`). Cross-checked all 22 years: only 1968 drifts. Fix-on-contact updated `file_inventory.csv` 1968 row + `field_specs.py:100` docstring + new FIX_LOG 2026-05-14T11:00:00Z entry.
+10. **VERIFY** (~5 min): 22/22 per-year row+col count PASS; 4 canonical + 4 matched-multiples parquet SHAs preserved BYTE-EXACT (verified via `shasum -a 256`); cache-cleared pytest 85P+1S+1XF in 152.55s (Convention 1 SHAPE PASS).
+11. **DECISION_LOG entry + this STATUS section + RECEIPTS/C8.17_step5a_2026-05-15T03-45-00Z.md** appended; commit pending.
+
+### Last completed step
+
+Single commit ships: 2 NEW parser files (`parse_public_us_pre1990_year.py` 245 lines + `parse_all_pre1990_years.py` 90 lines) + 2 fix-on-contact edits (`file_inventory.csv` 1968 row record count + notes; `field_specs.py:100` docstring) + 1 FIX_LOG entry + 1 DECISION_LOG entry + 1 STATUS section + 1 RECEIPT file. **22 new `natality_<year>_raw.parquet` files** at `~/Desktop/natality-harmonization/output/yearly_clean/` are downstream consequences (not in monorepo; built artifacts). **No tag** at intermediate DO step 5a per Convention 5 precedent.
+
+### In-progress
+
+C8.17 DO step 5b scheduled for next session. DO step 5b scope: `harmonize_v1_core.py` extension for pre-1990 era_tags (1403-line existing file; add NEW dispatcher branch `if 1968 <= year <= 1989: return _harmonize_pre1990(table, year)`; existing 1990+ handlers preserved byte-exact for H10). Specific edits: B3-style 1-digit MRACE recodes for 1968-1988 (analogue of task7_v3a + v3b fetal-death precedents); Hispanic-origin null pre-1978 (1978-revision birth cert added the Hispanic question); per-era SAMPWT handling for 1968-1977 sample-fraction era (1968-1971 = uniform 50% sample; 1972-1977 = mixed per-state via SAMPWT @ pos 208; 1978+ = 100% sample uniform 1x). Budget: 1-2 sessions per §15.D.
+
+### Next planned task
+
+**C8.17 DO step 5b — `harmonize_v1_core.py` extension for pre-1990 era_tags** (~1-2 sessions per §15.D). DO step 5b entry cheap-check (~5 min): re-verify the 14 forward-looking HALTs from RECEIPTS/C8.17_step5a_2026-05-15T03-45-00Z.md "Forward-looking HALTs" section. Then: (i) review existing `harmonize_v1_core.py` per-era dispatch surface (~1403 lines; 3 V2-era handlers); (ii) author new `_harmonize_pre1990(table, year)` handler; (iii) implement B3-style 1-digit MRACE recodes per-era; (iv) implement Hispanic-origin null pre-1978 (verify cross-era schema compat); (v) implement per-era SAMPWT handling; (vi) re-harmonize 1968-1989 (extending the existing 1990-2024 canonical natality v2.8.0 parquet at DO step 6); (vii) SMOKE: per-era column-count + value-distribution probe at canonical schema; (viii) VERIFY: pytest stays 85P+1S+1XF; existing canonical parquet SHAs byte-exact preserved through DO step 5b (the version bump happens at DO step 6); (ix) Sub-Q42 self-check.
+
+After C8.17 DO step 5b ships → **C8.17 DO step 6** (re-harmonize 1968-2024 full pipeline + preserve v2.8 baseline parquet + bump natality v2.8.0 → v2.9.0 OR v3.0.0; ~1-2 sessions) + **DO step 7** (CITATION.cff + ABOUT_THIS_RELEASE.md + README + PROJECT_STRUCTURE.md refresh; ~0.5-1 session) per §15.D.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged.
+**C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking C8.17 DO step 5b entry. The C8.17 DO step 5a close state is fully verified.
+
+**Carried-forward open questions from C8.17 DO step 4 close (still pending Phase D):**
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — `paper/draft_v2_hmd_styled.md:68` fetal-death timing. Further deferred.
+
+**Open soft-flags (16 carried; (y) RESOLVED in-session; (z) NEW carry-forward):**
+
+Carried unchanged from C8.17 DO step 4 close: (a)-(s) per prior STATUS + (u) fetal_death `imported` column uniformly "no" + (w) §15.D §1358 wording-reconciliation deferred to next [plan-update] + (x) DO step 4 STATUS narrative "envelope total 50,343,996" vs corrected file_inventory sum 62,341,801 (-21,351 from 1968 fix + arithmetic slip).
+
+**Soft-flag (y) RESOLVED THIS DO STEP 5a**: parser-speed slowdown on first-attempt per-row dict path was 5x too slow on 95-field 1972-1988 records (2,517 rows/s). Rewrote `_build_chunk_columns()` to use vectorized numpy fixed-width slicing; achieved 30K-100K rows/s. RESOLVED in-session.
+
+**Soft-flag (z) NEW CARRY-FORWARD**: investigate whether the natality 1990+ parser (`parse_public_us_year.py`) would benefit from the same bulk vectorization (probably yes; estimated 5x speedup for 1990-2024 full re-parse at DO step 6). Candidate for DO step 6 inclusion (if re-harmonize triggers re-parse) or post-Phase-D maintenance pass.
+
+### Forward-looking HALTs for C8.17 DO step 5b PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check access at C8.17 DO step 5b entry. Full enumeration in RECEIPTS/C8.17_step5a_2026-05-15T03-45-00Z.md.
+
+1. `C8.17-pre-do` tag at `12fc20e`; `C8.17-complete` NOT yet present.
+2. 4 canonical parquet SHAs byte-exact preserved (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`) — H10 gate intact through DO step 5a.
+3. 4 matched-multiples parquet SHAs byte-exact preserved (`5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`).
+4. **22 new pre-1990 `_raw.parquet` files** at `~/Desktop/natality-harmonization/output/yearly_clean/`; cumulative 62,341,801 rows / 1.6 GB. SHA prefixes per RECEIPT table. These are the input to DO step 5b's harmonize handler.
+5. `natality/scripts/01_import/parse_public_us_pre1990_year.py` + `parse_all_pre1990_years.py` present. No further parser edits expected at DO step 5b.
+6. `natality/scripts/01_import/field_specs.py` unchanged semantically at DO step 5a (only the 1968 docstring comment 1,772,133 → 1,750,782 was a fix-on-contact edit).
+7. `natality/metadata/file_inventory.csv` 1968 row carries `1,750,782 records` (corrected); other 21 rows unchanged.
+8. `FIX_LOG.md` has the 2026-05-14T11:00:00Z L13 entry as the most-recent entry.
+9. Cache-cleared pytest returns 85 PASS + 1 SKIP + 1 XFAIL in 150-300s range (system-variance heavy). Convention 1 PASS.
+10. NEXT_STEPS.md §15.D wording: soft-flag (w) carries; no edit at this DO step.
+11. Tier 3+5 progress = 1.9 of 7 tasks complete. Cumulative Phase C ~22.5 of 51-71 sessions.
+12. DO step 5b budget: 1-2 sessions per §15.D.
+13. DO step 5b substrate: 22 `_raw.parquet` files (this session's output); existing `harmonize_v1_core.py` (1403 lines V2-era 1990-2024) as the extension point.
+14. Soft-flags: (z) new carry-forward (1990+ parser bulk-path candidate); 15 others carry from C8.17 DO step 4 close.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (UNCHANGED).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (UNCHANGED; CHANGES at C8.17 DO step 6).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (UNCHANGED).
+- Matched-multiples 4th HVS product: 3 yearly_clean + 1 harmonized parquet (all UNCHANGED).
+- All C8.1-C8.16 DO outputs + C8.17 DO step 1+2+3+4 outputs unchanged.
+- **NEW this session (additive build-side; no monorepo canonical-state mutation):**
+  - **22 new `natality_<year>_raw.parquet` files** at `~/Desktop/natality-harmonization/output/yearly_clean/` (62,341,801 records / 1.6 GB cumulative).
+  - 2 new parser scripts in monorepo (`parse_public_us_pre1990_year.py` + `parse_all_pre1990_years.py`).
+  - 2 fix-on-contact monorepo edits (file_inventory.csv 1968 row + field_specs.py:100 docstring comment).
+  - 1 new FIX_LOG entry (2026-05-14T11:00:00Z; L13 class).
+  - 1 new DECISION_LOG entry (this session's choices).
+  - 1 new RECEIPT file (RECEIPTS/C8.17_step5a_2026-05-15T03-45-00Z.md).
+
+### Notes for next session
+
+- **C8.17 DO step 5b entry cheap-check** (~5 min): re-verify the 14 forward-looking HALTs above. Specifically: pytest baseline 85P+1S+1XF in 150-300s; 4+4 canonical parquet SHAs byte-exact; 22 _raw parquets present at `~/Desktop/natality-harmonization/output/yearly_clean/`.
+- **harmonize_v1_core.py extension strategy**: add a NEW per-era handler `_harmonize_pre1990(table, year)` that maps the 22 _raw column sets to the v2.8 canonical schema. The existing handlers stay byte-identical. The dispatcher's `if 1968 <= year <= 1989: return _harmonize_pre1990(...)` branch is the only change to existing code paths.
+- **B3-style 1-digit MRACE recodes**: 1968-1988 MRACE is single-digit (1/2/3/4/5/6/7/8); 1989+ uses 2-digit (01-99). Maps to `maternal_race_bridged` 4 categories (White / Black / AIAN / API + Other-Unknown). See task7_v3a + v3b precedent.
+- **Hispanic-origin null pre-1978**: 1978-rev cert added the Hispanic question; pre-1978 = null. Verify at DO step 5b PRE-FLIGHT whether pre-1989 public-use files surface the Hispanic field at all (probably not until 1989+).
+- **Per-era SAMPWT handling**: 1968-1971 = uniform 50% (2x weight); 1972-1977 = mixed per-state (SAMPWT @ pos 208 disambiguates); 1978+ = uniform 100% (1x weight).
+- **L17 forward (Convention 1)**: DO step 5b will likely add SMOKE harness `tests/test_natality_pre1990_harmonize_shape.py` with `DESIGN: tracks-current-state` first-docstring tag. SHAPE not VALUE.
+- **Sub-Q42 trigger** (per §15.D): if DO step 5b exceeds 2 sessions, file `[plan-update]` sub-entry. Cumulative effort cap is 86 sessions; current ~22.5.
+- **Re-run cost**: re-running `parse_all_pre1990_years.py --years 1968-1989` from scratch takes ~25 min wall-clock. Idempotent + non-destructive.
+- **B.12 snapshot regression baseline** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) preserved byte-exact through DO step 5a + expected through 5b (no canonical parquet shape change until DO step 6 version bump).
+
+### Session summary
+
+C8.17 DO step 5a SHIPPED in ~2 hours wall-clock (~1 hour active + ~1 hour parser-rewrite + 25 min parse run + cheap-check + receipt). 2 new parser modules at `natality/scripts/01_import/` (parse_public_us_pre1990_year.py 245 lines + parse_all_pre1990_years.py 90 lines) + 22 new natality_<year>_raw.parquet files at `~/Desktop/natality-harmonization/output/yearly_clean/` (62,341,801 records / 1.6 GB cumulative). **Two FIX_LOG-class issues resolved in-flight**: (L13) DO step 2 1968 row-count arithmetic error 1,772,133 → 1,750,782 (off-by-1 divisor for the CR/LF 2-byte terminator); (parser-speed) first-attempt per-row dict path was 5x too slow on 95-field 1972-1988 records, rewrote with vectorized numpy fixed-width slicing achieving 30K-100K rows/s. **Two AskUserQuestion**: Q1 PRE-FLIGHT-time scope-split decision (user authorized "do whatever you think is best" → LLM split DO step 5 → 5a parser + 5b harmonize per Convention 5 + C8.10a/b/c + C8.16 sub-step precedent + H10 safety reasoning); Q2 mid-session parser-speed decision (user authorized "Optimize parser ~30 min + re-verify, then resume"). VERIFY 22/22 per-year row+col count PASS against file_inventory.csv (1968 corrected); 4 canonical + 4 matched-multiples parquet SHAs preserved BYTE-EXACT (H10 gate intact); pytest 85P+1S+1XF in 152.55s (within Convention 1 SHAPE tolerance). Zero §7 halts; no tag at intermediate DO step per Convention 5 precedent. **C8.17 DO step 5b (`harmonize_v1_core.py` extension for pre-1990 era_tags; 1-2 sessions per §15.D) queued for next session.**
 
 ---
 

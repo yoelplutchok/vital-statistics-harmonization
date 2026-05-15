@@ -19,7 +19,58 @@
 
 ---
 
-## 2026-05-13T20:15:00Z — C8.12 (DO step 1, B.7 L13 audit) — L13 — `fetal_death/file_inventory.csv` `record_length` column had 17 EMPTY + 2 off-by-1 MISMATCH cells out of 43 rows; patched to no-terminator convention matching `field_specs.py` RECORD_LEN_* + the 1982-2004+2014 inventory rows
+## 2026-05-14T11:00:00Z — C8.17 DO step 5a — L13 — `natality/metadata/file_inventory.csv` 1968 row claimed 1,772,133 records; empirical line count is 1,750,782 (DO step 2 arithmetic used wrong divisor for 81-byte data + CR/LF 2-byte terminator)
+
+**Symptom:** C8.17 DO step 5a parser run on `Nat1968.zip` wrote 1,750,782 rows to `natality_1968_raw.parquet`, NOT 1,772,133 as `natality/metadata/file_inventory.csv` row 1968 claimed (DO step 2 entry 2026-05-14T08:30:00Z). Difference = −21,351 records (−1.2%). Cross-check via direct line-iter probe of `NATL1968.PUB` (uncompressed 145,314,906 bytes) confirms the file contains exactly 1,750,782 lines, ALL 81 bytes long, ZERO empty lines, ZERO length-mismatch lines. Per-record block size on disk = 83 bytes (81 data + 0x0d 0x0a terminator), not 82 as DO step 2 arithmetic assumed (verified via hex-dump at file positions 81-82 = `0d 0a`).
+
+Verification across all 22 pre-1990 years (`file_size // block_size` for each year, where block_size = data_len + 2 for the CR/LF terminator):
+
+| Year | Block | file_size / block | Inventory claim | Delta |
+|---|---|---|---|---|
+| 1968 | 83 (81+2) | 1,750,782 | 1,772,133 | **−21,351** |
+| 1969 | 217 (215+2) | 1,800,103 | 1,800,103 | 0 |
+| 1970 | 217 | 1,868,900 | 1,868,900 | 0 |
+| 1971 | 217 | 1,781,774 | 1,781,774 | 0 |
+| 1972 | 217 | 1,749,402 | 1,749,402 | 0 |
+| 1973-1979 | 217/215 | matches | matches | 0 |
+| 1980 | 217 | 3,310,301 | 3,310,301 | 0 |
+| 1981 | mixed | n/a (verified separately) | 3,319,054 | 0 |
+| 1982-1988 | 217 | matches | matches | 0 |
+| 1989 | 352 (350+2) | 4,045,693 | 4,045,693 | 0 |
+
+Only the 1968 row drifts. All 21 other years' claims are byte-exact.
+
+**Root cause:** C8.17 DO step 2 DECISION_LOG choice 5 (2026-05-14T08:30:00Z, DECISION_LOG.md:129) wrote: *"1968 (NATL1968.PUB = 145,314,906 bytes ÷ 82 = 1,772,133 records — 81 data + \\r\\n terminator)"*. The divisor 82 treats `\\r\\n` as a 1-byte terminator (LF only) while still naming it `\\r\\n`. The 1969-1971 arithmetic in the same choice correctly used divisor 217 (= 215+2) — so the inconsistency was within a single DECISION_LOG bullet. For 1968 specifically the off-by-one math (`/82` instead of `/83`) inflates the record count by ~1.2% (which is exactly 1 in 83 records, or equivalently 1 byte / 83-byte block treated as 1 record's worth of mass).
+
+This is a textbook L13-class error: the inventory CSV recorded a file claim that was never column-content-verified against the actual data. The DO step 2 session's L13-extension probe verified value-distributions on 5,000-record samples (CSEX / DMAGE / DBIRWT / DPLURAL / MRACE / BIRATTND distributions all PASS) but did NOT line-count the file. C8.17 DO step 5a is the first session to actually iterate every record from `NATL1968.PUB` end-to-end, which is when the discrepancy surfaced.
+
+**Fix:** Updated 2 references to the wrong 1968 count:
+
+1. `natality/metadata/file_inventory.csv` row 2 (1968): `1,772,133 records` → `1,750,782 records` in the `file_format` column + added a `notes`-column inline correction pointing to this FIX_LOG entry.
+2. `natality/scripts/01_import/field_specs.py:100` (1968 docstring): `(1,772,133 records; ~50% US sample)` → `(1,750,782 records; ~50% US sample)`.
+
+The append-only DECISION_LOG.md:117/129/148 (DO step 2 entry) and STATUS.md:223/233/286/331 (DO step 2 section) sections are NOT edited — per §3 append-only discipline, corrections go in new sections. This FIX_LOG entry + the next STATUS section (DO step 5a close) document the correction; future readers can trace the wrong-count narrative in the historical sections back to this fix.
+
+**Files touched (this fix):**
+- `natality/metadata/file_inventory.csv` — 1968 row file_format + notes columns updated
+- `natality/scripts/01_import/field_specs.py` — 1968 docstring comment updated
+
+**Regression scope:** None for the canonical parquets (no fetal-death / natality v2.8.0 / linked v3 / matched-multiples row touches the 1968 inventory figure). The 1968 row count was an INVENTORY-DOCUMENTATION value, not a value that gates any pipeline step or test assertion. The C8.17 DO step 6 re-harmonize will use the empirical parser output (1,750,782) regardless of the inventory claim. Cumulative envelope 1968-1989 = 62,363,152 records (corrects the STATUS DO step 4 narrative claim of 50,343,996 which was a separate arithmetic slip — soft-flag (x) for narrative-cleanup at next [plan-update]).
+
+**Verified by:**
+- `python -c "from zipfile import ZipFile; ..." → 1,750,782 lines, all 81 bytes` (this entry's diagnostic).
+- `145,314,906 / 83 = 1,750,781.999...` (arithmetic identity).
+- Empirical parser output `natality_1968_raw.parquet` row count = 1,750,782 (DO step 5a primary action).
+- Cross-check across all 22 years: only 1968 drifts; all other claims byte-exact (see table above).
+
+**Could the §8 matrix have caught this earlier?** Yes — **L13** ("any inventory row whose role/description names columns without a sibling column-name list is a soft-flag for downstream consumers to re-verify") is the matching matrix row. The defense (line-count the file at inventory write time, not just byte-position-probe + value-distribution-probe) was not applied because the inventory CSV was treated as informational-only at DO step 2. The DO step 2 entry's choice 5 says "These figures land in `natality/metadata/file_inventory.csv` `file_format` column per row and will be cross-checked at DO step 5 + Tier 2 (NCHS Vital Statistics of the United States annual-volume control counts)" — the "cross-checked at DO step 5" framing is exactly what surfaced this. So DO step 2 anticipated the verification, and DO step 5a is the first session to apply it. The fix-on-contact L11 + L13 discipline closes the loop.
+
+**Forward-looking follow-up:**
+- The same arithmetic-class error could affect other files where data_len + terminator_len divisors are mixed. The 22-year cross-check above proves no other pre-1990 natality year has the issue. The fetal_death + natality 1990+ + linked + matched-multiples inventory rows were authored from different processes (parser writes "rows= N" directly) so this class of error is bounded to the manual-arithmetic DO step 2 entry.
+- The STATUS DO step 4 narrative claim "envelope total 1968-1989 = 50,343,996" is a separate narrative-arithmetic slip — the file_inventory.csv per-row figures sum to 62,363,152 (corrected for 1968: 62,363,152). Soft-flag (x) for narrative-cleanup at next [plan-update].
+- DO step 5a's empirical full-file parser is the durable L13 defense for pre-1990 natality going forward: any future record-count regression at C8.17 DO step 6 or later will surface as a parser-vs-inventory delta, exactly like this one did.
+
+---
 
 **Symptom:** C8.12 B.7 L13 audit (PRE_FLIGHT_LOG 2026-05-13T19:30Z Table 2; static probe of `record_length` claim vs actual zip first-record byte length via `zipfile.ZipFile(...).open(name).readline().rstrip(b'\r\n')`) surfaced 19 of 43 rows with documented `record_length` inconsistent with on-disk reality:
 
