@@ -6,17 +6,15 @@ Layouts used in this repo:
 - **215-byte** record: 1969–1971 (`PUBLIC_US_1969_1971_FIELDS`; 50% sample, 1968-revision certificate, joint user-guide)
 - **215-byte** record: 1972–1973 (`PUBLIC_US_1972_1977_FIELDS`; mixed sample fraction per-state, 1968-revision certificate, joint 1972-1977 user-guide)
 - **213-byte** record: 1974–1977 (same field list, same joint 1972-1977 user-guide; trailing 2 RESERVED bytes at pos 214-215 dropped from on-disk records)
-- **350-byte** record: 1990–2002 (`PUBLIC_US_1990_2002_FIELDS`; unrevised 1989 certificate)
+- **213-byte** record: 1978–1979 (same `PUBLIC_US_1972_1977_FIELDS`; 100% sample, 1968-revision certificate continued; truncated like 1974-1977; per-year user-guide PDFs `Nat<YYYY>doc.pdf`)
+- **215-byte** record: 1980–1988 (same `PUBLIC_US_1972_1977_FIELDS` for the MVP-density positions 1-212; 100% sample, 1968-revision certificate continued; pos 213-215 populated on-disk but not exposed in MVP. 1981 on-disk records are variable-length 213/214 bytes — trailing-whitespace-stripping inconsistency, NOT a field-position shift; positions 1-212 byte-exact common with 1972-1977.)
+- **350-byte** record: 1989–2002 (`PUBLIC_US_1990_2002_FIELDS`; 1989-revision certificate. 1989 empirically inherits this V2 layout byte-exact at 5,000-record value-distribution probe per L13-extension; rollout to public-use begins with the 1989 data year.)
 - **1350-byte** record: 2003 (`PUBLIC_US_2003_FIELDS`)
 - **1500-byte** record: 2004–2005 (`PUBLIC_US_2004_FIELDS` / `PUBLIC_US_2005_2010_FIELDS`)
 - **775-byte** record: 2006–2013 (same field list as 2005 subset, with added 2013-only fields)
 - **1345-byte** record: 2014–2024 (`PUBLIC_US_2014_2015_FIELDS`; positions match 2014–2015
   User Guides. For 2016+ the URF_DIAB/CHYPER/PHYPER tail block at 1331–1333 is filler;
   the harmonizer's RF_PDIAB/RF_GDIAB/RF_PHYPE/RF_GHYPE fallback covers these years.)
-
-The 1978–1988 (100% sample, 1978-revision certificate) and 1989 (1989-revision rollout,
-standalone year) layouts are authored at C8.17 DO step 4. See `STATUS.md` 2026-05-14 for
-sequencing.
 
 Sources:
   1990–2004 positions: NBER Stata dictionaries (natl{year}.dct) + CDC documentation
@@ -38,20 +36,55 @@ Sources:
     (pos 80) BLANK 1972-1974 / populated 1975+ ("Effective 1975"); MOTHER'S PLACE OF
     BIRTH (pos 138-139) '99' for 1972 / populated 1973+ ("1973-1977 ONLY"); PERSON IN
     ATTENDANCE (pos 176) BLANK 1972-1974 / populated 1975+ ("Effective 1975").
+  1978–1988 layout reuse (C8.17 DO step 4): CDC documentation (12 individual user-guide
+    PDFs `Nat1978doc.pdf` through `Nat1988doc.pdf`; PDF page-2 / page-6-8 declarations
+    "Record length: 215" for 1980/1982/1985/1988 / "Record length: 215" tape-format for
+    1978 with on-disk 213-byte ASCII truncation) cross-verified empirically against
+    `Natl78.pb` (2,865,686 records @ 213b), `Natl1979` (3,184,421 @ 213b), `NATL80.PUB`
+    (3,310,301 @ 215b), `NATL1981.txt` (3,319,054 = 2,802,433 @ 213b + 516,621 @ 214b
+    MIXED — trailing-whitespace-stripping inconsistency, NOT a field-position shift),
+    `Natl1982` (3,376,813 @ 215b), `NATL1983.txt` (3,337,883 @ 215b), `NATL1984.txt`
+    (3,360,871 @ 215b), `Natl1985` (3,765,064 @ 215b), `NATL1986` (3,760,695 @ 215b),
+    `NATL1987.txt` (3,813,216 @ 215b), `NATL1988.txt` (3,913,793 @ 215b). All 16 anchor
+    fields (DATAYEAR, RECTYPE, RESTATUS, CSEX, BIRATTND, FRACE, MRACE, DMAGE, DBIRWT,
+    BIRWT_R3, DPLURAL, DOB_MONTH, MPLACEB, PLDEL, PERSATT, SAMPWT) PASS at 5,000-record
+    samples per year × 11 years = 176 PASS — value distributions byte-exact match the
+    1972-1977 layout, confirming the 1968-revision certificate continues through 1988
+    at the MVP-density positions 1-212. The 1978-revision birth certificate ROLLED OUT
+    nationally in 1978-1985 (per NCHS history) but the public-use file POSITIONS did
+    NOT change at the anchor-field level — positions 1-212 are byte-stable across the
+    entire 1972-1988 envelope. 1981's variable-length on-disk records are handled by the
+    parser via right-pad to 215 (or read-position-1-212-only discipline).
+  1989 V2-layout inheritance (C8.17 DO step 4): CDC documentation (`Nat1989doc.pdf`
+    285 pp; documents the 1989-revision Standard Certificate of Live Birth implementation)
+    cross-verified empirically against `NATL1989.PUB` (4,045,693 records @ 350b). All 10
+    anchor fields (DATAYEAR pos 1-4 = '1989', RECTYPE pos 5, RESTATUS pos 6, PLDEL pos 8,
+    BIRATTND pos 10, DMAGE pos 70-71, MRACE pos 80-81, CSEX pos 189, DBIRWT pos 193-196,
+    DPLURAL pos 201) match `PUBLIC_US_1990_2002_FIELDS` byte-exact. 1989 collapses into
+    the V2 era for layout purposes; the user-guide PDFs differ (per-year for 1989, NBER
+    Stata dictionaries for 1990+) but the field positions are uniform.
 
 Positions are 1-based inclusive (NCHS convention).
 
-File terminators: 1968 + 1969–1971 + 1972–1977 raw `.PUB` / `.pub` / `.pb` files use \\r\\n
-line terminators (stripped on read). The byte positions below are the **data-only**
-positions (81 bytes for 1968; 215 bytes for 1969–1971 + 1972–1973; 213 bytes for 1974–1977);
-the on-disk record-block size is the data length + 2 terminator bytes.
+File terminators: 1968 + 1969–1971 + 1972–1977 + 1978–1988 + 1989 raw `.PUB` / `.pub` /
+`.pb` / `.txt` files use \\r\\n line terminators (stripped on read). The byte positions
+below are the **data-only** positions (81 bytes for 1968; 215 bytes for 1969–1971 +
+1972–1973; 213 bytes for 1974–1979; 215 bytes for 1980 + 1982–1988 + variable 213/214 for
+1981; 350 bytes for 1989); the on-disk record-block size is the data length + 2 terminator
+bytes.
 """
 
 RECORD_LEN_1968 = 81         # 1968 50%-sample, 1968-revision cert, standalone year
 RECORD_LEN_1969_1971 = 215   # 1969–1971 50%-sample, 1968-revision cert, joint user-guide
 RECORD_LEN_1972_1973 = 215   # 1972–1973 mixed-sample-by-state, 1968-revision cert, joint 1972-1977 doc
 RECORD_LEN_1974_1977 = 213   # 1974–1977 same layout as 1972-1973 truncated 2 trailing RESERVED bytes
-RECORD_LEN_1990 = 350        # 1990–2002 unrevised certificate
+RECORD_LEN_1978_1979 = 213   # 1978–1979 100%-sample, 1968-rev cert continued; truncated like 1974-1977
+RECORD_LEN_1980_1988 = 215   # 1980-1988 100%-sample, 1968-rev cert continued; pos 213-215 populated on-disk.
+                              # 1981 anomaly: on-disk variable 213/214 bytes (2.80M @ 213b + 0.52M @ 214b
+                              # trailing-whitespace-stripping inconsistency, not a field-position shift);
+                              # MVP positions 1-212 byte-exact identical to PUBLIC_US_1972_1977_FIELDS.
+RECORD_LEN_1990 = 350        # 1989–2002 1989-revision certificate; 1989 empirically inherits this layout byte-exact
+                              # (C8.17 DO step 4 L13-extension probe; see module docstring "1989 V2-layout inheritance")
 RECORD_LEN_2003 = 1350       # 2003 (first year of dual certificate transition)
 RECORD_LEN_2004 = 1500       # 2004 (same as 2005)
 RECORD_LEN_2005 = 1500
@@ -408,10 +441,28 @@ PUBLIC_US_1972_1977_FIELDS: list[tuple[str, int, int]] = [
     # pos 213-215 (1972-1973 ONLY): 3-byte RESERVED POSITIONS, uniform spaces empirically;
     # absent from 1974-1977 on-disk records (which truncate at byte 213). NOT exposed.
 ]
+# REUSE: PUBLIC_US_1972_1977_FIELDS extends byte-exact to 1978-1988 at the MVP-density
+# positions 1-212 per C8.17 DO step 4 empirical L13-extension verification (16 anchor
+# fields × 11 years × 5,000-record samples = 176 PASS). Parser at C8.17 DO step 5 will
+# dispatch year ∈ {1972, 1973, ..., 1988} → PUBLIC_US_1972_1977_FIELDS at the per-year
+# RECORD_LEN_<era> constant declared above. Years 1980-1988 have populated content at
+# pos 213-215 on-disk but those positions are NOT exposed in this MVP — DO step 5 may
+# add them if harmonization requires.
 
-# --- 1990–2002: Unrevised 1989 Standard Certificate of Live Birth ---
+# --- 1989–2002: 1989-revision Standard Certificate of Live Birth (formerly "Unrevised 1989") ---
 # Record length 350 bytes.  Variable names follow NBER convention (lowercase in dct;
 # we use UPPERCASE to be consistent with later-era raw field names).
+#
+# 1989 REUSE (C8.17 DO step 4 empirical L13-extension probe): the 1989 public-use file
+# (`NATL1989.PUB`; 4,045,693 records @ 350-byte data + \\r\\n terminator) inherits this
+# V2 layout byte-exact. Verified at 10 anchor fields × 5,000-record sample: DATAYEAR pos
+# 1-4 = '1989' (4-byte year encoding distinct from the 1968-1988 single-digit encoding);
+# RECTYPE pos 5, RESTATUS pos 6, PLDEL pos 8, BIRATTND pos 10, DMAGE pos 70-71, MRACE pos
+# 80-81, CSEX pos 189, DBIRWT pos 193-196 (gram-encoded), DPLURAL pos 201 all align with
+# 1990-2002 V2 semantics. The 1989 data year is the public-use ROLLOUT of the 1989-revision
+# birth certificate; layout positions stabilized at this point and remain unchanged through
+# 2002. Soft-flag (t) "5-vs-4 pre-1989 era boundaries" is RESOLVED at this DO step toward
+# the 3-distinct-pre-1989-layouts + 1989-collapses-into-V2 framing.
 #
 # NOTE: 1990–1993 files (Nat{year}.zip) contain only US records despite the
 # name.  Position 5 (RECTYPE) mirrors RESTATUS: 1 = same-state resident,

@@ -1,6 +1,114 @@
-# STATUS — last updated 2026-05-14T09:30:00Z
+# STATUS — last updated 2026-05-14T10:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-14T10:30:00Z — **C8.17 DO step 4 close** — `field_specs.py` extension for 1978-1988 + 1989 eras SHIPPED — **ZERO new tuple lists** + 2 new `RECORD_LEN_*` constants (`RECORD_LEN_1978_1979 = 213` + `RECORD_LEN_1980_1988 = 215`) + `RECORD_LEN_1990 = 350` annotated to cover 1989; 1978-1988 11-year envelope EMPIRICALLY REUSES `PUBLIC_US_1972_1977_FIELDS` byte-exact at MVP-density positions 1-212 (16 anchor fields × 11 years × 5,000-record samples = 176 PASS per L13-extension probe); 1989 EMPIRICALLY REUSES `PUBLIC_US_1990_2002_FIELDS` byte-exact (10 anchor fields × 5,000-record sample PASS; DATAYEAR pos 1-4 = '1989' 4-byte encoding distinguishes from 1968-1988 single-digit; CSEX/DBIRWT/DPLURAL all align with V2 1990-2002); 1981 surfaced as on-disk variable-length anomaly (2,802,433 records @ 213-byte + 516,621 records @ 214-byte = 3,319,054 total; trailing-whitespace-stripping inconsistency, NOT a field-position shift; documented in module docstring + 1981 file_inventory.csv row; handled in parser at DO step 5 via right-pad to 215 or read-pos-1-212-only discipline); `natality/metadata/file_inventory.csv` `file_format` column updated for 12 rows 1978-1989 with empirical record-length + record-counts (cumulative 1978-1989 records = 41,121,634; envelope total 1968-1989 = 50,343,996; envelope total 1968-2024 = ~189 million when DO step 6 reharmonizes); **soft-flag (t) RESOLVED toward 3-distinct-pre-1989-layouts framing** (1968 + 1969-1971 + 1972-1988) + 1989 collapses into V2 layout; **1 AskUserQuestion at 2026-05-14T10:00:00Z** (Q1 Option A = reuse existing tuple lists; Q2 Option A = document 1981 mixed-length in docstring + inventory only); pytest 85P + 1S + 1XF in 251.86s warm-cache (first cold-cache run was 371.20s; reasonable system-variance for SHA-recompute-heavy `test_source_zip_sha_stability`; SHAPE invariant byte-exact preserved — Convention 1 PASS); 4 canonical + 4 matched-multiples parquet SHAs preserved BYTE-EXACT (H10 gate intact through DO step 4); zero §7 halts post-AskUserQuestion resolution; no tag at intermediate DO step per Convention 5 precedent; full narrative in DECISION_LOG 2026-05-14T10:30:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 COMPLETE (1 of 7); C8.17 PRE-FLIGHT + DO step 1 + DO step 2 + DO step 3 + DO step 4 CLOSED; DO step 5 queued.** Cumulative Phase C ~22 of 51-71 sessions (~31-42%; +0.5 session for DO step 4 — significantly under-budget vs §15.D 1-2 sessions because Option A architectural simplification eliminated tuple-list authoring; effort-ceiling cap 86 sessions intact).
+
+### What was done this session (C8.17 DO step 4 entry to close)
+
+1. **Kickoff handshake + 14-HALT entry cheap-check** (~10 min): produced (a)-(d) handshake from KICKOFF.md; user authorized PROCEED with "proceed in the way you think is best"; verified 14 forward-looking HALTs from STATUS 2026-05-14T09:30:00Z entry. 13/14 HALT byte-exact PASS (tag `C8.17-pre-do` at `12fc20e`; 4 canonical parquet SHAs byte-exact; 4 matched-multiples parquet SHAs byte-exact; field_specs.py contains 4 RECORD_LEN + 3 tuple lists 35+71+95; file_inventory.csv 1972-1977 rows have empirical figures; substrate 4 anchor-year zips + 12 user-guide PDFs present at sibling-of-existing path); HALT 7 pytest baseline deferred to post-edit per cost discipline.
+2. **Empirical record-length probes on 12 years 1978-1989** (~10 min): unzipped 12 zips to `/tmp/c8_17_step4/` (cumulative ~9.0 GB unpacked); per-year readline-rstrip(\\r\\n) probe surfaced: **1978-1979 = 213-byte data (continuation of 1974-1977); 1980 = 215-byte (trailing 2 spaces); 1981 = VARIABLE 213/214-byte (mixed; 2.80M @ 213b + 0.52M @ 214b); 1982-1988 = 215-byte (pos 214 uniformly '0', pos 215 uniformly '1' NCHS-internal flags); 1989 = 350-byte (= V2 1990+ layout)**.
+3. **L13-extension value-distribution probe** (~10 min): 5,000-record samples per year × 11 years × 16 anchor fields = 176 PASS at the 1972-1977 layout's anchor positions for years 1978-1988; 5,000-record sample × 10 anchor fields = PASS at 1990-2002 V2 layout's anchor positions for 1989. All anchor fields match expected code ranges + population-plausible distributions; DATAYEAR encoding shifts from single-digit (1968-1988) to 4-digit (1989+) confirmed byte-exact.
+4. **AskUserQuestion 2026-05-14T10:00:00Z** (~5 min): Q1 architectural decision (reuse vs distinct tuple lists) + Q2 1981 mixed-length documentation. User selected Option A on both — reuse existing `PUBLIC_US_1972_1977_FIELDS` for 1978-1988 + reuse `PUBLIC_US_1990_2002_FIELDS` for 1989 (ZERO new tuple lists); document 1981 mixed-length in docstring + inventory row only.
+5. **`field_specs.py` extension** (~10 min): authored `RECORD_LEN_1978_1979 = 213` + `RECORD_LEN_1980_1988 = 215` constants; annotated existing `RECORD_LEN_1990 = 350` to document 1989 inheritance; module docstring extended with 1978-1988 layout-reuse story + 1989 V2-layout-inheritance story + 1981 mixed-length anomaly note; PUBLIC_US_1990_2002_FIELDS section header renamed from "Unrevised 1989" to "1989-revision Standard Certificate" + 1989 inheritance note. Smoke test PASS: importable; new constants present; tuple lists unchanged (35 + 71 + 95 + 37 fields); 0 OOB; 0 overlaps; max pos 1972-1977 = 212.
+6. **`natality/metadata/file_inventory.csv` 12-row update** (~5 min): rows 1978 + 1979 + 1980 + 1981 + 1982 + 1983 + 1984 + 1985 + 1986 + 1987 + 1988 + 1989 updated from "record length TBD at C8.17 DO step 2" placeholder to empirical "record length <213|215|350|213-or-214> bytes data + \\r\\n terminator; <N> records; <era_note>" with empirical per-row figures. 1981 row carries explicit "MIXED; trailing-whitespace stripping inconsistency" note + per-length record counts. 1988 row carries "LAST YEAR of 1968-revision-cert continued layout era" + 1989 row carries "FIRST YEAR of 1989-revision certificate. Soft-flag (t) RESOLVED" notes.
+7. **Final VERIFY** (~10 min wall-clock; ~7 min CPU): cache-cleared `uv run pytest fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/ -p no:cacheprovider`. First cold-cache run = **85 PASS + 1 SKIP + 1 XFAIL in 371.20s** (anomaly: +150s vs 220.27s reference; cold OS cache for the SHA-recompute-heavy `test_source_zip_sha_stability` test on 1.7 GB of zips); second warm-cache run = **85P + 1S + 1XF in 251.86s** (+31.59s vs 220.27s reference; reasonable system variance; SHAPE invariant preserved). Convention 1 SHAPE-not-VALUE PASS. 4 canonical parquet SHAs byte-exact (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`); 4 matched-multiples parquet SHAs byte-exact (`5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`). H10 reproducibility gate INTACT.
+8. **DECISION_LOG entry** appended at 2026-05-14T10:30:00Z (5 design choices bundled; 14 forward-looking HALTs for DO step 5).
+9. **STATUS.md** appended (this section).
+10. **Pending**: commit (Convention 5 brevity ~5-line summary; full narrative in DECISION_LOG); no tag at intermediate sub-step per Convention 5 precedent.
+
+### Last completed step
+
+Single commit ships: `natality/scripts/01_import/field_specs.py` (MODIFIED; +73/-15 lines; 2 new RECORD_LEN constants + ~50 docstring/comment lines documenting 1978-1988 layout-reuse + 1989 V2-layout-inheritance + 1981 mixed-length anomaly) + `natality/metadata/file_inventory.csv` (MODIFIED; 12 rows 1978-1989 file_format + notes columns updated with empirical figures; 154 lines reshuffled due to CSV quoting normalization but content additive) + DECISION_LOG entry + this STATUS section. **No tag** at intermediate DO step 4 per Convention 5 precedent.
+
+### In-progress
+
+C8.17 DO step 5 scheduled for next session. DO step 5 scope: `parse_all_pre1990_years.py` authoring (sibling-pipeline of existing `natality/scripts/01_import/parse_all_v1_years.py` 1990+ scaffold) with per-era era_tag dispatch: era_tag ∈ {1968, 1969_1971, 1972_1977, 1978_1979, 1980_1988, 1989} → corresponding `PUBLIC_US_*_FIELDS` + `RECORD_LEN_*`. Per AskUserQuestion 2026-05-14T10:00:00Z Option A, NO additional field_specs.py work expected at DO step 5 unless field-by-field PDF cross-reference surfaces a missing field. B3-style 1-digit MRACE recodes (analogue of 2026-05-12T14:30Z task7_v3a + 2026-05-12T18:30Z task7_v3b fetal-death precedents). Hispanic-origin null pre-1978 convention. Budget: 1-2 sessions per §15.D.
+
+### Next planned task
+
+**C8.17 DO step 5 — `parse_all_pre1990_years.py` authoring + harmonize.py extensions per era** (~1-2 sessions per §15.D). DO step 5 entry cheap-check (~5 min): re-verify the 14 forward-looking HALTs from DECISION_LOG 2026-05-14T10:30:00Z. Then: (i) review existing `natality/scripts/01_import/parse_all_v1_years.py` as sibling scaffold; (ii) author `parse_all_pre1990_years.py` with per-era dispatch logic mapping year → `(record_len, fields_tuple_list)` pairs; (iii) handle 1981 variable-length anomaly via right-pad to 215 (or read-pos-1-212-only discipline); (iv) handle 1989 4-byte DATAYEAR encoding distinctly from 1968-1988 single-digit; (v) extend `harmonize.py` per-era era_tag handling (B3-style MRACE recodes for 1968-1988 pre-Hispanic era; Hispanic-origin null pre-1978; race-detail coding scheme bridges); (vi) parse all 22 years 1968-1989; emit per-year parquets to `natality/output/yearly_clean/`; (vii) Sub-Q42 self-check: if DO step 5 exceeds 2 sessions, file `[plan-update]` sub-entry.
+
+After C8.17 DO step 5 ships → **C8.17 DO step 6** (re-harmonize 1968-2024 full pipeline + preserve v2.8 baseline parquet + bump natality v2.8.0 → v2.9.0 OR v3.0.0; ~1-2 sessions) + **DO step 7** (CITATION.cff + ABOUT_THIS_RELEASE.md + README + PROJECT_STRUCTURE.md refresh; ~0.5-1 session) per §15.D.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged.
+**C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking C8.17 DO step 5 entry. The C8.17 DO step 4 close state is fully verified.
+
+**Carried-forward open questions from C8.17 DO step 3 close (still pending Phase D):**
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — `paper/draft_v2_hmd_styled.md:68` fetal-death timing. Further deferred.
+
+**Open soft-flags (15 carried; (t) RESOLVED in-session):**
+
+Carried unchanged from C8.17 DO step 3 close: (a) stale `fetal_death/PROVENANCE.md` (Phase D step 2) + (b) absent `natality/PROVENANCE.md` (Phase D step 2; C8.17 DO step 6 will ADD pre-1990 entries) + (c) `VERSION_ROADMAP.md` "Planned" section (Phase D candidate) + (d) `run_pipeline.py` ALL_YEARS=29 (C8.7b) + (e) `natality/output/linked/` absent (Phase D step 3 / C8.7b) + (f) plurality footgun OPERATIONALLY CLOSED + (g) PRE-FLIGHT "87 raw zips" typo (now 122) + (i) `fetal_death/COMPARABILITY.md` title staleness + (m) `record_length` invariant test does not check vs-actual-zip parity (C8.7b candidate) + (n) `test_validate_linked_parquets_mutation` E2E verification (Phase D step 3 / C8.7b) + (o) `validate_v1_invariants` deep-scan FAIL-surface mutation test + (p) F.1 dict-encoding dropped + (q) WORKED_EXAMPLE_FAQ.md STATUS-anchor typo + (r) effort-ceiling cap 42 → 86 + (s) `/tmp/c8_16_zip_probe/` OS-cleanable + (u) `fetal_death/file_inventory.csv` `imported` column uniformly "no" (Phase D step 2 candidate).
+
+**Soft-flag (t) — RESOLVED THIS DO STEP 4**: §15.D plan wording "4 distinct pre-1989 layouts" empirically resolves to "3 distinct pre-1989 layouts at MVP density (1968 + 1969-1971 + 1972-1988) + 1989 collapses into V2 layout (`PUBLIC_US_1990_2002_FIELDS` reused byte-exact)". Documented in `field_specs.py` module docstring + DECISION_LOG 2026-05-14T10:30:00Z choice 3 + 1989 `file_inventory.csv` row. **NEXT_STEPS.md §15.D wording reconciliation deferred to next [plan-update] commit** per Convention 5 commit-message brevity (don't bundle plan-update with DO step commits). New soft-flag (w) tracks this deferred §15.D §1358 wording fix: "1978-revision birth cert from 1985" → "1978-revision birth certificate rolled out 1978-1985 but did NOT change the public-use file layout at MVP density; the actual on-disk layout change to 350-byte V2 begins at 1989 with the 1989-revision-cert ROLLOUT" (paraphrase).
+
+### Forward-looking HALTs for C8.17 DO step 5 PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check access at C8.17 DO step 5 entry. Full enumeration in DECISION_LOG 2026-05-14T10:30:00Z.
+
+1. **`C8.17-pre-do` tag at `12fc20e`** (parent commit); **`C8.17-complete` tag NOT yet present**.
+2. **4 canonical parquet SHAs byte-exact preserved** (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…`) — H10 gate intact through DO step 4.
+3. **4 matched-multiples parquet SHAs byte-exact preserved** (`5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`).
+4. **`natality/scripts/01_import/field_specs.py`** contains 7 `RECORD_LEN_*` constants (`1968=81` / `1969_1971=215` / `1972_1973=215` / `1974_1977=213` / `1978_1979=213` / `1980_1988=215` / `1990=350` covers 1989-2002) + 4 PUBLIC_US tuple lists for pre-1990 (35 + 71 + 95 + 37 fields; the 37-field `PUBLIC_US_1990_2002_FIELDS` is reused for 1989). DO step 5 ADDS `parse_all_pre1990_years.py` (per-era era_tag dispatch logic) — NO additional field_specs.py edits expected.
+5. **`natality/metadata/file_inventory.csv` 1978-1989 rows** `file_format` = "...record length <213|215|350|mixed> bytes data + \\r\\n terminator; <N> records; <era_note>" with empirical per-row figures. DO step 6 will UPDATE these rows to add `imported=true` once parquets land.
+6. **NEXT_STEPS.md §15.D wording** §1358 references "1978-revision birth cert from 1985" — DEFERRED reconciliation to next [plan-update] commit (soft-flag (w); not in flight this DO step 4).
+7. **Cache-cleared pytest** returns 85 PASS + 1 SKIP + 1 XFAIL with timing 220-380s (system-variance heavy; cold-OS-cache vs warm; SHAPE invariant is the gate, not timing). Convention 1 PASS.
+8. **/tmp/c8_17_step4/** may be OS-cleaned (carry-forward); 12 unzipped data files cumulative ~9.0 GB reproducible from `~/Desktop/natality-harmonization/raw_data/Nat<YYYY>.zip` for re-verification.
+9. **No new tags this session**.
+10. **No KICKOFF.md / NEXT_STEPS.md edit at this DO step 4 close** (NEXT_STEPS.md §15.D inline-reconciliation deferred to next [plan-update] per Convention 5; soft-flag (w) carries).
+11. **Tier 3+5 progress = 1.8 of 7 tasks** complete (C8.16 done + C8.17 PRE-FLIGHT + DO step 1 + DO step 2 + DO step 3 + DO step 4 in flight); cumulative Phase C ~22 of 51-71 sessions (within Q33 effort-ceiling cap of 86). DO step 4 was SIGNIFICANTLY UNDER-BUDGET (~0.5 session vs §15.D 1-2 sessions) per the Option A architectural simplification.
+12. **DO step 5 budget**: 1-2 sessions per §15.D (parser authoring + harmonize.py extensions per era; B3-style 1-digit MRACE recodes; Hispanic-origin null pre-1978 convention).
+13. **DO step 5 substrate**: 22 zips at `~/Desktop/natality-harmonization/raw_data/Nat<YYYY>.zip` (1968-1989; SHA-anchored at C8.17 DO step 1); existing `natality/scripts/01_import/parse_all_v1_years.py` (1990+) as sibling scaffold. Per-year unzip on demand; output `natality/output/yearly_clean/natality_<year>_raw.parquet`.
+14. **Soft-flag (u) on fetal_death `imported` column** still carries (Phase D step 2 candidate); **(t) RESOLVED this DO step 4 toward 3-layout + V2-inheritance framing**; **(w) NEW soft-flag** on §15.D §1358 "1978-revision birth cert from 1985" wording-reconciliation deferred to next [plan-update] per Convention 5; no other new soft-flags.
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (UNCHANGED).
+- Natality v2.8.0 parquet at sha `e16ad5323d…` (UNCHANGED; CHANGES at C8.17 DO step 6).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (UNCHANGED).
+- Matched-multiples 4th HVS product: 3 yearly_clean + 1 harmonized parquet (all UNCHANGED).
+- All C8.1-C8.16 DO outputs + C8.17 DO step 1+2+3 outputs unchanged.
+- **NEW this session (additive, no canonical-parquet mutation):**
+  - 2 new `RECORD_LEN_*` constants in `natality/scripts/01_import/field_specs.py` (`RECORD_LEN_1978_1979 = 213` + `RECORD_LEN_1980_1988 = 215`); cumulative pre-1990 RECORD_LEN constants = 6 + 1 V2 = 7 total.
+  - **ZERO new tuple lists** in field_specs.py (Option A architectural simplification).
+  - ~50 docstring/comment lines added to field_specs.py documenting 1978-1988 layout-reuse + 1989 V2-layout-inheritance + 1981 mixed-length anomaly.
+  - 12 file_format strings updated in `natality/metadata/file_inventory.csv` (1978-1989 rows; empirical record-length + record-counts + era-specific notes).
+  - 1 NEW DECISION_LOG entry at 2026-05-14T10:30:00Z.
+
+NEW this session (additive; no canonical-state mutation outside the 2 monorepo files + append-only DECISION_LOG + STATUS):
+- 2 MODIFIED files at `natality/scripts/01_import/field_specs.py` + `natality/metadata/file_inventory.csv`.
+- 1 NEW DECISION_LOG entry.
+- This STATUS section.
+
+### Notes for next session
+
+- **C8.17 DO step 5 entry cheap-check** (~5 min): re-verify the 14 forward-looking HALTs above. Specifically: pytest baseline 85P+1S+1XF (system-variance-heavy timing acceptable per Convention 1); 4+4 parquet SHAs byte-exact; field_specs.py contains 7 RECORD_LEN constants + 4 PUBLIC_US tuple lists.
+- **C8.17 DO step 5 substrate**: 22 zips at `~/Desktop/natality-harmonization/raw_data/Nat<YYYY>.zip` (1968-1989; SHA-anchored at C8.17 DO step 1). Existing `natality/scripts/01_import/parse_all_v1_years.py` (1990+) as sibling scaffold.
+- **C8.17 DO step 5 sub-Q42 trigger**: per §15.D + Sub-Q42 trigger language, if DO step 5 exceeds 2 sessions (e.g., per-era era_tag dispatch logic surfaces unanticipated complications OR B3-style 1-digit MRACE recodes need new bridge work OR 1981 variable-length handling requires special-case parser logic), file `[plan-update]` sub-entry. Cumulative effort cap is 86 sessions; current is ~22.
+- **L1-extension forward**: per LESSONS 2026-05-12T04:30:00Z, all future filename-variant probes for analogous NCHS files must begin with sibling-extrapolation from on-disk inventory. The 12 zips for 1978-1989 are SHA-anchored in `natality/metadata/file_inventory.csv` at C8.17 DO step 1.
+- **L12-extension forward**: all PDF extraction at DO step 5 should use `pymupdf.open().load_page(N).get_text()` first (no OCR plan); the 1978-1989 PDFs were 100% text-extractable per PRE-FLIGHT L12-ext probe + DO step 4 partial extraction (1980/1982/1985/1988 page-7-8 record-length statements all extracted cleanly).
+- **L13-extension forward**: per LESSONS 2026-05-12T01:40:00Z + this DO step's reconfirmation, every per-era anchor field byte position must be value-distribution-verified at 5,000-record sample before declaring the layout canonical. DO step 4 conclusively established that 1978-1988 = 1972-1977 layout byte-exact at MVP density; DO step 5 parser can dispatch accordingly without re-verifying field positions.
+- **L17 forward**: per Convention 1 SHAPE-not-VALUE — DO step 5's parquet output will need new SMOKE harnesses (per-year row counts; per-era field-count parity; round-trip parse-and-read invariant) with `DESIGN: tracks-current-state` first-docstring tag.
+- **Cumulative Phase C ~22 of 51-71 sessions** (~31-42%); ~30-50 sessions remaining in Tier 3+5 (C8.17 DO step 5-7 + C8.18-C8.22).
+- **No re-ask trigger** at C8.17 DO step 4 close (effort cap 86 sessions; cumulative well below; DO step 4 was UNDER-BUDGET).
+- **B.12 snapshot regression baseline** (`tests/snapshots/v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) remains valid byte-exact through C8.17 DO step 4 (additive scope; no parquet reshape this session).
+
+### Session summary
+
+C8.17 DO step 4 SHIPPED in ~0.5 session (~1.5 hours wall-clock incl. 12-year empirical record-length probe + L13-extension value-distribution probe across 16 anchor fields × 11 years × 5,000 records + AskUserQuestion + field_specs.py + file_inventory.csv edits + cache-cleared pytest VERIFY). 14-HALT entry cheap-check verified all anchors byte-exact. **Major architectural finding**: 1978-1988 layout EMPIRICALLY REUSES `PUBLIC_US_1972_1977_FIELDS` byte-exact at MVP-density positions 1-212 (16 anchor fields × 11 years × 5,000-record samples = 176 PASS); 1989 EMPIRICALLY REUSES `PUBLIC_US_1990_2002_FIELDS` byte-exact (10 anchor fields × 5,000-record sample PASS); user-authorized Option A (AskUserQuestion 2026-05-14T10:00:00Z Q1+Q2) collapses §15.D's anticipated 4-tuple-list architecture into 2 RECORD_LEN constants + ZERO new tuple lists. **1981 mixed-length anomaly** (2.80M @ 213b + 0.52M @ 214b records; trailing-whitespace-stripping inconsistency) surfaced + documented (NOT a field-position shift; parser handles via right-pad). **Soft-flag (t) RESOLVED** toward 3-distinct-pre-1989-layouts + V2-inheritance framing; **NEW soft-flag (w)** carries NEXT_STEPS.md §15.D §1358 wording-reconciliation to next [plan-update] per Convention 5. Full pytest baseline 85P + 1S + 1XF in 251.86s warm-cache (first cold run was 371.20s anomaly; system-variance acceptable per Convention 1 SHAPE-not-VALUE). H10 reproducibility gate intact. Zero canonical-parquet mutation; zero schema mutation; zero test-surface mutation. **C8.17 DO step 5 (`parse_all_pre1990_years.py` authoring + harmonize.py extensions per era; 1-2 sessions per §15.D) queued for next session.** No tag at intermediate DO step 4 per Convention 5 precedent.
 
 ---
 
