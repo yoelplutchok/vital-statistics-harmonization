@@ -1,6 +1,88 @@
-# STATUS — last updated 2026-05-16T06:00:00Z
+# STATUS — last updated 2026-05-16T08:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-16T08:00:00Z — **C8.17 DO step 6 close** — canonical 1968-2024 re-harmonize + `certificate_revision` enum widen + natality **v3.0.0** bump SHIPPED — new canonical `natality_v2_harmonized.parquet` sha `c8a740eb48d4f3de66759da27eef94143c315846885bf905a88cbc0fa6237153` (201,161,456 rows / 71 cols / **57 yrs 1968-2024**) + `natality_v2_harmonized_derived.parquet` sha `acb5c48a9abf82ac78e6bf210d6be5d62cba6afae271b978b0e53ed528856974` (84 cols; SHIPPED/H10-gated); prior v2.8 (1990-2024, 138,819,655 rows) preserved as `natality_v2_harmonized{,_derived}.v28_baseline.parquet` (`230efed2…`/`e16ad53…`; forward-stability anchor §15.D); **1990-2024 slice BYTE-CLEAN** — all 35 years content-EQUAL vs `.v28_baseline` (`pyarrow.Table.equals` exact incl. nulls, no sort fallback → row-order also preserved; 0/35-year column drift; 138,819,655 preserved exactly = §15.D VERIFY anchor + L5); **183/183 NVSR PASS, 0 FAIL** (existing cells preserved; pre-1990 NVSR = future incremental task per §15.D + EXPLORATION_REPORT OCR-friction); **7 non-natality-v2 canonical parquet SHAs byte-exact** (`38e2cecb…`/`185c071e…` fetal-death + `9b828a4d…` linked + `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` matched-multiples — ONLY natality_v2 changed); Convention-2/L17 bundled re-pins all in this commit (`tests/test_row_count_conservation.py` NATALITY_EXPECTED_TOTAL 138_819_655→**201_161_456** + NATALITY_EXPECTED_YEARS range(1990,2025)→**range(1968,2025)**; B.12 new `tests/snapshots/v2_2026-05-16T08-00-00Z_columns.csv` baseline (340 rows; fetal_death ×2 + linked per-column SHAs byte-IDENTICAL to v1, natality_v2 84-col block updated; v1 retained per Anti-Pattern #10); 22 pre-1990 `natality/metadata/file_inventory.csv` `imported` false→true; `certificate_revision` schema row widened — `allowed_values` +`unrevised_1968`, `years_available` 1968-2024); pytest **85P+1S+1XF in 288.22s** (Convention 1 SHAPE; +50s vs 238s v2.8 baseline expected — natality fixtures now read 201M rows; the first post-rebuild run surfaced 1 correctly-firing cross-check FAIL `test_natality_inventory_years_match_schema_years_available` → root-cause-fixed via the inventory `imported` flip the test's own docstring scheduled for "C8.17 DO step 6", NOT re-pinned per Anti-Pattern #5; clean re-run confirmed 85P+1S+1XF); recon surfaced **D5** (separate stale build-repo `~/Desktop/natality-harmonization/scripts/`) → resolved by empirical byte-identity proof (monorepo harmonizer @ C8.17-pre-do ≡ build-repo copy that built the live canonical; derive identical too); **AskUserQuestion 2026-05-16T06:45:00Z → v3.0.0 major** (cert-revision era boundary + universal row-count/SHA change = the H10-cascade major trigger §15.D names); fail-closed via baseline-preservation-first (`.v28_baseline` cp'd BEFORE rebuild → fully reversible); zero §7 halts; **no tag** (DO step 7 docs-only version-string propagation + `C8.17-complete` still pending; Convention 5 intermediate-DO precedent; `C8.17-pre-do`@`12fc20e`); full narrative RECEIPTS/C8.17_step6_2026-05-16T08-00-00Z.md + DECISION_LOG 2026-05-16T08:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 COMPLETE (1 of 7); C8.17 PRE-FLIGHT + DO step 1+2+3+4+5a+5b+6 CLOSED; DO step 7 (docs + `C8.17-complete`) queued — the FINAL C8.17 sub-step.** Natality is now a **57-year (1968-2024) v3.0.0** product (was 35-year v2.8.0). Cumulative Phase C ~25 of 51-71 sessions (~35-49%; +1.5 sessions for DO step 6; effort-ceiling cap 86 intact).
+
+### What was done this session (C8.17 DO step 6 entry to close)
+
+1. **Entry cheap-check** (~15 min): 13/14 HALTs from DO5b receipt PASS (HALT 7 pytest deferred to VERIFY, precedented).
+2. **Pipeline recon** (~30 min): mapped the natality build chain (parse→harmonize→derive→validate); surfaced **D5** (separate stale build-repo) → resolved empirically (monorepo harmonizer @ `12fc20e` byte-identical to the build-repo copy behind the live canonical parquet; `derive_v1_core` identical); mapped C8.1 `test_schema_dtype_parity` (checks `type` only — unaffected), B.12 snapshot mechanism, `test_row_count_conservation` NATALITY pins, `test_inventory_invariants` imported-filter cross-check (docstring schedules the imported-flip for "DO step 6").
+3. **AskUserQuestion 2026-05-16T06:45:00Z** → **v3.0.0 major** (§15.D-flagged semver fork).
+4. **PRE-FLIGHT addendum** (~10 min): D5 + Field-value snapshot of every canonical artifact + v3.0.0 + Decision-B (version-string→DO7) → PRE_FLIGHT_LOG.md, before any DO mutation (L10-safe).
+5. **Fail-closed baseline preservation**: `cp -p` 2 canonical parquets → `.v28_baseline` (SHAs matched pre-DO6 canonical → reversible).
+6. **Re-harmonize** (`--years 1968-2024`, background, ~20 min): 201,161,456 rows / 57 yrs; cert sums verified.
+7. **Re-derive** (background, ~8 min): row-count-preserving.
+8. **Bundled re-pins**: cert schema row widen; `test_row_count_conservation` 2 NATALITY pins; `_build_snapshot.py` literal → v2; B.12 regenerate (verified 3 unchanged parquets byte-identical to v1, natality_v2 changed); 22 inventory `imported` flips.
+9. **VERIFY** (all 5 criteria PASS): A 1990-2024 byte-clean anchor (35/35 EQUAL); B 183/183 NVSR; C 7-SHA H10 gate; D pytest 85P+1S+1XF/288.22s (1 correctly-firing FAIL root-cause-fixed via inventory flip, clean re-run); E envelope sanity.
+10. **RECEIPT + DECISION_LOG + this STATUS** appended; commit pending.
+
+### Last completed step
+
+Single commit ships: `natality/metadata/harmonized_schema.csv` (cert row) + `natality/metadata/file_inventory.csv` (22 `imported` flips) + `tests/test_row_count_conservation.py` (2 NATALITY pins) + `tests/snapshots/_build_snapshot.py` (output literal) + `tests/snapshots/v2_2026-05-16T08-00-00Z_columns.csv` (NEW B.12 baseline; v1 retained) + `PRE_FLIGHT_LOG.md` (addendum) + 1 RECEIPT + 1 DECISION_LOG + this STATUS. **Canonical parquets + `.v28_baseline` are gitignored build artifacts** at `~/Desktop/natality-harmonization/output/harmonized/` (SHA-recorded in receipt/STATUS/DECISION_LOG). **No tag** (DO step 7 pending; Convention 5 intermediate-DO precedent).
+
+### In-progress
+
+C8.17 **DO step 7** (the FINAL C8.17 sub-step) scheduled next: docs-only version-string propagation v2.8.0→v3.0.0 across `natality/.zenodo.json` + `CITATION.cff` + `natality/docs/ABOUT_THIS_RELEASE.md` + `natality/README.md` + monorepo `PROJECT_STRUCTURE.md` + top-level `README.md` "four products" table (natality 35→**57 yrs 1968-2024** / 138,819,655→**201,161,456** records); refresh any broader C8.1 release-smoke EXPECTED_YEAR_ROWS / per-column `years_available` cells now populated 1968+; **then tag `C8.17-complete`**. NO rebuild/re-harmonize/re-derive at DO step 7 (verify the 2+7 parquet SHAs unchanged at PRE-FLIGHT). Budget 0.5-1 session per §15.D.
+
+### Next planned task
+
+**C8.17 DO step 7 — docs + `C8.17-complete` tag** (~0.5-1 session per §15.D). Entry cheap-check (~5 min): re-verify the 12 forward-looking HALTs from RECEIPTS/C8.17_step6_2026-05-16T08-00-00Z.md — esp. canonical SHAs `c8a740eb…`/`acb5c48a…` + 2 `.v28_baseline` + 7 non-natality-v2 SHAs all UNCHANGED (docs-only step; any SHA change = unauthorized rebuild = §7 HALT). After DO step 7 + `C8.17-complete` → C8.18 (linked 1983-2004 backward extension) per KICKOFF Tier 3+5 sequence.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking C8.17 DO step 7 entry. The DO step 6 close state is fully verified.
+
+**Carried-forward (Phase D):** C8.13 PROPOSE-EDIT manuscript-timing (deferred). Manuscript Coverage re-paragraph for the natality 1968-2024 / 201M-record envelope is Phase D D.4 (already planned), NOT DO step 7.
+
+**Open soft-flags (18; (bb) NEW):** (a)-(s) per prior STATUS + (u) fetal_death `imported` vestigial + (w) §15.D §1358 wording-reconciliation (next [plan-update]) + (x) DO4 STATUS envelope-sum slip + (z) 1990+ parser bulk-vectorization candidate + (aa) 4 conservative-null pre-1990 fields (DO-step-7-or-later refinement candidates; maternal_age full-envelope sentinel-leak check) + **(bb) NEW**: stale build-repo `~/Desktop/natality-harmonization/scripts/` + `_drive_natality_benchmark.py` lack all C8.17 work (out-of-C8.17-scope cleanup; Phase D / C8.7b candidate; DO step 6 ran the monorepo scripts directly so this did NOT block). (t)/(y) resolved earlier.
+
+### Forward-looking HALTs for C8.17 DO step 7 PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check; full 12 in RECEIPTS/C8.17_step6_2026-05-16T08-00-00Z.md.
+
+1. `C8.17-pre-do`@`12fc20e`; `C8.17-complete` NOT present (set at DO step 7 end — final sub-step).
+2. Canonical natality SHAs = `c8a740eb…` (harmonized) / `acb5c48a…` (derived). DO step 7 is docs-only — these MUST be unchanged at DO7 PRE-FLIGHT (any change = unauthorized rebuild → §7 HALT).
+3. 7 non-natality-v2 parquet SHAs byte-exact (`38e2cecb`/`185c071e`/`9b828a4d`/`adbec108`/`5c22308b`/`7c682668`/`d98b4296`).
+4. `.v28_baseline.parquet` ×2 preserved (`230efed2…`/`e16ad53…`; Anti-Pattern #10 — do not delete).
+5. DO step 7 scope: version-string v2.8.0→v3.0.0 (.zenodo.json/CITATION/ABOUT/README/PROJECT_STRUCTURE + four-products table) + broader smoke EXPECTED_YEAR_ROWS / per-column years_available 1968+ refresh; then `C8.17-complete`.
+6. Internal version inconsistency until DO step 7 (parquet v3.0.0-shaped; strings still v2.8.0 — intended §15.D split; DO step 7 is a hard prerequisite for `C8.17-complete`).
+7. B.12 latest baseline = `v2_2026-05-16T08-00-00Z_columns.csv` (v1 retained). DO step 7 does NOT re-snap.
+8. `test_row_count_conservation` NATALITY pins = 201_161_456 / range(1968,2025) — DO step 7 must not perturb.
+9. pytest baseline 85P+1S+1XF ≈ 288s (201M-row fixtures; ~240-380s band; count is the gate).
+10. Soft-flag (bb) stale build-repo; (aa)/(w)/(x)/(z)/(u) carry.
+11. Tier 3+5 ≈ 2.3/7; cumulative Phase C ≈ 25 of 51-71 (cap 86).
+12. §15.D §1358 wording (w) + §15.D step-6/7-boundary clarification = next-[plan-update] (Convention 5; not bundled with DO commits).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED).
+- **Natality v3.0.0 parquet `acb5c48a…` (derived; 201,161,456 rows / 57 yrs 1968-2024) — CHANGED THIS STEP** (was v2.8.0 `e16ad53…`). Pre-derive `c8a740eb…`. Prior v2.8 preserved `.v28_baseline` `230efed2…`/`e16ad53…`.
+- Linked file (cohort-linked, v3) `9b828a4d…` (UNCHANGED).
+- Matched-multiples: 3 yearly_clean + 1 harmonized (`adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…`; UNCHANGED).
+- All C8.1-C8.16 + C8.17 DO 1-5b outputs unchanged.
+- NEW this session (monorepo, git-tracked): cert schema row + 22 inventory imported flips + 2 test re-pins + `_build_snapshot.py` literal + `v2_…columns.csv` B.12 baseline + PRE_FLIGHT addendum + RECEIPT + DECISION_LOG + this STATUS. Build-side (gitignored): new canonical natality v3.0.0 parquets + 2 `.v28_baseline`.
+
+### Notes for next session
+
+- **DO step 7 entry cheap-check** (~5 min): re-verify the 12 HALTs; ESPECIALLY the 2+7 parquet SHAs unchanged (docs-only step). pytest 85P+1S+1XF ≈ 288s.
+- DO step 7 = version-string propagation + manuscript-facing counts (natality 1968-2024, 57 yrs, 201,161,456) + `C8.17-complete`. No rebuild. The v3.0.0 DECISION is already recorded (DECISION_LOG 2026-05-16T08:00:00Z); DO step 7 PROPAGATES it.
+- After `C8.17-complete` → C8.18 (linked 1983-2004 backward extension) per KICKOFF Tier 3+5 sequence (8-14 sessions; largest single pre-Zenodo task).
+- `/tmp/c8_17_step6/` scratch (logs + anchor/smoke scripts) OS-cleanable; reproducible.
+
+### Session summary
+
+C8.17 DO step 6 SHIPPED in ~3 hours wall-clock (recon + AUQ + ~20 min harmonize + ~8 min derive + anchor/NVSR/SHA/pytest VERIFY + receipt). Natality is now a **57-year (1968-2024) v3.0.0** product: canonical parquet 201,161,456 rows (= 138,819,655 v2.8 + 62,341,801 DO5a, exactly), `certificate_revision` enum widened with `unrevised_1968`, version bumped v2.8.0→v3.0.0 (major; AskUserQuestion 2026-05-16T06:45:00Z; the H10-cascade major trigger §15.D names). The **1990-2024 slice is byte-clean** (0/35-year content drift vs the preserved `.v28_baseline`; the additive DO5b branch provably did not perturb the existing envelope), **183/183 NVSR preserved**, **7 non-natality-v2 parquet SHAs byte-exact** (only natality_v2 changed). D5 (a separate stale build-repo) resolved by empirical byte-identity proof. Convention-2/L17 bundled re-pins (2 row-count pins + B.12 v2 baseline + 22 inventory imported flips + cert schema row) all in this commit; the first post-rebuild pytest surfaced exactly 1 correctly-firing cross-check FAIL → root-cause-fixed via the inventory flip the test's own docstring scheduled for DO step 6 (NOT re-pinned; Anti-Pattern #5), clean re-run 85P+1S+1XF in 288.22s. Fail-closed via baseline-preservation-first. Zero §7 halts; no tag (DO step 7 docs + `C8.17-complete` is the final C8.17 sub-step). **C8.17 DO step 7 (docs-only version-string propagation + `C8.17-complete`; 0.5-1 session per §15.D) queued.**
 
 ---
 

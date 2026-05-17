@@ -126,7 +126,11 @@ def main() -> None:
     # Single canonical baseline per session; UTC timestamp from the
     # session's commit context. Update the literal below at each authorized
     # re-snapshot, alongside a §11 plan-update DECISION_LOG entry.
-    out = BASELINE_DIR / "v1_2026-05-13T21-00-00Z_columns.csv"
+    # v2 re-snap: C8.17 DO step 6 canonical 1968-2024 re-harmonize
+    # (natality_v2 84-col block changes; the other 3 parquets' per-column
+    # SHAs are byte-identical to the v1 baseline). v1 baseline retained
+    # (Anti-Pattern #10). See DECISION_LOG 2026-05-16T08:00:00Z.
+    out = BASELINE_DIR / "v2_2026-05-16T08-00-00Z_columns.csv"
     n = write_baseline_csv(out)
     print(f"wrote {n} rows to {out}")
 

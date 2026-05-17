@@ -35,9 +35,12 @@ import pandas as pd
 FD_EXPECTED_TOTAL = 2_427_233
 FD_EXPECTED_YEARS = list(range(1982, 2025))  # 43 contiguous
 
-# Natality v2.8.0; 35 yrs 1990-2024.
-NATALITY_EXPECTED_TOTAL = 138_819_655
-NATALITY_EXPECTED_YEARS = list(range(1990, 2025))  # 35 contiguous
+# Natality v3.0.0; 57 yrs 1968-2024 (C8.17 backward extension; +22 yrs
+# 1968-1989, +62,341,801 rows over the v2.8.0 35-yr 1990-2024 envelope of
+# 138,819,655). Convention 2 / L17 release-state re-pin bundled with the
+# DO step 6 canonical re-harmonize; see DECISION_LOG 2026-05-16T08:00:00Z.
+NATALITY_EXPECTED_TOTAL = 201_161_456
+NATALITY_EXPECTED_YEARS = list(range(1968, 2025))  # 57 contiguous
 
 # Linked birth-infant death (cohort-linked, v3); 19 yrs 2005-2023.
 # (The linked file may extend to 2024-cohort at a future task when NCHS
