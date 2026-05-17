@@ -1,6 +1,104 @@
-# STATUS — last updated 2026-05-15T03:45:00Z
+# STATUS — last updated 2026-05-16T06:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-16T06:00:00Z — **C8.17 DO step 5b close** — `harmonize_v1_core.py` pre-1990 era_tag extension SHIPPED — additive `is_pre1989` branch (1968-1988; computes all 71 canonical output arrays) + `_mrace1digit_to_bridged4()` helper (H7 sibling parity with fetal-death V3b B3 1-digit MRACE recode: `1→1 2→2 3→3 0/4/5/6/8→4 7/9→null`) + `_to_int_or_null_safe()` helper (regex `^[+-]?[0-9]+$`-guarded coercion; robust vs pre-1990 non-numeric sentinels — SMOKE Tier 1 caught MONPRE `'&'` crashing the hard cast) + `_raw`/`_core` input-path conditional; **1989 routes through the byte-untouched existing `is_pre2003` path** (1989 `_raw` layout == V2 1990-2002 layout per DO step 4; SMOKE Tier 2 confirmed cert=`unrevised_1989` + Hispanic populated from ORMOTH); `harmonize_v1_core.py` 1403→1684 lines (+289/−4; **4 deletions all at the era-dispatch boundary** — existing 1990-2002 / 2003+ branch bodies + the shared 71-col output-assembly byte-identical; HALT 13 / H10 preserved); the DO step 5b entry cheap-check surfaced **4 material divergences from the DO step 5a receipt's assumed architecture** (D1 monolithic `main()` not a clean dispatcher; D2 harmonizer reads `_core` not `_raw`; D3 1989 collapses into existing is_pre2003; D4 no pre-1989 `certificate_revision` enum value) — all resolved BEFORE any DO mutation via AskUserQuestion 2026-05-15 (Q1 Opt A in-place branch + 1989→existing; Q2 Opt A new `unrevised_1968` value) + 2 LLM amendments (D2 path conditional; `marital_status`=null for 1968-1988 since natality pre-1990 carries LEGITIM≠marital, §7-#19-safe), documented in a PRE_FLIGHT_LOG addendum 2026-05-15T05:30:00Z (L10-safe; task1-addendum precedent); SMOKE Tier 0 (hand-computed fixture) + Tier 1 (200-row×5; caught + fixed the `'&'` sentinel) + Tier 2 (full single year per sub-era + 1989, 11,793,945 rows ~77s: H6 row-count conservation byte-exact 1968=1,750,782 / 1975=2,232,406 / 1985=3,765,064 / 1989=4,045,693; cert 1968-1985=`unrevised_1968`; race_bridged White 79-84% + API monotonically 0.5%→3.3% 1968→1989 historically plausible; 1968 education all-null (no DMEDUC) / 1975+ populated; 1989 Hispanic populated) **ALL PASS**; 4 canonical + 4 matched-multiples parquet SHAs preserved BYTE-EXACT (`38e2cecb…` / `185c071e…` / `e16ad53…` / `9b828a4d…` + `5c22308b…` / `7c682668…` / `d98b4296…` / `adbec108…`; DO step 5b wrote ZERO canonical — SMOKE output → `/tmp` scratch; canonical 1968-2024 re-harmonize + version bump = DO step 6); pytest 85P + 1S + 1XF in 238.25s (Convention 1 SHAPE-not-VALUE PASS; within 150-380s system-variance band); zero §7 halts; no tag at intermediate DO step per Convention 5 precedent (`C8.17-pre-do` at `12fc20e`; `C8.17-complete` NOT yet present); full narrative in RECEIPTS/C8.17_step5b_2026-05-16T06-00-00Z.md + DECISION_LOG 2026-05-16T06:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 COMPLETE (1 of 7); C8.17 PRE-FLIGHT + DO step 1+2+3+4+5a+5b CLOSED; DO step 6 queued.** Cumulative Phase C ~23.5 of 51-71 sessions (~33-46%; +1 session for DO step 5b; effort-ceiling cap 86 sessions intact).
+
+### What was done this session (C8.17 DO step 5b entry to close)
+
+1. **Kickoff handshake + (a)-(d)**: read STATUS / NEXT_STEPS §1-15.D / README / PROJECT_STRUCTURE / DECISION_LOG + FIX_LOG recent / LESSONS end-to-end + read-only git checks; produced the (a)-(d) handshake; user authorized "proceed in the way you think is best".
+2. **DO step 5b entry cheap-check** (~15 min): 13/14 forward-looking HALTs from RECEIPTS/C8.17_step5a PASS (HALT 9 pytest deferred to VERIFY per C8.17 DO 3/4 precedent); 4 canonical + 4 matched-multiples parquet SHAs byte-exact; H10 gate intact.
+3. **Architecture cheap-check** (~25 min): read `harmonize_v1_core.py` `main()` end-to-end + helpers + the 4 substrate era schemas + `harmonized_schema.csv` enums + the fetal-death V3b B3 sibling precedent. Surfaced 4 divergences from the DO step 5a receipt's assumed `_harmonize_pre1990` dispatcher.
+4. **AskUserQuestion 2026-05-15** (Q1 integration architecture; Q2 `certificate_revision` enum value): user selected **Option A on both**.
+5. **PRE-FLIGHT addendum** (~10 min): wrote the Convention-3 Field-value snapshot + 4-divergence resolution to PRE_FLIGHT_LOG.md (prepended; before any DO mutation; L10-safe).
+6. **SMOKE Tier 0** (~10 min): hand-computed fixture for `_mrace1digit_to_bridged4` + reused-helper sanity — PASS.
+7. **DO** (~25 min): authored `_mrace1digit_to_bridged4` + `_to_int_or_null_safe` module helpers + the `is_pre1989` branch + `_raw`/`_core` path conditional + era discriminator (`if is_pre2003:`→`elif is_pre2003:`). Syntax OK; git diff confirmed 4 deletions all at the dispatch boundary.
+8. **SMOKE Tier 1** (~10 min): 200-row×5 subsets — **caught pre-1990 MONPRE `'&'` non-numeric sentinel crashing the hard cast** → added `_to_int_or_null_safe` (regex-guarded; is_pre1989-only; 1990+ paths byte-untouched). Re-run PASS (schema byte-identical to canonical 71-col; conservation; distributions; 1989-routing).
+9. **SMOKE Tier 2** (~5 min): full single year per sub-era + 1989 (11.79M rows, 77s) — H6 conservation byte-exact + full-data distributions + 1989→is_pre2003 routing ALL PASS.
+10. **VERIFY** (~5 min): H10 SHA gate byte-exact (8/8); git scope = only harmonizer (additive) + PRE_FLIGHT addendum; cache-cleared pytest 85P+1S+1XF in 238.25s (Convention 1).
+11. **RECEIPT + DECISION_LOG + this STATUS** appended; commit pending.
+
+### Last completed step
+
+Single commit ships: `natality/scripts/03_harmonize/harmonize_v1_core.py` (MODIFIED +289/−4; 2 new module helpers + 1 new era branch + path conditional; existing 1990+/2003+ bodies byte-identical) + `PRE_FLIGHT_LOG.md` (DO step 5b PRE-FLIGHT addendum) + 1 RECEIPT + 1 DECISION_LOG entry + this STATUS section. **No canonical parquet / schema / test-surface mutation.** **No tag** at intermediate DO step 5b per Convention 5 precedent.
+
+### In-progress
+
+C8.17 **DO step 6** scheduled for next session — canonical 1968-2024 re-harmonize + version bump (§15.D DO step 6, 1-2 sessions). Scope: run `harmonize_v1_core.py --years 1968-2024` to the canonical out path; preserve the v2.8 parquet as `.v28_baseline.parquet` forward-stability anchor; **widen the `harmonized_schema.csv` `certificate_revision` enum to add `unrevised_1968` + bump natality v2.8.0 → v2.9.0 (or v3.0.0 if the cert-revision boundary triggers a major bump per H10 cascade)** (Anti-Pattern #6: schema edit requires version bump OR DECISION_LOG-referencing comment row); re-derive (04_derive); re-validate (existing 183/183 NVSR preserved + new pre-1990 cells incrementally); re-snap B.12 → `tests/snapshots/v2_<UTC>_columns.csv`; re-pin C8.1 `tracks-current-state` smoke EXPECTED_ROW_COUNT/EXPECTED_YEARS to the 1968-2024 envelope (the re-pin IS the expected behavior per L17/Convention 2, bundled with the rebuild — not a regression). Then DO step 7 (CITATION.cff + ABOUT_THIS_RELEASE + README + PROJECT_STRUCTURE refresh; 0.5-1 session).
+
+### Next planned task
+
+**C8.17 DO step 6 — canonical 1968-2024 re-harmonize + version bump** (~1-2 sessions per §15.D). DO step 6 entry cheap-check (~5 min): re-verify the 14 forward-looking HALTs from RECEIPTS/C8.17_step5b_2026-05-16T06-00-00Z.md. Note: DO step 6 WILL change the `natality_v2_*` canonical SHAs (that is the intended canonical re-harmonize + version bump); the other 6 SHAs (fetal-death ×2, linked ×1, matched-multiples ×4 — minus natality_v2 ×1) plus the harmonizer's existing 1990+/2003+ code-path byte-exactness must be preserved.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged.
+**C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking C8.17 DO step 6 entry. The C8.17 DO step 5b close state is fully verified.
+
+**Carried-forward open questions (still pending Phase D):**
+1. **C8.13 PROPOSE-EDIT timing**: Phase D step 4 manuscript re-pass — `paper/draft_v2_hmd_styled.md:68` fetal-death timing. Further deferred.
+
+**Open soft-flags (17 carried; (aa) NEW this DO step 5b):**
+
+Carried unchanged from C8.17 DO step 5a close: (a)-(s) per prior STATUS + (u) fetal_death `imported` column uniformly "no" + (w) §15.D §1358 "1978-revision birth cert from 1985" wording-reconciliation deferred to next [plan-update] + (x) DO step 4 STATUS narrative envelope-sum arithmetic slip + (z) 1990+ parser bulk-vectorization candidate. (t) RESOLVED at DO step 4; (y) RESOLVED at DO step 5a (no carry).
+
+**Soft-flag (aa) NEW THIS DO STEP 5b**: 4 conservative-null pre-1990 fields, each a documented DO-step-6 refinement candidate: (i) `LEGITIM` left unharmonized — a separate `legitimacy_status` column could surface it (NOT shoehorned into marital_status, §7-#19); (ii) `prenatal_visits` nulled (TPRENVIS sentinel coding unverified at author+SMOKE); (iii) `preterm_recode3` from pre-1990 GESTREC3 maps {1,2,3}, the pre-1990 `0` code → null (semantics inferred from distribution, not a user-guide cross-read); (iv) `maternal_age` no sentinel-null beyond blank (parity with V2) — DO step 6 full-envelope domain check will surface any 22-year sentinel leak.
+
+### Forward-looking HALTs for C8.17 DO step 6 PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check access at DO step 6 entry. Full enumeration (14) in RECEIPTS/C8.17_step5b_2026-05-16T06-00-00Z.md.
+
+1. `C8.17-pre-do` at `12fc20e`; `C8.17-complete` NOT present (no tag DO step 5b).
+2. 6-of-8 parquet SHAs byte-exact preserved (fetal-death ×2 `38e2cecb…`/`185c071e…`, linked ×1 `9b828a4d…`, matched-multiples ×4 `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…`); `natality_v2_*` SHA (`e16ad53…`) WILL change at DO step 6 (intended canonical re-harmonize).
+3. `harmonize_v1_core.py` carries `is_pre1989` branch (L653) + `_mrace1digit_to_bridged4` (L241) + `_to_int_or_null_safe` (L77) + `_raw`/`_core` path conditional (L617); existing 1990+/2003+ bodies byte-untouched.
+4. 22 `natality_<year>_raw.parquet` (DO 5a) + 35 `natality_<year>_core.parquet` (1990-2024) present at `~/Desktop/natality-harmonization/output/yearly_clean/`.
+5. 1989 routes through `is_pre2003` (Tier 2-verified); DO step 6 must NOT special-case 1989 into the pre-1989 branch.
+6. **`certificate_revision` enum widening + schema-version bump OWED at DO step 6** (`harmonized_schema.csv:5` add `unrevised_1968`; Anti-Pattern #6).
+7. Cache-cleared pytest 85P+1S+1XF (150-380s band); DO step 6 re-pins C8.1 smoke to 1968-2024 envelope (expected per L17/Convention 2).
+8. B.12 baseline (`v1_2026-05-13T21-00-00Z_columns.csv` sha=`b6fe22d6…`) byte-exact through 5b; DO step 6 re-snaps.
+9. DO step 6 budget 1-2 sessions; Sub-Q42 if >2 (cap 86; current ~23.5).
+10. `_to_int_or_null_safe` is is_pre1989-only; 1990+ paths keep `_to_int_or_null` byte-exact (HALT 13).
+11. Soft-flags (w)/(x)/(z)/(u) carry; (aa) NEW (4 DO-step-6 refinement candidates); (t)/(y) resolved.
+12. 6 DECISION_LOG 2026-05-16T06:00:00Z design choices settled — DO step 6 inherits; re-open only if full-envelope validation contradicts.
+13. Tier 3+5 ≈ 2.0/7 tasks; cumulative Phase C ≈ 23.5/51-71 (within cap 86).
+14. No KICKOFF.md / NEXT_STEPS.md edit at DO step 5b (Convention 5; soft-flag (w) carries).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) at SHAs `38e2cecb…` / `185c071e…` (UNCHANGED).
+- Natality v2.8.0 parquet at sha `e16ad53…` (UNCHANGED; WILL CHANGE at C8.17 DO step 6).
+- Linked file (cohort-linked, v3) at sha `9b828a4d…` (UNCHANGED).
+- Matched-multiples 4th HVS product: 3 yearly_clean + 1 harmonized parquet (all UNCHANGED).
+- All C8.1-C8.16 DO outputs + C8.17 DO step 1+2+3+4+5a outputs unchanged.
+- **NEW this session (additive; no canonical-state mutation):**
+  - `natality/scripts/03_harmonize/harmonize_v1_core.py` MODIFIED (+289/−4; 2 helpers + is_pre1989 branch + path conditional; existing 1990+/2003+ bodies byte-identical).
+  - `PRE_FLIGHT_LOG.md` MODIFIED (DO step 5b PRE-FLIGHT addendum, prepended).
+  - 1 NEW RECEIPT (RECEIPTS/C8.17_step5b_2026-05-16T06-00-00Z.md).
+  - 1 NEW DECISION_LOG entry (2026-05-16T06:00:00Z).
+  - This STATUS section.
+  - `/tmp/c8_17_step5b/` SMOKE scratch (OS-cleanable; reproducible).
+
+### Notes for next session
+
+- **C8.17 DO step 6 entry cheap-check** (~5 min): re-verify the 14 forward-looking HALTs above. Specifically: 6-of-8 parquet SHAs byte-exact (natality_v2 WILL change); harmonizer carries the is_pre1989 branch + 2 helpers; 22 `_raw` + 35 `_core` present; pytest 85P+1S+1XF baseline.
+- **DO step 6 = canonical re-harmonize**: `harmonize_v1_core.py --years 1968-2024` → canonical out; preserve v2.8 as `.v28_baseline.parquet`; widen `certificate_revision` enum + schema-version bump; 04_derive re-run; 05_validate (183/183 NVSR preserved + new pre-1990 cells); B.12 re-snap; C8.1 smoke re-pin to 1968-2024.
+- **The 4 conservative-null fields (soft-flag (aa))** are deliberate author+SMOKE scope boundaries — DO step 6 may refine against per-era user guides if cross-era continuity review wants the extra signal. Not bugs.
+- **Re-run cost**: `harmonize_v1_core.py --years 1968-2024` ≈ 11.79M rows / 4 years ≈ 77s observed → full 57-year envelope ≈ 10-20 min wall-clock; idempotent.
+- **Cumulative Phase C ~23.5 of 51-71 sessions**; ~28-48 remaining in Tier 3+5 (C8.17 DO 6-7 + C8.18-C8.22).
+
+### Session summary
+
+C8.17 DO step 5b SHIPPED in ~2.5 hours wall-clock. The DO step 5a receipt assumed a clean `_harmonize_pre1990(table,year)` dispatcher; the entry cheap-check found `harmonize_v1_core.py` is a monolithic `main()` with a binary `if is_pre2003/else` split reading `_core` (not `_raw`), and that 1989's `_raw` layout is byte-identical to the V2 1990-2002 layout. **4 divergences resolved before any DO mutation** via AskUserQuestion 2026-05-15 Q1+Q2 Option A + 2 LLM amendments (PRE_FLIGHT addendum, L10-safe). Shipped: additive `is_pre1989` branch (1968-1988, all 71 canonical arrays), `_mrace1digit_to_bridged4()` (H7 sibling parity with fetal-death V3b B3), `_to_int_or_null_safe()` (SMOKE Tier 1 caught pre-1990 MONPRE `'&'` sentinel), `_raw`/`_core` path conditional; **1989 → existing byte-untouched `is_pre2003` path**. SMOKE Tier 0+1+2 ALL PASS (Tier 2: 11.79M rows, H6 conservation byte-exact, race distribution historically plausible, 1989 Hispanic populated). 4 canonical + 4 matched-multiples SHAs byte-exact (zero canonical writes — DO step 6 owns that); pytest 85P+1S+1XF in 238.25s (Convention 1). Existing 1990+/2003+ code paths byte-untouched (4 deletions all at the dispatch boundary; HALT 13 / H10 preserved). Zero §7 halts; no tag (intermediate DO step, Convention 5). **C8.17 DO step 6 (canonical 1968-2024 re-harmonize + `certificate_revision` enum widening + version bump; 1-2 sessions per §15.D) queued.**
 
 ---
 

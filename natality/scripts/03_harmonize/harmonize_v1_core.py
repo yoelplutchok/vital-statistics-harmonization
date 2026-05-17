@@ -74,6 +74,25 @@ def _to_int_or_null(
     return pc.cast(trimmed_or_null, out_type, safe=False)
 
 
+def _to_int_or_null_safe(
+    arr: pa.Array | pa.ChunkedArray, out_type: pa.DataType
+) -> pa.Array | pa.ChunkedArray:
+    """Like `_to_int_or_null` but nulls ANY non-integer token before casting
+    instead of raising. The pre-1990 NCHS public-use files use non-numeric
+    sentinel characters in some numeric fields ('&', '-', '*', alpha codes)
+    that a hard `pc.cast(..., safe=False)` cannot parse. Authored at C8.17
+    DO step 5b for the is_pre1989 branch only; the 1990+ code paths keep using
+    `_to_int_or_null` byte-exact (HALT 13 / H10)."""
+    trimmed = _trim(arr)
+    is_int = pc.match_substring_regex(trimmed, r"^[+-]?[0-9]+$")
+    digits_or_null = pc.if_else(
+        pc.fill_null(is_int, False),
+        trimmed,
+        pa.scalar(None, type=pa.string()),
+    )
+    return pc.cast(digits_or_null, out_type, safe=False)
+
+
 def _to_str_or_null(arr: pa.Array | pa.ChunkedArray) -> pa.Array | pa.ChunkedArray:
     trimmed = _trim(arr)
     return pc.if_else(
@@ -216,6 +235,54 @@ def _mrace_detail_to_bridged4(
         out,
     )
     # 09 and others → null (no bridge available)
+    return out
+
+
+def _mrace1digit_to_bridged4(
+    mrace: pa.Array | pa.ChunkedArray,
+) -> pa.Array | pa.ChunkedArray:
+    """
+    Map the 1968-1988 (1968-revision-certificate era) 1-DIGIT MRACE code to the
+    approximate bridged 4-category: 1=White, 2=Black, 3=AIAN, 4=Asian/PI.
+
+    The pre-1989 natality public-use file carries MRACE as a single digit,
+    distinct from the 1989+ two-digit MRACE (01-99) handled by
+    `_mrace_detail_to_bridged4`. The 1-digit frame (per the 1985 NCHS natality
+    user guide MRACE item, which shares the 1978-revision-cert race lineage):
+
+        0 = Other Asian/PI        -> 4
+        1 = White                 -> 1
+        2 = Black                 -> 2
+        3 = AmIndian/Aleut/Eskimo -> 3
+        4 = Chinese               -> 4
+        5 = Japanese              -> 4
+        6 = Hawaiian              -> 4
+        7 = Other nonwhite (residual catch-all) -> null
+        8 = Filipino              -> 4
+        9 = Not stated            -> null
+
+    Codes 7 (residual "Other nonwhite") and 9 (not stated) bridge to null —
+    the same integrity-over-false-categorization convention used by the
+    fetal-death sibling pipeline's V3b B3 recode (`fetal_death/scripts/
+    03_harmonize/harmonize.py:399`, 1982-1988 1-digit MRACE) and the V2
+    `_mrace_detail_to_bridged4` 09->null choice. Authored at C8.17 DO step 5b
+    (H7 sibling-pipeline parity on the shared `maternal_race_bridged` concept;
+    AskUserQuestion 2026-05-15 Q1 Option A).
+    """
+    int8 = pa.int8()
+    null_i8 = pa.scalar(None, type=int8)
+    out = pc.if_else(pc.is_null(mrace), null_i8, null_i8)
+    # 1 = White
+    out = pc.if_else(pc.equal(mrace, 1), pa.scalar(1, type=int8), out)
+    # 2 = Black
+    out = pc.if_else(pc.equal(mrace, 2), pa.scalar(2, type=int8), out)
+    # 3 = American Indian / Aleut / Eskimo
+    out = pc.if_else(pc.equal(mrace, 3), pa.scalar(3, type=int8), out)
+    # 0, 4, 5, 6, 8 = Asian/PI subgroups (Other API / Chinese / Japanese /
+    # Hawaiian / Filipino)
+    for code in (0, 4, 5, 6, 8):
+        out = pc.if_else(pc.equal(mrace, code), pa.scalar(4, type=int8), out)
+    # 7 (residual "Other nonwhite") and 9 (not stated) -> null (initial value)
     return out
 
 
@@ -542,15 +609,25 @@ def main() -> None:
     writer: pq.ParquetWriter | None = None
     try:
         for year in years:
-            in_path = args.yearly_parquet_dir / f"natality_{year}_core.parquet"
+            # C8.17 DO step 5b: the pre-1990 parser writes
+            # natality_<year>_raw.parquet; the existing 1990+ pipeline writes
+            # natality_<year>_core.parquet. 1989 reads its _raw file but is
+            # routed through the existing is_pre2003 path (1989 _raw layout ==
+            # V2 1990-2002 layout, per C8.17 DO step 4).
+            suffix = "raw" if year <= 1989 else "core"
+            in_path = args.yearly_parquet_dir / f"natality_{year}_{suffix}.parquet"
             if not in_path.is_file():
                 raise FileNotFoundError(in_path)
 
             pf = pq.ParquetFile(in_path)
             cols = set(pf.schema_arrow.names)
 
-            # Detect era from available columns.
-            is_pre2003 = "DMAGE" in cols  # 1990–2002 have DMAGE; 2003+ have MAGER
+            # Detect era. C8.17 DO step 5b: 1968-1988 take the new pre-1989
+            # branch; 1989 collapses into the existing is_pre2003 (1990-2002)
+            # path byte-exact; 1990-2002 still detected by DMAGE presence;
+            # 2003+ fall through to the else branch.
+            is_pre1989 = year <= 1988
+            is_pre2003 = (not is_pre1989) and ("DMAGE" in cols)  # 1989–2002
             is_post2013 = "OEGEST_COMB" in cols  # 2014+ have obstetric estimate
 
             # Year-varying column name resolution (2003+ era)
@@ -573,7 +650,211 @@ def main() -> None:
                 restatus = _to_int_or_null(_get_col(batch, "RESTATUS"), pa.int8())
                 is_foreign = pc.equal(restatus, pa.scalar(4, type=pa.int8()))
 
-                if is_pre2003:
+                if is_pre1989:
+                    # ============================================================
+                    # 1968–1988 era: 1968-revision certificate (C8.17 DO 5b)
+                    # ------------------------------------------------------------
+                    # Three on-disk sub-layouts (1968 35-field / 1969-1971
+                    # 71-field / 1972-1988 95-field) handled uniformly via
+                    # per-column presence (_get_col_optional → null-fallback).
+                    # The 1968-rev public-use file has NO Hispanic origin, NO
+                    # direct marital question (only LEGITIM legitimacy, which is
+                    # NOT marital_status — left null per Convention-3 / §7-#19),
+                    # and none of the 1989+/2014+ clinical fields. High-confidence
+                    # anchor fields are mapped; everything not on the 1968-rev
+                    # cert is conservatively null (DO step 6 refinement flags in
+                    # the DECISION_LOG). AskUserQuestion 2026-05-15 Q1/Q2 Opt A.
+                    # ============================================================
+                    n = batch.num_rows
+                    pre1968_s = pa.scalar("unrevised_1968", type=pa.string())
+
+                    def _opt_int(name: str, t: pa.DataType):
+                        raw = _get_col_optional(batch, name)
+                        return (
+                            _to_int_or_null_safe(raw, t)
+                            if raw is not None
+                            else pa.nulls(n, type=t)
+                        )
+
+                    # Certificate revision: always 1968-revision for 1968-1988.
+                    cert_rev = pc.if_else(pc.is_null(year_arr), null_s, pre1968_s)
+
+                    # Maternal age (DMAGE single-year; parity with V2 — no extra
+                    # sentinel null beyond blank→null).
+                    mager = _opt_int("DMAGE", pa.int16())
+
+                    # Birth-order 9-category recodes (1969+; 1968 has no order
+                    # fields → null). Same semantics as V2 LIVORD9/TOTORD9.
+                    lbo = _opt_int("LBORD_R9", pa.int8())
+                    tbo = _opt_int("TBORD_R9", pa.int8())
+
+                    # Marital status: NOT available pre-1990. LEGITIM
+                    # (legitimacy) is a distinct concept; conflating it with
+                    # marital_status would create a §7-#19 cross-product
+                    # normalization hazard (fetal-death sources marital from
+                    # DMAR even in its 1982-1988 era). Null here; a separate
+                    # legitimacy_status column is a DO step 6 candidate.
+                    marital = pa.nulls(n, type=pa.int8())
+                    marital_rpt_flag = pa.nulls(n, type=pa.bool_())
+
+                    # Hispanic origin: the Hispanic question entered the birth
+                    # certificate with the 1978 revision and does not appear in
+                    # the pre-1989 public-use file → null.
+                    hisp_origin = pa.nulls(n, type=pa.int8())
+                    maternal_hisp = pa.nulls(n, type=pa.bool_())
+
+                    # Race: 1-digit MRACE → approximate bridged-4 (H7 sibling
+                    # parity with fetal-death V3b B3 1-digit recode).
+                    mrace_raw = _get_col_optional(batch, "MRACE")
+                    mrace_1d = (
+                        _to_int_or_null_safe(mrace_raw, pa.int16())
+                        if mrace_raw is not None
+                        else pa.nulls(n, type=pa.int16())
+                    )
+                    race_bridged = _mrace1digit_to_bridged4(mrace_1d)
+                    race_detail = (
+                        _to_str_or_null(mrace_raw)
+                        if mrace_raw is not None
+                        else pa.nulls(n, type=pa.string())
+                    )
+                    race_detail_15 = pa.nulls(n, type=pa.string())
+                    # maternal_race_ethnicity_5 needs Hispanic status to assign
+                    # NH_* — null pre-1989 (schema: null when Hispanic missing).
+                    race_eth = pa.nulls(n, type=pa.string())
+                    race_bridge = pc.if_else(
+                        pc.is_null(year_arr),
+                        null_s,
+                        pa.scalar("approximate_pre2003"),
+                    )
+
+                    # Education years → cat4 (1969+; 1968 has no DMEDUC → null;
+                    # 88 non-reporting / 99 unknown → null in the helper).
+                    educ_cat4 = _dmeduc_years_to_cat4(_opt_int("DMEDUC", pa.int16()))
+
+                    # Prenatal care start month → trimester (1969+; 1968 null).
+                    pn_start_month = _opt_int("MONPRE", pa.int16())
+                    pn_start_trim = _month_to_trimester(pn_start_month)
+
+                    # Prenatal visit count: TPRENVIS coding not yet verified at
+                    # this author+SMOKE step → conservative null (DO step 6
+                    # refinement candidate).
+                    previs = pa.nulls(n, type=pa.int16())
+
+                    # Smoking / risk factors / clinical detail: not collected on
+                    # the 1968-revision certificate → null.
+                    smoke_any = pa.nulls(n, type=pa.bool_())
+                    smoke_intensity = pa.nulls(n, type=pa.int8())
+                    cig0_r = pa.nulls(n, type=pa.int8())
+                    diab = pa.nulls(n, type=pa.int8())
+                    chyp = pa.nulls(n, type=pa.int8())
+                    phyp = pa.nulls(n, type=pa.int8())
+
+                    # Plurality (1-5; present all pre-1989 sub-eras).
+                    plur = _opt_int("DPLURAL", pa.int8())
+
+                    # Infant sex (CSEX 1→M 2→F else null).
+                    csex = _opt_int("CSEX", pa.int8())
+                    sex = pc.if_else(
+                        pc.equal(csex, 1),
+                        pa.scalar("M"),
+                        pc.if_else(pc.equal(csex, 2), pa.scalar("F"), null_s),
+                    )
+
+                    # Gestation (LMP-based DGESTAT, 1969+; 1968 has GESTREC only
+                    # → null). Keep schema domain 17-47 ∪ {99}; else → null.
+                    dgestat = _opt_int("DGESTAT", pa.int16())
+                    _in_range = pc.and_(
+                        pc.greater_equal(dgestat, pa.scalar(17, type=pa.int16())),
+                        pc.less_equal(dgestat, pa.scalar(47, type=pa.int16())),
+                    )
+                    _is99 = pc.equal(dgestat, pa.scalar(99, type=pa.int16()))
+                    _keep = pc.or_(
+                        pc.fill_null(_in_range, False),
+                        pc.fill_null(_is99, False),
+                    )
+                    gest_weeks = pc.if_else(
+                        _keep, dgestat, pa.scalar(None, type=pa.int16())
+                    )
+                    gest_src = pc.if_else(
+                        pc.is_null(gest_weeks), null_s, pa.scalar("lmp")
+                    )
+
+                    # Preterm recode3: pre-1990 GESTREC3 {1,2,3} kept; the
+                    # pre-1990 0 ("not on certificate") → null. 1968 has no
+                    # GESTREC3 → null.
+                    g3 = _opt_int("GESTREC3", pa.int8())
+                    preterm_r3 = pc.if_else(
+                        pc.is_null(g3), pa.scalar(None, type=pa.int8()),
+                        pa.scalar(None, type=pa.int8()),
+                    )
+                    for _v in (1, 2, 3):
+                        preterm_r3 = pc.if_else(
+                            pc.equal(g3, pa.scalar(_v, type=pa.int8())),
+                            pa.scalar(_v, type=pa.int8()),
+                            preterm_r3,
+                        )
+
+                    # Birthweight grams (parity with V2 — direct cast; 9999
+                    # not-stated kept per schema).
+                    dbwt = _opt_int("DBIRWT", pa.int32())
+
+                    # Delivery method / Apgar / BMI: not on 1968-rev cert.
+                    dmeth = pa.nulls(n, type=pa.int8())
+                    apgar5 = pa.nulls(n, type=pa.int16())
+                    bmi_pp = pa.nulls(n, type=pa.float32())
+                    bmi_pp_r6 = pa.nulls(n, type=pa.int8())
+
+                    # Father's age (DFAGE 1969+; 1968 null). Valid 10-98;
+                    # 99/out-of-range → null (parity with V2 pre2003 guard).
+                    fage = _opt_int("DFAGE", pa.int16())
+                    fage = pc.if_else(
+                        pc.and_(
+                            pc.greater_equal(fage, pa.scalar(10, type=pa.int16())),
+                            pc.less_equal(fage, pa.scalar(98, type=pa.int16())),
+                        ),
+                        fage,
+                        pa.scalar(None, type=pa.int16()),
+                    )
+                    fage_cat_rec11 = pa.nulls(n, type=pa.string())
+
+                    # Birth facility (PLDEL 1975+; 1968-1974 → null).
+                    birth_fac = _pldel_to_facility(_opt_int("PLDEL", pa.int8()))
+
+                    # Attendant at birth (present all pre-1989; 9 → null,
+                    # parity with V2).
+                    attend = _opt_int("BIRATTND", pa.int8())
+                    attend = pc.if_else(
+                        pc.equal(attend, pa.scalar(9, type=pa.int8())),
+                        pa.scalar(None, type=pa.int8()),
+                        attend,
+                    )
+
+                    # Payment / prior cesarean / father Hispanic+race-eth: not
+                    # on 1968-rev cert.
+                    pay_rec = pa.nulls(n, type=pa.int8())
+                    prior_ces = pa.nulls(n, type=pa.bool_())
+                    father_hisp = pa.nulls(n, type=pa.bool_())
+                    father_race_eth = pa.nulls(n, type=pa.string())
+
+                    # Father's education years → cat4 (DFEDUC 1969+; 1968 null).
+                    father_educ_cat4 = _dmeduc_years_to_cat4(
+                        _opt_int("DFEDUC", pa.int16())
+                    )
+
+                    # 2014+-only clinical blocks: all null pre-1989.
+                    ca_list = [pa.nulls(n, type=pa.bool_()) for _ in range(12)]
+                    ip_list = [pa.nulls(n, type=pa.bool_()) for _ in range(5)]
+                    prior_ces_count = pa.nulls(n, type=pa.int8())
+                    fert_drugs = pa.nulls(n, type=pa.bool_())
+                    art = pa.nulls(n, type=pa.bool_())
+                    pre_preg_diab = pa.nulls(n, type=pa.bool_())
+                    gest_diab = pa.nulls(n, type=pa.bool_())
+                    nicu = pa.nulls(n, type=pa.bool_())
+                    wtgain = pa.nulls(n, type=pa.int16())
+                    indl = pa.nulls(n, type=pa.bool_())
+                    bfed = pa.nulls(n, type=pa.bool_())
+
+                elif is_pre2003:
                     # ============================================================
                     # 1990–2002 era: unrevised certificate only
                     # ============================================================

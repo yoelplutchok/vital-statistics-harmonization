@@ -8,6 +8,56 @@
 
 ---
 
+## PRE-FLIGHT addendum for C8.17 DO step 5b — 2026-05-15T05:30:00Z — `harmonize_v1_core.py` extension for pre-1990 era_tags — **RESULT: PROCEED** (Convention-3 Field-value snapshot surfaced 4 divergences from the DO step 5a receipt's assumed architecture; resolved at this cheap-check moment by AskUserQuestion 2026-05-15T05:15:00Z Q1 Option A + Q2 Option A + 2 LLM plan-amendments; zero §7 halts; canonical parquet byte-exact preserved this step — H10 gate intact; full re-harmonize + version bump remain DO step 6)
+
+> **Why an addendum (not a fresh PRE-FLIGHT entry):** C8.17 uses ONE upfront umbrella PRE-FLIGHT (the 2026-05-14T06:30:00Z entry below) per §4.1 option (a) (multi-sub-step task, single upfront PRE-FLIGHT). Each DO sub-step does an *entry cheap-check* (re-verify the prior step's forward-looking HALTs) rather than a new PRE-FLIGHT. This addendum is written because the DO step 5b entry cheap-check surfaced a **material architecture divergence the umbrella PRE-FLIGHT did not anticipate** — exactly the L10-safe pattern the task1 session established (`## PRE-FLIGHT addendum for task1_joint_use_denominators — 2026-05-11T17:58:10Z`): the divergence + its resolution are documented **before the first DO mutation**, with `C8.17-pre-do` already tagged at `12fc20e` (no re-tag; intermediate-DO-step Convention 5 precedent).
+
+### Entry cheap-check — 14 forward-looking HALTs from RECEIPTS/C8.17_step5a_2026-05-15T03-45-00Z.md
+
+- [x] HALT 1: `C8.17-pre-do` tag at `12fc20e`; `C8.17-complete` NOT present. ✓ (`git rev-list -n1 C8.17-pre-do` = `12fc20e7019797c03574bf78b2c6d440f92e162b`; `git tag --list 'C8.17*'` = `C8.17-pre-do` only)
+- [x] HALT 2: 4 canonical parquet SHAs byte-exact ✓
+  - `output/harmonized/fetal_death_harmonized.parquet` = `38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48`
+  - `output/harmonized/fetal_death_derived.parquet` = `185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09`
+  - `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` = `e16ad5323d68e28d401518f1ff56b12c09e43883e76022a9823d51a677c41d44`
+  - `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet` = `9b828a4de4e59b17a1ca727e3dddc7ea7d748bb5281a98612f6fb9b85a08b777`
+- [x] HALT 3: 4 matched-multiples parquet SHAs byte-exact (`adbec108…` harmonized + `5c22308b…`/`7c682668…`/`d98b4296…` yearly_clean) ✓
+- [x] HALT 4: 22 `natality_<year>_raw.parquet` present at `~/Desktop/natality-harmonization/output/yearly_clean/` (`ls … | wc -l` = 22). ✓
+- [x] HALT 5: `parse_public_us_pre1990_year.py` (245 ln) + `parse_all_pre1990_years.py` (90 ln) present. ✓
+- [x] HALT 6: `field_specs.py` carries 7 pre-1990-relevant `RECORD_LEN_*` + 4 pre-1990 tuple lists (35/71/95 + `PUBLIC_US_1990_2002_FIELDS`=37 reused for 1989). ✓
+- [x] HALT 7: `file_inventory.csv` 1968 row = `1,750,782 records` + FIX_LOG pointer. ✓
+- [x] HALT 8: `FIX_LOG.md` most-recent = `2026-05-14T11:00:00Z — C8.17 DO step 5a — L13`. ✓
+- [ ] HALT 9: cache-cleared pytest 85P+1S+1XF — **DEFERRED to post-edit VERIFY** per cheap-check cost discipline (C8.17 DO step 3/4 established precedent: "HALT pytest baseline deferred to DO step post-edit"). Not a halt; will gate H10 at VERIFY.
+- [x] HALT 10: `NEXT_STEPS.md` §15.D line 1358 unchanged (soft-flag (w) carries; no edit this step). ✓
+- [x] HALT 11-14: Tier 3+5 ~1.9/7; budget 1-2 sessions; substrate = 22 `_raw` parquets + `harmonize_v1_core.py` 1403 ln; 16 soft-flags carried. ✓ (informational)
+
+**13/14 PASS; HALT 9 deferred to VERIFY (precedented).** H10 gate intact.
+
+### Field-value snapshot (Convention 3) — target artifact this DO step mutates
+
+- [x] Target file enumerated: `natality/scripts/03_harmonize/harmonize_v1_core.py` (1403 ln). Mutation = **additive only**: a new `is_pre1989` era branch inside `main()`'s batch loop + `_mrace1digit_to_bridged4()` helper + a `_raw`/`_core` input-path conditional. **Zero edits to the existing 1990-2002 (`is_pre2003`) or 2003+ (`else`) code paths** (HALT 13 + Convention 1).
+- [x] Current values vs DO step 5a receipt's assumed-state — **4 divergences found** (resolved at this cheap-check moment, before any DO mutation):
+
+  - **D1 — No `_harmonize_pre1990(table, year)` dispatcher.** Receipt "Notes for next session" assumed a clean dispatcher with `if 1968<=year<=1989: return _harmonize_pre1990(...)` as "the only change." **Actual:** `main()` (line 456) is monolithic — a per-year loop with a binary `if is_pre2003 / else` split (line 576/781) and inline per-column branching; the output 70-col `pa.Table.from_arrays([...])` is assembled at line 1329 from ~58 named arrays each branch must produce. **Resolution (AUQ Q1 Option A):** add an in-place `is_pre1989` branch computing all 58 arrays; do NOT refactor existing handlers (refactor = HALT 13 / H10 risk).
+  - **D2 — Input path `_core` vs `_raw`.** `main():545` hardcodes `natality_{year}_core.parquet`; DO step 5a wrote `natality_{year}_raw.parquet` (receipt HALT 4 mandates `_raw` is the harmonize input). **Resolution (LLM plan-amendment, bundled in AUQ Q1 Option A):** path conditional — `_raw.parquet` for `year <= 1989`, `_core.parquet` for `year >= 1990`. 1990+ behavior byte-unchanged.
+  - **D3 — 1989 collapses into the existing `is_pre2003` path.** The 1989 `_raw` columns are byte-identical to the V2 1990-2002 layout (DO step 4 finding; verified: all 27 `_get_col` hard-reads in the `is_pre2003` block — DMAGE/DMAR/LIVORD9/TOTORD9/ORMOTH/MRACE/DMEDUC/MONPRE/NPREVIS/DIABETES/CHYPER/PHYPER/TOBACCO/CIGAR6/DPLURAL/CSEX/DGESTAT/GESTAT3/DBIRWT/DELMETH5/FMAPS/DFAGE/PLDEL/BIRATTND/ORFATH/ORRACEF/DFEDUC — are all present in `natality_1989_raw.parquet`). `is_pre2003 = "DMAGE" in cols` already fires for 1989. **Resolution (AUQ Q1 Option A):** 1989 routes through the EXISTING `is_pre2003` block with **zero new code** (cert_rev = `unrevised_1989` already correct — 1989 IS the 1989-revision cert). The new era discriminator is `is_pre1989 = year <= 1988`; `is_pre2003 = (not is_pre1989) and ("DMAGE" in cols)` so 1968-1988 take the new branch and 1989-2002 keep the existing one. Verified by SMOKE Tier 1b.
+  - **D4 — `certificate_revision` enum has no pre-1989 value.** Canonical `harmonized_schema.csv:5` enum = `unrevised_1989|revised_2003|unknown`; 1968-1988 = 1968-revision certificate (distinct). **Resolution (AUQ Q2 Option A):** new handler emits **`unrevised_1968`** for 1968-1988; the `harmonized_schema.csv` enum widening + schema-version bump stay DEFERRED to DO step 6 (§15.D / Anti-Pattern #6). DO step 5b does NOT write the canonical parquet (output → non-canonical scratch path for SMOKE), so the canonical SHAs stay byte-exact and no schema-version bump is owed this step.
+
+- [x] Additional Convention-3 snapshots verified against task plan:
+  - `marital_status` (schema int8 `1|2|9`, source DMAR/MAR): pre-1990 natality `_raw` files carry **`LEGITIM`, not `DMAR`** (1968/1975/1985 probed; only 1989 has DMAR). H7 sibling check: fetal-death `marital_status` sources `DMAR@87` even in its 1982-1988 V3b era — natality's pre-1990 public-use file simply does not surface a direct marital question. Plan-amendment: **`marital_status` = null for 1968-1988** (LEGITIM = legitimacy ≠ marital status; conflating them risks §7-#19 cross-product value-normalization divergence). LEGITIM left unharmonized at 5b; a separate `legitimacy_status` column is a documented DO-step-6/future candidate, not shoehorned here.
+  - `maternal_race_bridged` (schema int8 `1|2|3|4`): H7 sibling parity — mirror fetal-death `harmonize.py:399` B3 1-digit map (per 1985 user guide p18, same 1978-rev-era frame): `0/4/5/6/8→4 (API), 1→1, 2→2, 3→3, 7→null (residual), 9→null (not stated)`. New `_mrace1digit_to_bridged4()` helper (int8 output; sibling of existing `_mrace_detail_to_bridged4`).
+  - `_dmeduc_years_to_cat4` (helper:158): verified that pre-1990 DMEDUC sentinels `88` (non-reporting) and `99` (unknown) both fall through to null (only 00-17 ranges assigned). Safe to reuse for 1969-1988 DMEDUC + DFEDUC.
+  - Conservative-null fields for 1968-1988 (not on the 1968-rev certificate / absent from the public-use file): hispanic_origin, maternal_hispanic, maternal_race_ethnicity_5, marital_reporting_flag, prenatal_visits, smoking (×3), diabetes/hypertension (×3), delivery_method, apgar5, bmi (×2), payment_source, prior_cesarean(+count), father_hispanic, father_race_ethnicity_5, fage_cat_rec11, all 12 congenital-anomaly + 5 infection + 6 clinical-detail (2014+) booleans. Each logged as a DECISION_LOG choice with a DO-step-6 refinement flag where a future signal exists (e.g., TPRENVIS, LEGITIM, FAGER_R11).
+
+### Halt conditions tripped
+
+None. The 4 divergences are Convention-3 "task-plan-assumed-state vs actual-state" mismatches, **resolved at the cheap-check moment** by AskUserQuestion (Q1+Q2 Option A) + 2 LLM plan-amendments (D2 path conditional; marital=null) — per Convention 3 ("resolve … by amending the task plan OR halting and asking the human; do not silently proceed under the divergent state"). No §7 condition is open. DO step 5b scope (author + SMOKE; canonical re-harmonize + version bump = DO step 6) is unchanged from §15.D.
+
+### Result
+
+**PROCEED** to C8.17 DO step 5b DO phase (author `is_pre1989` branch + `_mrace1digit_to_bridged4()` + `_raw` path conditional; SMOKE Tier 0/1/1b on non-canonical scratch output; VERIFY pytest + H10 SHA gate). No new tag (intermediate DO step, Convention 5 precedent). Resolution narrative + the 6 design choices land in the DECISION_LOG entry at DO step 5b close.
+
+---
+
 ## PRE-FLIGHT for C8.17 — 2026-05-14T06:30:00Z — Natality 1968-1989 backward extension (A.2; 22 new years; 5 era boundaries; second Tier-3+5 task) — **RESULT: PROCEED** (zero §7 halts; zero AskUserQuestion needed; one minor terminology soft-flag (t) on §15.D "4 distinct pre-1989 layouts" wording vs cheap-check-empirical 5 era boundaries 1968 / 1969-1971 / 1972-1977 / 1978-1988 / 1989; resolution = §15.D wording stands as cumulative-count framing, soft-flag carried for DO step 1 reconciliation; no `[plan-update]` commit needed)
 
 ### Scope summary
