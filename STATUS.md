@@ -1,6 +1,82 @@
-# STATUS — last updated 2026-05-17T18:30:00Z
+# STATUS — last updated 2026-05-17T20:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-17T20:00:00Z — **C8.18 DO step 3 PRE-FLIGHT close** (investigation-only; ZERO canonical-state mutation) — two material findings surfaced + resolved before any DO mutation; DO step 3 split → 3a (denominator/births layout) + 3b (numerator/infant-death + ICD-9)
+
+PRE-FLIGHT/SMOKE-Tier-0 for C8.18 DO step 3 (cohort 1983-1991 layout reconstruction). **No `field_specs.py`/parser/parquet/schema mutation** (git scope = `PRE_FLIGHT_LOG.md` + `DECISION_LOG.md` + this STATUS + commit; 11/11 gate parquet SHAs re-verified byte-exact at the entry cheap-check incl. fetal-death via the canonical `-build` tree). Two material findings were surfaced at the Convention-3 snapshot **before any DO mutation** (L10-safe; C8.17 DO5b precedent) and resolved per established precedent: **(1) substrate format = Python `field_specs.py` tuple lists, NOT CSV** (the §15.D "layout-CSV" wording is the C8.17-DO-step-2 substrate-format question again; resolved Option-A-style = extend `field_specs.py`, H7 sibling-pipeline discipline; the §15.D wording reconcile is owed, bundled with the DO step 3a commit per the C8.13/C8.17-DO2 fix-on-contact precedent); **(2) the 1983-1991 cohort file is a separate numerator + denominator two-file structure** (Denominator `LinkCO{YY}USden.dat` 91-byte all-births + Numerator `LinkCO{YY}USnum.dat` 500-byte linked birth+death incl. ICD-9 underlying cause + 61-cause list), NOT the 2005+ single denominator-plus → **reconstruct a denominator-plus-equivalent** (one row per birth, death fields where an infant death linked, via the NCHS certificate match-key join) preserving linked v4 schema continuity with 2005-2023 (the standard pre-2005 cohort-IMR construction). **DO step 3 split → 3a (denominator/births `field_specs.py` layout) + 3b (numerator birth+death+ICD-9+match-key)** per the C8.17 DO5a/5b Convention-5 + H10 + state-on-disk precedent. The full 1983 denominator 91-byte layout (all fields 1-91 + value codes) is captured in PRE_FLIGHT_LOG as state-on-disk substrate so DO step 3a does not re-read the guide. Per-year stability: 1983 ≡ 1988 = 91 B; **1989-1991 spans the 1989 birth-cert revision — its layout MUST be re-verified at DO step 3a (do not assume 91-byte continuity; L13-extension)**. A §15.D model-clarification `[plan-update]` is proposed, NOT applied (§11; soft-flag (ii)). Zero §7 halts. Full narrative RECEIPTS will be the DO step 3a receipt; this checkpoint = PRE_FLIGHT_LOG + DECISION_LOG 2026-05-17T20:00:00Z + this STATUS.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16+C8.17 COMPLETE (2 of 7); C8.18 IN PROGRESS (DO steps 1+2 closed + step 3 PRE-FLIGHT closed; 3a next).** The linked product remains v3 (2005-2023); the 41-yr 1983-2023 cohort v4 re-harmonize is a later C8.18 DO step. Cumulative Phase C ≈ 27.5 of 51-71 (cap 86 intact).
+
+### What was done this session (continuation: C8.18 DO step 3 PRE-FLIGHT)
+
+1. User authorized "proceed as you think is best; make any relevant decisions".
+2. C8.18 DO step 3 entry cheap-check: 7/7 forward-looking HALTs from RECEIPTS/C8.18_step2 PASS; 11/11 gate parquet SHAs byte-exact (gate-SHA script corrected to read fetal-death from the canonical `-build` tree per soft-flag (hh)).
+3. Linked-pipeline substrate investigation: `parse_linked_year.py`/`field_specs.py`/`harmonize_linked_v3.py` → confirmed Python-tuple substrate (not CSV) + the 2005+ denominator-plus model assumption.
+4. `LinkCO83Guide.pdf` pp0-31 read (L12-extension re-confirmed: text-extractable, no OCR): file characteristics + the full 91-byte denominator record layout (fields 1-91 + value codes) + the num/den two-file structural finding; LinkCO88/91 file-characteristics cross-check (1983≡1988 91 B; 1989-1991 cert-boundary flagged).
+5. Two findings surfaced + resolved before any DO mutation; DO step 3 split 3a/3b; full denominator layout written to PRE_FLIGHT_LOG (state-on-disk).
+6. PRE_FLIGHT_LOG + DECISION_LOG + this STATUS appended; PRE-FLIGHT-only commit (zero canonical mutation; no tag — intermediate).
+
+### Last completed step
+
+C8.18 DO step 2 (commit `9e6576b`) + the §15.D `[plan-update]` `df0675f`. This session adds a PRE-FLIGHT-only commit: `PRE_FLIGHT_LOG.md` (C8.18 DO step 3 entry incl. the full 1983 denominator layout) + `DECISION_LOG.md` 2026-05-17T20:00:00Z + this STATUS. **Zero canonical-state mutation** (no `field_specs.py`/parser/parquet/schema/test). **No tag** (intermediate; `C8.18-pre-do`@`6632a15` remains the DO rollback anchor).
+
+### In-progress
+
+C8.18 **DO step 3a** queued: author additive `field_specs.py` `LINKED_BIRTH_1983_1988_FIELDS` (from the PRE_FLIGHT_LOG-captured 91-byte layout) + verify/author the 1989-1991 (1989-rev-cert) denominator layout separately + `LINKED_DEN_RECLEN_*` constants + `_layout_for_linked_year` 1983-1991 branch (additive; existing 2005/2014 branches byte-untouched); SMOKE Tier 1 = 100-record parse of `LinkCO83USden.dat` + **encoding verify (EBCDIC-vs-ASCII)** + L13-extension value-distribution verify each anchor field across 1983-1988 + the 1989 boundary; bundle the §15.D "layout-CSV→field_specs.py" wording reconcile (C8.17 DO2 fix-on-contact precedent); VERIFY + RECEIPT + commit (no tag).
+
+### Next planned task
+
+**C8.18 DO step 3a — cohort 1983-1991 denominator/births `field_specs.py` layout authoring + SMOKE Tier 1 value-distribution/encoding verify** (~1-2 sessions). Entry cheap-check: re-verify the forward-looking HALTs in PRE_FLIGHT_LOG 2026-05-17T20:00:00Z — esp. 11 gate parquet SHAs unchanged (fetal-death via `-build` tree); the 1983 denominator 91-byte layout is in PRE_FLIGHT_LOG (don't re-read the guide for 1983); do NOT assume 91-byte continuity across the 1989 cert boundary (L13-extension); existing 2005/2014 `field_specs.py` tuple lists byte-untouched.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.18 DO step 3a entry. The two PRE-FLIGHT findings are resolved per established precedent (C8.17 DO step 2 substrate-format; standard pre-2005 cohort-IMR construction); a §15.D model-clarification `[plan-update]` is proposed-not-applied (soft-flag (ii); §11 human-merge — queued with the soft-flag-(w) batch; not DO-step-3a-blocking, the on-disk PRE_FLIGHT_LOG/DECISION_LOG are authoritative in the interim).
+
+**Carried-forward (Phase D):** C8.13 PROPOSE-EDIT manuscript-timing; manuscript Coverage re-paragraph (natality 1968-2024 + forthcoming linked 1983-2023) = D.4.
+
+**Open soft-flags (25; 2 NEW, 0 resolved this step):** **(ii) NEW** §15.D Task C8.18 DO-step model-clarification owed (layout-CSV→field_specs.py Python; 1983-1991 num/den two-file → denominator-plus-equivalent via match-key join; DO step 3 → 3a/3b) → §11 `[plan-update]`, soft-flag-(w) batch. **(gg) REFINED**: 1983-1991 numerator = ICD-9 underlying cause + 61-cause list (not 130-cause recode) + entity/record-axis multiple cause; exact ICD-9-era harmonized column shape = DO step 3b/5. (hh) fetal-death `-build`-tree gate path; (ff resolved earlier this session); (cc)/(dd)/(ee)/(bb)/(aa)/(w)/(x)/(z)/(u) carry. (t)/(y) resolved earlier.
+
+### Forward-looking HALTs for C8.18 DO step 3a PRE-FLIGHT (Convention 4)
+
+Full enumeration in PRE_FLIGHT_LOG 2026-05-17T20:00:00Z + DECISION_LOG 2026-05-17T20:00:00Z.
+
+1. `C8.18-pre-do`@`6632a15`; `C8.18-complete` NOT present. C8.17-complete present.
+2. 11 gate parquet SHAs unchanged (fetal-death `38e2cecb…`/`185c071e…` via `~/Desktop/fetal-death-harmonization-build/output/harmonized/`, NOT the stale non-`build` secondary). Linked-derived `9b828a4d…` changes only at the later re-harmonize DO step.
+3. The full 1983 denominator 91-byte layout (fields 1-91 + codes) is in PRE_FLIGHT_LOG 2026-05-17T20:00:00Z — state-on-disk; DO step 3a authors it as `field_specs.py` tuples (additive). Do NOT re-read the guide for 1983.
+4. **Do NOT assume 91-byte continuity across the 1989 birth-cert revision** — 1989-1991 (1989-rev) denominator layout MUST be re-read from `LinkCO{89,90,91}Guide.pdf` at DO step 3a (L13-extension; C8.17 natality 1989-rev precedent).
+5. SMOKE Tier 1 MUST verify the `LinkCO83USden.dat` byte encoding (guide says original tape = IBM/EBCDIC 8-bit; the 2005+ parser uses latin-1 — pre-2005 public-use `.dat` encoding is unverified) + value-distribution-verify each anchor field (L13-extension; not byte-position alone).
+6. Existing `field_specs.py` `LINKED_BIRTH/DEATH_2005_2013/2014_2020_*` tuple lists + `_layout_for_linked_year` 2005/2014 branches byte-untouched (H10/HALT-13 sibling of C8.17 DO5b).
+7. §15.D "layout-CSV→field_specs.py" wording reconcile bundles with the DO step 3a commit (C8.17 DO2 fix-on-contact); the broader §15.D model-clarification = soft-flag (ii) `[plan-update]` (§11, human-merge).
+8. pytest baseline 85P+1S+1XF (~240-380s; count is the gate). Tier 3+5 ≈ 2.5/7; Phase C ≈ 27.5/51-71 (cap 86).
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` at `~/Desktop/fetal-death-harmonization-build/output/harmonized/` (UNCHANGED; canonical gate = `-build` tree).
+- Natality v3.0.0 `acb5c48a…`(deriv 201,161,456/57yr)/`c8a740eb…`(harm); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED).
+- Linked (cohort, v3; 2005-2023) `9b828a4d…` (UNCHANGED; → v4 1983-2023 at the later C8.18 re-harmonize DO step).
+- Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED).
+- 19 cohort zips + 19 guide PDFs on disk + SHA-anchored (C8.18 DO step 2; manifest 141/linked 38).
+- All C8.1-C8.17 + C8.18 DO steps 1+2 outputs unchanged. NEW git-tracked this step: PRE_FLIGHT_LOG (DO step 3 entry incl. full 1983 denom layout) + DECISION_LOG 2026-05-17T20:00:00Z + this STATUS. No build-side change (investigation-only).
+
+### Notes for next session
+
+- **C8.18 DO step 3 PRE-FLIGHT is closed (investigation-only).** Substrate format = Python `field_specs.py`. 1983-1991 = num/den two-file → denominator-plus-equivalent via match-key join. DO step 3 split 3a/3b. The full 1983 denominator 91-byte layout is in PRE_FLIGHT_LOG (state-on-disk).
+- **Next: DO step 3a** — author `field_specs.py` `LINKED_BIRTH_1983_1988_FIELDS` from the captured layout; separately verify the 1989-1991 1989-rev-cert denominator (do NOT assume 91-byte continuity); SMOKE Tier 1 encoding (EBCDIC-vs-ASCII) + value-distribution verify; bundle the §15.D "layout-CSV→field_specs.py" wording reconcile.
+- The §15.D model-clarification `[plan-update]` (soft-flag (ii)) is owed to the human (queued with soft-flag (w)); the on-disk PRE_FLIGHT_LOG/DECISION_LOG are authoritative in the interim.
+- `/tmp/c8_18_*` scratch is OS-cleanable + reproducible.
+
+### Session summary
+
+This continuation shipped the C8.18 DO step 3 PRE-FLIGHT (investigation-only; zero canonical mutation). A thorough read-only investigation of the linked pipeline + `LinkCO83Guide.pdf` surfaced two material findings before any DO mutation (L10-safe): the substrate format is Python `field_specs.py` not CSV (the C8.17 DO-step-2 question again — resolved the same way), and the 1983-1991 cohort file is a separate numerator/denominator two-file structure (91-byte all-births denominator + 500-byte linked birth+death numerator with ICD-9), reconcilable to a denominator-plus-equivalent (one row per birth, death fields via the certificate-match-key join) that preserves linked v4 schema continuity. DO step 3 was split 3a/3b per the C8.17 DO5a/5b Convention-5 precedent; the full 1983 denominator 91-byte layout (fields 1-91 + value codes) is checkpointed in PRE_FLIGHT_LOG as state-on-disk substrate. A §15.D model-clarification `[plan-update]` is proposed-not-applied (soft-flag (ii); §11 human-merge). 11/11 gate parquet SHAs byte-exact; zero §7 halts. **C8.18 DO step 3a (denominator/births `field_specs.py` layout authoring + SMOKE Tier 1 encoding/value-distribution verify; ~1-2 sessions) is next.**
 
 ---
 
