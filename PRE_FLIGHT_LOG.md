@@ -8,6 +8,63 @@
 
 ---
 
+## PRE-FLIGHT for C8.18 DO step 2 — 2026-05-17T17:30:00Z — download 19 cohort source zips + 19 cohort user-guide PDFs + SHA-anchor + metadata extension (per the §15.D scope-corrected entry; cohort-only, 19 zips NOT 29) — **RESULT: PROCEED**
+
+> Per-sub-step PRE-FLIGHT addendum under the C8.18 umbrella PRE-FLIGHT (2026-05-17T05:30:00Z); C8.16/C8.17 umbrella+addendum precedent (§4.1/L10 one-upfront-or-per-sub-step). Written **before any DO step 2 mutation** (no zip/PDF downloaded, no metadata file edited yet). The §15.D Task C8.18 scope-correction `[plan-update]` (soft-flag (ff)) was **merged this session** as standalone commit `df0675f` (§11 step 3; DECISION_LOG 2026-05-17T17:00:00Z) — the §15.D entry now agrees with the on-disk decision (cohort-only, 19 zips), so this PRE-FLIGHT runs against a self-consistent plan.
+
+### Entry cheap-check — 7 forward-looking HALTs from RECEIPTS/C8.18_step1_2026-05-17T05-30-00Z.md
+
+- [x] **HALT 1**: `git tag -l 'C8.18*'` = `C8.18-pre-do` only (@ `6632a15d59…`); `C8.18-complete` NOT present (set only at the final C8.18 sub-step per Convention 5). `C8.17-complete` present. HEAD = `df0675f` (the standalone `[plan-update]`; sits *after* `C8.18-pre-do`@`6632a15` and is a non-DO commit — `C8.18-pre-do` remains the C8.18 DO rollback anchor). ✓
+- [x] **HALT 2 — 11 gate parquet SHAs byte-exact at DO step 2 entry** (on-disk `shasum -a 256`, 2026-05-17): canonical natality `natality_v2_harmonized.parquet`=`c8a740eb…6237153` ✓ / `natality_v2_harmonized_derived.parquet`=`acb5c48a…28856974` ✓; `.v28_baseline` `230efed2…33ccebac` ✓ / `e16ad532…77c41d44` ✓; `natality_v3_linked_harmonized_derived.parquet`=`9b828a4d…5a08b777` ✓; `fetal_death_harmonized.parquet`=`38e2cecb…99c5cf48` ✓ / `fetal_death_derived.parquet`=`185c071e…a7968a09` ✓ **(read from the canonical `~/Desktop/fetal-death-harmonization-build/output/harmonized/` build tree — see "resolved cheap-check" note below)**; `matched_multiples_harmonized.parquet`=`adbec108…45dc1549` ✓; MM 1995-1997=`5c22308b…d39205d1` ✓ / 1995-2000=`7c682668…edd61f5d` ✓ / 2016-2020=`d98b4296…6a543261` ✓. **11/11 unchanged.** DO step 2 is download + SHA-verify + metadata only — zero rebuild; the linked-derived `9b828a4d…` changes only at the later C8.18 re-harmonize DO step (NOT here). ✓
+  - **Resolved cheap-check (L7 / no-rubber-stamp; not a §7 regression):** the first SHA pass read `~/Desktop/fetal-death-harmonization/fetal_death_{harmonized,derived}.parquet` and got `f09beb4a…`/`90af89b9…` ≠ documented. Investigated rather than accept-or-panic: that directory holds a **stale May-4 secondary copy** (20/25 MB); the **canonical** fetal-death gate parquets are in the **build tree** `~/Desktop/fetal-death-harmonization-build/output/harmonized/` (May-13; 28/35 MB) and hash `38e2cecb…99c5cf48` / `185c071e…a7968a09` — **byte-exact vs documented**. Consistent with `tests/test_source_zip_sha_stability.py` `FETAL_RAW_DIR = ~/Desktop/fetal-death-harmonization-build/...` (the build tree is canonical) and the C8.17 D5 stale-build-repo class. No regression; my initial path was wrong, corrected at the cheap-check moment.
+- [x] **HALT 3 — scope = 19 cohort zips, NOT 29** ✓. All 19 probed HTTP 200 at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/cohortlinkedus/`: 9 × `LinkCO{83,84,85,86,87,88,89,90,91}.zip` (no `US` suffix; `cohortlinked/` variant is 404 — path is uniformly `cohortlinkedus`) + 10 × `LinkCO{95,96,97,98,99,00,01,02,03,04}US.zip` (content-lengths 48.9 MB … 192.7 MB; Σ ≈ **1.80 GB**). Period-linked `LinkPE*US.zip` 1995-2004 NOT probed, NOT downloaded — OUT of C8.18 scope per Option A.
+- [x] **HALT 4 — §15.D C8.18 scope-correction `[plan-update]` MERGED** ✓ (standalone commit `df0675f`, §11 step 3, this session; DECISION_LOG 2026-05-17T17:00:00Z). NEXT_STEPS.md §15.D now reads cohort-only / 19 zips / 7-step DO list; soft-flag (ff) RESOLVED. The on-disk decision (DECISION_LOG 2026-05-17T05:30:00Z) and the plan now agree.
+- [x] **HALT 5** — documentation-deferral soft-flags (gg/cc/dd/ee + bb/aa/w/x/z/u) are informational, NOT C8.18-DO-step-2-blocking. ✓
+- [x] **HALT 6** — §15.D §1358 wording (w) + the §15.D DO-step-6/7-boundary clarification remain a SEPARATE next-`[plan-update]` item (deliberately NOT bundled with the (ff) scope-correction per §9-#8 / scope-minimalism; DECISION_LOG 2026-05-17T17:00:00Z alternative (a)). ✓
+- [x] **HALT 7** — Tier 3+5 ≈ 2.5/7 (C8.16+C8.17 done; C8.18 DO step 1 of 7 done); cumulative Phase C ≈ 26 of 51-71 (effort-ceiling cap 86 intact). ✓ (informational)
+
+**7/7 PASS. 11/11 gate parquet SHAs byte-exact (fetal-death via the canonical `-build` tree). Scope = 19 cohort zips + 19 cohort guide PDFs, all HTTP 200.**
+
+### Inputs
+
+- [x] 19 cohort source zips — all HTTP 200 (`curl -sI`): `cohortlinkedus/LinkCO{83..91}.zip` (9) + `cohortlinkedus/LinkCO{95..04}US.zip` (10). Sibling-derived (L1-extension) from the on-disk 2005-2015 `LinkCO{05..15}US.zip` whose `source_url` (`file_inventory.csv`) + manifest §3 confirm the exact `cohortlinkedus/` path; the only filename delta is the pre-1995 missing `US` suffix (NCHS_SOURCE_MANIFEST §3 documents this convention change). ✓
+- [x] 19 cohort user-guide PDFs — all HTTP 200 at `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Dataset_Documentation/DVS/cohortlinked/LinkCO{83..91,95..04}Guide.pdf`. L1-extension sibling-derivation **anchored on the on-disk `LinkCO05Guide.pdf`**: probed it at the corrected base → HTTP 200, `content-length: 367848` = the on-disk file size byte-for-byte (`raw_docs/linked/LinkCO05Guide.pdf` is 367848 B) → the URL is the verified-correct sibling form; 1983-2004 siblings all resolve. (Correct doc base = `…/NCHS/Dataset_Documentation/DVS/cohortlinked/`, a sibling of `…/NCHS/Datasets/`, established via WebFetch on cdc.gov/nchs vitalstatsonline after the §15.D-approximate `Datasets/DVS/Dataset_Documentation/DVS/...` form 404'd — L1-extension: a 404 on a hallucinated path is a weak signal; the verified-on-disk-sibling anchor is the strong one.) ✓
+- [x] No required upstream task incomplete: C8.18 DO step 1 closed (decision = Option A cohort-only); `[plan-update]` merged. ✓
+- [x] No stale checkpoints: `~/Desktop/natality-harmonization/raw_data/linked/` has NONE of `LinkCO{83..91}.zip`/`LinkCO{95..04}US.zip`; `raw_docs/linked/` has NONE of `LinkCO{83..04}Guide.pdf` → net-new, no overwrite, idempotent (re-run = skip-existing). ✓
+
+### Environment
+
+- [x] Python 3.13.9 (≥3.11) ✓; pandas 2.3.2 (≥2.3) ✓; pyarrow 18.1.0 (≥18.0) ✓.
+- [x] `git status --porcelain` clean (the `[plan-update]` `df0675f` is committed; working tree clean); branch `main`. ✓
+- [x] L10 (§12 step 8): this DO-step-2 PRE-FLIGHT entry (2026-05-17T17:30:00Z) is written before the first DO-step-2 mutation (no download/metadata edit yet); prior sub-step (DO step 1) PRE-FLIGHT 2026-05-17T05:30:00Z precedes its DO commit `66cfcb9`; the intervening `[plan-update]` `df0675f` is a non-DO §11 commit. No back-fill. ✓
+
+### Source documentation
+
+- [x] DO step 2 consumes external NCHS zips + cohort guide PDFs; SHA-256 is **recorded at download** (no prior manifest SHA exists for the 19 new files — they are net-new manifest rows, the C8.17 DO step 1 precedent). No §7-#11 stale-SHA exposure (nothing claims a prior SHA for these). L12-extension text-layer probe on a sample cohort guide PDF (oldest = `LinkCO83Guide.pdf` highest OCR-risk + one 1990s) is a SMOKE deliverable BEFORE any "needs OCR" claim (LESSONS 2026-05-12T15:00Z precedent). ✓
+
+### Outputs
+
+- [x] Intended outputs (net-new, none exist): 19 zips → `~/Desktop/natality-harmonization/raw_data/linked/`; 19 PDFs → `~/Desktop/natality-harmonization/raw_docs/linked/`; git-tracked metadata extension → `natality/metadata/file_inventory.csv` (+19 `_linked` rows) + `docs/NCHS_SOURCE_MANIFEST.md` §3 (+19 rows) + `tests/test_source_zip_sha_stability.py` (Convention-2/L17 tracks-current-state anchor re-pin). No canonical parquet / `harmonized_schema.csv` / validation-target CSV / harmonize-or-parse script created or overwritten at DO step 2 (download + inventory only — the C8.17 DO step 1 shape). ✓
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+Three git-tracked artifacts will be mutated; current state snapshotted + verified against the (corrected) §15.D plan:
+
+- `natality/metadata/file_inventory.csv` — **77 lines (76 data rows + header)**; **19** `_linked` rows (`2005_linked`…`2023_linked`); 57 natality rows (1968-2024). Plan-assumed: add **19** `_linked` rows (`1983_linked`…`1991_linked` + `1995_linked`…`2004_linked`) → 95 data rows, 38 `_linked`. Columns: `year,source_url,source_org,raw_filename,file_format,doc_filename,imported,notes`. Matches plan. ✓
+- `docs/NCHS_SOURCE_MANIFEST.md` — §3 header `## Section 3 — Linked-cohort raw zips (19; cohort years 2004-2023)`; 19 SHA rows (2005-2023). Plan-assumed: → 38 rows, header recount + 1983-1991/1995-2004 cohort years + 1992-1994-gap note; total manifest 122 → 141. Matches plan. ✓
+- `tests/test_source_zip_sha_stability.py` — **`DESIGN: tracks-current-state`** (first docstring line); anchors `assert len(rows) == 122` + `counts == {"fetal": 43, "natality": 57, "linked": 19, "matched_multiples": 3}` + docstring "122 = 43 + 57 + 19 + 3". Plan: re-pin to `141` / `"linked": 38` / "141 = 43 + 57 + 38 + 3" — **this re-pin IS the expected behavior** (Convention 1 §4.2.1 / Convention 2 / L17; bundled into the DO step 2 commit, NOT a regression; the C8.17 DO step 1 precedent re-pinned 100→122 in the same download commit). Routing logic (`LinkCO*`→linked, `*PE*CO*`→linked) already covers the new `LinkCO{83..04}` filenames. Matches plan. ✓
+- **Divergence verdict: NONE.** All three artifacts' current values match the scope-corrected §15.D plan's assumed state. (The earlier inverted-premise divergence was resolved at DO step 1 + the `[plan-update]` merged this session.)
+
+### Halt conditions tripped
+
+None. (The fetal-death SHA initial-mismatch was a wrong-path read, resolved at the cheap-check moment to the canonical `-build` tree — 11/11 byte-exact; not a §7-#18 regression.)
+
+### Result
+
+**PROCEED** to C8.18 DO step 2 SMOKE → DO.
+
+---
+
 ## PRE-FLIGHT for C8.18 (umbrella) + DO step 1 — 2026-05-17T05:30:00Z — Linked birth-infant death 1983-2004 backward extension (A.3; 19 new years; permanent 1992-1994 gap); first Tier-3+5 task after C8.17-complete — **RESULT: PROCEED to DO step 1 (cohort-vs-period publishing-design decision via AskUserQuestion — the §15.D-prescribed DO-step-1 mechanism)**; a **material §7-class substrate divergence surfaced at the Convention-3 Field-value snapshot** (the §15.D + EXPLORATION_REPORT §A.3 task-plan premise *"HVS-linked from 2005 ships period-format only"* is **INVERTED** — the existing 2005-2023 product is the **cohort-linked** series); flagged BEFORE any DO mutation; resolution is exactly the §15.D DO-step-1 + Sub-Q42 AskUserQuestion path + a proposed §15.D `[plan-update]` sub-entry (human-merged per §11; NOT bundled with the DO commit per Convention 5)
 
 > **Why an umbrella PRE-FLIGHT + DO-step-1 section:** C8.18 is a multi-sub-step task (8 DO steps per §15.D; ~8-14 sessions). Per §4.1 / L10 the choice is one upfront umbrella PRE-FLIGHT or per-sub-step PRE-FLIGHT; this follows the C8.16/C8.17 precedent (one umbrella + per-sub-step addenda). **DO step 1 is decision-only** (the cohort-vs-period publishing-design decision; a DECISION_LOG entry + STATUS section; **zero canonical-state mutation, zero source downloads**). The 19-or-29 source zips + ~25 user-guide PDFs are **DO step 2** inputs and get their own DO-step-2 PRE-FLIGHT addendum (SHA-verified at download per §5 + L1-extension sibling-probe). Documented **before any DO mutation**; `C8.18-pre-do` to be tagged at the clean pre-DO HEAD per §13 step 4.

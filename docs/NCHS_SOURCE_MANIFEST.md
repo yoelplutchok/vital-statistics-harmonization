@@ -148,16 +148,40 @@ Coverage envelope: 57 years contiguous. Filename convention: `Nat<YYYY>.zip` (19
 
 ---
 
-## Section 3 — Linked-cohort raw zips (19; cohort years 2004-2023)
+## Section 3 — Linked-cohort raw zips (38; cohort years 1983-2023, permanent 1992-1994 gap)
 
-Naming convention changes at cohort 2015 / publication 2016:
-- 2005-2015 publication: `LinkCO<YY>US.zip` (cohort year embedded as 2-digit suffix; corresponds to the **publication year**, which is cohort_year + 1).
+> **C8.18 DO step 2 extension (2026-05-17).** 19 pre-2005 **cohort-linked** rows added (cohort years 1983-1991 + 1995-2004) per the C8.18 cohort-only backward extension (DECISION_LOG 2026-05-17T05:30:00Z; §15.D scope-corrected `[plan-update]` `df0675f`). These zips are SHA-anchored + on disk at `raw_data/linked/` but **not yet harmonized into the parquet** (`file_inventory.csv` `imported=false`); the linked v3→v4 re-harmonize is a later C8.18 DO step. Period-linked 1995-2004 (`LinkPE*US.zip`) is **out of C8.18 scope** (Option A; a separate future product). All probed HTTP 200 at the same `cohortlinkedus/` path as 2005-2015.
+
+Naming convention (three eras):
+- 1983-1991 (pre-1995, cohort-only): `LinkCO<YY>.zip` (2-digit cohort year, **no `US` suffix**); members `LinkCO<YY>USnum.dat` (infant-death numerator) + `LinkCO<YY>USden.dat` (birth denominator).
+- 1995-2015 publication: `LinkCO<YY>US.zip` (cohort year as 2-digit suffix; for 2005+ the suffix corresponds to the **publication year** = cohort_year + 1). 1995-2002 members `LinkCO<YY>USDen/Num/Unl.dat`; 2003-2015 members `VS<YY>LKBC.*`.
 - 2017 publication onward: `<YYYY-pub>PE<YYYY-cohort>CO.zip` (4-digit publication year + 4-digit cohort year explicit).
+
+**1992-1994: permanent gap.** NCHS suspended ALL birth-infant-death linkage for the 1992, 1993, and 1994 cohorts (no cohort and no period file published). The gap is permanent and surfaced loud in `harmonized_schema.csv` `years_available`, CODEBOOK, ABOUT_THIS_RELEASE.md, and the manuscript Coverage paragraph (per EXPLORATION_REPORT §A.3 risk (a)).
 
 Each zip contains one publication-year + cohort-year pair. Inventory keys these as `<cohort_year>_linked` to match the cohort year that the parquet pipeline harmonizes against (cohort = year-of-birth of the cohort being followed for infant deaths).
 
 | Cohort year | Inventory key | raw_filename | SHA-256 |
 |---|---|---|---|
+| 1983 | `1983_linked` | `LinkCO83.zip` | `1eb16d4f185abec566472d6ef00811ff910288b8945c5224c20d1eabf21f0f5c` |
+| 1984 | `1984_linked` | `LinkCO84.zip` | `ca36244bc089270b45b8e32f1f4e6b81fa746319de4dabf74019157f697edb5b` |
+| 1985 | `1985_linked` | `LinkCO85.zip` | `70874c9952f194569d106f8ae704864cdb43c55147048e4acdc62646ccb6dbab` |
+| 1986 | `1986_linked` | `LinkCO86.zip` | `e99694c614e5ac31bf05b240ae092a3681fcc078411ea0f028c7e9c0472ed983` |
+| 1987 | `1987_linked` | `LinkCO87.zip` | `15df1eae8cb93119b0b1b2445b77362462a0a092470fc19d5f27e6ef63e5d6d8` |
+| 1988 | `1988_linked` | `LinkCO88.zip` | `6f7b8e64c9576b2464c90ec5d01d31a21dba5d664ca415163bd93e91b88e87e8` |
+| 1989 | `1989_linked` | `LinkCO89.zip` | `a7f9f0da4bd249d67937055e1f0bb8a9fdc7092ef66be58262abfabf507d7cc7` |
+| 1990 | `1990_linked` | `LinkCO90.zip` | `af54e5c32436194a854d4c84750ced3265ec24a3ae4ca5b35d169e824dc65dec` |
+| 1991 | `1991_linked` | `LinkCO91.zip` | `92c8d8a4c3299c8b8c399862f98439b4d1c4520f92d643ba9c53c38647f5bb46` |
+| 1995 | `1995_linked` | `LinkCO95US.zip` | `ecc03a36a9880f5eb3a946657bfe6b54ae25b0dc1415bad6ae64c90f6a6bfa35` |
+| 1996 | `1996_linked` | `LinkCO96US.zip` | `31e3e098b3b455fff293b177f6430e0ff9355459286b0a269c3e638a48cc4965` |
+| 1997 | `1997_linked` | `LinkCO97US.zip` | `1b23fe4ed1511c76c5a78b622be0401550b9f3a2f55d7dfdf33ef4c40f90a5df` |
+| 1998 | `1998_linked` | `LinkCO98US.zip` | `804c128875e2d8c3865e78f64af8b5144bb5a9772b3f5b2fd4099f8ecd518e83` |
+| 1999 | `1999_linked` | `LinkCO99US.zip` | `444be0ec866e8082f373975862ff09ddec7026a0ebe60ab72a2a254ba0594462` |
+| 2000 | `2000_linked` | `LinkCO00US.zip` | `61d0d6aad5c903f3d4cec20340d76a417a80d8db7124c01c9d442fd5f128f065` |
+| 2001 | `2001_linked` | `LinkCO01US.zip` | `d49b8d36df499dfda85d2fbd20120b38cd811cb7716daac9e8d21bb0910d66ec` |
+| 2002 | `2002_linked` | `LinkCO02US.zip` | `d185527f7dab8648fd50058e566065376b250a9d0e24cf52c93d2438409e8788` |
+| 2003 | `2003_linked` | `LinkCO03US.zip` | `110fbbeca5e52f0f1ec8bce60cdaefdc4afeb542578d8932cd2d86d9dabe18d9` |
+| 2004 | `2004_linked` | `LinkCO04US.zip` | `f5c2fbf9e71fa8a059704e9779427390b6aaac1d9722ab3993af2e712a90393f` |
 | 2005 | `2005_linked` | `LinkCO05US.zip` | `d805b77d6971dc7c2e1bcfdf982e368440a0c8747d9a3975e223c74815596257` |
 | 2006 | `2006_linked` | `LinkCO06US.zip` | `226f02a8c397619c63a52b2e223ee38cec01bb4146efd13ed28c281487eb681d` |
 | 2007 | `2007_linked` | `LinkCO07US.zip` | `d4e44da8274a09afaa232ac809dd5078cfe3a6b5e06ef697ebb9a506b5a32a92` |
@@ -178,7 +202,7 @@ Each zip contains one publication-year + cohort-year pair. Inventory keys these 
 | 2022 | `2022_linked` | `2023PE2022CO.zip` | `1c2ad811a4b8c4aecded084162cfcba0ecf6d8c7dd06909aaacddd30967e3fe6` |
 | 2023 | `2023_linked` | `2024PE2023CO.zip` | `24742c158e15134383514a0516dbaa0e6f94ba49ec253fe552719ceaa5f735c8` |
 
-**Linked-file coverage caveat.** This monorepo's harmonization pipeline covers cohort years 2005-2023 (19 years contiguous). The NCHS canonical linked-file series goes back to 1983 cohort year, but pre-2005 files are NOT processed by this resource (the natality harmonization v2.x scope decision deferred them; see [`natality/docs/COMPARABILITY.md`](../natality/docs/COMPARABILITY.md) § V3 Linked birth-infant death comparability). Pre-2005 linked files exist in the NCHS public-use archive but are not included in this manifest.
+**Linked-file coverage caveat.** As of C8.18 DO step 2 (2026-05-17) the 19 pre-2005 cohort-linked source zips (1983-1991 + 1995-2004) are SHA-anchored in this manifest and on disk, but the **harmonized linked parquet still covers cohort years 2005-2023 only** (19 years; linked v3). The pre-2005 rows carry `imported=false` in `file_inventory.csv` until the C8.18 re-harmonize DO step ships the 41-year 1983-2023 cohort-linked parquet (linked v3→v4, permanent 1992-1994 gap). The earlier "pre-2005 NOT processed (v2.x scope deferral)" statement is **superseded** by the C8.18 cohort-only backward extension (DECISION_LOG 2026-05-17T05:30:00Z; `[plan-update]` `df0675f`); see [`natality/docs/COMPARABILITY.md`](../natality/docs/COMPARABILITY.md) § V3 Linked birth-infant death comparability. Period-linked 1995-2004 (`LinkPE*US.zip`) remains out of scope (Option A; separate future product).
 
 **2025 cohort release.** The 2025-published cohort-2024 file (`2025PE2024CO.zip`) has not yet been released by NCHS at the time of this manifest's generation (2026-05-13). Once released, a subsequent latest-year refresh task (per the C8.2 / C8.10b carry-forward soft-flag) will append the row and refresh this manifest under a new `[plan-update]` revision.
 

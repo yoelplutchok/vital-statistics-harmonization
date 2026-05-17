@@ -1,6 +1,77 @@
-# STATUS — last updated 2026-05-17T04:00:00Z
+# STATUS — last updated 2026-05-17T18:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-17T18:30:00Z — **C8.18 §15.D scope-correction `[plan-update]` MERGED + C8.18 DO step 2 close** — 19 cohort source zips (~1.85 GB) + 19 cohort user-guide PDFs downloaded, SHA-anchored, 3 metadata artifacts extended — **ZERO canonical-state mutation** (11/11 gate parquet SHAs byte-exact at VERIFY: natality `c8a740eb…`/`acb5c48a…`, `.v28_baseline` `230efed2…`/`e16ad532…`, linked-derived `9b828a4d…`, fetal-death `38e2cecb…99c5cf48`/`185c071e…a7968a09` **via the canonical `~/Desktop/fetal-death-harmonization-build/output/harmonized/` tree**, MM `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…`; git scope = `file_inventory.csv` + `NCHS_SOURCE_MANIFEST.md` + `test_source_zip_sha_stability.py` + `PRE_FLIGHT_LOG.md`, no `.parquet`/schema/harmonize-or-parse-script). Two commits this session: (1) standalone **`[plan-update]` `df0675f`** — §15.D Task C8.18 scope-correction APPLIED (§11 step 3; premise period→cohort, 29→19 zips, DO list 8→7, effort 8-14→~8-11, VERIFY per-cohort; **soft-flag (ff) RESOLVED** — NEXT_STEPS.md §15.D now agrees with the on-disk decision); (2) **C8.18 DO step 2** — 19 zips (9 × `LinkCO{83..91}.zip` no-`US`-suffix + 10 × `LinkCO{95..04}US.zip`; Σ 1,858,192,447 B) + 19 cohort guide PDFs to `raw_data/linked/` + `raw_docs/linked/`; SHA-anchored all 19 into `NCHS_SOURCE_MANIFEST.md` §3 (linked 19→38, total 122→141); +19 `<YYYY>_linked` rows to `file_inventory.csv` (`imported=false` — not yet harmonized; C8.17 precedent; 76→95 data rows, 0 malformed); Convention-2/L17 same-commit re-pin of `test_source_zip_sha_stability.py` (`tracks-current-state`: 122→141, linked 19→38). SMOKE L12-extension text-layer probe (the oldest/highest-risk `LinkCO83Guide.pdf` 139/139 non-empty + `LinkCO96Guide.pdf` 262/272) → **no OCR needed**. pytest **85 passed, 1 skipped, 1 xfailed in 347.03s** (Convention 1 count gate; within ~240-380s band; the SHA-stability test re-verified all 38 linked SHAs byte-exact + the anchor re-pin, within the 85 passed; `test_inventory_invariants` unaffected — `_linked` keys skipped). One in-flight L13-extension catch (a positional num/den mislabel in generated inventory notes — corrected before apply; denominator now the `*den*` member for all 19). One resolved cheap-check: the fetal-death gate parquet canonical path = the `-build` tree (the non-`build` copy is a stale May-4 secondary; investigated, not a §7-#18 regression; **NEW soft-flag (hh)**). Zero §7 halts. No tag at this intermediate DO step (Convention 5; `C8.18-complete` final-sub-step-only; `C8.18-pre-do`@`6632a15` remains the DO rollback anchor). Full narrative RECEIPTS/C8.18_step2_2026-05-17T18-30-00Z.md + DECISION_LOG 2026-05-17T17:00:00Z (plan-update) + 2026-05-17T18:30:00Z (DO step 2).
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 + C8.17 COMPLETE (2 of 7); C8.18 IN PROGRESS (DO steps 1+2 of 7 closed; plan-update merged).** The §15.D plan and the on-disk decision now agree (cohort-only, 19 zips, 7-step DO list). 19 cohort source zips + 19 cohort user-guide PDFs are SHA-anchored on disk; the linked product is still v3 (2005-2023) — the v3→v4 re-harmonize to the 41-year 1983-2023 cohort series is a later C8.18 DO step. Cumulative Phase C ≈ 27 of 51-71 sessions (effort-ceiling cap 86 intact).
+
+### What was done this session (kickoff → C8.18 DO step 2 close)
+
+1. **Kickoff handshake** (a)-(d); user authorized "proceed in the way you think is best".
+2. **§15.D Task C8.18 scope-correction `[plan-update]` MERGED** (§11 step 3; the gating soft-flag (ff)): standalone `[plan-update]` commit `df0675f` — premise period→cohort, 29→19 zips, DO list 8→7, effort/VERIFY narrowed; NEXT_STEPS.md §15.D + DECISION_LOG 2026-05-17T17:00:00Z. Not bundled with any DO commit (Convention 5).
+3. **C8.18 DO step 2** full five-phase: PRE-FLIGHT (7/7 HALTs; 11/11 gate SHAs byte-exact incl. the fetal-death `-build`-tree path correction; 19 zip + 19 guide URLs HTTP 200; Convention-3 snapshot no-divergence; L10-safe) → SMOKE (sample download + zip integrity + SHA + L12 text-layer probe = no OCR) → DO (19 zips + 19 PDFs downloaded; 3 metadata artifacts extended) → VERIFY (5 criteria PASS) → RECEIPT.
+4. **RECEIPT + DECISION_LOG ×2 + this STATUS** appended; commit pending.
+
+### Last completed step
+
+Two commits ship this session: `df0675f` (standalone `[plan-update]` — `NEXT_STEPS.md` §15.D + `DECISION_LOG.md` 2026-05-17T17:00:00Z) and the C8.18 DO step 2 commit (`natality/metadata/file_inventory.csv` +19 rows + `docs/NCHS_SOURCE_MANIFEST.md` §3 19→38 + `tests/test_source_zip_sha_stability.py` Convention-2/L17 re-pin + `PRE_FLIGHT_LOG.md` DO-step-2 entry + RECEIPTS/C8.18_step2 + `DECISION_LOG.md` 2026-05-17T18:30:00Z + this STATUS). Raw zips/PDFs are gitignored (outside the monorepo tree at `~/Desktop/natality-harmonization/raw_{data,docs}/linked/`; SHA-recorded in the manifest). **No tag** (intermediate DO step; Convention 5).
+
+### In-progress
+
+C8.18 **DO step 3** queued: cohort 1983-1991 layout-CSV reconstruction (1978-rev birth cert + ICD-9; sibling of natality 1978-1988 from C8.17 DO step 4). Substrate on disk: `raw_data/linked/LinkCO{83..91}.zip` (members `LinkCO{YY}USden.dat` births-denominator + `LinkCO{YY}USnum.dat` infant-death-numerator) + `raw_docs/linked/LinkCO{83..91}Guide.pdf` (text-extractable; no OCR — L12 confirmed). §15.D estimate 2-3 sessions.
+
+### Next planned task
+
+**C8.18 DO step 3 — cohort 1983-1991 layout-CSV reconstruction** (~2-3 sessions per scope-corrected §15.D). Entry cheap-check (~5 min): re-verify the 7 forward-looking HALTs in RECEIPTS/C8.18_step2_2026-05-17T18-30-00Z.md — esp. 11 gate parquet SHAs unchanged (fetal-death via the `-build` tree, NOT the stale `~/Desktop/fetal-death-harmonization/` secondary); 19 zips + 19 guides on disk + SHA-anchored (manifest 141 / linked 38); record byte-width is the DO step 3 deliverable (currently undeclared by design in `file_inventory.csv` `file_format`); L13-extension value-distribution verify each anchor field.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED, unchanged. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED, unchanged.
+
+### Open questions for human
+
+None blocking C8.18 DO step 3 entry. The DO step 2 close state is fully verified; the §15.D `[plan-update]` is merged so the plan and on-disk decision agree (no remaining (ff) gate).
+
+**Carried-forward (Phase D):** C8.13 PROPOSE-EDIT manuscript-timing (deferred); manuscript Coverage re-paragraph (natality 1968-2024 + the forthcoming linked 1983-2023 envelope) = Phase D D.4.
+
+**Open soft-flags (23; 1 RESOLVED, 1 NEW):** **(ff) RESOLVED** (§15.D scope-correction `[plan-update]` merged `df0675f`). **(hh) NEW**: the stale non-`build` `~/Desktop/fetal-death-harmonization/*.parquet` secondary copy vs the canonical `-build` tree — future gate-SHA checks must use the `-build` path (sibling of the C8.17 D5 stale-build-repo class; Phase D / C8.7b cleanup; not C8.18-blocking). **(gg)** ICD-9-era harmonized cause column shape + `cause_recode_130` per-era → C8.18 DO step 5/6 PRE-FLIGHT. (cc)/(dd)/(ee)/(bb)/(aa)/(w)/(x)/(z)/(u) carry. (t)/(y) resolved earlier.
+
+### Forward-looking HALTs for C8.18 DO step 3 PRE-FLIGHT (Convention 4)
+
+Restated for cheap-check; full 7 in RECEIPTS/C8.18_step2_2026-05-17T18-30-00Z.md.
+
+1. `C8.18-pre-do`@`6632a15`; `C8.18-complete` NOT present (final-sub-step-only). `C8.17-complete` present. `df0675f` ([plan-update]) + the DO step 2 commit are on `main` after `6632a15`.
+2. 11 gate parquet SHAs unchanged — natality `c8a740eb…`/`acb5c48a…`; `.v28_baseline` `230efed2…`/`e16ad532…`; linked-derived `9b828a4d…`; fetal-death `38e2cecb…99c5cf48`/`185c071e…a7968a09` **(read from `~/Desktop/fetal-death-harmonization-build/output/harmonized/`, NOT the stale secondary)**; MM `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…`. Linked-derived `9b828a4d…` changes only at the later C8.18 re-harmonize DO step.
+3. 19 cohort zips + 19 guide PDFs on disk + SHA-anchored (`raw_{data,docs}/linked/`); manifest §3 = 38 linked / 141 total; `test_source_zip_sha_stability.py` anchors = 141 / linked 38. DO step 3 must NOT re-download (idempotent).
+4. DO step 3 = cohort 1983-1991 layout reconstruction (1978-rev birth + ICD-9; C8.17 natality-1978-1988 sibling). L13-extension: value-distribution-verify each anchor field, not byte-position alone. Record byte-width = the DO step 3 deliverable (`file_inventory.csv` `file_format` deliberately says so; not fabricated).
+5. ICD-9/10 default-null + revision-tagged settled; exact ICD-9-era column shape + `cause_recode_130` per-era = DO step 5/6 PRE-FLIGHT (soft-flag (gg)).
+6. `test_row_count_conservation.py` NATALITY pins (`201_161_456`/`range(1968,2025)`) must NOT be perturbed; LINKED pins (`74_943_824`/`range(2005,2024)`) get the Convention-2/L17 same-commit re-pin at the later re-harmonize DO step. B.12 latest = `v2_2026-05-16T08-00-00Z_columns.csv`. pytest baseline 85P+1S+1XF (~240-380s; count is the gate).
+7. Tier 3+5 ≈ 2.5/7; cumulative Phase C ≈ 27 of 51-71 (cap 86).
+
+### Build artifacts current
+
+- 43-yr fetal-death parquet (v2.4.0) `38e2cecb…`/`185c071e…` at `~/Desktop/fetal-death-harmonization-build/output/harmonized/` (UNCHANGED; canonical gate path = the `-build` tree).
+- **Natality v3.0.0** parquet `acb5c48a…` (derived; 201,161,456 / 57 yr 1968-2024) / `c8a740eb…` (harmonized) (UNCHANGED). `.v28_baseline` `230efed2…`/`e16ad532…` preserved.
+- Linked (cohort-linked, v3; 2005-2023) `9b828a4d…` (UNCHANGED; WILL change at the later C8.18 re-harmonize DO step → v4, 1983-2023).
+- Matched-multiples: 3 yearly_clean + 1 harmonized (`adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…`; UNCHANGED).
+- **NEW raw substrate (gitignored; SHA-anchored in manifest §3):** 19 cohort zips `raw_data/linked/LinkCO{83..91}.zip`+`LinkCO{95..04}US.zip` (~1.85 GB) + 19 cohort guide PDFs `raw_docs/linked/LinkCO{83..91,95..04}Guide.pdf`.
+- All C8.1-C8.17 + C8.18 DO step 1 outputs unchanged. NEW git-tracked this session: §15.D + 2 DECISION_LOG + file_inventory(+19) + manifest(19→38) + SHA-stability re-pin + PRE_FLIGHT entry + 1 RECEIPT + this STATUS. No build-side change (download + metadata only).
+
+### Notes for next session
+
+- **C8.18 DO steps 1+2 closed; the §15.D `[plan-update]` is merged.** Next per scope-corrected §15.D: **DO step 3 — cohort 1983-1991 layout-CSV reconstruction** (2-3 sessions; the highest-value early extension step; sibling-derive from C8.17 natality 1978-1988 layout work; L13-extension value-distribution verify).
+- The 19 zips' record byte-widths are deliberately undeclared in `file_inventory.csv` (`file_format` = "record byte-width = C8.18 DO step 3") — DO step 3 reconstructs them from `LinkCO{83..91}Guide.pdf` (no OCR; L12-confirmed text-extractable). Members: `*den*` = births denominator (the primary harmonized file), `*num*` = infant-death numerator, `*unl*` = unlinked (1995+).
+- Soft-flag (hh): always read fetal-death gate parquets from the `~/Desktop/fetal-death-harmonization-build/output/harmonized/` tree (the non-`build` copy is a stale secondary).
+- `/tmp/c8_18_step2_*` scratch (dl script + log + manifest + row generators) is OS-cleanable + reproducible.
+
+### Session summary
+
+Two units shipped: (1) the §15.D Task C8.18 scope-correction `[plan-update]` was MERGED (§11 step 3; standalone commit `df0675f`) — resolving the gating soft-flag (ff) so NEXT_STEPS.md §15.D agrees with the on-disk cohort-only decision; (2) C8.18 DO step 2 SHIPPED in one session: 19 cohort-linked source zips (~1.85 GB) + 19 cohort user-guide PDFs downloaded + SHA-anchored, with `file_inventory.csv` (+19 `imported=false` rows), `NCHS_SOURCE_MANIFEST.md` §3 (linked 19→38, total 122→141), and the `tracks-current-state` SHA-stability test (Convention-2/L17 anchor re-pin) extended in the same DO commit (the C8.17 DO step 1 precedent). VERIFY all-PASS: 38/38 artifacts size-valid, manifest parses to 141/{43,57,38,3}, 11/11 gate parquet SHAs byte-exact (H10; zero canonical mutation), pytest 85P+1S+1XF/347.03s (Convention 1 count gate; the SHA-stability test re-verified all 38 linked SHAs byte-exact). SMOKE's L12-extension probe confirmed the cohort guide PDFs are text-extractable (no OCR). One L13-extension mislabel (num/den) caught + fixed before apply; one fetal-death wrong-path SHA read investigated + resolved to the canonical `-build` tree (not a regression; new soft-flag (hh)). Zero §7 halts. **C8.18 DO step 3 (cohort 1983-1991 layout-CSV reconstruction; 2-3 sessions) is next.**
 
 ---
 

@@ -8,14 +8,20 @@ the SHA disagreement surfaces at CI rather than mid-pipeline. The manifest
 at docs/NCHS_SOURCE_MANIFEST.md (sha=ed2a44d3… at C8.11) is the canonical
 reference; this test verifies the on-disk universe matches it.
 
-Convention 1 SHAPE-not-VALUE: the count anchor (122 = 43 + 57 + 19 + 3) is the
+Convention 1 SHAPE-not-VALUE: the count anchor (141 = 43 + 57 + 38 + 3) is the
 structural invariant; per-row SHA assertions enforce the manifest is the
 single source of truth. The manifest is re-snapshot under authorized
 latest-year refreshes via §11 plan-update (e.g., when 2025-published
 cohort-2024 linked file lands, the manifest gains a row). The matched-
 multiples section (3 rows; 1995-1997 + 1995-2000 + 2016-2020) was added at
 C8.16 (2026-05-14). The 22 pre-1990 natality rows (1968-1989) were added at
-C8.17 DO step 1 (2026-05-14).
+C8.17 DO step 1 (2026-05-14). The 19 pre-2005 cohort-linked rows (cohort
+years 1983-1991 + 1995-2004; linked 19 -> 38) were added at C8.18 DO step 2
+(2026-05-17) under the cohort-only backward extension (DECISION_LOG
+2026-05-17T05:30:00Z; scope-corrected [plan-update] df0675f). This anchor
+re-pin is the expected behavior of a `tracks-current-state` harness under
+an authorized canonical-inventory extension (Convention 2 / §8 L17),
+bundled into the same DO commit as the manifest + file_inventory extension.
 
 Skip-if-zip-missing per the established `_require()` pattern in
 tests/conftest.py + per-subproject conftests. CI without raw zips on disk
@@ -100,17 +106,17 @@ def _sha256_of(path: Path) -> str:
 
 
 def test_manifest_anchor_row_count() -> None:
-    """Convention-1 anchor: 122 raw-zip rows total in NCHS_SOURCE_MANIFEST.md."""
+    """Convention-1 anchor: 141 raw-zip rows total in NCHS_SOURCE_MANIFEST.md."""
     rows = _parse_manifest()
-    assert len(rows) == 122, (
-        f"expected 122 manifest rows "
-        f"(43 fetal-death + 57 natality + 19 linked + 3 matched-multiples); "
+    assert len(rows) == 141, (
+        f"expected 141 manifest rows "
+        f"(43 fetal-death + 57 natality + 38 linked + 3 matched-multiples); "
         f"got {len(rows)}"
     )
 
 
 def test_manifest_section_row_counts() -> None:
-    """Convention-1 anchor: 43 + 57 + 19 + 3 = 122 split across product sections."""
+    """Convention-1 anchor: 43 + 57 + 38 + 3 = 141 split across product sections."""
     rows = _parse_manifest()
     counts = {"fetal": 0, "natality": 0, "linked": 0, "matched_multiples": 0}
     for filename, _sha in rows:
@@ -124,7 +130,7 @@ def test_manifest_section_row_counts() -> None:
             counts["matched_multiples"] += 1
         else:
             raise AssertionError(f"unrecognized raw_filename: {filename!r}")
-    assert counts == {"fetal": 43, "natality": 57, "linked": 19, "matched_multiples": 3}
+    assert counts == {"fetal": 43, "natality": 57, "linked": 38, "matched_multiples": 3}
 
 
 def test_source_zip_sha_matches_manifest() -> None:
