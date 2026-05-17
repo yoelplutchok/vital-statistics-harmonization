@@ -1611,3 +1611,327 @@ LINKED_NUM_DEATH_2003_FIELDS: list[tuple[str, int, int]] = [
 ]
 
 LINKED_NUM_RECLEN_2003 = 1142
+
+# ==========================================================================
+# C8.18 DO step 4c — cohort 2004 linked layout (900-byte Denominator-PLUS
+# + 1259-byte numerator; 2003-revision transition continued).
+#
+# 2004 is the second year of the 2003-revision dual-certificate transition.
+# REVISION@7 flags the certificate revision per record (S=1989 version
+# unrevised / A=2003 version revised); the byte LAYOUT is one fixed-width
+# record regardless (the "Vers*" column flags which revision populates a
+# field, not a layout shift). 2004 is the cohort-linked birth year so all
+# infant deaths are ICD-10 (deaths occur 2004-2005).
+#
+# Reconstructed byte-exact FRESH from the LinkCO04Guide.pdf DETAIL
+# "Position/Len/Field" code-outline (pp21-60; the L13-extension governing
+# precedent — the pp18-19 "Linked 2004 Cohort Selected Data Elements and
+# Locations" element-span SUMMARY is composite + NOT trusted, used only as
+# an independent cross-check) and value-distribution-verified on real
+# DEFLATE LinkCO04US.zip data FIRST-RUN-CLEAN (n=500 den-plus + numerator;
+# FAILS: NONE).
+#
+# TWO L13-extension findings resolved at the Convention-3 snapshot BEFORE
+# any field_specs.py mutation (both were non-binding RECEIPTS/C8.18_step4b
+# forward-looking-note extrapolations/hypotheses explicitly flagged for
+# value-verification; real data + guide p18 + zip-member arithmetic are
+# authoritative; same class as the 4b 1259->1142 catch):
+#   * "2004 = 900/1142" extrapolation FALSIFIED -> numerator = 1259
+#     (guide p18: Num US reclen 1259 / count 27,763 ;
+#      VS04LKBC.USNUMPUB 35,009,143 / (1259+2 CRLF) = 27,763 byte-exact ;
+#      den VS04LKBC.DUSDENOM 3,715,298,312 / (900+2) = 4,118,956).
+#   * "2004 den-plus == LINKED_BIRTH_2005_2013" HYPOTHESIS FALSIFIED ->
+#     2004 birth is the 2003-rev *cohort* layout (FILLER@1-6 + REVISION@7
+#     + IDNUMBER@10-14); LINKED_BIRTH_2003 value-verifies byte-exact on
+#     real 2004 den-plus only for locs 1-575, then DIVERGES (2004 carries
+#     more 2003-rev F_* edit flags; MRACE1E@800 vs 2003's @683).
+#   * LinkCO04US.zip = DEFLATE (stdlib zipfile; NOT DEFLATE64 like 2003 —
+#     no special tooling for 2004).
+#
+# Composite-span convention (soft-flag (gg); per-condition leaf
+# decomposition + per-era cause recode = C8.18 DO step 5/6; the 2003 4b
+# precedent): MEDRISK@328-344 OBSTETRC@355-361 LABOR@374-389
+# DELMETH@395-401 NEWBORN@483-491 CONGENIT@504-525 (birth) ;
+# ENTITY@905-1044 (20x7) RECORD@1049-1148 (20x5) (numerator). Cleanly
+# DETAIL-enumerated F_* edit scalars kept individually. FILLER_<n> =
+# DETAIL-enumerated filler ; RESERVED_<n> = unenumerated synthesized
+# gap-fill (the 2003 4b provenance-distinction; gaps explicit, never
+# silently dropped — §2 fail-closed). Field names are NCHS-cohort-guide-
+# traceable raw names (IDNUMBER@10-14 = the num<->den-plus join key, named
+# for sibling-2003 + p18-summary consistency though the DETAIL token is
+# "SEQNUM"; MAGER@89-90 = 2003-sibling MAGER41; BRTHWGT@467-470 =
+# 2003-sibling DBWT — positions identical + value-verified). Positions
+# 1-based inclusive.
+#
+# Sources:
+#   - LinkCO04Guide.pdf p18 (file char: Den US 900 / Num US 1259 / Unl US
+#     1259), pp21-57 (denominator-plus DETAIL locs 1-900; p57 divider
+#     "Here ends the denominator-plus file."), pp57-60 (numerator-only
+#     mortality DETAIL locs 901-1259). pp18-19 element-span SUMMARY =
+#     NOT trusted (L13-ext). Captured state-on-disk in PRE_FLIGHT_LOG.md
+#     2026-05-18T23:00:00Z SMOKE Tier 0 + /tmp/c8_18_s4c/ builder.
+# ==========================================================================
+
+# --- 2004 cohort: 900-byte Denominator-PLUS, birth-cert section ---
+# Locs 1-867. Identical in the den-plus AND the numerator's natality
+# section (LinkCO04Guide pp21-57). 1-575 structurally == LINKED_BIRTH_2003
+# (value-verified on real 2004 data); 576-867 reconstructed from the 2004
+# DETAIL (the 2004-specific 2003-rev F_* edit-flag region + relocated
+# MRACE1E@800-823 / FRACE1E@835-858).
+LINKED_BIRTH_2004_FIELDS: list[tuple[str, int, int]] = [
+    ("FILLER_1", 1, 6),
+    ("REVISION", 7, 7),     # Birth-cert revision (S=1989 unrevised / A=2003 revised)
+    ("FILLER_8", 8, 8),
+    ("LATEREC", 9, 9),      # Late record flag
+    ("IDNUMBER", 10, 14),   # Infant death number (num<->den-plus join key; DETAIL "SEQNUM")
+    ("DOB_YY", 15, 18),     # Birth year (== 2004 for the 2004 cohort)
+    ("DOB_MM", 19, 20),     # Birth month (01-12)
+    ("FILLER_21", 21, 28),
+    ("DOB_WK", 29, 29),     # Day of week of birth
+    ("OSTATE", 30, 31),     # Occurrence FIPS state
+    ("XOSTATE", 32, 33),
+    ("FILLER_34", 34, 36),
+    ("OCNTYFIPS", 37, 39),
+    ("OCNTYPOP", 40, 40),
+    ("FILLER_41", 41, 41),
+    ("UBFACIL", 42, 42),
+    ("FILLER_43", 43, 58),
+    ("BFACIL3", 59, 59),
+    ("RESERVED_60", 60, 88),
+    ("MAGER", 89, 90),      # Age of mother (2003-sibling MAGER41; same pos)
+    ("MAGER14", 91, 92),    # Age of mother recode 14
+    ("MAGER9", 93, 93),     # Age of mother recode 9
+    ("FILLER_94", 94, 95),
+    ("UMBSTATE", 96, 97),
+    ("FILLER_98", 98, 99),
+    ("MBSTATER3", 100, 100),
+    ("FILLER_101", 101, 106),
+    ("XMRSTATE", 107, 108),
+    ("MRSTATEFIPS", 109, 110),
+    ("FILLER_111", 111, 113),
+    ("MRCNTYFIPS", 114, 116),
+    ("FILLER_117", 117, 119),
+    ("MRCITYFIPS", 120, 124),
+    ("FILLER_125", 125, 131),
+    ("RCNTY_POP", 132, 132),
+    ("RCITY_POP", 133, 133),
+    ("CITYLIM", 134, 134),
+    ("METRORES", 135, 135),
+    ("FILLER_136", 136, 136),
+    ("RECTYPE", 137, 137),
+    ("RESTATUS", 138, 138),
+    ("MBRACE", 139, 140),   # Bridged race of mother
+    ("MRACE", 141, 142),    # Race of mother (detail)
+    ("MRACEREC", 143, 143), # Race of mother recode
+    ("MRACEIMP", 144, 144),
+    ("FILLER_145", 145, 147),
+    ("UMHISP", 148, 148),
+    ("MRACEHISP", 149, 149),
+    ("FILLER_150", 150, 152),
+    ("MAR", 153, 153),      # Marital status of mother
+    ("MAR_IMP", 154, 154),
+    ("MEDUC", 155, 155),    # Education of mother
+    ("UMEDUC", 156, 157),   # Education of mother (2003-rev)
+    ("MEDUC_REC", 158, 158),
+    ("FILLER_159", 159, 174),
+    ("FAGERPT_FLG", 175, 175),
+    ("FAGERPT", 176, 177),
+    ("FILLER_178", 178, 181),
+    ("FAGECOMB", 182, 183),
+    ("UFAGECOMB", 184, 185),
+    ("FAGEREC11", 186, 187),
+    ("FBRACE", 188, 189),
+    ("FILLER_190", 190, 190),
+    ("FRACEREC", 191, 191),
+    ("FILLER_192", 192, 194),
+    ("UFHISP", 195, 195),
+    ("FRACEHISP", 196, 196),
+    ("FILLER_197", 197, 198),
+    ("UFRACE", 199, 200),
+    ("FILLER_201", 201, 203),
+    ("PRIORLIVE", 204, 205),
+    ("PRIORDEAD", 206, 207),
+    ("PRIORTERM", 208, 209),
+    ("LBO", 210, 211),
+    ("LBO_REC", 212, 212),
+    ("FILLER_213", 213, 214),
+    ("TBO", 215, 216),
+    ("TBO_REC", 217, 217),
+    ("FILLER_218", 218, 244),
+    ("PRECARE", 245, 246),  # Month prenatal care began
+    ("PRECARE_REC", 247, 247),
+    ("FILLER_248", 248, 255),
+    ("MPCB", 256, 257),
+    ("MPCB_REC6", 258, 258),
+    ("MPCB_REC5", 259, 259),
+    ("FILLER_260", 260, 269),
+    ("UPREVIS", 270, 271),  # Number of prenatal visits
+    ("PREVIS_REC", 272, 273),
+    ("FILLER_274", 274, 274),
+    ("APNCU", 275, 275),
+    ("WTGAIN", 276, 277),   # Weight gain during pregnancy
+    ("WTGAIN_REC", 278, 278),
+    ("U_APNCU", 279, 279),
+    ("DFPC_IMP", 280, 280),
+    ("FILLER_281", 281, 283),
+    ("CIG_1", 284, 285),
+    ("CIG_2", 286, 287),
+    ("CIG_3", 288, 289),
+    ("TOBUSE", 290, 290),
+    ("CIGS", 291, 292),     # Cigarettes (recode)
+    ("UCIG_REC6", 293, 293),
+    ("CIG_REC", 294, 294),
+    ("ALCOHOL", 295, 295),  # Alcohol use
+    ("DRINKS", 296, 297),
+    ("DRINKS_REC", 298, 298),
+    ("FILLER_299", 299, 327),
+    ("MEDRISK", 328, 344),  # Medical risk factors (composite; URF_* leaves DO5; gg)
+    ("FILLER_345", 345, 354),
+    ("OBSTETRC", 355, 361), # Obstetric procedures (composite; UOP_* leaves DO5; gg)
+    ("FILLER_362", 362, 373),
+    ("LABOR", 374, 389),    # Complications of labor/delivery (composite; ULD_* DO5; gg)
+    ("FILLER_390", 390, 394),
+    ("DELMETH", 395, 401),  # Method of delivery (composite; UME_*+DMETH_REC; DO5; gg)
+    ("FILLER_402", 402, 407),
+    ("ATTEND", 408, 408),   # Attendant at birth
+    ("FILLER_409", 409, 414),
+    ("APGAR5", 415, 416),   # Five-minute Apgar score
+    ("APGAR5R", 417, 417),  # Apgar recode
+    ("FILLER_418", 418, 422),
+    ("DPLURAL", 423, 423),  # Plurality
+    ("FILLER_424", 424, 424),
+    ("IMP_PLUR", 425, 425), # Plurality imputation flag
+    ("FILLER_426", 426, 435),
+    ("SEX", 436, 436),      # Sex of infant
+    ("IMP_SEX", 437, 437),  # Sex imputation flag
+    ("DLMP_MM", 438, 439),
+    ("DLMP_DD", 440, 441),
+    ("DLMP_YY", 442, 445),
+    ("ESTGEST", 446, 447),  # Obstetric estimate of gestation
+    ("FILLER_448", 448, 450),
+    ("COMBGEST", 451, 452), # Combined gestation - detail weeks
+    ("GESTREC10", 453, 454),# Gestation recode 10
+    ("GESTREC3", 455, 455), # Gestation recode 3
+    ("OBGEST_FLG", 456, 456),
+    ("GEST_IMP", 457, 457),
+    ("FILLER_458", 458, 466),
+    ("BRTHWGT", 467, 470),  # Birth weight in grams (2003-sibling DBWT; same pos)
+    ("BWTR12", 471, 472),   # Birth weight recode 12
+    ("BWTR4", 473, 473),    # Birth weight recode 4
+    ("FILLER_474", 474, 474),
+    ("BWTIMP", 475, 475),
+    ("FILLER_476", 476, 482),
+    ("NEWBORN", 483, 491),  # Abnormal conditions of the newborn (composite; UAB_* DO5; gg)
+    ("FILLER_492", 492, 503),
+    ("CONGENIT", 504, 525), # Congenital anomalies (composite; UCA_* leaves DO5; gg)
+    ("FILLER_526", 526, 568),
+    ("F_MORIGIN", 569, 569),
+    ("F_FORIGIN", 570, 570),
+    ("F_MEDUC", 571, 571),
+    ("FILLER_572", 572, 572),
+    ("F_CLINEST", 573, 573),
+    ("F_APGAR5", 574, 574),
+    ("F_TOBACO", 575, 575),
+    ("RESERVED_576", 576, 646),
+    ("F_MED", 647, 647),
+    ("F_WTGAIN", 648, 648),
+    ("F_ALCOL", 649, 649),
+    ("F_API", 650, 650),
+    ("RESERVED_651", 651, 666),
+    ("F_TOBAC", 667, 667),
+    ("F_MPCB", 668, 668),
+    ("F_MPCB_U", 669, 669),
+    ("RESERVED_670", 670, 682),
+    ("F_URF_LUNG", 683, 683),
+    ("RESERVED_684", 684, 686),
+    ("F_URF_HEMO", 687, 687),
+    ("RESERVED_688", 688, 693),
+    ("F_URF_RENAL", 694, 694),
+    ("F_URF_RH", 695, 695),
+    ("RESERVED_696", 696, 722),
+    ("F_ULD_CORD", 723, 723),
+    ("RESERVED_724", 724, 726),
+    ("FILLER_727", 727, 729),
+    ("F_U_VAGINAL", 730, 730),
+    ("F_U_VBAC", 731, 731),
+    ("F_U_PRIMAC", 732, 732),
+    ("F_U_REPEAC", 733, 733),
+    ("F_U_FORCEP", 734, 734),
+    ("F_U_VACUUM", 735, 735),
+    ("RESERVED_736", 736, 746),
+    ("F_UAB_NSEIZ", 747, 747),
+    ("RESERVED_748", 748, 751),
+    ("F_UCA_ANEN", 752, 752),
+    ("F_UCA_SPINA", 753, 753),
+    ("RESERVED_754", 754, 767),
+    ("F_UCA_CLUB", 768, 768),
+    ("RESERVED_769", 769, 773),
+    ("FILLER_774", 774, 799),
+    ("MRACE1E", 800, 802),
+    ("MRACE2E", 803, 805),
+    ("MRACE3E", 806, 808),
+    ("MRACE4E", 809, 811),
+    ("MRACE5E", 812, 814),
+    ("MRACE6E", 815, 817),
+    ("MRACE7E", 818, 820),
+    ("MRACE8E", 821, 823),
+    ("RESERVED_824", 824, 834),
+    ("FRACE1E", 835, 837),
+    ("FRACE2E", 838, 840),
+    ("FRACE3E", 841, 843),
+    ("FRACE4E", 844, 846),
+    ("FRACE5E", 847, 849),
+    ("FRACE6E", 850, 852),
+    ("FRACE7E", 853, 855),
+    ("FRACE8E", 856, 858),
+    ("FILLER_859", 859, 867),
+]
+
+# --- 2004 cohort: Denominator-PLUS appended death "plus" + RECWT ---
+# Locs 868-900. Present on BOTH num + den-plus; den-plus ends @900
+# (RECWT@893-900). == LINKED_DEATH_2005_2013 model (FLGND@868 /
+# AGED@872-874 / RECWT@893-900; DETAIL + real-data verified).
+LINKED_DEATH_2004_FIELDS: list[tuple[str, int, int]] = [
+    ("FLGND", 868, 868),    # Match status (den-plus {1,2}; numerator {1} linked deaths)
+    ("RESERVED_869", 869, 871),
+    ("AGED", 872, 874),     # Age at death in days (000-366)
+    ("AGER5", 875, 875),    # Infant age recode 5
+    ("AGER22", 876, 877),   # Infant age recode 22
+    ("MANNER", 878, 878),   # Manner of death
+    ("DISPO", 879, 879),    # Method of disposition
+    ("AUTOPSY", 880, 880),  # Autopsy
+    ("FILLER_881", 881, 881),
+    ("PLACE", 882, 882),    # Place of injury
+    ("RESERVED_883", 883, 883),
+    ("UCOD", 884, 887),     # Underlying cause of death - ICD-10 (2004 cohort all ICD-10)
+    ("RESERVED_888", 888, 888),
+    ("UCODR130", 889, 891), # 130 infant cause recode (ICD-10; DO5; gg)
+    ("RESERVED_892", 892, 892),
+    ("RECWT", 893, 900),    # Record weight (1.XXXXXX; den-plus ENDS @900)
+]
+
+LINKED_DENOMPLUS_RECLEN_2004 = 900
+
+# --- 2004 cohort numerator: mortality section (locs 901-1259) ---
+# (Birth section 1-867 REUSE LINKED_BIRTH_2004_FIELDS; death "plus"
+#  868-900 REUSE LINKED_DEATH_2004_FIELDS.) 901-1259 = numerator-only
+# mortality (multiple-cause ENTITY/RECORD + death geo/date). ICD-10
+# throughout (2004 cohort -> deaths 2004-2005). numerator = 1259
+# (NOT 1142 — the prior receipt-note extrapolation was FALSIFIED;
+# guide p18 + byte-exact zip-member arithmetic).
+LINKED_NUM_DEATH_2004_FIELDS: list[tuple[str, int, int]] = [
+    ("FILLER_901", 901, 902),
+    ("EANUM", 903, 904),    # Number of entity-axis conditions (00-20)
+    ("ENTITY", 905, 1044),  # Entity-axis conditions (20 x 7-byte; composite; DO5; gg)
+    ("FILLER_1045", 1045, 1046),
+    ("RANUM", 1047, 1048),  # Number of record-axis conditions (00-20)
+    ("RECORD", 1049, 1148), # Record-axis conditions (20 x 5-byte; composite; DO5; gg)
+    ("FILLER_1149", 1149, 1185),
+    ("HOSPD", 1186, 1186),  # Hospital and patient status
+    ("WEEKDAYD", 1187, 1187),# Day of week of death
+    ("DTHYR", 1188, 1191),  # Year of death (cohort .. cohort+1)
+    ("FILLER_1192", 1192, 1257),
+    ("DOD_MM", 1258, 1259), # Month of death (01-12; numerator ENDS @1259)
+]
+
+LINKED_NUM_RECLEN_2004 = 1259

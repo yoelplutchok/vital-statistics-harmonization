@@ -174,9 +174,12 @@ def test_denominator_dispatcher_additive_branch():
     assert reclen == 783
     assert birth is LINKED_BIRTH_2003_FIELDS
     assert death is LINKED_DEATH_2003_FIELDS
-    # 2004 = a separate later DO step 4c (unconfigured here);
-    # 1992-1994 = the permanent NCHS linkage gap
-    for y in (1992, 1993, 1994, 2004):
+    # 2004 is now configured (C8.18 DO step 4c) — this minimal Edit is
+    # bundled into the 4c commit per L17 / §4.2.1 (this harness is
+    # DESIGN: tracks-current-state; the stale "2004 raises ValueError"
+    # pin would otherwise FAIL on the correct 4c mutation).
+    # 1992-1994 = the permanent NCHS linkage gap (remaining negative case)
+    for y in (1992, 1993, 1994):
         with pytest.raises(ValueError):
             _layout_for_linked_year(y)
 
@@ -187,7 +190,8 @@ def test_numerator_dispatcher_additive_branch():
     assert birth is LINKED_BIRTH_2003_FIELDS
     # numerator death = den-plus "plus" 751-783 + mortality 784-1142
     assert death == LINKED_DEATH_2003_FIELDS + LINKED_NUM_DEATH_2003_FIELDS
-    for y in (1992, 1993, 1994, 2004):
+    # 2004 now configured (C8.18 DO step 4c; L17 bundle per §4.2.1)
+    for y in (1992, 1993, 1994):
         with pytest.raises(ValueError):
             _numerator_layout_for_linked_year(y)
     with pytest.raises(ValueError):

@@ -50,6 +50,11 @@ from field_specs import (
     LINKED_NUM_DEATH_2003_FIELDS,
     LINKED_DENOMPLUS_RECLEN_2003,
     LINKED_NUM_RECLEN_2003,
+    LINKED_BIRTH_2004_FIELDS,
+    LINKED_DEATH_2004_FIELDS,
+    LINKED_NUM_DEATH_2004_FIELDS,
+    LINKED_DENOMPLUS_RECLEN_2004,
+    LINKED_NUM_RECLEN_2004,
     LINKED_BIRTH_2005_2013_FIELDS,
     LINKED_BIRTH_2014_2020_FIELDS,
     LINKED_DEATH_2005_2013_FIELDS,
@@ -102,6 +107,13 @@ def _layout_for_linked_year(
     fixed-width layout regardless), authored FRESH from the LinkCO03Guide
     DETAIL (the prior "2003 numerator = 1259" assumption was FALSIFIED ->
     1142; L13-extension; never assume same-model==same-layout).
+    C8.18 DO step 4c adds 2004 (additive): a 900-byte Denominator-PLUS
+    (birth cert 1-867 + death "plus" 868-900 incl. RECWT@893-900),
+    2003-revision transition continued, authored FRESH from the
+    LinkCO04Guide DETAIL (the receipt-note "2004 = 900/1142"
+    extrapolation was FALSIFIED -> numerator 1259, and the "den-plus ==
+    LINKED_BIRTH_2005_2013" hypothesis was FALSIFIED -> 2003-rev cohort
+    layout; L13-extension). 2004 = DEFLATE (NOT DEFLATE64 like 2003).
     1992-1994 is the permanent NCHS linkage gap (unconfigured -> ValueError).
     The two-file numerator left-join + the `_find_denomplus_member`
     "DEN"-vs-"DENOM" support (+ the DEFLATE64-at-2003 decompressor =
@@ -139,12 +151,28 @@ def _layout_for_linked_year(
         # transition (REVISION@7 S=1989-unrev / A=2003-rev); one
         # fixed-width layout regardless of revision. Authored FRESH
         # from the LinkCO03Guide DETAIL (L13-extension; the prior
-        # "1259 numerator" assumption was FALSIFIED -> 1142). 2004 =
-        # a separate later DO step 4c (900/1142).
+        # "1259 numerator" assumption was FALSIFIED -> 1142).
         return (
             LINKED_DENOMPLUS_RECLEN_2003,
             LINKED_BIRTH_2003_FIELDS,
             LINKED_DEATH_2003_FIELDS,
+        )
+    if year == 2004:
+        # C8.18 DO step 4c: 900-byte Denominator-PLUS (birth cert
+        # 1-867 + death "plus" 868-900 incl. RECWT@893-900; den-plus
+        # ends @900). 2003-revision transition continued (REVISION@7
+        # S=1989-unrev / A=2003-rev); one fixed-width layout regardless.
+        # Authored FRESH from the LinkCO04Guide DETAIL (L13-extension;
+        # the receipt-note "2004 = 900/1142" extrapolation was FALSIFIED
+        # -> 1259, and the "den-plus == LINKED_BIRTH_2005_2013"
+        # hypothesis was FALSIFIED -> 2003-rev cohort layout). The
+        # death "plus" 868-900 == the LINKED_DEATH_2005_2013 model
+        # (value-verified on real 2004 data). LinkCO04US.zip = DEFLATE
+        # (stdlib-fine; NOT DEFLATE64 like 2003).
+        return (
+            LINKED_DENOMPLUS_RECLEN_2004,
+            LINKED_BIRTH_2004_FIELDS,
+            LINKED_DEATH_2004_FIELDS,
         )
     if 2005 <= year <= 2013:
         return (
@@ -160,7 +188,7 @@ def _layout_for_linked_year(
         )
     raise ValueError(
         f"Year {year} not yet configured for linked files. "
-        f"Supported: 1983-1991 + 1995-2003 (cohort denominator-plus), 2005-2020. "
+        f"Supported: 1983-1991 + 1995-2004 (cohort denominator-plus), 2005-2020. "
         f"(1992-1994 = the permanent NCHS linkage gap.)"
     )
 
@@ -191,11 +219,18 @@ def _numerator_layout_for_linked_year(
     (multiple-cause ENTITY/RECORD + death geo/date; ICD-10 throughout
     — 2003 cohort). The prior "2003 numerator = 1259" assumption was
     FALSIFIED -> 1142 (guide p17 + byte-exact zip-member arithmetic;
-    L13-extension). 1992-1994 = the permanent NCHS linkage gap
+    L13-extension). C8.18 DO step 4c adds 2004 (additive): 1259-byte
+    numerator = birth 1-867 REUSE LINKED_BIRTH_2004_FIELDS, death
+    "plus" 868-900 REUSE LINKED_DEATH_2004_FIELDS, numerator-only
+    mortality 901-1259 (ENTITY/RECORD + death geo/date; ICD-10 — 2004
+    cohort). The receipt-note "2004 = 900/1142" extrapolation was
+    FALSIFIED -> numerator 1259 (guide p18 + zip-member arithmetic;
+    L13-extension; never assume same-model==same-layout).
+    1992-1994 = the permanent NCHS linkage gap
     (unconfigured -> ValueError). The two-file num/den construction,
     the numerator<->denominator-plus join (1989-1991 key =
     MATCHS,IDNUMBER; 1995-2002 key = IDNUMBER@2-6 per LinkCO95Guide
-    p20; 2003 key = IDNUMBER@10-14 per LinkCO03Guide p20),
+    p20; 2003/2004 key = IDNUMBER@10-14 per LinkCO0{3,4}Guide p20),
     `_find_denomplus_member` "DEN"/"NUM" support, the DEFLATE64-at-2003
     decompressor (CLI 7z stream), and the harmonize path are C8.18 DO
     step 5 concerns; this function only returns the layout substrate
@@ -236,9 +271,21 @@ def _numerator_layout_for_linked_year(
             LINKED_BIRTH_2003_FIELDS,
             LINKED_DEATH_2003_FIELDS + LINKED_NUM_DEATH_2003_FIELDS,
         )
+    if year == 2004:
+        # C8.18 DO step 4c: 1259-byte numerator (the receipt-note
+        # "2004 = 900/1142" extrapolation was FALSIFIED; guide p18 +
+        # zip-member arithmetic 27,763 x (1259+2 CRLF) = 35,009,143 =
+        # VS04LKBC.USNUMPUB). birth 1-867 + death "plus" 868-900
+        # (REUSE the den-plus specs) + numerator-only mortality
+        # 901-1259. ICD-10 throughout (2004 cohort -> deaths 2004-2005).
+        return (
+            LINKED_NUM_RECLEN_2004,
+            LINKED_BIRTH_2004_FIELDS,
+            LINKED_DEATH_2004_FIELDS + LINKED_NUM_DEATH_2004_FIELDS,
+        )
     raise ValueError(
         f"Year {year} not configured for the cohort numerator. "
-        f"Supported: 1983-1991 + 1995-2003 (cohort numerator). "
+        f"Supported: 1983-1991 + 1995-2004 (cohort numerator). "
         f"(Denominator layouts: see _layout_for_linked_year.)"
     )
 
