@@ -36,6 +36,10 @@ from field_specs import (
     LINKED_DEATH_1989_1991_FIELDS,
     LINKED_DEN_RECLEN_1983_1988,
     LINKED_DENOMPLUS_RECLEN_1989_1991,
+    LINKED_NUM_DEATH_1983_1988_FIELDS,
+    LINKED_NUM_DEATH_1989_1991_FIELDS,
+    LINKED_NUM_RECLEN_1983_1988,
+    LINKED_NUM_RECLEN_1989_1991,
     LINKED_BIRTH_2005_2013_FIELDS,
     LINKED_BIRTH_2014_2020_FIELDS,
     LINKED_DEATH_2005_2013_FIELDS,
@@ -109,6 +113,46 @@ def _layout_for_linked_year(
     raise ValueError(
         f"Year {year} not yet configured for linked files. "
         f"Supported: 1983-1991 (cohort denominator), 2005-2020."
+    )
+
+
+def _numerator_layout_for_linked_year(
+    year: int,
+) -> tuple[int, list[tuple[str, int, int]], list[tuple[str, int, int]]]:
+    """Return (expected_reclen, birth_fields, death_fields) for the cohort NUMERATOR.
+
+    C8.18 DO step 3b adds the pre-1990 cohort NUMERATOR layouts
+    (additive; `_layout_for_linked_year` above + the 2005/2014 +
+    3a-denominator branches are byte-untouched, H10/HALT-13).
+    1983-1988 numerator = 500-byte: natality locs 1-91 REUSE
+    LINKED_BIRTH_1983_1988_FIELDS (the deceased infant's birth
+    covariates; the NCHS shared "Denominator Record and Natality
+    Section" layout), locs 92-193 = numerator-only reserved (not
+    enumerated), mortality locs 194-500. 1989-1991 numerator =
+    535-byte: birth locs 1-212 REUSE LINKED_BIRTH_1989_1991_FIELDS,
+    death-derived "plus" locs 213-225 REUSE LINKED_DEATH_1989_1991_FIELDS,
+    mortality locs 226-535. The two-file num/den construction, the
+    numerator<->denominator-plus join (1989-1991 key = MATCHS,IDNUMBER),
+    `_find_denomplus_member` "DEN"/"NUM" support, and the harmonize
+    path are C8.18 DO step 5 concerns; this function only returns the
+    layout substrate (no zip I/O).
+    """
+    if 1983 <= year <= 1988:
+        return (
+            LINKED_NUM_RECLEN_1983_1988,
+            LINKED_BIRTH_1983_1988_FIELDS,
+            LINKED_NUM_DEATH_1983_1988_FIELDS,
+        )
+    if 1989 <= year <= 1991:
+        return (
+            LINKED_NUM_RECLEN_1989_1991,
+            LINKED_BIRTH_1989_1991_FIELDS,
+            LINKED_DEATH_1989_1991_FIELDS + LINKED_NUM_DEATH_1989_1991_FIELDS,
+        )
+    raise ValueError(
+        f"Year {year} not configured for the cohort numerator. "
+        f"Supported: 1983-1991 (cohort numerator). "
+        f"(Denominator layouts: see _layout_for_linked_year.)"
     )
 
 

@@ -1029,3 +1029,114 @@ LINKED_DEATH_1989_1991_FIELDS: list[tuple[str, int, int]] = [
 ]
 
 LINKED_DENOMPLUS_RECLEN_1989_1991 = 225
+
+# =====================================================================
+# Linked Birth-Infant Death: pre-1990 COHORT numerator layouts
+# (C8.18 DO step 3b — 1983-1991 cohort backward extension)
+# =====================================================================
+# The cohort NUMERATOR file (LinkCO{YY}USnum.dat) is the linked
+# infant-death <-> birth-certificate record set (one row per linked
+# infant death). It is a SEPARATE physical file from the denominator
+# (the 3a-authored LINKED_*_1983_1988 / _1989_1991 specs); this block
+# authors the numerator LAYOUT substrate only. The two-file num/den
+# construction (1983-1988) + the numerator<->denominator-plus join
+# (1989-1991, key = (MATCHS, IDNUMBER)) + `_find_denomplus_member`
+# "DEN"/"NUM" support + the harmonize path are C8.18 DO step 5
+# parser/harmonize concerns (per PRE_FLIGHT_LOG 2026-05-17T20:00:00Z
+# + 2026-05-18T00:30:00Z; soft-flag (ii) §11 model-clarification).
+#
+# Cert match key (PRE_FLIGHT_LOG 2026-05-18T00:30:00Z HALT-4 finding):
+#   * 1989-1991: (MATCHS@1, IDNUMBER@2-6) — both already in
+#     LINKED_BIRTH_1989_1991_FIELDS; the DO-step-5 numerator<->
+#     denominator-plus join key.
+#   * 1983-1988: NO record-level public-use key. The 500-byte
+#     numerator is SELF-CONTAINED — locs 1-91 are the deceased
+#     infant's full birth covariates (byte-identical to the 91-byte
+#     denominator LINKED_BIRTH_1983_1988_FIELDS — the NCHS
+#     "Denominator Record and Natality Section of Linked Record"
+#     shared layout). The standard pre-2005 cohort-IMR construction
+#     is self-contained-numerator + aggregate-denominator (DO step 5).
+#
+# Both layouts are byte-exact from the guide DETAIL code-outline
+# (L13-extension; the C8.18 DO step 3a SMOKE-Tier-1 governing
+# precedent — the p13/pp18-19 element-span summary is composite +
+# NOT trusted), value-distribution-verified at DO step 3b SMOKE
+# Tier 1 on real LinkCO{83..91}USnum.dat.
+#
+# Sources:
+#   - 1983-1988: LinkCO83Guide.pdf p12 (file char: 500 B / 39,704),
+#     p32 (locs 92-193 = numerator-only RESERVED), pp33-45
+#     ("Mortality Part/Section of Linked Record" detail, locs
+#     194-500). Natality section locs 1-91 == the 3a-authored
+#     LINKED_BIRTH_1983_1988_FIELDS (do not re-author).
+#   - 1989-1991: LinkCO89Guide.pdf p17 (file char: 535 B / 38,605;
+#     Unlinked also 535 B / 1,029), p20 (locs 7-212 = Birth Cert,
+#     213-535 = Death Cert), pp46-56 ("Mortality Section of Linked
+#     Record" detail). Birth section locs 1-212 == the 3a-authored
+#     LINKED_BIRTH_1989_1991_FIELDS; death-derived "plus" locs
+#     213-225 == LINKED_DEATH_1989_1991_FIELDS (do not re-author).
+#
+# Positions are 1-based inclusive (start, end). Composite ENTITY /
+# RECORDAX multiple-cause spans are single fields here (per-condition
+# decomposition + `cause_recode_130` per-era = DO step 5; the C8.18
+# DO3a MEDRISK/OBSTETRC composite-span precedent; soft-flag (gg)).
+
+# --- 1983-1988 cohort numerator: mortality section (locs 194-500) ---
+# (Natality section locs 1-91 REUSE LINKED_BIRTH_1983_1988_FIELDS;
+#  locs 92-193 = numerator-only RESERVED, not enumerated.)
+LINKED_NUM_DEATH_1983_1988_FIELDS: list[tuple[str, int, int]] = [
+    ("YOD", 194, 197),         # Year of death (1983-19xx)
+    ("RECTYPED", 198, 198),    # Record type - death (1 res / 2 nonres)
+    ("RESSTATD", 199, 199),    # Resident status - death (1-4)
+    ("REGOCCD", 200, 200),     # Region of occurrence - death
+    ("DIVOCCD", 201, 202),     # Division + state subcode of occurrence
+    ("XSTOCCD", 203, 204),     # Expanded state of occurrence (01-52)
+    ("STOCCD", 205, 206),      # State of occurrence (01-51)
+    ("CNTOCCD", 207, 209),     # County of occurrence (999 = <250k)
+    ("REGRESD", 210, 210),     # Region of residence - death
+    ("DIVRESD", 211, 212),     # Division + state subcode of residence
+    ("XSTRESD", 213, 214),     # Expanded state of residence
+    ("STRESD", 215, 216),      # State of residence
+    ("CNTRESD", 217, 219),     # County of residence (999 = <250k)
+    ("CITYRESD", 220, 222),    # City of residence (999 = balance)
+    ("AGER5", 223, 223),       # Infant age recode 5 (1=<1hr..5=postneo)
+    ("AGER76", 224, 225),      # Infant age recode 76
+    ("AGER38", 226, 227),      # Infant age recode 38
+    ("HOSPD", 228, 228),       # Hospital and patient status
+    ("AUTOPSY", 229, 229),     # Autopsy performed (1/8/9)
+    ("ACCIDPL", 230, 230),     # Place of accident (causes E850-E929)
+    ("UCOD", 231, 234),        # Underlying cause of death (ICD-9; no E)
+    ("UCODR61", 235, 237),     # 61 selected causes recode (010-680)
+    ("NENTITY", 238, 239),     # Number of entity-axis conditions (00-20)
+    ("ENTITY", 240, 379),      # Entity-axis conditions (20 x 7-byte)
+    ("NRECORD", 380, 381),     # Number of record-axis conditions (00-20)
+    ("RECORDAX", 382, 481),    # Record-axis conditions (20 x 5-byte)
+    ("RESERVED", 482, 500),    # Reserved positions (19 bytes)
+]
+
+LINKED_NUM_RECLEN_1983_1988 = 500
+
+# --- 1989-1991 cohort numerator: mortality section (locs 226-535) ---
+# (Birth section locs 1-212 REUSE LINKED_BIRTH_1989_1991_FIELDS;
+#  death-derived "plus" locs 213-225 REUSE LINKED_DEATH_1989_1991_FIELDS.)
+LINKED_NUM_DEATH_1989_1991_FIELDS: list[tuple[str, int, int]] = [
+    ("RESERVED1", 226, 260),   # Reserved positions (35 bytes)
+    ("NENTITY", 261, 262),     # Number of entity-axis conditions (00-20)
+    ("ENTITY", 263, 402),      # Entity-axis conditions (20 x 7-byte, ICD-9)
+    ("NRECORD", 403, 404),     # Number of record-axis conditions (00-20)
+    ("RECORDAX", 405, 504),    # Record-axis conditions (20 x 5-byte, ICD-9)
+    ("RESSTATD", 505, 505),    # Resident status - death (1-4)
+    ("STOCCFIPD", 506, 507),   # State of occurrence FIPS - death
+    ("CNTOCFIPD", 508, 510),   # County of occurrence FIPS - death
+    ("STRESFIPD", 511, 512),   # State of residence FIPS - death (00=for)
+    ("CNTRESFIPD", 513, 515),  # County of residence FIPS - death
+    ("DRSTATE", 516, 517),     # State of residence NCHS codes - death
+    ("CITYRESD", 518, 520),    # City of residence NCHS codes (999=bal)
+    ("EOSPD", 521, 521),       # Place of death
+    ("DTHYR", 522, 525),       # Year of death (1989-19xx)
+    ("DTHMON", 526, 527),      # Month of death (01-12)
+    ("WEEKDAYD", 528, 528),    # Day of week of death (1-7)
+    ("RESERVED2", 529, 535),   # Reserved positions (7 bytes)
+]
+
+LINKED_NUM_RECLEN_1989_1991 = 535
