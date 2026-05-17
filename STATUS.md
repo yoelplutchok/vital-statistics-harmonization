@@ -1,6 +1,82 @@
-# STATUS — last updated 2026-05-18T02:00:00Z
+# STATUS — last updated 2026-05-18T05:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-18T05:00:00Z — **C8.18 DO step 4 PRE-FLIGHT close** (investigation-only; ZERO canonical-state mutation) — cohort 1995-2004 = three-file **denominator-plus** model; 1995-2002-reuses-1989-1991 hypothesis **FALSIFIED** by a read-only real-data probe; LinkCO03US.zip = **DEFLATE64**; DO step 4 split → 4a (1995-2002) + 4b (2003) + 4c (2004)
+
+PRE-FLIGHT/SMOKE-Tier-0 for C8.18 DO step 4 (cohort 1995-2004 layout reconstruction). **No `field_specs.py`/parser/parquet/schema/test mutation** (git scope = `PRE_FLIGHT_LOG.md` + `DECISION_LOG.md` + this STATUS + commit; 9/9 forward-looking HALTs from `RECEIPTS/C8.18_step3b` re-verified; 11/11 gate parquet SHAs byte-exact incl. fetal-death via the canonical `-build` tree; canonical pytest **111P+1S+1XF in 347.34s** re-run + baseline-preserved). Three material findings were surfaced at the Convention-3 snapshot **before any DO mutation** (L10-safe; the C8.18 DO step 3 PRE-FLIGHT investigation-only precedent) and resolved per established precedent: **(1)** cohort 1995-2004 = the **three-file denominator-plus model** (numerator + unlinked + denominator-plus "may be used by itself"; LinkCO{95..04}Guide file-characteristics) — the SAME family as 1989-1991 + 2005+, NOT the pure two-file 1983-1988 form; the denominator-plus file IS the per-birth row set (the §15.D "denominator-plus-equivalent" is direct). **(2)** the **1995-2002-reuses-1989-1991 hypothesis is FALSIFIED** by a read-only real-data L13-extension value-distribution probe (same 535-byte numerator length ≠ same layout: DBIRWT@79-82 = `'1 05'` not 4-digit grams, UCODR61@223-225 = `'1.0'` RECWT-bleed, DTHYR/DTHMON shifted; the 230-byte den-plus likewise diverges) → DO step 4a authors the 1995-2002 230-byte den-plus + 535-byte numerator FRESH from the LinkCO95/99Guide **DETAIL code-outline** (do NOT reuse `LINKED_*_1989_1991`; do NOT trust the element-span SUMMARY — L13-extension governing precedent). **(3)** `LinkCO03US.zip` = **DEFLATE64** (stdlib `zipfile` `NotImplementedError`; `7z`/`unzip`/`zipfile-deflate64` available) — a bounded DO-step-4b tooling decision (1995-2002 + 2004 + 2005+ = DEFLATE, stdlib-fine). **DO step 4 split → 4a (cohort 1995-2002: 230/535; 1989-rev; ICD-9 1995-98 / ICD-10 1999-2002 as a within-era UCOD value-domain — record lengths constant across the 1998→1999 ICD boundary) + 4b (cohort 2003: 783/1259; 2003-rev transition; DEFLATE64) + 4c (cohort 2004: 900/1259; verify den-plus == `LINKED_BIRTH_2005_2013`)** per the C8.17 DO5a/5b + C8.18 DO3a/3b Convention-5 precedent. A §15.D model-clarification `[plan-update]` (the 4a/4b/4c decomposition + structural model + reuse-falsification + DEFLATE64 note) is proposed, **NOT applied** (§11; folded into soft-flag (ii)). Zero §7 halts. Full narrative: `PRE_FLIGHT_LOG.md` 2026-05-18T05:00:00Z + `DECISION_LOG.md` 2026-05-18T05:00:00Z + this STATUS.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 + C8.17 COMPLETE (2 of 7); C8.18 IN PROGRESS (DO steps 1+2 closed; step 3 PRE-FLIGHT + 3a denominator + 3b numerator closed; step 4 PRE-FLIGHT closed; 4a next).** The linked product remains v3 (2005-2023); the 41-yr 1983-2023 cohort v4 re-harmonize is a later C8.18 DO step. Cumulative Phase C ≈ 29 of 51-71 (cap 86 intact).
+
+### What was done this session (C8.18 DO step 4 PRE-FLIGHT)
+
+1. Kickoff handshake (a)-(d); user authorized "proceed and please make any important decisions yourself in the best way possible".
+2. C8.18 DO step 4 entry cheap-check: 9/9 forward-looking HALTs from `RECEIPTS/C8.18_step3b` PASS; 11/11 gate parquet SHAs byte-exact (fetal-death via the canonical `-build` tree); canonical pytest re-run **111P+1S+1XF in 347.34s** (baseline preserved).
+3. Read-only structural investigation of all 10 cohort 1995-2004 zips + guides: L12-extension text-layer probe (all DETAIL pages text-extractable; empty pages are appendix-only); file-characteristics record lengths; real `.dat` member names + block sizes + compression; the decisive 1989-1991-layout-applied-to-1995 reuse probe (FALSIFIED); DETAIL-code-outline page pointers captured as state-on-disk.
+4. Three material findings surfaced + resolved before any DO mutation; DO step 4 split 4a/4b/4c; structural model + record lengths + member naming + compression + reuse-falsification + DETAIL-page pointers written to PRE_FLIGHT_LOG (state-on-disk).
+5. PRE_FLIGHT_LOG + DECISION_LOG + this STATUS appended; PRE-FLIGHT-only commit (zero canonical mutation; no tag — intermediate).
+
+### Last completed step
+
+C8.18 DO step 3b (commit `00ade5f`). This session adds a PRE-FLIGHT-only commit: `PRE_FLIGHT_LOG.md` (C8.18 DO step 4 entry incl. the structural model + record-length table + DETAIL-page pointers) + `DECISION_LOG.md` 2026-05-18T05:00:00Z + this STATUS. **Zero canonical-state mutation** (no `field_specs.py`/parser/parquet/schema/test). **No tag** (intermediate; `C8.18-pre-do`@`6632a15` remains the DO rollback anchor).
+
+### In-progress
+
+C8.18 **DO step 4a** queued: cohort **1995-2002** `field_specs.py` layout authoring — `LINKED_BIRTH_1995_2002_FIELDS` (230-byte den-plus) + `LINKED_NUM_DEATH_1995_2002_FIELDS` (535-byte numerator) + reclen constants + additive dispatcher branches + a NEW sibling SMOKE harness, reconstructed FRESH from the LinkCO95Guide DETAIL code-outline (~pp19-49 den-plus / ~pp50+ numerator-mortality) cross-checked vs LinkCO99Guide for the ICD-10 1999-2002 sub-era, SMOKE-Tier-1 value-distribution-verified across the 1998→1999 ICD-9→ICD-10 boundary. Do NOT reuse `LINKED_*_1989_1991` (FALSIFIED) or trust the element-span SUMMARY (L13-extension). The 1983-1991 den+num layouts are state-on-disk (do NOT re-derive).
+
+### Next planned task
+
+**C8.18 DO step 4a — cohort 1995-2002 `field_specs.py` layout authoring + SMOKE Tier-1 value-distribution verify** (~1-1.5 sessions). Entry cheap-check: re-verify the forward-looking HALTs in `PRE_FLIGHT_LOG.md` 2026-05-18T05:00:00Z — esp. 11 gate parquet SHAs unchanged (fetal-death via `-build`); canonical pytest baseline 111P+1S+1XF on the 4-dir suite; the 1983-1991 den+num layouts state-on-disk; the 1995-2002 layout authored FRESH from the DETAIL code-outline (reuse-of-1989-1991 FALSIFIED); encoding = ASCII; the DEFLATE64-at-2003 + member-finder = DO-step-4b/5.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.18 DO step 4a entry. The §15.D model-clarification `[plan-update]` (soft-flag (ii)) is proposed-not-applied (§11 human-merge; queued with the soft-flag-(w) batch — it now also folds the DO step 4 4a/4b/4c decomposition + the 1995-2004 three-file denominator-plus structural model + the reuse-falsification + the DEFLATE64-at-2003 note). On-disk PRE_FLIGHT_LOG/DECISION_LOG/RECEIPTs authoritative in the interim.
+
+**Carried-forward (Phase D):** C8.13 PROPOSE-EDIT manuscript-timing; manuscript Coverage re-paragraph (natality 1968-2024 + forthcoming linked 1983-2023) = D.4.
+
+**Open soft-flags (26; 0 NEW, 0 resolved):** **(ii) REFINED**: now also folds the DO step 4 4a/4b/4c decomposition + 1995-2004 three-file denominator-plus model + 1995-2002-reuse-FALSIFIED + DEFLATE64-at-2003 — proposed-not-applied (§11 human-merge). **(gg) carry**: 1995-2004 numerator ICD-9/ICD-10 + entity/record-axis multiple cause = composite spans at 4a/4b/4c; per-condition decomp + `cause_recode_130` per-era + harmonized cause-column shape stay DO 5/6. **(jj) carry**: README 3-dir/"56 passed" stale (baseline 111P+1S+1XF). (hh)/(ff-resolved)/(cc)/(dd)/(ee)/(bb)/(aa)/(w)/(x)/(z)/(u) carry. (t)/(y) resolved earlier.
+
+### Forward-looking HALTs for C8.18 DO step 4a PRE-FLIGHT (Convention 4)
+
+Full enumeration in `PRE_FLIGHT_LOG.md` 2026-05-18T05:00:00Z.
+
+1. `C8.18-pre-do`@`6632a15`; `C8.18-complete` NOT present. `C8.17-complete` present. HEAD = the DO step 4 PRE-FLIGHT commit (after `00ade5f`).
+2. 11 gate parquet SHAs unchanged (fetal-death `38e2cecb…`/`185c071e…` via `~/Desktop/fetal-death-harmonization-build/output/harmonized/`; natality `c8a740eb…`/`acb5c48a…`; `.v28_baseline` `230efed2…`/`e16ad532…`; linked-derived `9b828a4d…`; MM ×4). Linked-derived changes only at the later re-harmonize DO step.
+3. **Canonical pytest baseline = `111 passed, 1 skipped, 1 xfailed`** on the **4-dir** suite (runtime ~240-380s band; 347.34s this entry). README 3-dir line stale → soft-flag (jj).
+4. The 1983-1991 cohort den+num layouts are state-on-disk in `field_specs.py` (do NOT re-derive). **DO step 4a = cohort 1995-2002 230-byte den-plus + 535-byte numerator authored FRESH from the LinkCO95Guide DETAIL code-outline (~pp19-49 / ~pp50+) cross-checked vs LinkCO99Guide for ICD-10 1999-2002**; reuse-of-1989-1991 is FALSIFIED; do NOT trust the "List of Data Elements and Locations" element-span SUMMARY (L13-extension).
+5. Encoding = ASCII (latin-1 `_slice_field` works for the cohort `.dat`; re-confirmed on real 1995-2002 data).
+6. Structural model (cohort 1995-2004): three-file denominator-plus (numerator + unlinked + den-plus); 1995-2002 = 230/535 (1989-rev; ICD-9 1995-98 / ICD-10 1999-2002 within-era value-domain); 2003 = 783/1259 (2003-rev; DEFLATE64); 2004 = 900/1259 (2003-rev; den-plus likely == `LINKED_BIRTH_2005_2013`). `_find_denomplus_member` (`"DENOM"`) won't match `Den`/`DEN`/`DUSDENOM`/`USDENPUB` + DEFLATE64-at-2003 = DO step 4b/5 parser concerns.
+7. §15.D substrate-format wording reconcile applied at the 3a commit; the broader model-clarification (now incl. the 4a/4b/4c decomposition + structural model + reuse-falsification + DEFLATE64) = soft-flag (ii) §11 human-merge.
+8. soft-flag (gg): 1995-2004 ICD-9/ICD-10 underlying cause + entity/record-axis multiple cause = composite spans at 4a/4b/4c (per-condition + `cause_recode_130` per-era = DO 5/6).
+9. pytest runtime ~347s (in-band; the band is the gate).
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` at `~/Desktop/fetal-death-harmonization-build/output/harmonized/` (UNCHANGED; canonical gate = `-build` tree).
+- Natality v3.0.0 `acb5c48a…`(deriv 201,161,456/57yr)/`c8a740eb…`(harm); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED).
+- Linked (cohort, v3; 2005-2023) `9b828a4d…` (UNCHANGED; → v4 1983-2023 at the later C8.18 re-harmonize DO step).
+- Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED).
+- 19 cohort zips + 19 guide PDFs on disk + SHA-anchored (C8.18 DO step 2; manifest 141/linked 38) — UNCHANGED (read-only this step).
+- All C8.1-C8.17 + C8.18 DO steps 1+2+3-PRE-FLIGHT+3a+3b outputs unchanged. NEW git-tracked this step: `PRE_FLIGHT_LOG`/`DECISION_LOG`/this STATUS only. **Zero canonical/script/test mutation** (investigation-only PRE-FLIGHT; 11/11 gate parquet SHAs byte-exact).
+
+### Notes for next session
+
+- **C8.18 DO step 4 PRE-FLIGHT is CLOSED (investigation-only).** Structural model + record lengths + member naming + compression + the decisive reuse-falsification + DETAIL-code-outline page pointers are state-on-disk in PRE_FLIGHT_LOG 2026-05-18T05:00:00Z. Next: **DO step 4a — cohort 1995-2002 layout authoring** (230-byte den-plus + 535-byte numerator FRESH from the LinkCO95/99Guide DETAIL code-outline; SMOKE-Tier-1 value-verify across the 1998→1999 ICD boundary; ~1-1.5 sessions) — then DO step 4b (2003; DEFLATE64) + 4c (2004; verify vs LINKED_BIRTH_2005_2013).
+- The L13-extension "author from the DETAIL code-outline, value-distribution-verify on real data, do NOT trust the element-span summary, never assume same-length==same-layout" discipline governs DO step 4a (the reuse-of-1989-1991 hypothesis was FALSIFIED cheaply this PRE-FLIGHT — the principle works).
+- The §15.D model-clarification `[plan-update]` (soft-flag (ii)) is owed to the human (§11; queued with the soft-flag-(w) batch); on-disk PRE_FLIGHT_LOG/DECISION_LOG/RECEIPTs authoritative in the interim.
+- `/tmp/c8_18_s4_*` scratch (10 guide text extracts + the probe script) + the background pytest output file are OS-cleanable + reproducible.
+
+### Session summary
+
+C8.18 DO step 4 PRE-FLIGHT CLOSED in one session (investigation-only; ZERO canonical-state mutation; the C8.18 DO step 3 PRE-FLIGHT precedent). Entry cheap-check 9/9 (11/11 gate parquet SHAs byte-exact; pytest 111P+1S+1XF/347.34s baseline preserved). Three material findings surfaced + resolved before any DO mutation: (1) cohort 1995-2004 = the three-file **denominator-plus** model (numerator + unlinked + den-plus; same family as 1989-1991 + 2005+, NOT pure two-file 1983-1988); (2) the **1995-2002-reuses-1989-1991 hypothesis is FALSIFIED** by a read-only real-data value-distribution probe (same 535-byte length ≠ same layout) → DO step 4a authors fresh from the DETAIL code-outline (L13-extension governing precedent); (3) `LinkCO03US.zip` = **DEFLATE64** (a bounded DO-step-4b tooling decision). DO step 4 split → **4a (1995-2002 230/535) + 4b (2003 783/1259 DEFLATE64) + 4c (2004 900/1259)** per the C8.17 DO5a/5b + C8.18 DO3a/3b Convention-5 precedent. Structural model + record lengths + member naming + compression + DETAIL-code-outline page pointers captured as state-on-disk in PRE_FLIGHT_LOG. A §15.D model-clarification `[plan-update]` is proposed-not-applied (soft-flag (ii); §11 human-merge). Zero §7 halts. **No tag** (intermediate PRE-FLIGHT checkpoint). **C8.18 DO step 4a (cohort 1995-2002 layout authoring; ~1-1.5 sessions) is next.**
 
 ---
 
