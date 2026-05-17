@@ -1,5 +1,7 @@
 # Comparability across years (1990–2024)
 
+> **v3.0.0 scope note.** As of natality **v3.0.0** the product spans **1968–2024** (57 years — see `ABOUT_THIS_RELEASE.md`). The comparability decisions documented below cover the **1990–2024** era; the pre-1990 (1968–1989) comparability narrative (1968/1989 certificate eras, 1-digit MRACE→bridged race recode, conservative-null pre-1990 fields, sample-fraction history) is tracked as a dedicated cross-product COMPARABILITY follow-up (task C8.20 / soft-flag (aa)) and is not yet reflected here. The 1990–2024 slice is byte-identical to v2.8 (verified at C8.17 DO step 6), so every decision below is unchanged.
+
 This document records comparability decisions for the harmonized U.S. natality microdata.
 
 Canonical sources of truth:

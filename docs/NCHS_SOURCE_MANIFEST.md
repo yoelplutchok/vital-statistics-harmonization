@@ -6,7 +6,7 @@
 >
 > **Cross-product consistency.** Each row keys on `year × raw_filename`, matching the corresponding row in each subproject's `file_inventory.csv`:
 > - Fetal-death rows match [`fetal_death/file_inventory.csv`](../fetal_death/file_inventory.csv) (43 rows, year 1982-2024).
-> - Natality + linked rows match [`natality/metadata/file_inventory.csv`](../natality/metadata/file_inventory.csv) (54 rows: 35 natality 1990-2024 + 19 linked-cohort with `2005_linked` through `2023_linked` keys).
+> - Natality + linked rows match [`natality/metadata/file_inventory.csv`](../natality/metadata/file_inventory.csv) (76 rows: 57 natality 1968-2024 + 19 linked-cohort with `2005_linked` through `2023_linked` keys).
 >
 > **Generation.** SHAs computed via `shasum -a 256` on the canonical NCHS public-use zips as downloaded from `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/` paths recorded in each inventory's `source_url` column. Generated 2026-05-13 at the C8.11 DO step under the Phase C Tier-2 plan; carries forward unchanged until a new latest-year refresh + a corresponding `[plan-update]` commit names the next manifest revision.
 >
@@ -144,7 +144,7 @@ Coverage envelope: 57 years contiguous. Filename convention: `Nat<YYYY>.zip` (19
 
 **Filename casing note.** The on-disk filenames for the 2021 + 2022 natality zips are lowercase (`nat2021us.zip` + `nat2022us.zip`) on the original NCHS download; on the case-insensitive macOS filesystem they resolve to the same inode as the inventory-recorded capital-N convention (`Nat2021us.zip` + `Nat2022us.zip`). The inventory's capital-N casing is the canonical reference; any downstream user on a case-sensitive filesystem may need to rename the on-disk files to match. The 22 pre-1990 zips were downloaded with `.ZIP` upstream extension served by the NCHS FTP and saved lowercase `.zip` to match the canonical inventory convention.
 
-**Boundary notes.** Filename changes from `Nat<YYYY>.zip` (1968-1993) to `Nat<YYYY>us.zip` (1994+) at the 1994 publication-suffix introduction. Sample-frame changes at 1972 (50% sample for 1968-1971 → 100% for 1972+). Certificate-revision boundaries: 1968-revision (1968-1977) → 1978-revision (1978-1988) → 1989-revision (1990+ canonical; 1989 is the rollout-year standalone, reconciled at C8.17 DO step 4 per soft-flag (t)). Record lengths for the 22 pre-1990 zips are TBD at C8.17 DO step 2 (layout-CSV reconstruction); the 35 1990-2024 record lengths follow the existing per-era `natality/scripts/01_import/` codepath. All 22 pre-1990 zips are SHA-anchored here at C8.17 DO step 1 with `imported=false` in `natality/metadata/file_inventory.csv` (becomes `true` at C8.17 DO step 5 when `parse_all_pre1990_years.py` lands).
+**Boundary notes.** Filename changes from `Nat<YYYY>.zip` (1968-1993) to `Nat<YYYY>us.zip` (1994+) at the 1994 publication-suffix introduction. Sample-frame changes at 1972 (50% sample for 1968-1971 → 100% for 1972+). Certificate-revision boundaries: 1968-revision (1968-1977) → 1978-revision (1978-1988) → 1989-revision (1990+ canonical; 1989 is the rollout-year standalone, reconciled at C8.17 DO step 4 per soft-flag (t)). Record lengths for the 22 pre-1990 zips were resolved at C8.17 DO steps 2-4 (`field_specs.py` per-era extensions); the 35 1990-2024 record lengths follow the existing per-era `natality/scripts/01_import/` codepath. All 22 pre-1990 zips are SHA-anchored here (C8.17 DO step 1); `imported=true` as of C8.17 DO step 6 (parser `parse_all_pre1990_years.py` landed at DO step 5a; canonical 1968-2024 re-harmonize + the `imported` flip at DO step 6).
 
 ---
 
@@ -210,11 +210,11 @@ Companion PDFs (also SHA-anchored in `matched_multiples/file_inventory.csv`):
 
 ## Cross-product invariants
 
-The manifest's three sections combine to span the full 1982-2024 fetal-death + 1990-2024 natality + 2005-2023 linked-cohort coverage that this monorepo harmonizes. Cross-product analyses joining numerator + denominator across products (per [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md)) typically require each input zip's byte-identity to reproduce a published validation cell — this manifest is the verification anchor for that reproducibility.
+The manifest's three sections combine to span the full 1982-2024 fetal-death + 1968-2024 natality + 2005-2023 linked-cohort coverage that this monorepo harmonizes. Cross-product analyses joining numerator + denominator across products (per [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md)) typically require each input zip's byte-identity to reproduce a published validation cell — this manifest is the verification anchor for that reproducibility.
 
-- **100 zip × 64-char SHA-256 entries** = 100 × 64 = 6,400 hex characters of integrity information at byte-exact fidelity.
-- **Inventory cross-reference**: every row of this manifest has a matching row in `fetal_death/file_inventory.csv` (43 rows; matches Section 1), `natality/metadata/file_inventory.csv` (54 rows; 35 match Section 2 + 19 match Section 3), or `matched_multiples/file_inventory.csv` (3 rows; matches Section 4).
-- **Coverage envelope**: fetal-death covers 43 contiguous years 1982-2024; natality 35 contiguous years 1990-2024; linked-cohort 19 contiguous cohort years 2005-2023; matched-multiples 3 publication windows 1995-1997 / 1995-2000 / 2016-2020. Cross-product joint coverage = 19 cohort years 2005-2023 (natality + linked) intersected with 33 years 1992-2024 (natality + fetal-death; fetal-death pre-1990 is fetal-death-only). Matched-multiples is an ancillary product spanning natality + fetal-death + linked-cohort within its 3 windows.
+- **122 zip × 64-char SHA-256 entries** = 122 × 64 = 7,808 hex characters of integrity information at byte-exact fidelity.
+- **Inventory cross-reference**: every row of this manifest has a matching row in `fetal_death/file_inventory.csv` (43 rows; matches Section 1), `natality/metadata/file_inventory.csv` (76 rows; 57 match Section 2 + 19 match Section 3), or `matched_multiples/file_inventory.csv` (3 rows; matches Section 4).
+- **Coverage envelope**: fetal-death covers 43 contiguous years 1982-2024; natality 57 contiguous years 1968-2024; linked-cohort 19 contiguous cohort years 2005-2023; matched-multiples 3 publication windows 1995-1997 / 1995-2000 / 2016-2020. Cross-product joint coverage = 19 cohort years 2005-2023 (natality + linked) intersected with 33 years 1992-2024 (natality + fetal-death; fetal-death pre-1990 is fetal-death-only). Matched-multiples is an ancillary product spanning natality + fetal-death + linked-cohort within its 3 windows.
 - **No row collisions**: each `(year, raw_filename)` pair is unique across all four sections. Linked rows use the `<cohort_year>_linked` inventory key to disambiguate from same-year natality rows; matched-multiples rows use a publication-window key (1995-1997 / 1995-2000 / 2016-2020) to disambiguate from individual-year rows.
 
 ## Update procedure
@@ -230,4 +230,4 @@ When a new NCHS public-use file lands (e.g., 2025-published cohort-2024 linked f
 
 ---
 
-*Manifest generated 2026-05-13 at the C8.11 DO step of the Phase C Tier-2 plan; cross-references `fetal_death/file_inventory.csv` v2.4.0 + `natality/metadata/file_inventory.csv` v2.8.0. Per Anti-Pattern #1 (append-only state files), any future update revises a NEW manifest revision rather than overwriting this one.*
+*Manifest generated 2026-05-13 at the C8.11 DO step of the Phase C Tier-2 plan; cross-references `fetal_death/file_inventory.csv` v2.4.0 + `natality/metadata/file_inventory.csv` v3.0.0. Per Anti-Pattern #1 (append-only state files), any future update revises a NEW manifest revision rather than overwriting this one.*

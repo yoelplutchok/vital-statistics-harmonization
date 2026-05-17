@@ -51,9 +51,9 @@ This is the recommended first check before any multi-year analysis. Known struct
 Reproduce:
 
 ```bash
-python scripts/03_harmonize/harmonize_v1_core.py --years 1990-2024 --out output/harmonized/natality_v2_harmonized.parquet
+python scripts/03_harmonize/harmonize_v1_core.py --years 1968-2024 --out output/harmonized/natality_v2_harmonized.parquet
 python scripts/04_derive/derive_v1_core.py --in output/harmonized/natality_v2_harmonized.parquet --out output/harmonized/natality_v2_harmonized_derived.parquet
-python scripts/05_validate/key_rates_from_derived_core.py --in output/harmonized/natality_v2_harmonized_derived.parquet --years 1990-2024
+python scripts/05_validate/key_rates_from_derived_core.py --in output/harmonized/natality_v2_harmonized_derived.parquet --years 1990-2024   # 1990-2024 benchmarked subset
 ```
 
 Spot-checks: LBW 6.97% (1990), 7.32% (1995), 7.57% (2000), 8.07% (2015), 8.24% (2020) — all match NCHS published values. Preterm rates show expected series breaks at 2003 (LMP→combined) and 2014 (combined→obstetric estimate).
@@ -61,6 +61,8 @@ Spot-checks: LBW 6.97% (1990), 7.32% (1995), 7.57% (2000), 8.07% (2015), 8.24% (
 ## External validation (V2 natality)
 
 **Results: 183/183 targets pass.** Validated against NCHS “Births: Final Data” NVSR reports, CDC Data API, and NCHS Data Briefs covering resident birth counts, LBW%, preterm%, twin/triplet+ rates, cesarean%, singleton%, male%, smoking%, and Medicaid% across 1990-2024.
+
+> **v3.0.0 scope note.** As of natality v3.0.0 the harmonized product spans **1968–2024** (57 years; 201,161,456 records — see `ABOUT_THIS_RELEASE.md`). External NVSR validation currently covers **1990–2024** (the 183 targets above, all pass; the 1990–2024 slice is byte-identical to the v2.8 baseline, verified at C8.17 DO step 6). Pre-1990 (1968–1989) NVSR benchmarking against *Vital Statistics of the United States* annual-volume control counts is a planned incremental addition; the reproduce commands below build the full 1968–2024 parquet but validate the 1990–2024 target subset.
 
 > **2024 coverage caveat**: the NVSR "Births: Final Data for 2024" report was not yet published at this release. The targets CSV currently contains only **one 2024 target** — `cesarean_rate_pct`, sourced to VSRR No. 38 (*Births: Provisional Data for 2024*). Other 2024 metrics (LBW%, preterm%, smoking%, Medicaid%, etc.) have no external validation yet. When the 2024 NVSR Final Data report publishes, those targets will be backfilled to match the 5–8 targets per year density used for 1990–2023.
 

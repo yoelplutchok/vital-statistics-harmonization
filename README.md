@@ -4,7 +4,7 @@ A single repository containing harmonized U.S. natality, linked birth–infant d
 
 This repository unifies two previously separate projects:
 
-- [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) — natality 1990–2024 + linked birth–infant death 2005–2023
+- [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) — natality 1968–2024 + linked birth–infant death 2005–2023
 - [yoelplutchok/fetal-death-harmonization](https://github.com/yoelplutchok/fetal-death-harmonization) — fetal death 1992–2022
 
 Future development happens here; the original repos are mirrors.
@@ -13,7 +13,7 @@ Future development happens here; the original repos are mirrors.
 
 | Product | Years | Records | Columns | NVSR validation | Source code |
 |---|---|---|---|---|---|
-| **Natality** | 1990–2024 (35 years) | 138,819,655 | 84 (71 harmonized + 13 derived) | 183/183 *Births: Final Data* targets byte-exact | [`natality/`](natality/) |
+| **Natality** | 1968–2024 (57 years) | 201,161,456 | 84 (71 harmonized + 13 derived) | 183/183 *Births: Final Data* targets byte-exact (1990–2024; pre-1990 benchmarking planned) | [`natality/`](natality/) |
 | **Linked birth–infant death** | 2005–2023 (19 years) | 74,943,824 | 94 (87 harmonized + 7 derived death-side) | 33/35 byte-exact (2 cells differ by 1 record from NCHS upstream null-weight survivor records) | [`natality/`](natality/) |
 | **Fetal death** | 1982–2024 (43 years) | 2,427,233 | 89 (73 harmonized + 16 derived) | 29/29 per-year counts + 26/26 per-year fetal mortality rates byte-exact (V2 era); 13/19 detail cells byte-exact + 6 documented diffs | [`fetal_death/`](fetal_death/) |
 | **Matched multiples** | 1995–1997 + 1995–2000 + 2016–2020 (3 windows) | 1,665,568 | 24 harmonized | 5/5 byte-exact cells from 2016-2020 PDF Table 1 *Total* column (Total / Birth / Survivor / Infant death / Fetal death); twin "complete-set" IMR = 10.14/1,000 reproduces PDF prose byte-exact | [`matched_multiples/`](matched_multiples/) |

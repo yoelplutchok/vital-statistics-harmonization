@@ -2,12 +2,12 @@
 
 ## What years are covered?
 
-- **V2 Natality**: 1990-2024 (35 years, 138.8 million birth records)
+- **V2 Natality**: 1968-2024 (57 years, 201.2 million birth records)
 - **V3 Linked birth-infant death**: 2005-2023 (19 years, 74.9 million birth records with linked infant death data)
 
 ## What is the difference between V2 and V3?
 
-**V2 Natality** contains birth records only — maternal demographics, prenatal care, birth outcomes. It covers the longest time span (1990-2024).
+**V2 Natality** contains birth records only — maternal demographics, prenatal care, birth outcomes. It covers the longest time span (1968-2024).
 
 **V3 Linked** contains birth records linked to infant death certificates. It includes all the V2 birth-side columns plus death-side columns (cause of death, age at death, neonatal/postneonatal classification). Use V3 for infant mortality research. V3 starts at 2005 because that is when NCHS began releasing public-use cohort linked files in the current format.
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env Rscript
-# Quickstart: U.S. Natality Harmonized Dataset (v2.8.0, 1990-2024)
+# Quickstart: U.S. Natality Harmonized Dataset (v3.0.0, 1968-2024)
 #
 # R companion to natality/notebooks/quickstart.ipynb. Demonstrates basic
-# loading and analysis of the harmonized natality dataset across all 35 years.
+# loading and analysis of the harmonized natality dataset across all 57 years.
 #
 # Uses arrow::open_dataset() rather than read_parquet() because the full
-# natality parquet has ~138.8M rows × 84 columns and exceeds typical R memory
+# natality parquet has ~201.2M rows × 84 columns and exceeds typical R memory
 # limits when materialized. open_dataset() returns a queryable handle; dplyr
 # verbs are pushed down to Arrow and only the aggregated result is brought
 # into R memory.

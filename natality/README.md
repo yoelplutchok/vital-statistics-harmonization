@@ -1,10 +1,10 @@
 # U.S. Natality Harmonization Project
 
-A researcher-ready release of harmonized U.S. natality microdata for cross-year analysis (1990–2024) plus linked birth-infant death records (2005–2023).
+A researcher-ready release of harmonized U.S. natality microdata for cross-year analysis (1968–2024) plus linked birth-infant death records (2005–2023).
 
 ## What this is
 
-NCHS publishes annual natality public-use microdata as fixed-width ASCII records inside zips, with the field layout changing multiple times across 1990–2024:
+NCHS publishes annual natality public-use microdata as fixed-width ASCII records inside zips, with the field layout changing multiple times across 1968–2024:
 
 | Era | Years | Record length | Certificate |
 |-----|-------|---------------|-------------|
@@ -14,18 +14,20 @@ NCHS publishes annual natality public-use microdata as fixed-width ASCII records
 | Dual-certificate transition | 2006–2013 | 775 bytes | Dual (unrevised-only fields get blanked from 2009 on) |
 | Revised-only | 2014–2024 | 1345 bytes | 2003 revised certificate |
 
+The table above shows the 1990–2024 layouts. Natality coverage also extends back to **1968–1989** (added in v3.0.0, C8.17) across four earlier NCHS layouts under the 1968-revision certificate — 1968 (81-byte), 1969–1971 (215-byte), 1972–1988, and 1989 (a sibling of the 1990 layout). Exact per-era byte positions and record lengths are in `scripts/01_import/field_specs.py`; per-variable pre-1990 comparability is tracked at task C8.20.
+
 Plus three linked birth-infant death formats (2005–2013 denominator-plus 900 bytes, 2014–2015 denominator-plus 1384 bytes, 2016–2023 period-cohort merged by CO_SEQNUM+CO_YOD).
 
 This project parses all of them, maps the era-specific raw fields to a **single stable schema of 71 harmonized columns + 13 derived indicators** (V2 natality) and 78 + 16 (V3 linked), documents every era boundary and comparability constraint, and validates the output against NCHS "Births: Final Data" NVSR reports (183/183 V2 targets pass, 35/35 V3 linked targets pass).
 
 ## Headline metrics
 
-- **Years covered**: 1990–2024 (35 years natality); 2005–2023 (19 years linked birth-infant death)
-- **Birth records**: 138,819,655 total (natality V2); 74,943,824 (linked V3)
-- **Residents-only subsets**: 138.58M V2; 74.79M V3 linked
+- **Years covered**: 1968–2024 (57 years natality); 2005–2023 (19 years linked birth-infant death)
+- **Birth records**: 201,161,456 total (natality V2); 74,943,824 (linked V3)
+- **Residents-only subsets**: 138.58M V2 *(1990–2024 v2.8 slice; v3.0.0 1968–2024 convenience refresh pending)*; 74.79M V3 linked
 - **Columns**: V2 = 71 harmonized + 13 derived = 84; V3 linked = 78 harmonized + 16 derived = 94 (same 84 as V2 plus 7 death-side harmonized + 3 death-side derived)
-- **Validation**: all 41 internal invariants pass with 0 violations against the V2 natality parquet (V3 linked: 38 pass clean + 1 with 2 documented NCHS-upstream survivor exceptions; 3 V2-only coverage invariants are skipped in V3 mode — see `docs/COMPARABILITY.md` §"V3 linked vs V2 natality: 2009–2010 unrevised-cert field retention"); V2 external targets 183/183 pass (1990–2024); V3 linked external targets 35/35 pass (2005–2023, from NCHS linked user guides)
-- **Zenodo DOI** (concept — always resolves to latest deposited version): [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074). Latest *deposited* version: **v2.7.0** ([10.5281/zenodo.19868835](https://doi.org/10.5281/zenodo.19868835)). **v2.8.0 ships in this repo but is not yet deposited to Zenodo** (column-name rename: `year → data_year`, `restatus → residence_status`, `maternal_race_bridged4 → maternal_race_bridged`, `maternal_hispanic_origin → hispanic_origin`); deposit will land via the unified-HVS Zenodo task. The v2.7.0 deposit remains the canonical citable artifact until then. **Migration guide**: [`migrations/v2.7.0-to-v2.8.0-natality.md`](../migrations/v2.7.0-to-v2.8.0-natality.md) covers the column-rename surface, version-agnostic helper usage, sed/awk recipes, and DuckDB view patterns.
+- **Validation**: all 41 internal invariants pass with 0 violations against the V2 natality parquet (V3 linked: 38 pass clean + 1 with 2 documented NCHS-upstream survivor exceptions; 3 V2-only coverage invariants are skipped in V3 mode — see `docs/COMPARABILITY.md` §"V3 linked vs V2 natality: 2009–2010 unrevised-cert field retention"); V2 external targets 183/183 pass (1990–2024; pre-1990 (1968–1989) NVSR benchmarking is a planned incremental addition); V3 linked external targets 35/35 pass (2005–2023, from NCHS linked user guides)
+- **Zenodo DOI** (concept — always resolves to latest deposited version): [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074). Latest *deposited* version: **v2.7.0** ([10.5281/zenodo.19868835](https://doi.org/10.5281/zenodo.19868835)). **v3.0.0 ships in this repo but is not yet deposited to Zenodo** (1968–1989 backward extension: +22 years, 201,161,456 records, `certificate_revision` gains `unrevised_1968`; built on the v2.8.0 column-name rename: `year → data_year`, `restatus → residence_status`, `maternal_race_bridged4 → maternal_race_bridged`, `maternal_hispanic_origin → hispanic_origin`); deposit will land via the unified-HVS Zenodo task. The v2.7.0 deposit remains the canonical citable artifact until then. **Migration**: v3.0.0 is schema-additive over v2.8.0 — the 1990–2024 slice is byte-identical (verified at C8.17 DO step 6 against the preserved v2.8 baseline), so existing v2.8.0 analyses run unchanged; v3.0.0 only adds 22 earlier years and a fourth `certificate_revision` value. The [`migrations/v2.7.0-to-v2.8.0-natality.md`](../migrations/v2.7.0-to-v2.8.0-natality.md) guide still covers the v2.7→v2.8 column-rename surface; a dedicated v2.8.0→v3.0.0 migration guide is a planned follow-up.
 
 ## Output files
 
@@ -33,9 +35,9 @@ All outputs live under `output/`. The three files a researcher will actually use
 
 | File | Rows | Columns | What it is |
 |------|-----:|--------:|-----------|
-| `output/harmonized/natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | All U.S. births 1990–2024, one row per birth, with all derived indicators. **Start here for most analyses.** |
+| `output/harmonized/natality_v2_harmonized_derived.parquet` | 201,161,456 | 84 | All U.S. births 1968–2024, one row per birth, with all derived indicators. **Start here for most analyses.** |
 | `output/harmonized/natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | Linked birth-infant death 2005–2023, one row per birth, death-side fields populated for ~0.6% that died in the first year. |
-| `output/convenience/*.parquet` | ~138.58M / ~74.79M | — | Residents-only subsets (exclude foreign residents; `residence_status != 4`) for matching NCHS residence-based published rates. |
+| `output/convenience/*.parquet` | ~138.58M / ~74.79M | — | Residents-only subsets (exclude foreign residents; `residence_status != 4`) for matching NCHS residence-based published rates. *(V2 reflects the 1990–2024 v2.8 slice; the v3.0.0 1968–2024 convenience refresh is a pending follow-up.)* |
 
 ## Reading order
 
@@ -111,6 +113,7 @@ Years 2009–2013 and 2015 use non-standard zip compression (deflate64 / PPMd); 
 
 ```bash
 # 1. Parse raw zips → per-year parquet (run once)
+python scripts/01_import/parse_all_pre1990_years.py --years 1968-1989   # pre-1990 (C8.17 DO 5a)
 python scripts/01_import/parse_all_v1_years.py --years 1990-2024
 python scripts/01_import/parse_all_linked_years.py --years 2005-2015        # denom-plus
 for y in 2016 2017 2018 2019 2020 2021 2022 2023; do
@@ -120,7 +123,7 @@ for y in 2016 2017 2018 2019 2020 2021 2022 2023; do
 done
 
 # 2. Harmonize era-specific fields → common schema
-python scripts/03_harmonize/harmonize_v1_core.py --years 1990-2024
+python scripts/03_harmonize/harmonize_v1_core.py --years 1968-2024
 python scripts/03_harmonize/harmonize_linked_v3.py --years 2005-2023
 
 # 3. Derive analysis-ready indicators (LBW, preterm, age-cat, neonatal_death, cause_group)
@@ -151,5 +154,5 @@ End-to-end runtime on a single modern laptop: ~1 hour wall clock for parse, ~15 
 - Cite this harmonization (concept DOI — always resolves to latest version):
   [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19363074.svg)](https://doi.org/10.5281/zenodo.19363074)
 - Or pin to a specific version:
-  - v2.7.0 (current): [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19868835.svg)](https://doi.org/10.5281/zenodo.19868835)
+  - v2.7.0 (latest deposited; in-repo state is v3.0.0, pending the unified-HVS deposit): [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19868835.svg)](https://doi.org/10.5281/zenodo.19868835)
   - v2.5.0 (initial): [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19363075.svg)](https://doi.org/10.5281/zenodo.19363075)

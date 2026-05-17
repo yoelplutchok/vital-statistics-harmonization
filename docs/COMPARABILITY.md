@@ -10,7 +10,8 @@
 ## Era-boundary timeline (cross-product)
 
 ```text
-NATALITY    1990 ─────────────────────────────────────────────────────────────── 2024 [35 yr]
+NATALITY    1968 ──── 1990 ──────────────────────────────────────────────── 2024 [57 yr]
+            1968-rev (1968–1989: 1968/1969-71/1972-88/1989 layouts)──────
                        2003-rev────────                              2014 OE────
                                   MEDUC unbridged
                                                                           California marital → null 2017+
@@ -82,7 +83,7 @@ The bridged-race column ends at different years on each product because NCHS dis
 
 | Product | Last year with `maternal_race_bridged` populated | First year null |
 |---|---|---|
-| **Natality** (v2.8.0) | 2019 | 2020 |
+| **Natality** (v3.0.0) | 2019 | 2020 |
 | **Linked** (v3) | 2019 | 2020 (matches natality numerator side) |
 | **Fetal-death** (v2.4.0) | 2017 | 2018 |
 

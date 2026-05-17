@@ -14,7 +14,7 @@ If the pipeline has already been run, you can immediately load the outputs:
 ```python
 import pandas as pd
 
-# V2 Natality: 138.8M births, 1990-2024 (84 columns)
+# V2 Natality: 201.2M births, 1968-2024 (84 columns)
 df = pd.read_parquet("output/harmonized/natality_v2_harmonized_derived.parquet")
 
 # Filter to residents (standard NCHS analysis universe)
@@ -33,13 +33,13 @@ linked_res = pd.read_parquet("output/convenience/natality_v3_linked_residents_on
 
 ## Available output files
 
-### V2 Natality (1990-2024)
+### V2 Natality (1968-2024)
 
 | File | Rows | Columns | Use case |
 |------|------|---------|----------|
-| `output/convenience/natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Recommended** — residents only, derived indicators included |
-| `output/harmonized/natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | Full file with foreign residents + residence_status columns |
-| `output/harmonized/natality_v2_harmonized.parquet` | 138,819,655 | 71 | Harmonized only (no derived indicators) |
+| `output/convenience/natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Recommended** — residents only, derived indicators included. *(1990–2024 v2.8 slice; v3.0.0 1968–2024 convenience refresh pending.)* |
+| `output/harmonized/natality_v2_harmonized_derived.parquet` | 201,161,456 | 84 | Full file with foreign residents + residence_status columns |
+| `output/harmonized/natality_v2_harmonized.parquet` | 201,161,456 | 71 | Harmonized only (no derived indicators) |
 | `output/yearly_clean/natality_{year}_core.parquet` | varies | varies | Raw NCHS substrings (audit/debug only) |
 
 ### V3 Linked birth-infant death (2005-2023)
@@ -99,8 +99,9 @@ trend["post_imr"] = trend["postneonatal"] / trend["births"] * 1000
 ### V2 Natality
 
 ```bash
+python scripts/01_import/parse_all_pre1990_years.py --years 1968-1989   # pre-1990 (C8.17 DO 5a)
 python scripts/01_import/parse_all_v1_years.py --years 1990-2024
-python scripts/03_harmonize/harmonize_v1_core.py --years 1990-2024 \
+python scripts/03_harmonize/harmonize_v1_core.py --years 1968-2024 \
   --out output/harmonized/natality_v2_harmonized.parquet
 python scripts/04_derive/derive_v1_core.py \
   --in output/harmonized/natality_v2_harmonized.parquet \

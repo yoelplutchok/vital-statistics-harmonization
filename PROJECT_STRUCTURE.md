@@ -36,7 +36,7 @@ Subproject-specific docs (codebooks, FAQs, comparability notes) live inside `nat
 
 ## natality/
 
-Natality 1990–2024 plus linked birth–infant death 2005–2023, mirrored from the [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) repo (v2.8.0 in-repo state, last Zenodo deposit v2.7.0).
+Natality 1968–2024 plus linked birth–infant death 2005–2023, mirrored from the [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) repo (v3.0.0 in-repo state, last Zenodo deposit v2.7.0).
 
 | Path | Purpose |
 |---|---|

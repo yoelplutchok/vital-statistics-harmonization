@@ -4,17 +4,17 @@ This repository produces **harmonized, researcher-ready** releases of **U.S. nat
 
 ## What's included
 
-### V2 Natality (1990-2024): 138.8 million births
+### V2 Natality (1968-2024): 201.2 million births
 
-A single stacked Parquet file covering all 35 years of U.S. natality data, with a stable **71-column harmonized schema** (plus 13 derived columns). The pipeline resolves five different NCHS record layouts, three certificate revisions, and dozens of field-name/coding changes into one consistent format. Variables span maternal and paternal demographics, prenatal care, medical risk factors, congenital anomalies, infections, fertility treatment, clinical detail, delivery details, and birth outcomes.
+A single stacked Parquet file covering all 57 years of U.S. natality data, with a stable **71-column harmonized schema** (plus 13 derived columns). The pipeline resolves multiple NCHS record layouts spanning three birth-certificate revisions (1968, 1989, 2003), and dozens of field-name/coding changes into one consistent format. Variables span maternal and paternal demographics, prenatal care, medical risk factors, congenital anomalies, infections, fertility treatment, clinical detail, delivery details, and birth outcomes.
 
 **Output files:**
 
 | File | Rows | Columns | Description |
 |------|------|---------|-------------|
-| `natality_v2_harmonized.parquet` | 138,819,655 | 71 | Harmonized birth records |
-| `natality_v2_harmonized_derived.parquet` | 138,819,655 | 84 | + derived indicators (LBW, preterm, singleton, diabetes/HTN booleans, etc.) |
-| `natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped |
+| `natality_v2_harmonized.parquet` | 201,161,456 | 71 | Harmonized birth records |
+| `natality_v2_harmonized_derived.parquet` | 201,161,456 | 84 | + derived indicators (LBW, preterm, singleton, diabetes/HTN booleans, etc.) |
+| `natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped. *(Reflects the 1990–2024 v2.8 slice; the v3.0.0 1968–2024 convenience refresh via `scripts/06_convenience/` is a pending follow-up.)* |
 
 ### V3 Linked birth-infant death (2005-2023): 74.9 million births
 
@@ -42,7 +42,7 @@ The same birth records for 2005-2023, now linked to infant death certificates. A
   - `maternal_race_detail_15cat` (2014+) — 15-category mother's race recode for revised-cert rows (MRACE15).
 - **Missingness diagnostics**: per-variable per-year null rates with structural break detection (`output/validation/harmonized_missingness_by_year.csv` + `harmonized_missingness_breaks.csv`).
 - **Validation artifacts** against official NCHS tabulations (`docs/VALIDATION.md`) plus null-rate discontinuity detection in the invariant checker.
-- Automatic handling of **era-specific field positions, names, and coding** across 5 natality record layouts + 3 linked formats.
+- Automatic handling of **era-specific field positions, names, and coding** across the full set of natality record layouts spanning the 1968 / 1989 / 2003 certificate eras + 3 linked formats.
 - **Linked-file composite join key**: `parse_linked_cohort_year.py` merges 2016–2023 denominator+numerator using `(CO_SEQNUM, CO_YOD)` (the NCHS-documented composite key), not CO_SEQNUM alone.
 - **Parquet versioning**: convenience files embed git hash and build timestamp in metadata; `PROVENANCE.md` provides SHA-256 checksums.
 
@@ -66,7 +66,7 @@ Full details in `docs/COMPARABILITY.md`. Highlights:
 
 ## What this release does NOT claim
 
-- Not every variable is fully trend-safe across all 35 years (see comparability classes in the codebook and "Known pitfalls" in `COMPARABILITY.md`).
+- Not every variable is fully trend-safe across all 57 years (see comparability classes in the codebook and "Known pitfalls" in `COMPARABILITY.md`). Per-variable comparability is documented for 1990–2024; the pre-1990 (1968–1989) per-variable comparability extension is tracked at task C8.20.
 - No restricted-use geography or restricted-use variables are included.
 - 2009-2013 missing unrevised values are documented, not imputed.
 - 1990-2002 race bridging is approximate (official NCHS bridged race starts at 2003); 2020-2024 race/ethnicity is reconstructed from detail codes with ~3% multiracial exclusion.
@@ -75,7 +75,7 @@ Full details in `docs/COMPARABILITY.md`. Highlights:
 
 | Dataset | External targets | Result |
 |---------|-----------------|--------|
-| V2 Natality (1990-2024) | 183 targets across 1990-2024 (births, LBW%, preterm%, plurality, singleton%, male%, cesarean%, smoking%, Medicaid%) | 183/183 pass |
+| V2 Natality (1968-2024 product; 1990-2024 benchmarked) | 183 targets across 1990-2024 (births, LBW%, preterm%, plurality, singleton%, male%, cesarean%, smoking%, Medicaid%); pre-1990 (1968-1989) NVSR benchmarking is a planned incremental addition | 183/183 pass |
 | V2 Natality invariants | Deterministic consistency checks | 0 violations |
 | V3 Linked (2005-2023) | 35 active targets across 2005, 2010, 2015, 2020-2023 (births, infant deaths, IMR, neonatal/postneonatal deaths, neonatal/postneonatal IMR) | 35/35 active pass |
 
@@ -88,11 +88,12 @@ See `docs/VALIDATION.md` for details and `output/validation/` for machine-readab
 From repo root (after downloading raw inputs per the README "Quick reproduce" section):
 
 ```bash
-# V2 Natality (1990-2024)
+# V2 Natality (1968-2024)
+python scripts/01_import/parse_all_pre1990_years.py --years 1968-1989   # pre-1990 (C8.17 DO 5a)
 python scripts/01_import/parse_all_v1_years.py --years 1990-2024
-python scripts/03_harmonize/harmonize_v1_core.py --years 1990-2024
+python scripts/03_harmonize/harmonize_v1_core.py --years 1968-2024
 python scripts/04_derive/derive_v1_core.py
-python scripts/05_validate/compare_external_targets_v1.py
+python scripts/05_validate/compare_external_targets_v1.py                 # 183 NVSR targets (1990-2024; pre-1990 benchmarking planned)
 python scripts/05_validate/validate_v1_invariants.py --years 1990-2024
 python scripts/05_validate/harmonized_missingness.py
 

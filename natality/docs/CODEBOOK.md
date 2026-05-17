@@ -4,6 +4,8 @@ This codebook is derived conceptually from `metadata/harmonized_schema.csv`. The
 
 ## Harmonized variables (1990–2024)
 
+> **v3.0.0 scope note.** As of natality **v3.0.0** the product spans **1968–2024** (57 years; 201,161,456 records — see `ABOUT_THIS_RELEASE.md`). The per-variable availability/comparability rows below currently document the **1990–2024** era; the schema is identical (71 harmonized + 13 derived) and the 1990–2024 slice is byte-identical to v2.8. The pre-1990 (1968–1989) per-variable codebook extension (per-era availability, sentinel/coding differences, conservative-null fields) is tracked at task **C8.20** and is not yet reflected in the per-variable rows below.
+
 This is the current harmonized schema implemented by:
 
 - `scripts/03_harmonize/harmonize_v1_core.py`
