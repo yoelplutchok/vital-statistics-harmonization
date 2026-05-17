@@ -1140,3 +1140,191 @@ LINKED_NUM_DEATH_1989_1991_FIELDS: list[tuple[str, int, int]] = [
 ]
 
 LINKED_NUM_RECLEN_1989_1991 = 535
+
+# =====================================================================
+# Linked Birth-Infant Death: 1995-2002 COHORT layouts
+# (C8.18 DO step 4a — 1995-2002 cohort backward extension)
+# =====================================================================
+# The 1995-2002 cohort-linked files use a 230-byte Denominator-PLUS
+# (LinkCO{YY}US{Den,DEN}.dat) + a 535-byte Numerator
+# (LinkCO{YY}US{Num,NUM}.dat) + a 535-byte Unlinked file. This is the
+# three-file denominator-plus model (the same family as 1989-1991 +
+# 2005+, NOT the pure two-file 1983-1988 form): the denominator-plus
+# IS the one-row-per-birth set; the numerator adds the richer
+# multiple-cause mortality detail (joined via IDNUMBER at DO step 5).
+#
+# Authored byte-exact from the LinkCO95Guide.pdf DETAIL "Item and Code
+# Outline" (pp20-62; the Item-Location column), NOT the pp18-19 "List
+# of Data Elements and Locations" element-span SUMMARY (L13-extension:
+# the C8.18 DO step 3a SMOKE-Tier-1 catch is the governing precedent —
+# the SUMMARY spans are composites, e.g. SUMMARY pos 210 = "flag in
+# both num/den" + 220-222 = part of "multiple conditions", whereas the
+# byte-level DETAIL labels 210 = R7 reserved + 220-222 = UCODR recode;
+# the DETAIL is authoritative). The 1995-2002-reuses-1989-1991
+# hypothesis was FALSIFIED at the C8.18 DO step 4 PRE-FLIGHT
+# (2026-05-18T05:00:00Z) by a read-only real-data value-distribution
+# probe (same 535-byte numerator length != same layout): this layout
+# is authored FRESH and value-distribution-verified at C8.18 DO step
+# 4a SMOKE Tier 1 on real LinkCO{95,98,99,02}US{Den,Num}.dat.
+#
+# ONE physical layout spans 1995-2002 (record lengths 230/535 constant
+# across the 1998->1999 ICD-9->ICD-10 boundary — empirically confirmed:
+# LinkCO99Guide.pdf Den 230 / Num 535 + all 11 spot-checked DETAIL
+# anchors byte-identical to LinkCO95Guide; only the UCOD@216-219
+# value-domain changes "ICD 9th Revision" (1995-98) -> "ICD 10th
+# Revision" (1999-2002), and UCODR@220-222 "61 Infant Cause Recode"
+# (ICD-9) -> "130-cause" (ICD-10) — a within-era value-domain, NOT a
+# byte shift; the harmonized cause-column shape + per-era recode
+# semantics are C8.18 DO step 5/6, soft-flag (gg)).
+#
+# Structural boundaries (LinkCO95Guide.pdf p20 + p50):
+#   * Locations 1-210   = MATCHS@1 + IDNUMBER@2-6 + Birth Certificate
+#                          (7-210); identical in den-plus + numerator
+#                          (the shared "Denominator Record and Natality
+#                          Section of Numerator (Linked) Record" detail).
+#   * Locations 211-222 = death-derived "plus" (AGED..UCODR); on BOTH
+#                          the numerator AND denominator-plus files.
+#   * Locations 223-230 = RECWT (record weight); ends the den-plus.
+#   * Locations 223-535 = numerator file only (RECWT 223-230, then a
+#                          231-260 reserved gap + multiple-cause +
+#                          death geo/date 261-535).
+#
+# The two-file num<->denom-plus construction (1995-2002 join key =
+# IDNUMBER@2-6, per LinkCO95Guide p20: "This number uniquely identifies
+# the same infant in the numerator and denominator-plus files"), the
+# `_find_denomplus_member` "DEN"/"NUM" support, the DEFLATE64-at-2003
+# tooling decision (1995-2002 = DEFLATE, stdlib-fine), and the
+# harmonize path are C8.18 DO step 4b/5 concerns; this step authors the
+# LAYOUT substrate + additive dispatcher branches only.
+#
+# Composite multiple-field blocks (DELMETH/MEDRISK/OTHERRSK/OBSTETRC/
+# LABOR/NEWBORN/CONGENIT/FLRES + the entity/record-axis ENTITY/RECORD
+# spans) are single composite spans here; per-condition leaf
+# decomposition + per-era cause recode = C8.18 DO step 5 (the C8.18
+# DO3a MEDRISK/OBSTETRC + DO3b ENTITY/RECORDAX composite-span
+# precedent; soft-flag (gg)). Positions are 1-based inclusive.
+#
+# Sources:
+#   - LinkCO95Guide.pdf p15-17 (file char: Den 230 / Num 535 / Unl 535;
+#     LinkCO95USDen.dat 905,498,784 / 232 = 3,903,012 = p15), pp20-49
+#     ("Denominator Record and Natality Section of Numerator (Linked)
+#     Record" DETAIL, locs 1-210), pp50-51 ("...Mortality Section..."
+#     DETAIL, locs 211-230), pp52-62 ("Mortality Section of Numerator
+#     (Linked) Record" DETAIL, locs 231-535); captured state-on-disk in
+#     PRE_FLIGHT_LOG.md 2026-05-18T14:30:00Z SMOKE Tier 0.
+#   - LinkCO99Guide.pdf p16-18 (Den 230 / Num 535 / Unl 535) + DETAIL
+#     anchor cross-check (ICD-10 1999-2002 sub-era; byte-identical).
+
+# --- 1995-2002 cohort: 230-byte Denominator-PLUS, birth-cert section ---
+# Locs 1-210 (MATCHS/IDNUMBER + Birth Certificate). Identical in the
+# den-plus AND the numerator's natality section (LinkCO95Guide p20-49).
+LINKED_BIRTH_1995_2002_FIELDS: list[tuple[str, int, int]] = [
+    ("MATCHS", 1, 1),         # Match status (1 matched B/ID, 2 surviving, 3 unmatched-unl-only)
+    ("IDNUMBER", 2, 6),       # Infant death number (num<->denom-plus join key)
+    ("BIRYR", 7, 10),         # Year of birth (1995-2002)
+    ("RESSTATB", 11, 11),     # Resident status - birth (1-4)
+    ("BRSTATE", 12, 13),      # Expanded state of residence - NCHS codes - birth
+    ("STOCCFIPB", 14, 15),    # State of occurrence FIPS - birth
+    ("CNTOCFIPB", 16, 18),    # County of occurrence FIPS - birth
+    ("STRESFIPB", 19, 20),    # State of residence FIPS - birth
+    ("CNTYRFPB", 21, 23),     # County of residence FIPS - birth
+    ("PLRES", 24, 28),        # Place (city) of residence FIPS
+    ("MAGEFLG", 29, 29),      # Age of mother flag
+    ("DMAGE", 30, 31),        # Age of mother (10-49)
+    ("MAGER8", 32, 32),       # Age of mother recode 8
+    ("ORMOTH", 33, 33),       # Hispanic origin of mother
+    ("ORRACEM", 34, 34),      # Hispanic origin and race of mother recode
+    ("MRACEIMP", 35, 35),     # Race of mother imputation flag
+    ("MRACE", 36, 37),        # Race of mother (detail)
+    ("MRACE3", 38, 38),       # Race of mother recode 3
+    ("DMEDUC", 39, 40),       # Education of mother detail (00-17, 99)
+    ("MEDUC6", 41, 41),       # Education of mother recode 6
+    ("DMARIMP", 42, 42),      # Marital status imputation flag
+    ("DMAR", 43, 43),         # Marital status of mother (1/2)
+    ("MPLBIR", 44, 45),       # Place of birth of mother
+    ("MPLBIRR", 46, 46),      # Place of birth of mother recode
+    ("DTOTORD", 47, 48),      # Detail total birth order
+    ("DLIVORD", 49, 50),      # Detail live birth order
+    ("MONPRE", 51, 52),       # Detail month prenatal care began (00-09, 99)
+    ("MPRE5", 53, 53),        # Month prenatal care began recode 5
+    ("NPREVIST", 54, 55),     # Total number of prenatal visits
+    ("ADEQUACY", 56, 56),     # Adequacy of care recode (Kessner)
+    ("R1", 57, 59),           # Reserved positions
+    ("FAGERFLG", 60, 60),     # Reported age of father used flag
+    ("DFAGE", 61, 62),        # Age of father
+    ("ORFATH", 63, 63),       # Hispanic origin of father
+    ("ORRACEF", 64, 64),      # Hispanic origin and race of father recode
+    ("FRACE", 65, 66),        # Race of father (detail)
+    ("PLDEL", 67, 67),        # Place or facility of delivery
+    ("BIRATTND", 68, 68),     # Attendant at delivery
+    ("R2", 69, 69),           # Reserved position
+    ("GESTESTM", 70, 70),     # Clinical estimate of gestation used flag
+    ("CLINGEST", 71, 72),     # Clinical estimate of gestation (17-47, 99)
+    ("GESTIMP", 73, 73),      # Gestation imputation flag
+    ("GESTAT", 74, 75),       # Gestation - detail in weeks (17-47, 99)
+    ("GESTAT10", 76, 77),     # Gestation recode 10
+    ("CSEXIMP", 78, 78),      # Sex imputation flag
+    ("CSEX", 79, 79),         # Sex of child (1 M / 2 F)
+    ("BWIF", 80, 80),         # Birth weight imputation flag
+    ("DBIRWT", 81, 84),       # Birth weight detail in grams (imputed)
+    ("BIRWT12", 85, 86),      # Birth weight recode 12 (imputed)
+    ("BIRWT4", 87, 87),       # Birth weight recode 4 (imputed)
+    ("PLURIMP", 88, 88),      # Plurality imputation flag
+    ("DPLURAL", 89, 89),      # Plurality
+    ("FMAPS", 90, 91),        # Five-minute Apgar score (00-10, 99)
+    ("DELMETH", 92, 99),      # Method of delivery (composite; leaves DO5)
+    ("MEDRISK", 100, 117),    # Medical risk factors (composite; MRFLAG@100..OTHERMR@117; DO5)
+    ("OTHERRSK", 118, 128),   # Other risk factors - tobacco/alcohol/wt-gain (composite; DO5)
+    ("OBSTETRC", 129, 136),   # Obstetric procedures (composite; leaves DO5)
+    ("LABOR", 137, 153),      # Complications of labor and/or delivery (composite; DO5)
+    ("NEWBORN", 154, 163),    # Abnormal conditions of the newborn (composite; DO5)
+    ("CONGENIT", 164, 186),   # Congenital anomalies (composite; leaves DO5)
+    ("FLRES", 187, 203),      # Reporting flags for place of residence (composite; DO5)
+    ("CDOBMIMP", 204, 204),   # Month of birth of child imputation flag
+    ("BIRMON", 205, 206),     # Month of birth (01-12)
+    ("R6", 207, 208),         # Reserved position
+    ("WEEKDAYB", 209, 209),   # Day of week child born
+    ("R7", 210, 210),         # Reserved (SUMMARY claims num/den flag; DETAIL authoritative, L13-ext)
+]
+
+# --- 1995-2002 cohort: Denominator-PLUS appended death "plus" + RECWT ---
+# Locs 211-230. 211-222 on BOTH num + den-plus; 223-230 RECWT (den-plus
+# ends at 230). Analogous to LINKED_DEATH_1989_1991 / _2005_2013.
+LINKED_DEATH_1995_2002_FIELDS: list[tuple[str, int, int]] = [
+    ("AGED", 211, 213),       # Age at death in days (000-364)
+    ("AGER5", 214, 214),      # Infant age recode 5
+    ("ACCIDPL", 215, 215),    # Place of accident (E850-E869, E880-E928)
+    ("UCOD", 216, 219),       # Underlying cause - ICD-9 (1995-98) / ICD-10 (1999-2002)
+    ("UCODR", 220, 222),      # Infant cause recode - 61-cause ICD-9 / 130-cause ICD-10 (DO5)
+    ("RECWT", 223, 230),      # Record weight (1.XXXXXX; ~1.0 surviving, >1.0 infant death)
+]
+
+LINKED_DENOMPLUS_RECLEN_1995_2002 = 230
+
+# --- 1995-2002 cohort numerator: mortality section (locs 231-535) ---
+# (Birth section 1-210 REUSE LINKED_BIRTH_1995_2002_FIELDS; death "plus"
+#  211-230 REUSE LINKED_DEATH_1995_2002_FIELDS.) 231-260 = reserved gap
+# (unenumerated in the DETAIL; the LinkCO95Guide DETAIL jumps RECWT@230
+# -> MULTCOND@261; mirrors the 1989-1991 numerator RESERVED1@226-260).
+LINKED_NUM_DEATH_1995_2002_FIELDS: list[tuple[str, int, int]] = [
+    ("RESERVED1", 231, 260),  # Reserved gap (RECWT@230 -> MULTCOND@261)
+    ("EANUM", 261, 262),      # Number of entity-axis conditions (00-20)
+    ("ENTITY", 263, 402),     # Entity-axis conditions (20 x 7-byte; ICD-9/10; composite, DO5)
+    ("RANUM", 403, 404),      # Number of record-axis conditions (00-20)
+    ("RECORD", 405, 504),     # Record-axis conditions (20 x 5-byte; ICD-9/10; composite, DO5)
+    ("RESSTATD", 505, 505),   # Resident status - death (1-4)
+    ("DRSTATE", 506, 507),    # Expanded state of residence - NCHS codes - death
+    ("STOCCFIPD", 508, 509),  # State of occurrence FIPS - death
+    ("CNTOCFIPD", 510, 512),  # County of occurrence FIPS - death
+    ("STRESFIPD", 513, 514),  # State of residence FIPS - death (00 = foreign)
+    ("CNTYRFPD", 515, 517),   # County of residence FIPS - death
+    ("PLRESD", 518, 522),     # Place (city) of residence FIPS - death
+    ("HOSPD", 523, 523),      # Hospital and patient status
+    ("DTHYR", 524, 527),      # Year of death (cohort .. cohort+1)
+    ("DTHMON", 528, 529),     # Month of death (01-12)
+    ("R8", 530, 531),         # Reserved position
+    ("WEEKDAYD", 532, 532),   # Day of week of death (1-7, 9)
+    ("R9", 533, 535),         # Reserved positions (numerator ends at 535)
+]
+
+LINKED_NUM_RECLEN_1995_2002 = 535

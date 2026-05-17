@@ -40,6 +40,11 @@ from field_specs import (
     LINKED_NUM_DEATH_1989_1991_FIELDS,
     LINKED_NUM_RECLEN_1983_1988,
     LINKED_NUM_RECLEN_1989_1991,
+    LINKED_BIRTH_1995_2002_FIELDS,
+    LINKED_DEATH_1995_2002_FIELDS,
+    LINKED_NUM_DEATH_1995_2002_FIELDS,
+    LINKED_DENOMPLUS_RECLEN_1995_2002,
+    LINKED_NUM_RECLEN_1995_2002,
     LINKED_BIRTH_2005_2013_FIELDS,
     LINKED_BIRTH_2014_2020_FIELDS,
     LINKED_DEATH_2005_2013_FIELDS,
@@ -82,6 +87,11 @@ def _layout_for_linked_year(
     births-only 91-byte Denominator (no death section in this file; the
     500-byte numerator carries death detail -> DO step 3b). 1989-1991 is a
     225-byte Denominator-PLUS (birth cert + appended death-derived section).
+    C8.18 DO step 4a adds 1995-2002 (additive): a 230-byte
+    Denominator-PLUS (birth cert 1-210 + death "plus" 211-230 incl.
+    RECWT@223-230), authored FRESH from the LinkCO95Guide DETAIL (the
+    1995-2002-reuses-1989-1991 hypothesis was FALSIFIED; L13-extension).
+    1992-1994 is the permanent NCHS linkage gap (unconfigured -> ValueError).
     The two-file numerator left-join + the `_find_denomplus_member`
     "DEN"-vs-"DENOM" support are C8.18 DO step 5 parser concerns; this
     function only returns the layout substrate.
@@ -98,6 +108,18 @@ def _layout_for_linked_year(
             LINKED_BIRTH_1989_1991_FIELDS,
             LINKED_DEATH_1989_1991_FIELDS,
         )
+    if 1995 <= year <= 2002:
+        # C8.18 DO step 4a: 230-byte Denominator-PLUS (birth cert
+        # 1-210 + death "plus" 211-230 incl. RECWT@223-230). Authored
+        # FRESH from the LinkCO95Guide DETAIL (the 1995-2002-reuses-
+        # 1989-1991 hypothesis was FALSIFIED; L13-extension). One layout
+        # spans 1995-2002 (ICD-9 1995-98 / ICD-10 1999-2002 = a
+        # within-era UCOD@216-219 value-domain, not a byte shift).
+        return (
+            LINKED_DENOMPLUS_RECLEN_1995_2002,
+            LINKED_BIRTH_1995_2002_FIELDS,
+            LINKED_DEATH_1995_2002_FIELDS,
+        )
     if 2005 <= year <= 2013:
         return (
             LINKED_DENOMPLUS_RECLEN_2005_2013,
@@ -112,7 +134,8 @@ def _layout_for_linked_year(
         )
     raise ValueError(
         f"Year {year} not yet configured for linked files. "
-        f"Supported: 1983-1991 (cohort denominator), 2005-2020."
+        f"Supported: 1983-1991 + 1995-2002 (cohort denominator-plus), 2005-2020. "
+        f"(1992-1994 = the permanent NCHS linkage gap.)"
     )
 
 
@@ -131,11 +154,17 @@ def _numerator_layout_for_linked_year(
     enumerated), mortality locs 194-500. 1989-1991 numerator =
     535-byte: birth locs 1-212 REUSE LINKED_BIRTH_1989_1991_FIELDS,
     death-derived "plus" locs 213-225 REUSE LINKED_DEATH_1989_1991_FIELDS,
-    mortality locs 226-535. The two-file num/den construction, the
-    numerator<->denominator-plus join (1989-1991 key = MATCHS,IDNUMBER),
-    `_find_denomplus_member` "DEN"/"NUM" support, and the harmonize
-    path are C8.18 DO step 5 concerns; this function only returns the
-    layout substrate (no zip I/O).
+    mortality locs 226-535. C8.18 DO step 4a adds 1995-2002 (additive):
+    535-byte numerator = birth locs 1-210 REUSE
+    LINKED_BIRTH_1995_2002_FIELDS, death "plus" 211-230 REUSE
+    LINKED_DEATH_1995_2002_FIELDS, numerator-only mortality 231-535
+    (RESERVED1@231-260 + multiple-cause + death geo/date). 1992-1994 =
+    the permanent NCHS linkage gap (unconfigured -> ValueError). The
+    two-file num/den construction, the numerator<->denominator-plus
+    join (1989-1991 key = MATCHS,IDNUMBER; 1995-2002 key = IDNUMBER@2-6
+    per LinkCO95Guide p20), `_find_denomplus_member` "DEN"/"NUM"
+    support, and the harmonize path are C8.18 DO step 5 concerns; this
+    function only returns the layout substrate (no zip I/O).
     """
     if 1983 <= year <= 1988:
         return (
@@ -149,9 +178,20 @@ def _numerator_layout_for_linked_year(
             LINKED_BIRTH_1989_1991_FIELDS,
             LINKED_DEATH_1989_1991_FIELDS + LINKED_NUM_DEATH_1989_1991_FIELDS,
         )
+    if 1995 <= year <= 2002:
+        # C8.18 DO step 4a: 535-byte numerator = birth 1-210 + death
+        # "plus" 211-230 (REUSE the den-plus specs) + numerator-only
+        # mortality 231-535 (RESERVED1@231-260 + multiple-cause +
+        # death geo/date). Authored FRESH from the LinkCO95Guide
+        # DETAIL (L13-extension; reuse-of-1989-1991 FALSIFIED).
+        return (
+            LINKED_NUM_RECLEN_1995_2002,
+            LINKED_BIRTH_1995_2002_FIELDS,
+            LINKED_DEATH_1995_2002_FIELDS + LINKED_NUM_DEATH_1995_2002_FIELDS,
+        )
     raise ValueError(
         f"Year {year} not configured for the cohort numerator. "
-        f"Supported: 1983-1991 (cohort numerator). "
+        f"Supported: 1983-1991 + 1995-2002 (cohort numerator). "
         f"(Denominator layouts: see _layout_for_linked_year.)"
     )
 

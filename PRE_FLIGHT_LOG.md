@@ -8,6 +8,170 @@
 
 ---
 
+## PRE-FLIGHT for C8.18 DO step 4a — 2026-05-18T14:30:00Z — cohort **1995-2002** `field_specs.py` layout authoring (230-byte denominator-plus + 535-byte numerator; 1989-rev birth; ICD-9 1995-98 / ICD-10 1999-2002 within-era UCOD value-domain) + SMOKE Tier-0/1 value-distribution verify — **RESULT: PROCEED to DO** (9/9 forward-looking HALTs from `RECEIPTS/C8.18_step3b_2026-05-18T02-00-00Z.md` + the C8.18 DO step 4 PRE-FLIGHT entry below re-verified; 11/11 gate parquet SHAs byte-exact; canonical pytest baseline `111 passed, 1 skipped, 1 xfailed in 360.53s` (4-dir suite) preserved; the FULL 1995-2002 den-plus + numerator layout reconstructed **byte-exact from the `LinkCO95Guide.pdf` DETAIL "Item and Code Outline"** (pp20-62; the L13-extension governing precedent — the pp18-19 "List of Data Elements and Locations" element-span SUMMARY is composite + NOT trusted) and **cross-verified byte-identical against `LinkCO99Guide.pdf`** for the ICD-10 1999-2002 sub-era (record lengths 230/535 + 11 anchor positions constant across the 1998→1999 ICD-9→ICD-10 boundary; only the `UCOD`@216-219 value-domain changes "ICD 9th Revision" → "ICD 10th Revision") — captured below as state-on-disk substrate; four within-task scope decisions surfaced at the Convention-3 snapshot **before any `field_specs.py` mutation** (L10-safe; the C8.18 DO step 3a/3b precedent) and resolved per established precedent: (i) DO step 4a scope = additive `field_specs.py` constants + additive `_layout_for_linked_year`/`_numerator_layout_for_linked_year` 1995-2002 branches + a NEW sibling SMOKE harness [`_find_denomplus_member` `"DEN"`-vs-`"DENOM"` + DEFLATE64-at-2003 + the num/den construction remain DO step 4b/5 per PRE_FLIGHT_LOG 2026-05-18T05:00:00Z]; (ii) medical/health composites authored as single composite spans (per-condition leaf decomposition + per-era cause recode = DO step 5; the DO3a/3b `MEDRISK`/`OBSTETRC` composite-span + soft-flag (gg) governing precedent); (iii) NEW sibling harness `test_linked_cohort_1995_2002_layout_smoke.py` (vs editing the shipped 3a/3b harnesses) — the C8.17 DO5a/5b + C8.18 DO3a/3b "new-harness-per-sub-step" precedent; (iv) the p18-19 element-SUMMARY-vs-DETAIL discrepancy (SUMMARY: pos 210 = "flag included in both num/den", pos 220-222 = part of "multiple conditions"; DETAIL: 210 = R7 reserved, 220-222 = `UCODR` 61/130-cause recode) resolved per the L13-extension governing precedent — the byte-level DETAIL is authoritative, the element-span SUMMARY is NOT trusted; discrepancy documented + SMOKE Tier-1 value-distribution-verified on real data; zero §7 halts
+
+> Per-sub-step PRE-FLIGHT under the C8.18 umbrella PRE-FLIGHT (2026-05-17T05:30:00Z) + the C8.18 DO step 4 PRE-FLIGHT (2026-05-18T05:00:00Z investigation-only checkpoint). Written **before any DO step 4a mutation** (no `field_specs.py` edit, no parser run). The structural model + record lengths + member naming + compression + DETAIL-code-outline page pointers were captured at the 2026-05-18T05:00:00Z entry as state-on-disk; this entry executes the DO step 4a per-sub-step cheap-check, reconstructs the FULL 1995-2002 layout from the authoritative DETAIL code-outline + cross-verifies vs LinkCO99Guide, and captures it as state-on-disk substrate so DO goes straight to authoring (the C8.18 DO step 3b precedent: "both layouts reconstructed from the guide DETAIL code-outlines + captured state-on-disk; SMOKE Tier 1 verified first-run-clean").
+
+### Entry cheap-check — 9 forward-looking HALTs (from `RECEIPTS/C8.18_step3b` + the 2026-05-18T05:00:00Z DO step 4 PRE-FLIGHT)
+
+- [x] **HALT 1**: `git tag -l` = `C8.17-complete`/`C8.17-pre-do`/`C8.18-pre-do`; `C8.18-complete` NOT present (final-sub-step-only). HEAD `209e756` = the DO step 4 PRE-FLIGHT commit (after `00ade5f`). `C8.18-pre-do`@`6632a15` is the DO rollback anchor. Branch `main`, tree clean. ✓
+- [x] **HALT 2 — 11 gate parquet SHAs byte-exact** (re-computed on-disk this entry): natality `c8a740eb…a6237153`/`acb5c48a…28856974`; `.v28_baseline` `230efed2…33ccebac`/`e16ad532…77c41d44`; linked-derived `9b828a4d…5a08b777`; fetal-death `38e2cecb…99c5cf48`(harm)/`185c071e…a7968a09`(deriv) (via the `~/Desktop/fetal-death-harmonization-build/output/harmonized/` tree, soft-flag (hh)); MM `adbec108…45dc1549`/`5c22308b…d39205d1`/`7c682668…edd61f5d`/`d98b4296…6a543261`. **11/11 unchanged** vs the DO step 4 PRE-FLIGHT HALT 2 + the DO step 3b receipt VERIFY-A. DO step 4a layout authoring is additive substrate only (no parser run, no rebuild). ✓
+- [x] **HALT 3 — canonical pytest baseline = `111 passed, 1 skipped, 1 xfailed`** on the **4-dir** suite `fetal_death/tests/ natality/tests/ tests/ matched_multiples/tests/` — re-run this entry: **`111 passed, 1 skipped, 1 xfailed in 360.53s`** (byte-exact baseline preserved; in the ~240-380s band). README 3-dir "56 passed" line stays stale → soft-flag (jj) (out-of-scope; Phase-D/C8.x docs-refresh). ✓
+- [x] **HALT 4 — DO step 4a = cohort 1995-2002 `field_specs.py` layout authoring** (230-byte den-plus + 535-byte numerator; 1989-rev birth; ICD-9 1995-98 / ICD-10 1999-2002 within-era UCOD value-domain), reconstructed FRESH from the `LinkCO95Guide.pdf` **DETAIL "Item and Code Outline"** (L13-extension; do NOT trust the pp18-19 element-span SUMMARY; do NOT reuse `LINKED_*_1989_1991` — the 1995-2002-reuses-1989-1991 hypothesis was FALSIFIED at the 2026-05-18T05:00:00Z PRE-FLIGHT). DO step 4a must **NOT re-derive** the 1983-1991 denominator OR numerator layouts (state-on-disk in `field_specs.py` — verified present + byte-untouched this entry: `LINKED_BIRTH_1983_1988_FIELDS`/`LINKED_BIRTH_1989_1991_FIELDS`/`LINKED_DEATH_1989_1991_FIELDS`/`LINKED_NUM_DEATH_1983_1988_FIELDS`/`LINKED_NUM_DEATH_1989_1991_FIELDS` + reclen constants), nor the 2005/2014 LINKED specs. ✓
+- [x] **HALT 5 — encoding = ASCII (verified at 3a/3b + DO step 4 PRE-FLIGHT)**: the 2005+ parser `_slice_field` `.decode("latin-1")` works for the cohort `.dat`. Re-confirmed at the 2026-05-18T05:00:00Z entry on real `LinkCO{95..02}US{Den,Num}.dat` (BIRYR@7-10 == cohort year under latin-1). ✓
+- [x] **HALT 6 — structural model**: 1995-2004 = the three-file denominator-plus model. **DO step 4a finding (this entry, from the LinkCO95Guide DETAIL p20 + p50):** "Locations 7-210 contain data from the Birth Certificate. Locations 211-535 contain data from the Death Certificate. Data in locations 211-222 are included on both the numerator and denominator-plus files. Data in locations 223-535 are included in the numerator file only." → den-plus (230) = MATCHS@1 + IDNUMBER@2-6 + birth-cert@7-210 + death-"plus"@211-222 + RECWT@223-230; numerator (535) = the same 1-230 + numerator-only mortality 231-535. The `_find_denomplus_member` `"DEN"`-vs-`"DENOM"` + DEFLATE64-at-2003 remain DO step 4b/5 parser concerns (not DO step 4a — additive layout substrate only). ✓
+- [x] **HALT 7 — §15.D substrate-format wording reconcile already APPLIED at the 3a commit**; the broader §15.D model-clarification (3a/3b split; 4a/4b/4c decomposition; structural model; reuse-falsification; DEFLATE64) remains **soft-flag (ii)** proposed-not-applied for §11 human-merge. DO step 4a folds the 1995-2002 230/535 den-plus+numerator layout-confirmation into the SAME (ii) note; no new §15.D wording edit owed this sub-step. ✓
+- [x] **HALT 8 — soft-flag (gg) refined**: the 1995-2002 numerator carries `UCOD`@216-219 (ICD-9 1995-98 / ICD-10 1999-2002) + `UCODR`@220-222 (61-cause ICD-9 / 130-cause ICD-10 recode — within-era value-domain) + entity-axis (`ENTITY`@263-402, 20×7) / record-axis (`RECORD`@405-504, 20×5) multiple cause as composite spans; per-condition decomposition + `cause_recode` per-era + the ICD-9/10-era harmonized cause-column shape stay DO step 5/6 (the 3a/3b composite-span precedent). ✓
+- [x] **HALT 9 — pytest runtime ~360s** (in the ~240-380s band; the band is the gate, not the absolute number). ✓
+
+**9/9 PASS. 11/11 gate parquet SHAs byte-exact. No §7 halt from the entry cheap-check.**
+
+### Inputs
+
+- [x] `raw_data/linked/LinkCO{95..02}US.zip` (8 cohort zips on disk + SHA-anchored at C8.18 DO step 2; read-only this entry — SMOKE Tier 1 reads the first ~300 records of `LinkCO{95,98,99,02}US{Den,Num}.dat` spanning the 1998→1999 ICD-9→ICD-10 boundary). Members: 1995-2001 `LinkCO{YY}US{Den,Num,Unl}.dat` (mixed case); 2002 `LinkCO02US{DEN,NUM,UNL}.dat` (upper). Compression = DEFLATE (stdlib-readable for all of 1995-2002; DEFLATE64-at-2003 is DO step 4b).
+- [x] `~/Desktop/natality-harmonization/raw_docs/linked/LinkCO95Guide.pdf` (258 pp; L12-extension text-layer probe at the 2026-05-18T05:00:00Z entry — DETAIL pp20-62 fully text-extractable, no OCR) — the authoritative ICD-9 1995-cohort layout. `LinkCO99Guide.pdf` (224 pp; text-extractable) — the ICD-10 1999-cohort cross-check.
+- [x] Sibling substrate (read-only): `natality/scripts/01_import/field_specs.py` (the 3a/3b `LINKED_*_1983_1991` + the 2005/2014 LINKED specs — pattern to mirror; do NOT re-derive) + `parse_linked_year.py` (`_layout_for_linked_year` denominator dispatcher + `_numerator_layout_for_linked_year` 3b helper — additive 1995-2002 branches to add at DO).
+
+### Source documentation
+
+- [x] `LinkCO95Guide.pdf` DETAIL "Item and Code Outline" (the Item-Location/Length/Variable-Name columns; the L13-extension authoritative source): **pp20-49 "Denominator Record and Natality Section of Numerator (Linked) Record"** (locs 1-210 birth cert); **pp50-51 "Denominator Record and Mortality Section of Numerator (Linked) Record"** (locs 211-230 = death-"plus" 211-222 + RECWT 223-230; p51: *"Here ends the Denominator file. Documentation for the Mortality Section of the Numerator (Linked) file begins with the record weight in positions 223-230"*); **pp52-62 "Mortality Section of Numerator (Linked) Record"** (locs 231-535, numerator-only). pp18-19 "List of Data Elements and Locations" element-span SUMMARY = NOT trusted (L13-extension). `LinkCO99Guide.pdf` cross-check: Den 230 / Num 535 / Unlinked 535 (p16-18) + 11 DETAIL anchor positions byte-identical to LinkCO95 (BIRYR@7-10, DBIRWT@81-84, BIRWT4@87, DPLURAL@89, UCOD@216-219 ["ICD 10th Revision"], RECWT@223-230, AGED@211-213, ACCIDPL@215, EANUM@261-262, DTHYR@524-527, WEEKDAYD@532). No §7-#11 stale-SHA exposure (on-disk SHA-anchored guides).
+
+### Outputs
+
+- [x] DO step 4a intended outputs (NOT created this PRE-FLIGHT — DO next): **additive** `field_specs.py` — `LINKED_BIRTH_1995_2002_FIELDS` (locs 1-210; 76 fields incl. composite spans) + `LINKED_DEATH_1995_2002_FIELDS` (the den-plus death-"plus" + RECWT, locs 211-230; 6 fields) + `LINKED_NUM_DEATH_1995_2002_FIELDS` (numerator-only mortality, locs 231-535; 18 fields) + `LINKED_DENOMPLUS_RECLEN_1995_2002 = 230` + `LINKED_NUM_RECLEN_1995_2002 = 535`; additive `_layout_for_linked_year`/`_numerator_layout_for_linked_year` 1995-2002 branches; NEW `natality/tests/test_linked_cohort_1995_2002_layout_smoke.py` (`DESIGN: tracks-current-state`; Convention 1/2). **Additive — existing 2005/2014 + 3a/3b 1983-1991 constants + dispatchers byte-untouched (H10 / HALT-13).** No canonical parquet/schema/validation-CSV. **This PRE-FLIGHT entry itself = zero canonical mutation** (git scope = PRE_FLIGHT_LOG + this commit's state files).
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+DO step 4a mutates `natality/scripts/01_import/field_specs.py` (additive) + `parse_linked_year.py` (additive branches) + a NEW SMOKE harness; this PRE-FLIGHT entry mutates no canonical state. Four within-task scope decisions surfaced **before any `field_specs.py` mutation** and resolved per established precedent (the user's standing "make any important decisions yourself" authorization + on-point DO 3a/3b resolutions govern; no §7 halt):
+
+1. **DO step 4a scope** = additive `field_specs.py` constants + additive `_layout_for_linked_year`/`_numerator_layout_for_linked_year` 1995-2002 branches + a NEW sibling SMOKE harness. `_find_denomplus_member` `"DEN"`-vs-`"DENOM"` support + the DEFLATE64-at-2003 tooling decision + the num↔den construction + the harmonize path remain DO step 4b/5 (per PRE_FLIGHT_LOG 2026-05-18T05:00:00Z; the DO 3a/3b scope precedent).
+2. **Composite-span convention**: the medical/health composites (`DELMETH`@92-99, `MEDRISK`@100-117, `OTHERRSK`@118-128, `OBSTETRC`@129-136, `LABOR`@137-153, `NEWBORN`@154-163, `CONGENIT`@164-186, `FLRES`@187-203) + the multiple-cause spans (`ENTITY`@263-402, `RECORD`@405-504) are authored as single composite spans; per-condition leaf decomposition + per-era `UCODR` 61/130-cause recode semantics stay DO step 5 (the DO3a/3b `MEDRISK`/`OBSTETRC`/`ENTITY`/`RECORDAX` composite-span + soft-flag (gg) governing precedent).
+3. **NEW sibling harness** `test_linked_cohort_1995_2002_layout_smoke.py` (vs editing the shipped 3a/3b harnesses) — the C8.17 DO5a/5b + C8.18 DO3a/3b new-harness-per-sub-step precedent (sub-step isolation).
+4. **Element-SUMMARY-vs-DETAIL discrepancy** at pos 210 + 220-222: the pp18-19 "List of Data Elements" SUMMARY maps pos 210 → "Flag for records included in both numerator and denominator" and 220-222 → part of "Multiple conditions"; the byte-level DETAIL "Item and Code Outline" labels 210 = `R7` Reserved Position + 220-222 = `UCODR` (61-cause ICD-9 / 130-cause ICD-10 infant-cause recode). **Resolved per the L13-extension governing precedent (the DO 3a SMOKE-Tier-1 catch): the byte-level DETAIL is authoritative; the element-span SUMMARY is composite + NOT trusted.** Authored per the DETAIL; the discrepancy is documented in the `field_specs.py` source-citation block + SMOKE Tier-1 value-distribution-verifies the affected positions on real data (the DO-step-5 harmonized match-flag uses `MATCHS`@1, not pos 210, so the layout substrate is unaffected either way).
+
+**Divergence verdict:** none of the four decisions contradicts the C8.18 cohort-only scope or the §15.D / 2026-05-18T05:00:00Z DO-step-4a mandate; all are *within* the "author the cohort 1995-2002 layout from the DETAIL code-outline" mandate and resolved per established precedent. No §7 halt; no fresh AskUserQuestion (the user's standing authorization + on-point prior resolutions govern).
+
+### SMOKE Tier 0 — the FULL 1995-2002 layout reconstructed from the LinkCO95Guide DETAIL code-outline (state-on-disk substrate for DO; cross-verified byte-identical vs LinkCO99Guide)
+
+L13-extension governing precedent (C8.18 DO 3a/3b): the byte-level DETAIL "Item and Code Outline" Item-Location column is authoritative; the pp18-19 element-span summary is composite + NOT trusted. Positions 1-based inclusive (start, end). Composites are single spans (decision (2) above). **`LinkCO99Guide.pdf` (ICD-10 1999-cohort) cross-verified byte-identical** — 230/535 record lengths + all 11 spot-checked anchor positions constant across the 1998→1999 boundary; only `UCOD`@216-219 value-domain changes "ICD 9th Revision"→"ICD 10th Revision" and `UCODR`@220-222 "61 Infant Cause Recode"→"130-cause" (within-era; DO step 5/6 / soft-flag (gg)).
+
+**`LINKED_BIRTH_1995_2002_FIELDS`** — den-plus + numerator-natality section, locs 1-210 (MATCHS/IDNUMBER + birth cert; identical in den-plus + numerator per the shared DETAIL p20-49):
+
+| loc | var | desc |
+|---|---|---|
+| 1 | MATCHS | Match Status (1 matched B/ID / 2 surviving infant / 3 unmatched-unlinked-only) |
+| 2-6 | IDNUMBER | Infant Death Number (uniquely identifies same infant in num + den-plus) |
+| 7-10 | BIRYR | Year of Birth |
+| 11 | RESSTATB | Resident Status - Birth (1-4) |
+| 12-13 | BRSTATE | Expanded State of Residence - NCHS Codes - Birth |
+| 14-15 | STOCCFIPB | State of Occurrence (FIPS) - Birth |
+| 16-18 | CNTOCFIPB | County of Occurrence (FIPS) - Birth |
+| 19-20 | STRESFIPB | State of Residence (FIPS) - Birth |
+| 21-23 | CNTYRFPB | County of Residence (FIPS) - Birth |
+| 24-28 | PLRES | Place (City) of Residence (FIPS) |
+| 29 | MAGEFLG | Age of Mother Flag |
+| 30-31 | DMAGE | Age of Mother |
+| 32 | MAGER8 | Age of Mother Recode 8 |
+| 33 | ORMOTH | Hispanic Origin of Mother |
+| 34 | ORRACEM | Hispanic Origin and Race of Mother Recode |
+| 35 | MRACEIMP | Race of Mother Imputation Flag |
+| 36-37 | MRACE | Race of Mother |
+| 38 | MRACE3 | Race of Mother Recode 3 |
+| 39-40 | DMEDUC | Education of Mother Detail |
+| 41 | MEDUC6 | Education of Mother Recode 6 |
+| 42 | DMARIMP | Marital Status Imputation Flag |
+| 43 | DMAR | Marital Status of Mother |
+| 44-45 | MPLBIR | Place of Birth of Mother |
+| 46 | MPLBIRR | Place of Birth of Mother Recode |
+| 47-48 | DTOTORD | Detail Total Birth Order |
+| 49-50 | DLIVORD | Detail Live Birth Order |
+| 51-52 | MONPRE | Detail Month of Pregnancy Prenatal Care Began |
+| 53 | MPRE5 | Month Prenatal Care Began Recode 5 |
+| 54-55 | NPREVIST | Total Number of Prenatal Visits |
+| 56 | ADEQUACY | Adequacy of Care Recode (Kessner) |
+| 57-59 | R1 | Reserved Positions |
+| 60 | FAGERFLG | Reported Age of Father Used Flag |
+| 61-62 | DFAGE | Age of Father |
+| 63 | ORFATH | Hispanic Origin of Father |
+| 64 | ORRACEF | Hispanic Origin and Race of Father Recode |
+| 65-66 | FRACE | Race of Father |
+| 67 | PLDEL | Place or Facility of Delivery |
+| 68 | BIRATTND | Attendant at Delivery |
+| 69 | R2 | Reserved Position |
+| 70 | GESTESTM | Clinical Estimate of Gestation Used Flag |
+| 71-72 | CLINGEST | Clinical Estimate of Gestation |
+| 73 | GESTIMP | Gestation Imputation Flag |
+| 74-75 | GESTAT | Gestation - Detail in Weeks |
+| 76-77 | GESTAT10 | Gestation Recode 10 |
+| 78 | CSEXIMP | Sex Imputation Flag |
+| 79 | CSEX | Sex (1 M / 2 F) |
+| 80 | BWIF | Birth Weight Imputation Flag |
+| 81-84 | DBIRWT | Birth Weight Detail in Grams (Imputed) |
+| 85-86 | BIRWT12 | Birth Weight Recode 12 (Imputed) |
+| 87 | BIRWT4 | Birth Weight Recode 4 (Imputed) |
+| 88 | PLURIMP | Plurality Imputation Flag |
+| 89 | DPLURAL | Plurality |
+| 90-91 | FMAPS | Five-Minute Apgar Score |
+| 92-99 | DELMETH | Method of Delivery (composite; leaves DO5) |
+| 100-117 | MEDRISK | Medical Risk Factors (composite; MRFLAG@100..OTHERMR@117; leaves DO5) |
+| 118-128 | OTHERRSK | Other Risk Factors — tobacco/alcohol/wt-gain (composite; leaves DO5) |
+| 129-136 | OBSTETRC | Obstetric Procedures (composite; leaves DO5) |
+| 137-153 | LABOR | Complications of Labor and/or Delivery (composite; leaves DO5) |
+| 154-163 | NEWBORN | Abnormal Conditions of the Newborn (composite; leaves DO5) |
+| 164-186 | CONGENIT | Congenital Anomalies (composite; leaves DO5) |
+| 187-203 | FLRES | Reporting Flags for Place of Residence (composite; leaves DO5) |
+| 204 | CDOBMIMP | Month of Birth of Child Imputation Flag |
+| 205-206 | BIRMON | Month of Birth |
+| 207-208 | R6 | Reserved Position |
+| 209 | WEEKDAYB | Day of Week Child Born |
+| 210 | R7 | Reserved Position (SUMMARY claims "num/den flag"; DETAIL authoritative — L13-ext; value-verify SMOKE T1) |
+
+**`LINKED_DEATH_1995_2002_FIELDS`** — den-plus death-"plus" + RECWT, locs 211-230 (present on BOTH den-plus + numerator; the appended "plus" that makes the den-plus a denominator-plus, analogous to `LINKED_DEATH_1989_1991_FIELDS` / `LINKED_DEATH_2005_2013_FIELDS`):
+
+| loc | var | desc |
+|---|---|---|
+| 211-213 | AGED | Age at Death in Days (000-364) |
+| 214 | AGER5 | Infant Age Recode 5 |
+| 215 | ACCIDPL | Place of Accident (E850-E869, E880-E928) |
+| 216-219 | UCOD | Underlying Cause of Death — ICD 9th Rev (1995-98) / 10th Rev (1999-2002); pos 219 blank if no 4th digit |
+| 220-222 | UCODR | Infant Cause Recode — 61-cause ICD-9 (1995-98) / 130-cause ICD-10 (1999-2002); within-era value-domain (DO5/soft-flag (gg)) |
+| 223-230 | RECWT | Record Weight (1.XXXXXX; ≈1.0-1.03 infant-death, 1.0 surviving) |
+
+**`LINKED_NUM_DEATH_1995_2002_FIELDS`** — numerator-only mortality section, locs 231-535 (locs 223-535 numerator-only per DETAIL p50; 231-260 = unenumerated reserved gap between RECWT@223-230 and MULTCOND@261; mirrors the 1989-1991 numerator `RESERVED1`@226-260 pattern):
+
+| loc | var | desc |
+|---|---|---|
+| 231-260 | RESERVED1 | Reserved (unenumerated in DETAIL; 30 bytes between RECWT@230 and MULTCOND@261) |
+| 261-262 | EANUM | Number of Entity-Axis Conditions (00-20) |
+| 263-402 | ENTITY | Entity-Axis Conditions (20 × 7-byte; part/line + seq + ICD code + nature-of-injury flag; composite, leaves DO5) |
+| 403-404 | RANUM | Number of Record-Axis Conditions (00-20) |
+| 405-504 | RECORD | Record-Axis Conditions (20 × 5-byte; ICD code + nature-of-injury flag; composite, leaves DO5) |
+| 505 | RESSTATD | Resident Status - Death (1-4) |
+| 506-507 | DRSTATE | Expanded State of Residence - NCHS Codes - Death |
+| 508-509 | STOCCFIPD | State of Occurrence (FIPS) - Death |
+| 510-512 | CNTOCFIPD | County of Occurrence (FIPS) - Death |
+| 513-514 | STRESFIPD | State of Residence (FIPS) - Death (00 = foreign) |
+| 515-517 | CNTYRFPD | County of Residence (FIPS) - Death |
+| 518-522 | PLRESD | Place (City) of Residence (FIPS) - Death |
+| 523 | HOSPD | Hospital and Patient Status |
+| 524-527 | DTHYR | Year of Death |
+| 528-529 | DTHMON | Month of Death (01-12) |
+| 530-531 | R8 | Reserved Position |
+| 532 | WEEKDAYD | Day of Week of Death (1-7, 9) |
+| 533-535 | R9 | Reserved positions |
+
+Reclens (byte-confirmed at the 2026-05-18T05:00:00Z entry against guide-stated counts, e.g. `LinkCO95USDen.dat` 905,498,784/232 = 3,903,012 = LinkCO95Guide p15): **den-plus = 230**, **numerator = 535** (constant across the 1998→1999 ICD boundary — LinkCO99Guide p16-18 byte-identical). `_layout_for_linked_year(1995..2002)` → `(230, LINKED_BIRTH_1995_2002_FIELDS, LINKED_DEATH_1995_2002_FIELDS)`; `_numerator_layout_for_linked_year(1995..2002)` → `(535, LINKED_BIRTH_1995_2002_FIELDS, LINKED_DEATH_1995_2002_FIELDS + LINKED_NUM_DEATH_1995_2002_FIELDS)` (exactly the 1989-1991 dispatcher pattern). The layout is authored at DO from this state-on-disk table + value-distribution-verified on real `LinkCO{95,98,99,02}US{Den,Num}.dat` at SMOKE Tier 1 (the 3b first-run-clean discipline; if a position FAILs, the layout is rebuilt from the DETAIL — the assertion is NOT loosened, §2 fail-closed / §9-#4).
+
+### Halt conditions tripped
+
+None. Four within-task scope decisions surfaced at the Convention-3 snapshot **before any `field_specs.py` mutation** (L10-safe; the DO 3a/3b precedent) and resolved per established precedent (additive-substrate scope = DO 3a/3b; composite-span = soft-flag (gg)/DO3a; new-harness-per-sub-step = C8.17 DO5a/5b; DETAIL-over-SUMMARY = L13-extension governing precedent). None contradicts the C8.18 cohort-only scope or the §15.D/2026-05-18T05:00:00Z DO-step-4a mandate. No §7 halt; no fresh AskUserQuestion (standing authorization + on-point prior resolutions govern).
+
+### Result
+
+**PROCEED to DO.** The FULL cohort 1995-2002 layout (230-byte den-plus + 535-byte numerator) is reconstructed byte-exact from the `LinkCO95Guide.pdf` DETAIL "Item and Code Outline" + cross-verified byte-identical against `LinkCO99Guide.pdf` for the ICD-10 1999-2002 sub-era, captured above as state-on-disk substrate. DO step 4a authors the additive `field_specs.py` constants + `_layout_for_linked_year`/`_numerator_layout_for_linked_year` 1995-2002 branches + a NEW sibling SMOKE harness, value-distribution-verified on real `LinkCO{95,98,99,02}US{Den,Num}.dat` across the 1998→1999 ICD-9→ICD-10 boundary (SMOKE Tier 0 synthetic + L3 negative → Tier 1 real data; fail-closed). Single commit (PRE-FLIGHT + DO + RECEIPT; the C8.18 DO 3a/3b precedent); no tag (intermediate; `C8.18-pre-do`@`6632a15` remains the rollback anchor). 4b (cohort 2003; DEFLATE64) + 4c (cohort 2004) follow.
+
+---
+
 ## PRE-FLIGHT for C8.18 DO step 4 — 2026-05-18T05:00:00Z — cohort 1995-2004 layout reconstruction (1989-rev + 2003-rev; ICD-9/ICD-10) — **RESULT: PROCEED to DO step 4a (cohort 1995-2002 layout authoring) next; this entry is PRE-FLIGHT/investigation-only, ZERO canonical-state mutation**; three material findings surfaced + resolved before any DO mutation: (1) 1995-2004 = the **three-file denominator-plus model** (numerator + unlinked + denominator-plus; same family as 1989-1991 + 2005+, NOT the pure two-file 1983-1988 form) — the denominator-plus file IS the per-birth row set; (2) the **1995-2002 reuse-of-1989-1991 hypothesis is FALSIFIED** by a read-only real-data value-distribution probe (same 535-byte numerator length ≠ same layout — DBIRWT@79-82 = `'1 05'` not 4-digit grams, UCODR61@223-225 = `'1.0'` weight-bleed, DTHYR/DTHMON shifted; the 230-byte den-plus likewise diverges with a trailing `1.000000` RECWT field) → 1995-2002 needs its OWN layout authored from the LinkCO95/99Guide DETAIL code-outline (L13-extension governing precedent; do NOT reuse `LINKED_*_1989_1991`); (3) **LinkCO03US.zip uses DEFLATE64** (stdlib `zipfile` cannot decompress; `7z`/`unzip`/`zipfile-deflate64` available — a DO-step-4b tooling decision); DO step 4 split → **4a (cohort 1995-2002: 230-byte den-plus + 535-byte numerator; 1989-rev; ICD-9 1995-98 / ICD-10 1999-2002 as a within-era UCOD value-domain) + 4b (cohort 2003: 783-byte den-plus + 1259-byte numerator; 2003-rev transition; DEFLATE64) + 4c (cohort 2004: 900-byte den-plus + 1259-byte numerator; verify den-plus == `LINKED_BIRTH_2005_2013`)** per the C8.17 DO5a/5b + C8.18 DO3a/3b Convention-5 multi-session-DO-step precedent; zero §7 halts
 
 > Per-sub-step PRE-FLIGHT under the C8.18 umbrella PRE-FLIGHT (2026-05-17T05:30:00Z). Written **before any DO step 4 mutation** (no `field_specs.py` edit, no parser run). §15.D-estimates DO step 4 at 2-3 sessions over 10 cohort years × 3 sub-eras; this session does the PRE-FLIGHT + read-only structural investigation (record lengths, member naming, compression, the decisive reuse-hypothesis probe, detail-code-outline page pointers) and checkpoints **PRE-FLIGHT/investigation-only** (state-on-disk; the `field_specs.py` authoring + SMOKE Tier-1 value-distribution verify = DO step 4a, next session) — mirrors the C8.18 DO step 3 PRE-FLIGHT/investigation-only checkpoint + the C8.17 DO5a/5b + C8.18 DO3a/3b multi-session-DO-step split discipline.
