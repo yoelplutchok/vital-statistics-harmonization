@@ -8,6 +8,81 @@
 
 ---
 
+## PRE-FLIGHT for C8.18 (umbrella) + DO step 1 — 2026-05-17T05:30:00Z — Linked birth-infant death 1983-2004 backward extension (A.3; 19 new years; permanent 1992-1994 gap); first Tier-3+5 task after C8.17-complete — **RESULT: PROCEED to DO step 1 (cohort-vs-period publishing-design decision via AskUserQuestion — the §15.D-prescribed DO-step-1 mechanism)**; a **material §7-class substrate divergence surfaced at the Convention-3 Field-value snapshot** (the §15.D + EXPLORATION_REPORT §A.3 task-plan premise *"HVS-linked from 2005 ships period-format only"* is **INVERTED** — the existing 2005-2023 product is the **cohort-linked** series); flagged BEFORE any DO mutation; resolution is exactly the §15.D DO-step-1 + Sub-Q42 AskUserQuestion path + a proposed §15.D `[plan-update]` sub-entry (human-merged per §11; NOT bundled with the DO commit per Convention 5)
+
+> **Why an umbrella PRE-FLIGHT + DO-step-1 section:** C8.18 is a multi-sub-step task (8 DO steps per §15.D; ~8-14 sessions). Per §4.1 / L10 the choice is one upfront umbrella PRE-FLIGHT or per-sub-step PRE-FLIGHT; this follows the C8.16/C8.17 precedent (one umbrella + per-sub-step addenda). **DO step 1 is decision-only** (the cohort-vs-period publishing-design decision; a DECISION_LOG entry + STATUS section; **zero canonical-state mutation, zero source downloads**). The 19-or-29 source zips + ~25 user-guide PDFs are **DO step 2** inputs and get their own DO-step-2 PRE-FLIGHT addendum (SHA-verified at download per §5 + L1-extension sibling-probe). Documented **before any DO mutation**; `C8.18-pre-do` to be tagged at the clean pre-DO HEAD per §13 step 4.
+
+### Entry cheap-check — 7 forward-looking HALTs from RECEIPTS/C8.17_step7_2026-05-17T04-00-00Z.md
+
+- [x] HALT 1: `C8.17-pre-do`@`12fc20e` present **AND `C8.17-complete` present** (`git tag -l 'C8.17*'` = both; `git tag -l 'C8.18*'` = none). C8.17 fully closed (DO 1-7). ✓
+- [x] HALT 2: **9 canonical/baseline parquet SHAs unchanged** (on-disk `shasum -a 256`, 2026-05-17): canonical natality `natality_v2_harmonized.parquet`=`c8a740eb…6237153` ✓ / `natality_v2_harmonized_derived.parquet`=`acb5c48a…28856974` ✓ ; `.v28_baseline` `230efed2…33ccebac` ✓ / `e16ad532…77c41d44` ✓ ; 7 non-natality-v2 — `fetal_death_harmonized`=`38e2cecb…99c5cf48` ✓ / `fetal_death_derived`=`185c071e…a7968a09` ✓ / `natality_v3_linked_harmonized_derived`=`9b828a4d…5a08b777` ✓ / `matched_multiples_harmonized`=`adbec108…45dc1549` ✓ / MM 1995-1997=`5c22308b…39205d1` ✓ / MM 1995-2000=`7c682668…edd61f5d` ✓ / MM 2016-2020=`d98b4296…6a543261` ✓. **The linked-derived `9b828a4d…` is byte-exact NOW (DO step 1 does no rebuild); it WILL change only at the later C8.18 re-harmonize DO step — the intended symmetric sibling of C8.17's natality_v2 change.** (Side-note: `natality_v3_linked_harmonized.parquet` = `e1795ac6…` is the un-gated intermediate; only the SHIPPED `_derived` is in the 7-SHA gate.)
+- [x] HALT 3: B.12 latest baseline = `tests/snapshots/v2_2026-05-16T08-00-00Z_columns.csv` present; `v1_2026-05-13T21-00-00Z_columns.csv` retained (both on disk, 44746 B each). C8.18 will re-snap (linked parquet changes) at the later re-harmonize DO step → new `v3_<UTC>_columns.csv`; DO step 1 does NOT re-snap. ✓
+- [x] HALT 4: `tests/test_row_count_conservation.py` — NATALITY pins L42-43 = `201_161_456` / `list(range(1968, 2025))` (57) **must NOT be perturbed by C8.18** ✓ (verified present; DO step 1 does not touch tests); LINKED pins L48-49 = `74_943_824` / `list(range(2005, 2024))` (19) — these get the Convention-2/L17 **same-commit re-pin at the later C8.18 re-harmonize DO step** (NOT DO step 1). pytest baseline 85P+1S+1XF (~240-380s band; count is the gate). DO step 1 is decision-only and cannot perturb the test surface → pytest **DEFERRED** (no canonical/test/script mutation this step; C8.17 DO-3/4/5b/6/7 precedent for deferring pytest when the step provably cannot touch the parquet/test surface).
+- [x] HALT 5: Documentation-deferral soft-flags (cc/dd/ee + bb/aa/w/x/z/u) are NOT C8.18-blocking ✓ (informational; carry).
+- [x] HALT 6: §15.D §1358 wording (w) + the §15.D DO-step-6/7-boundary clarification remain next-`[plan-update]` items (Convention 5; NOT bundled with any DO commit). This PRE-FLIGHT ADDS a proposed §15.D C8.18 scope-correction sub-entry to that next-`[plan-update]` queue (see "§7-class divergence" below); KICKOFF/NEXT_STEPS unedited this step. ✓
+- [x] HALT 7: Tier 3+5 ≈ 2.5/7 done (C8.16+C8.17); cumulative Phase C ≈ 25.5/51-71 (effort-ceiling cap 86 intact). C8.18 = the largest single remaining pre-Zenodo task (8-14 sessions). ✓ (informational)
+
+**7/7 PASS. All 9 gate parquet SHAs byte-exact on-disk (DO step 1 is decision-only — no rebuild precondition holds). pytest deferred (provably no test-surface mutation at a decision-only step; precedented).**
+
+### Environment
+
+- [x] Python 3.13.9 (≥3.11) ✓ ; pandas 2.3.2 (≥2.3) ✓ ; pyarrow 18.1.0 (≥18.0) ✓.
+- [x] `git status --porcelain` clean at session start; on branch `main`; HEAD `6632a15` (C8.17 DO step 7 / `C8.17-complete`). ✓
+- [x] L10 (§12 step 8): the prior task's PRE-FLIGHT addendum (C8.17 DO step 7, 2026-05-17T03:30:00Z) precedes its DO commit; RECEIPTS/C8.17_step7 documents L10-safe; C8.17 fully closed. No back-fill. ✓
+
+### Source documentation
+
+- [x] DO step 1 (cohort-vs-period publishing-design decision) rests on **internal repo substrate**, not on external NCHS PDFs/zips. The 19-or-29 source zips + ~25 cohort/period user-guide PDFs (`ftp.cdc.gov/.../Dataset_Documentation/DVS/{cohortlinked,periodlinked}/Link*UserGuide.pdf`) are **DO step 2** inputs — SHA-verified at download time + L1-extension sibling-probe + L12-extension text-layer probe in the DO-step-2 PRE-FLIGHT addendum, NOT here. No external citation is consumed at DO step 1. ✓ (no §7-#11 stale-SHA exposure this step)
+
+### Outputs
+
+- [x] DO step 1 intended outputs: a new DECISION_LOG entry (the cohort-vs-period design decision artifact) + a new STATUS section + a RECEIPTS/C8.18_step1_<UTC>.md + this PRE-FLIGHT entry. **No canonical artifact** (no parquet / no `harmonized_schema.csv` / no validation-target CSV / no test / no script) is created or overwritten at DO step 1. ✓ (no §7-#17 canonical-scope-creep at DO step 1; the scope *correction* it surfaces is routed through §11 plan-update, not silently actioned)
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+
+DO step 1 mutates **no canonical artifact** (decision-only). Per Convention 3 the snapshot instead captures the **substrate the design decision rests on**, verified against the task plan's assumed state — and this is where a **material divergence surfaced**:
+
+- **Task-plan assumed state** (`NEXT_STEPS.md` §15.D Task C8.18 + `EXPLORATION_REPORT.md` §A.3:129 + KICKOFF Tier-3+5 line): *"HVS-linked from 2005 ships **period-format only**; extending backward forces (a) ship cohort+period both as separate parquets, or (b) reconcile via a derived 'period-equivalent' view of cohort data, or (c) stop the backward extension at 1995 and ship period-only."*
+- **Actual substrate (snapshot, 2026-05-17, read-only):**
+  - `docs/NCHS_SOURCE_MANIFEST.md` §3 title = **"Linked-cohort raw zips (19; cohort years 2004-2023)"**; explicit clause: *"Inventory keys these as `<cohort_year>_linked` … (**cohort = year-of-birth of the cohort being followed for infant deaths**)."* Shipped zips = `LinkCO05US.zip`…`LinkCO15US.zip` (cohort) + `2017PE2016CO.zip`… (period-cohort combined, harmonized to **cohort**-equivalent).
+  - `natality/metadata/external_validation_targets_v3_linked.csv` — **every** `value_source` cites a **cohort** linked-file user guide: `LinkCO05Guide.pdf` / `LinkCO10Guide.pdf` / `LinkCO15Guide.pdf` / `21PE20CO_linkedUG.pdf` / `22PE21CO_linkedUG.pdf` / `23PE22CO_linkedUG.pdf`, all labelled "(YYYY **cohort** linked file user guide)"; metrics are cohort-file metrics ("do not apply the weight for cohort use").
+  - `natality/scripts/01_import/parse_linked_year.py` docstring: *"Parse NCHS linked birth-infant death **cohort** denominator-plus files. Reads the denominator-plus member from a **LinkCO{yy}US.zip**."* `parse_linked_cohort_year.py`: constructs a **cohort** file from the 2016+ period-cohort format ("Output is equivalent to the 2005-2015 denominator-plus format: one row per birth").
+  - `natality/docs/GETTING_STARTED.md:171`: *"**Cohort vs period** — the V3 file **follows each birth cohort** for a full year of mortality experience. This is preferred for multivariate analysis over period files."*
+  - `natality/docs/VALIDATION.md:220` + `COMPARABILITY.md:213`: NCHS guide guidance "For **cohort** file use: do not apply the weight"; record-weight semantics are cohort-file semantics.
+- **Divergence verdict:** the task-plan premise is **inverted**. The existing HVS-linked 2005-2023 product is unambiguously the **cohort-linked** series (v3), validated against NCHS cohort linked-file guides. §15.D options (b) "period-equivalent view of cohort" and (c) "stop at 1995, ship period-only" were predicated on a wrong premise and are largely **moot**. Resolved at this cheap-check moment — see next subsection — **before any DO mutation** (L10-safe; mirrors the C8.17 DO step 5b "4 divergences from the receipt's assumed architecture, resolved before any DO mutation via AskUserQuestion + PRE_FLIGHT addendum" precedent).
+
+### §7-class divergence classification + resolution path
+
+- **Classification:** §7-#12 (conflicting documentation — task plan §15.D / EXPLORATION_REPORT §A.3 vs the actual repo substrate) + §7-#13 (validity-domain ambiguity — the cohort-vs-period analytic framing). NOT silently worked around (KICKOFF "What to do if a convention conflicts with a task's plan: raise it as a §7 halt BEFORE the first DO mutation and ask the human").
+- **Resolution path = exactly the §15.D-prescribed mechanism:** §15.D Task C8.18 DO step 1 = *"cohort-vs-period publishing-design decision; **AskUserQuestion if PRE-FLIGHT-time substrate is ambiguous**"* and Sub-Q42 = *"Cohort/period publishing-design = methodology-paper-level decision; if PRE-FLIGHT-time substrate is materially ambiguous, AskUserQuestion + `[plan-update]` sub-entry."* The substrate is not merely ambiguous — the plan's premise is inverted — so: (1) this PRE-FLIGHT documents it before any DO mutation; (2) DO step 1 resolves the design via AskUserQuestion with the **corrected** substrate; (3) the decision is recorded in DECISION_LOG; (4) a §15.D C8.18 scope-correction `[plan-update]` sub-entry is **proposed** (not applied — only the human merges plan changes per §11; queued with the soft-flag-(w) next-`[plan-update]`, NOT bundled with the DO step 1 commit per Convention 5).
+
+### SMOKE Tier 0 — corrected cohort-vs-period design-decision reasoning (the §15.D DO-step-1 SMOKE)
+
+Source availability (EXPLORATION_REPORT §A.3 + §15.D PRE-FLIGHT inputs), re-read under the corrected premise:
+
+- **Cohort-linked 1983-1991** (9 yrs; `LinkCO83.zip`–`LinkCO91.zip`; no `US` suffix pre-1995; ~665 MB). **Only cohort exists pre-1995** — no period-linked file is published before 1995, so 1983-1991 is necessarily cohort (no choice exists there).
+- **1992-1994**: permanent gap — NCHS suspended ALL linkage (no cohort, no period). Loud-document, do not close.
+- **Cohort-linked 1995-2004** (10 yrs; `LinkCO95US.zip`–`LinkCO04US.zip`; ~1.18 GB) — directly continues the existing 2005-2023 cohort series.
+- **Period-linked 1995-2004** (10 yrs; `LinkPE95US.zip`–`LinkPE04US.zip`; ~1.18 GB) — a *different linkage method* than the existing product; an asymmetric 10-year island (no period 1983-1994; HVS ships no period 2005-2023).
+
+Three design options (the AskUserQuestion set), corrected for "existing product = cohort":
+
+- **Option A — Cohort-only backward extension (methodologically consistent; LLM-recommended).** Parse cohort-linked 1983-1991 + cohort-linked 1995-2004; append to the existing cohort 2005-2023 series → a clean **41-year cohort-linked series (1983-2023, permanent 1992-1994 gap)**. **19 source zips** (not 29), ~1.85 GB (not ~3 GB). Drops period-linked 1995-2004 from C8.18 scope (a different linkage method = a separate future product, not required for series consistency). Simplest manuscript story ("the cohort-linked series extended backward"); fewest new boundaries; lowest effort/risk (drops the 2-3 period sessions per §A.3 → effort lands at the **lower** end of 8-14). §15.D options (b)/(c) are moot under the corrected premise.
+- **Option B — Cohort backward extension + period-linked 1995-2004 as a separate secondary product.** Everything in A PLUS ship `LinkPE95US.zip`–`LinkPE04US.zip` as a distinct period-linked parquet (or a `linkage_method` discriminator). 29 source zips, ~3 GB, +2-3 sessions, +a new public-API surface that exists for only 10 asymmetric years (1995-2004) of a method HVS otherwise never ships. Manuscript must explain the asymmetry.
+- **Option C — Defer the entire pre-2005 backward extension.** Leave linked at 2005-2023; revisit post-Zenodo. Reframes C8.18 to "not now" (a §11 deferral, EXPLORATION_REPORT §A.3 "defer-to-post-submission" priority is the on-record default).
+
+Tier 0 verdict: the decision is **methodology-paper-level** (Sub-Q42), the substrate premise is inverted, and the options carry materially different manuscript + effort + public-API consequences → **AskUserQuestion is required** (not an LLM unilateral pick). LLM recommendation: **Option A** (consistent with the existing cohort product; cleanest manuscript framing; minimizes scope/risk/effort; period-linked 1995-2004 is a weak asymmetric addition better deferred or dropped). Higher SMOKE tiers (1/2/3 layout-CSV + parse + re-harmonize) belong to DO steps 3-7, not DO step 1.
+
+### Halt conditions tripped
+
+- §7-#12 + §7-#13 substrate divergence (task-plan premise inverted) — surfaced here at the Convention-3 cheap-check, BEFORE any DO mutation; resolution is the §15.D-prescribed DO-step-1 AskUserQuestion + a proposed (human-merged) §15.D `[plan-update]` sub-entry. This is the intended DO-step-1 flow, not an unhandled halt. No other §7 condition tripped.
+
+### Result
+
+**PROCEED to DO step 1** = AskUserQuestion (cohort-vs-period publishing-design, corrected substrate) → record decision in DECISION_LOG → propose §15.D C8.18 scope-correction `[plan-update]` sub-entry (human-merged per §11; not bundled with the DO commit). No canonical-state mutation at DO step 1. `C8.18-pre-do` tagged at the clean pre-DO HEAD per §13 step 4.
+
+---
+
 ## PRE-FLIGHT addendum for C8.17 DO step 7 — 2026-05-17T03:30:00Z — docs-only version-string propagation v2.8.0→v3.0.0 + `C8.17-complete` (the FINAL C8.17 sub-step) — **RESULT: PROCEED** (12/12 forward-looking HALTs from RECEIPTS/C8.17_step6 verified; all 11 gate parquet SHAs byte-exact — docs-only precondition holds; one D-class scope divergence surfaced + resolved by AskUserQuestion 2026-05-17 → Option A "Honest propagation" Convention-3 plan-amendment; zero §7 halts)
 
 > **Why an addendum:** C8.17 uses one upfront umbrella PRE-FLIGHT (2026-05-14T06:30:00Z); each DO sub-step does an entry cheap-check (task1-addendum / DO5b / DO6 precedent). DO step 7 is docs-only (no rebuild) but the cheap-check Field-value snapshot surfaced a material scope divergence the umbrella PRE-FLIGHT + §15.D did not fully anticipate. Documented **before any DO mutation**; `C8.17-pre-do`@`12fc20e` already tagged (no re-tag — Convention 5 intermediate-DO precedent; `C8.17-complete` set at this step's end since DO step 7 is the final sub-step).
