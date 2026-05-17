@@ -1392,53 +1392,54 @@ Each task uses the §4 five-phase discipline; halts on any §7 condition; tagged
 
 ---
 
-### Task C8.18 — Linked birth-infant death 1983-2004 backward extension (A.3; 19 new years; 1992-1994 gap)
+### Task C8.18 — Linked birth-infant death 1983-2004 cohort-only backward extension (A.3; 19 new cohort years; 1992-1994 gap)
 
-**Goal.** Extend linked coverage from 2005-2023 (19 yrs) to **1983-2023 (41 yrs with permanent 1992-1994 gap)** by parsing 29 NCHS source files: cohort-linked 1983-1991 (9 yrs; `LinkCO83.zip`-`LinkCO91.zip`) + cohort-linked 1995-2004 (10 yrs; `LinkCO95US.zip`-`LinkCO04US.zip`) + period-linked 1995-2004 (10 yrs; `LinkPE95US.zip`-`LinkPE04US.zip`). Resolve the cohort-vs-period publishing-design decision (methodology-paper-level). Re-harmonize linked 1983-2023 (with documented 1992-1994 gap). Bump linked v3 → v4.
+> **[plan-update] 2026-05-17 (scope-correction; applied per §11 step 3; resolves soft-flag (ff)).** This entry's original premise — *"existing post-2005 HVS-linked ships period-format only"* — was **inverted**. A Convention-3 PRE-FLIGHT Field-value snapshot at C8.18 DO step 1 (5 converging substrate sources: `docs/NCHS_SOURCE_MANIFEST.md` §3; every `external_validation_targets_v3_linked.csv` `value_source`; `parse_linked_year.py`/`parse_linked_cohort_year.py`; `GETTING_STARTED.md:171`; `VALIDATION.md:220`/`COMPARABILITY.md:213`) established that the existing 2005-2023 product is the **cohort-linked** series. The §7-#12/#13 divergence was surfaced before any DO mutation and resolved via the §15.D-prescribed DO-step-1 + Sub-Q42 AskUserQuestion mechanism → **Option A "Cohort-only backward extension"** (user-selected 2026-05-17; DECISION_LOG 2026-05-17T05:30:00Z; RECEIPTS/C8.18_step1_2026-05-17T05-30-00Z.md). Corrections applied below: premise period→cohort; source scope 29→**19 zips**; period-linked 1995-2004 dropped from C8.18 (separate deferrable future product, separate `[plan-update]` if a user need arises); DO list re-sequenced 8→7 (DO step 1 now RESOLVED/decision-only); effort narrowed toward the lower 8-14 end; VERIFY "per-cohort/period" → per-cohort. The pre-correction text is preserved in DECISION_LOG 2026-05-17T05:30:00Z + the C8.18 PRE_FLIGHT_LOG entry per the append-only-supersede convention (§3).
 
-**Why this matters.** Second-largest "more data" win. Doubles linked coverage to 41 yrs. Three distinct boundary types intersect (cert-revision 1989→2003, ICD-9→ICD-10 1998→1999, linkage-method cohort-vs-period) → cohort/period publishing-design is the methodology-paper-level question. Largest single-task effort in the project (8-14 sessions). Strong support for the manuscript's "single-revision-window forced" framing.
+**Goal.** Extend linked coverage from 2005-2023 (19 yrs) to **1983-2023 (41 yrs with permanent 1992-1994 gap)** as a **cohort-only backward extension** — append to the existing cohort-linked 2005-2023 series by parsing **19 NCHS cohort source files**: cohort-linked 1983-1991 (9 yrs; `LinkCO83.zip`-`LinkCO91.zip`, no `US` suffix pre-1995) + cohort-linked 1995-2004 (10 yrs; `LinkCO95US.zip`-`LinkCO04US.zip`). The cohort-vs-period publishing-design decision is **RESOLVED at DO step 1 = Option A cohort-only** (the existing product is cohort-linked; period-linked 1995-2004 is a different linkage method = a separate future product, OUT of C8.18 scope). Re-harmonize linked 1983-2023 (with documented 1992-1994 gap). Bump linked v3 → v4.
+
+**Why this matters.** Second-largest "more data" win. Doubles linked coverage to 41 yrs. Under cohort-only, two boundary types remain materially in-scope (cert-revision 1989→2003; ICD-9→ICD-10 1998→1999); the third (linkage-method cohort-vs-period) is settled (cohort-only). One of the largest single-task efforts in the project (~8-11 sessions post-correction; lower end of the original 8-14). Strong support for the manuscript's "single-revision-window forced" framing.
 
 **PRE-FLIGHT inputs.**
-- 29 NCHS source zips (probe HTTP 200 + sizes per EXPLORATION_REPORT §A.3 sizes). Note filename convention: no `US` suffix pre-1995; `<verb>CO<YY>` / `<verb>CO<YY>US` / `<verb>PE<YY>US` patterns.
-- ~25 user-guide PDFs at `ftp.cdc.gov/.../Dataset_Documentation/DVS/{cohortlinked,periodlinked}/Link*UserGuide.pdf`. L12-extension text-layer probe per the natality 2007-08 / fetal 2009-01 re-OCR-batch precedent.
-- 1992-1994 gap: permanent; NCHS suspended linkage. Must surface loud in schema (`years_available` cells include the gap), CODEBOOK, and manuscript per EXPLORATION_REPORT §A.3 risk (a).
-- Cohort-vs-period publishing-design substrate: existing post-2005 HVS-linked ships period-format only; backward extension forces a design decision (per EXPLORATION_REPORT §A.3): (i) ship cohort + period as separate parquets; (ii) reconcile via a derived "period-equivalent" view of cohort data; (iii) stop the backward extension at 1995 and ship period-only. Each has manuscript implications. PRE-FLIGHT records the design decision via AskUserQuestion + DECISION_LOG entry.
-- ICD-9 vs ICD-10 cause-of-death substrate: 1983-1998 ships ICD-9; 1999+ ships ICD-10. Simplest harmonization: ship `cause_icd10` null for 1983-1998 (per EXPLORATION_REPORT §A.3 risk (c) default). More-complete: build 9→10 crosswalk (defer to dedicated derivation task post-C8.18).
+- 19 NCHS cohort source zips (probe HTTP 200 + sizes per EXPLORATION_REPORT §A.3 sizes). Filename convention: no `US` suffix pre-1995 (`LinkCO{83..91}.zip`); `US` suffix 1995+ (`LinkCO{95..04}US.zip`). Period-linked `LinkPE*US.zip` is OUT of scope.
+- Cohort user-guide PDFs at `ftp.cdc.gov/.../Dataset_Documentation/DVS/cohortlinked/Link*Guide.pdf` (~19; exact count + naming sibling-derived at DO step 2 PRE-FLIGHT from on-disk `LinkCO{05..15}Guide.pdf`, L1-extension). L12-extension text-layer probe per the natality 2007-08 / fetal 2009-01 re-OCR-batch precedent.
+- 1992-1994 gap: permanent; NCHS suspended ALL linkage (no cohort, no period). Must surface loud in schema (`years_available` cells include the gap), CODEBOOK, and manuscript per EXPLORATION_REPORT §A.3 risk (a).
+- Cohort-vs-period publishing-design: **RESOLVED = Option A cohort-only** (DECISION_LOG 2026-05-17T05:30:00Z). The existing 2005-2023 HVS-linked product is the cohort-linked series; the methodologically-consistent extension is cohort-linked. §15.D EXPLORATION_REPORT §A.3 options (b) "period-equivalent view of cohort" / (c) "stop at 1995, period-only" were predicated on the inverted premise and are moot.
+- ICD-9 vs ICD-10 cause-of-death substrate: cohort 1983-1998 carries ICD-9; 1999+ carries ICD-10 (existing 2005-2023 product is ICD-10, schema col `underlying_cause_icd10`). **Coupled decision settled at DO step 1 (DECISION_LOG 2026-05-17T05:30:00Z): default-null + revision-tagged** — populate `underlying_cause_icd10` only for 1999-2023 (null 1983-1998); preserve raw ICD-9 in `_raw` parquets + a within-era ICD-9 harmonized representation (exact column shape decided at DO step 5/6 PRE-FLIGHT, H7 fetal-death sibling-parity, soft-flag (gg)); published 9→10 crosswalk deferred to a dedicated post-C8.18 derivation task. `cause_recode_130` per-era availability = DO step 5/6 PRE-FLIGHT question (soft-flag (gg)).
 
 **SMOKE plan.**
-- Tier 0: cohort-vs-period design decision (DECISION_LOG entry; AskUserQuestion if PRE-FLIGHT-time material ambiguity surfaces).
-- Tier 0: byte-position layout-CSV reconstruction per era (1983-1988 cohort 1978-rev + ICD-9; 1989-1991 cohort 1989-rev + ICD-9; 1995-1998 cohort 1989-rev + ICD-9; 1999-2002 cohort 1989-rev + ICD-10; 2003-2004 cohort 1989+2003-rev mix + ICD-10; period 1995-2004 same boundary pattern).
-- Tier 1: 100-record parse per era; anchor-field value-distribution verify per L13-extension.
-- Tier 2: full-year parse; per-year + per-cohort/period aggregate counts match NCHS Linked File reports cell-by-cell.
-- Tier 3: re-harmonize linked 1983-2023; 2005-2023 byte-clean regression (0/N column drift on the post-2005 slice vs current parquet; H10 gate per Q38 default-validity-anchor preservation).
+- Tier 0: cohort-vs-period design decision — **RESOLVED at DO step 1** (Option A cohort-only; AskUserQuestion 2026-05-17; DECISION_LOG 2026-05-17T05:30:00Z).
+- Tier 0: byte-position layout-CSV reconstruction per cohort era (1983-1988 cohort 1978-rev + ICD-9; 1989-1991 cohort 1989-rev + ICD-9; 1995-1998 cohort 1989-rev + ICD-9; 1999-2002 cohort 1989-rev + ICD-10; 2003-2004 cohort 1989+2003-rev mix + ICD-10).
+- Tier 1: 100-record parse per cohort era; anchor-field value-distribution verify per L13-extension.
+- Tier 2: full-year parse; per-year cohort aggregate counts match NCHS cohort Linked File reports cell-by-cell.
+- Tier 3: re-harmonize linked 1983-2023; 2005-2023 byte-clean regression (0/N column drift on the post-2005 slice vs current cohort parquet; H10 gate per Q38 default-validity-anchor preservation).
 
-**DO scope (multi-sub-step; expect ~8-14 sub-step commits).**
-1. **DO step 1 (1 session)**: cohort-vs-period publishing-design decision; AskUserQuestion if PRE-FLIGHT-time substrate is ambiguous.
-2. **DO step 2 (1 session)**: download 29 source zips + 25 user-guide PDFs; SHA-verify.
+**DO scope (multi-sub-step; ~7 sub-step commits post-correction; DO step 1 = decision-only/RESOLVED).**
+1. **DO step 1 — RESOLVED (decision-only; SHIPPED 2026-05-17)**: cohort-vs-period publishing-design = **Option A cohort-only** via AskUserQuestion 2026-05-17 (DECISION_LOG 2026-05-17T05:30:00Z; RECEIPTS/C8.18_step1_2026-05-17T05-30-00Z.md; zero canonical-state mutation; `C8.18-pre-do`@`6632a15`).
+2. **DO step 2 (1 session)**: download **19 cohort source zips** (9 × `LinkCO{83..91}.zip` + 10 × `LinkCO{95..04}US.zip`) + cohort user-guide PDFs (L1-extension sibling-derive; L12-extension text-layer probe); SHA-verify; extend `file_inventory.csv` + `docs/NCHS_SOURCE_MANIFEST.md`.
 3. **DO step 3 (2-3 sessions)**: layout-CSV reconstruction for cohort 1983-1991 (1978-rev birth + ICD-9; sibling of natality 1978-1988 from C8.17's DO step 4).
-4. **DO step 4 (1-2 sessions)**: layout-CSV reconstruction for cohort + period 1995-1998 (1989-rev birth + ICD-9).
-5. **DO step 5 (1-2 sessions)**: layout-CSV reconstruction for cohort + period 1999-2004 (1989-rev birth + ICD-10; 2003-2004 cohort 1989+2003-rev mix).
-6. **DO step 6 (1-2 sessions)**: parser + harmonize_linked.py extensions per era; ICD-9 vs ICD-10 cause-of-death handling per the design decision.
-7. **DO step 7 (1 session)**: re-harmonize linked 1983-2023; preserve v3 parquet as `.v3_baseline.parquet` forward-stability anchor; bump linked v3 → v4.
-8. **DO step 8 (0.5-1 session)**: update CITATION.cff + ABOUT_THIS_RELEASE.md + README.md + PROJECT_STRUCTURE.md + manuscript references; refresh smoke pins.
+4. **DO step 4 (2-3 sessions)**: layout-CSV reconstruction for cohort 1995-2004 (1989-rev birth; ICD-9 1995-1998 / ICD-10 1999-2004; 2003-2004 cohort 1989+2003-rev mix). [former §15.D DO steps 4+5 merged — period work dropped.]
+5. **DO step 5 (1-2 sessions)**: parser + `harmonize_linked.py` extensions per cohort era; ICD-9 default-null + revision-tagged per the DO step 1 coupled decision; `cause_recode_130` per-era reconciliation (soft-flag (gg)).
+6. **DO step 6 (1-2 sessions)**: re-harmonize linked 1983-2023; preserve v3 parquet as `.v3_baseline.parquet` forward-stability anchor; bump linked v3 → v4; Convention-2/L17 same-commit re-pin of `tests/test_row_count_conservation.py` LINKED pins + B.12 re-snap.
+7. **DO step 7 (0.5-1 session)**: update CITATION.cff + .zenodo.json + ABOUT_THIS_RELEASE.md + README.md + PROJECT_STRUCTURE.md + manuscript references; refresh smoke pins; tag `C8.18-complete`.
 
 **VERIFY criteria.**
-- Per-year + per-cohort/period counts 1983-2004 match NCHS Linked File report tables byte-exact.
+- Per-year cohort counts 1983-2004 match NCHS cohort Linked File report tables byte-exact.
 - 2005-2023 byte-clean regression: 0/N columns drift on the post-2005 slice (anchor preserved per L5 + H10).
 - 1992-1994 gap documented in `harmonized_schema.csv` `years_available` cells + CODEBOOK + ABOUT_THIS_RELEASE.md + manuscript Coverage paragraph.
 - C8.1's dtype-parity test PASSes on v4 parquet.
 - B.12 snapshot regression baseline re-snaps post-rebuild.
-- External validation grid: existing 33/35 + 2 docs preserved; new pre-2005 cells added incrementally.
+- External validation grid: existing 33/35 + 2 docs preserved; new pre-2005 cohort cells added incrementally.
 
-**RECEIPT requirement.** Standard + Forward-looking HALTs covering: 29 source zip SHAs; 25 user-guide PDF SHAs; new layout-CSV SHAs; v4 parquet SHAs; cohort-vs-period design decision artifact at DECISION_LOG; B.12 snapshot baseline shift; whether the v3 baseline anchor preserved byte-exact on the 2005-2023 slice; ICD-9 vs ICD-10 handling at DO step 6 (cause_icd10 null pre-1999 default + future crosswalk task framing).
+**RECEIPT requirement.** Standard + Forward-looking HALTs covering: 19 cohort source zip SHAs; cohort user-guide PDF SHAs; new layout-CSV SHAs; v4 parquet SHAs; cohort-vs-period design decision artifact at DECISION_LOG (RESOLVED at DO step 1 = Option A cohort-only); B.12 snapshot baseline shift; whether the v3 baseline anchor preserved byte-exact on the 2005-2023 slice; ICD-9 vs ICD-10 handling at DO step 5 (default-null + revision-tagged + future crosswalk task framing per DECISION_LOG 2026-05-17T05:30:00Z).
 
-**Estimated effort.** **8-14 sessions** (lower if cohort/period design decision = period-only-from-1995; higher if both-formats-shipped + ICD-9-to-10-crosswalk pursued).
+**Estimated effort.** **~8-11 sessions** (lower end of the original 8-14; cohort-only drops the ~2-3 period sessions and the ICD-9→10 crosswalk is deferred; higher if cohort 1972-1977-analogue layout friction or `cause_recode_130` per-era reconciliation inflates DO step 5).
 
-**Dependencies.** C8.17 modestly (1978-cert layout knowledge from natality 1978-1988 work). Independent of C8.16. Largest single-task effort in pre-Zenodo Phase C.
+**Dependencies.** C8.17 modestly (1978-cert layout knowledge from natality 1978-1988 work). Independent of C8.16. One of the largest single-task efforts in pre-Zenodo Phase C.
 
-**Halt-condition flags.** H1, H6, H7 (linked schema must agree with natality on shared concepts), F1 (canonical filter must be year-and-cohort-or-period aware), F4 (within-era for ICD-9/10), L1-extension, L9 (NVSR + Linked File report cell-validation at PRE-FLIGHT), L12-extension, L13-extension, L17. Convention 1 SHAPE-not-VALUE.
+**Halt-condition flags.** H1, H6, H7 (linked schema must agree with natality on shared concepts), F1 (canonical filter must be year-and-cohort aware), F4 (within-era for ICD-9/10), L1-extension, L9 (NVSR + cohort Linked File report cell-validation at PRE-FLIGHT), L12-extension, L13-extension, L17. Convention 1 SHAPE-not-VALUE.
 
-**Sub-Q42 triggers.** Cohort/period publishing-design = methodology-paper-level decision; if PRE-FLIGHT-time substrate is materially ambiguous, AskUserQuestion + [plan-update] sub-entry. ICD-9→10 crosswalk if pursued >1 session beyond default-null handling triggers [plan-update].
+**Sub-Q42 triggers.** Cohort/period publishing-design = methodology-paper-level decision — **RESOLVED at DO step 1** via the AskUserQuestion + `[plan-update]` sub-entry mechanism (this scope-correction). ICD-9→10 crosswalk if *pursued* >1 session beyond default-null handling triggers a new `[plan-update]` (the settled default-null does not). Period-linked 1995-2004 reconsideration requires its own `[plan-update]` (out of C8.18 scope per Option A).
 
 ---
 
