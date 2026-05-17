@@ -842,3 +842,190 @@ LINKED_DEATH_2014_2020_FIELDS: list[tuple[str, int, int]] = [
 ]
 
 LINKED_DENOMPLUS_RECLEN_2014_2020 = 1384
+
+# =====================================================================
+# Linked Birth-Infant Death: pre-1990 COHORT denominator layouts
+# (C8.18 DO step 3a — 1983-1991 cohort backward extension)
+# =====================================================================
+# The pre-1990 NCHS cohort-linked files use COMPACT fixed-width layouts
+# that are NOT byte-position-aligned with the natality public-use file
+# (unlike the 2005+ LINKED_BIRTH_* specs, which copy natality positions
+# + a few overrides). They are therefore authored here as standalone
+# tuple lists, transcribed from the NCHS cohort user guides and
+# value-distribution-verified at C8.18 DO step 3a SMOKE Tier 1
+# (L13-extension: byte position alone is not trusted).
+#
+# Two distinct physical layouts span 1983-1991 (the 1989 birth-cert
+# revision is the boundary — verified empirically, NOT assumed):
+#
+#   * 1983-1988: a PURE births-only 91-byte Denominator file
+#     (LinkCO{YY}USden.dat; match status + birth cert + record weight;
+#     NO death section — the linked death detail is in the separate
+#     500-byte numerator file -> C8.18 DO step 3b). 91 data bytes +
+#     CR/LF = 93-byte block (e.g. LinkCO83USden.dat 310,738,482 / 93
+#     = 3,341,274 = guide count).
+#   * 1989-1991: a 225-byte Denominator-PLUS file (birth cert locs
+#     7-212 + a small appended death-derived "plus" 213-225),
+#     structurally analogous to the 2005+ denominator-plus model
+#     (alongside a richer 535-byte numerator -> DO step 3b/5).
+#     225 data bytes + CR/LF = 227-byte block (LinkCO89USden.dat
+#     918,414,987 / 227 = 4,045,881 = guide count).
+#
+# The 2005+ parser member-finder (`_find_denomplus_member`, matches
+# "DENOM") + the 1983-1988 two-file numerator left-join + the
+# `.dat` decode strategy are C8.18 DO step 5 parser concerns; this
+# step authors the LAYOUT substrate + an additive dispatcher branch.
+#
+# Sources:
+#   - 1983-1988: PRE_FLIGHT_LOG.md 2026-05-17T20:00:00Z SMOKE Tier 0
+#     (full 1983 denominator layout reconstructed from LinkCO83Guide.pdf
+#     pp12-31; state-on-disk; 1983 == 1988 == 91 bytes per-year stable).
+#   - 1989-1991: LinkCO89Guide.pdf p17 (file characteristics: 225 B /
+#     4,045,881) + pp18-19 ("List of Data Elements and Locations",
+#     Denominator-Plus File column) + pp20-47 (detail code outlines);
+#     captured in PRE_FLIGHT_LOG.md 2026-05-17T22:30:00Z SMOKE Tier 0.
+#     1989-1991 share the 1989-revision certificate (per-year stable).
+#
+# Field names are NCHS-cohort-guide-traceable raw names; the
+# harmonized-schema mapping (v4 schema continuity with 2005-2023) is
+# C8.18 DO step 5. Positions are 1-based inclusive (start, end).
+
+# --- 1983-1988 cohort: births-only Denominator (91 bytes) ---
+LINKED_BIRTH_1983_1988_FIELDS: list[tuple[str, int, int]] = [
+    ("MATCHS", 1, 1),       # Match status (1 matched / 3 surviving)
+    ("BIRYR", 2, 5),        # Year of birth
+    ("RECTYPE", 10, 10),    # Record type
+    ("RESSTAT", 11, 11),    # Resident status (1-4)
+    ("STOCC", 17, 18),      # State of occurrence (01-51; * = 50% sample)
+    ("CNTYOCC", 19, 21),    # County of occurrence (999 = <250k pop)
+    ("STRES", 27, 28),      # State of residence
+    ("CNTYRES", 29, 31),    # County of residence
+    ("CITYRES", 32, 34),    # City of residence
+    ("CRACE", 36, 36),      # Detail race of child (1-8)
+    ("CRACE3", 37, 37),     # Race of child recode 3
+    ("CSEX", 38, 38),       # Sex of child (1 M / 2 F)
+    ("DGEST", 39, 40),      # Detail gestation weeks (17-52, 99 = NS)
+    ("GESTR10", 41, 42),    # Gestation recode 10
+    ("DBIRWT", 43, 46),     # Birth weight grams (0227-8165, 9999 = NS)
+    ("BWR14", 47, 48),      # Birth weight recode 14
+    ("BWR3", 49, 49),       # Birth weight recode 3
+    ("DPLURAL", 50, 50),    # Plurality (1 single / 2 twin / 3 other)
+    ("APGAR1", 51, 52),     # Apgar 1 minute (00-10, 99)
+    ("APGAR5", 53, 54),     # Apgar 5 minute (00-10, 99)
+    ("ORMOTH", 55, 56),     # Mother origin/descent (00-24, 88, 99)
+    ("DMRACE", 57, 57),     # Detail race of mother (1-8, 0/9 = NS)
+    ("DMAGE", 58, 59),      # Detail age of mother (10-49)
+    ("MAGER12", 60, 61),    # Age of mother recode 12
+    ("DMEDUC", 62, 63),     # Mother education detail (00-17, 99)
+    ("MEDUC6", 64, 64),     # Mother education recode 6
+    ("DMAR", 65, 65),       # Marital status (1 married / 2 unmarried)
+    ("MPLBIR", 66, 67),     # Mother place of birth (01-59, 99)
+    ("ORFATH", 68, 69),     # Father origin/descent
+    ("DFRACE", 70, 70),     # Detail race of father
+    ("DFAGE", 71, 72),      # Detail age of father (10-98, 99 = NS)
+    ("DFEDUC", 73, 74),     # Father education detail
+    ("DLLB", 75, 75),       # Interval since last live birth (0-7, 9)
+    ("OUTCOME", 76, 76),    # Outcome of last pregnancy (0/1/2/9)
+    ("DLPT", 77, 77),       # Interval since last preg termination (0-9)
+    ("DMPCB", 78, 79),      # Detail month prenatal care began (01-09, 00, 99)
+    ("MPCR6", 80, 80),      # Month prenatal care recode 6
+    ("NPREVIS", 81, 82),    # Total prenatal visits (00-49, 99)
+    ("DTOTORD", 83, 84),    # Detail total birth order (01-50, 99)
+    ("TOTORD9", 85, 85),    # Total birth order recode 9
+    ("DLIVORD", 86, 87),    # Detail live birth order (01-50, 99)
+    ("LIVORD9", 88, 88),    # Live birth order recode 9
+    ("PLDEL", 89, 89),      # Place of delivery (1 hosp / 2-3 nonhosp / 9)
+    ("BIRATTND", 90, 90),   # Attendant at birth (1 MD / 2 midwife / 3 / 9)
+    ("RECWT", 91, 91),      # Record weight (denominator inflation weight)
+]
+
+LINKED_DEN_RECLEN_1983_1988 = 91
+
+# --- 1989-1991 cohort: 225-byte Denominator-PLUS, birth-cert section ---
+# Positions are byte-exact from the LinkCO89Guide.pdf DETAIL code-outline
+# (pp20-47), NOT the pp18-19 element-span summary. C8.18 DO step 3a
+# SMOKE Tier 1 (L13-extension value-distribution) caught that the
+# pp18-19 spans are composites (e.g. "Birthweight 79-85" = DBIRWT@79-82
+# + BIRWT12@83-84 + BIRWT4@85); the detail code-outline is authoritative.
+LINKED_BIRTH_1989_1991_FIELDS: list[tuple[str, int, int]] = [
+    ("MATCHS", 1, 1),         # Match status (1/2/3)
+    ("IDNUMBER", 2, 6),       # Infant death number
+    ("BIRYR", 7, 10),         # Year of birth (1989-1991)
+    ("RESSTATB", 11, 11),     # Resident status - birth (1-4)
+    ("PLDEL", 12, 12),        # Place/facility of delivery (1-5, 9)
+    ("BIRATTND", 13, 13),     # Attendant at delivery (1-5, 9)
+    ("STOCCFIPB", 14, 15),    # State of occurrence FIPS - birth
+    ("CNTOCFIPB", 16, 18),    # County of occurrence FIPS - birth
+    ("STRESFIPB", 19, 20),    # State of residence FIPS - birth
+    ("CNTRESFIPB", 21, 23),   # County of residence FIPS - birth
+    ("BRSTATE", 24, 25),      # NCHS state of residence - birth
+    ("CITYRESB", 26, 28),     # NCHS city of residence - birth
+    ("MAGEFLG", 29, 29),      # Mother age imputed flag
+    ("DMAGE", 30, 31),        # Detail age of mother (10-49)
+    ("MAGER8", 32, 32),       # Age of mother recode 8
+    ("ORMOTH", 33, 33),       # Hispanic origin of mother
+    ("ORRACEM", 34, 34),      # Hispanic-origin race recode (mother)
+    ("MRACEIMP", 35, 35),     # Mother race imputed flag
+    ("MRACE", 36, 37),        # Detail race of mother
+    ("MRACE3", 38, 38),       # Race of mother recode 3
+    ("DMEDUC", 39, 40),       # Detail education of mother (00-17, 99)
+    ("MEDUC6", 41, 41),       # Education of mother recode 6
+    ("DMARIMP", 42, 42),      # Marital status imputed flag
+    ("DMAR", 43, 43),         # Marital status (1/2)
+    ("MPLBIR", 44, 45),       # Mother place of birth
+    ("MPLBIRR", 46, 46),      # Mother place of birth recode
+    ("DTOTORD", 47, 48),      # Detail total birth order (01-40, 99)
+    ("DLIVORD", 49, 50),      # Detail live birth order (00-31, 99)
+    ("MONPRE", 51, 52),       # Detail month prenatal care began (00-09, 99)
+    ("MPRE5", 53, 53),        # Month prenatal care recode 5
+    ("NPREVIS", 54, 55),      # Number of prenatal visits (00-48, 49)
+    ("ADEQUACY", 56, 56),     # Adequacy of care recode
+    ("DLLB", 57, 59),         # Interval since last live birth
+    ("FAGERFLG", 60, 60),     # Father age imputed flag
+    ("DFAGE", 61, 62),        # Detail age of father (10-98, 99)
+    ("ORFATH", 63, 63),       # Hispanic origin of father
+    ("ORRACEF", 64, 64),      # Hispanic-origin race recode (father)
+    ("FRACE", 65, 66),        # Detail race of father
+    ("DFEDUC", 67, 68),       # Detail education of father (00-17, 99)
+    ("CDOBMIMP", 69, 69),     # Date-of-birth month imputed flag
+    ("BIRMON", 70, 71),       # Month of birth (01-12)
+    ("GESTFLG", 72, 72),      # Gestation imputed flag
+    ("GESTAT", 73, 74),       # Detail gestation weeks (17-47, 99)
+    ("GESTAT10", 75, 76),     # Gestation recode 10
+    ("CSEXIMP", 77, 77),      # Sex imputed flag
+    ("CSEX", 78, 78),         # Sex of child (1 M / 2 F)
+    ("DBIRWT", 79, 82),       # Detail birth weight (grams)
+    ("BIRWT12", 83, 84),      # Birth weight recode 12
+    ("BIRWT4", 85, 85),       # Birth weight recode 4
+    ("PLURIMP", 86, 86),      # Plurality imputed flag
+    ("DPLURAL", 87, 87),      # Plurality (1-5)
+    ("OMAPS", 88, 89),        # Apgar 1 minute (00-10, 99)
+    ("FMAPS", 90, 91),        # Apgar 5 minute (00-10, 99)
+    ("DELMTH", 92, 99),       # Method of delivery (composite)
+    ("MEDRISK", 101, 117),    # Medical risk factors (composite)
+    ("OTHERRSK", 118, 128),   # Other risk factors (tobacco/alcohol/wtgain)
+    ("OBSTETRC", 130, 136),   # Obstetric procedures (composite)
+    ("LABOR", 138, 153),      # Complications of labor/delivery (composite)
+    ("ABNORMNB", 155, 163),   # Abnormal conditions of the newborn (composite)
+    ("CONGENIT", 165, 186),   # Congenital anomalies (composite)
+    ("FLRES", 187, 206),      # Residence reporting flags (composite)
+    ("DOW", 208, 208),        # Day of week of birth
+    ("CRACE", 209, 210),      # Detail race of child
+    ("CRACE3", 211, 212),     # Race of child recode
+]
+
+# --- 1989-1991 cohort: Denominator-PLUS appended death-derived section ---
+# Locations 213-225 of the 225-byte denominator-plus record (the "plus";
+# LinkCO89Guide.pdf pp46-47). The FULL ICD-9 multiple-cause detail
+# (entity/record axis, 261-504) lives in the separate 535-byte
+# numerator -> C8.18 DO step 3b/5 (soft-flag (gg)).
+LINKED_DEATH_1989_1991_FIELDS: list[tuple[str, int, int]] = [
+    ("AGED", 213, 215),       # Age at death in days (000-364)
+    ("AGER5", 216, 216),      # Infant age recode 5
+    ("AUTOPSY", 217, 217),    # Autopsy performed (1/2/8/9)
+    ("ACCIDPL", 218, 218),    # Place of accident
+    ("UCOD", 219, 222),       # Underlying cause of death (ICD-9)
+    ("UCODR61", 223, 225),    # 61 selected causes of infant death recode
+]
+
+LINKED_DENOMPLUS_RECLEN_1989_1991 = 225

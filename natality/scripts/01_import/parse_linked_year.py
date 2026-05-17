@@ -31,6 +31,11 @@ if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
 from field_specs import (
+    LINKED_BIRTH_1983_1988_FIELDS,
+    LINKED_BIRTH_1989_1991_FIELDS,
+    LINKED_DEATH_1989_1991_FIELDS,
+    LINKED_DEN_RECLEN_1983_1988,
+    LINKED_DENOMPLUS_RECLEN_1989_1991,
     LINKED_BIRTH_2005_2013_FIELDS,
     LINKED_BIRTH_2014_2020_FIELDS,
     LINKED_DEATH_2005_2013_FIELDS,
@@ -66,7 +71,29 @@ def _list_members(zip_path: Path) -> list[str]:
 def _layout_for_linked_year(
     year: int,
 ) -> tuple[int, list[tuple[str, int, int]], list[tuple[str, int, int]]]:
-    """Return (expected_reclen, birth_fields, death_fields) for the linked denominator-plus."""
+    """Return (expected_reclen, birth_fields, death_fields) for the linked denominator-plus.
+
+    C8.18 DO step 3a adds the pre-1990 cohort denominator layouts (additive;
+    the 2005/2014 branches below are byte-untouched). 1983-1988 is a
+    births-only 91-byte Denominator (no death section in this file; the
+    500-byte numerator carries death detail -> DO step 3b). 1989-1991 is a
+    225-byte Denominator-PLUS (birth cert + appended death-derived section).
+    The two-file numerator left-join + the `_find_denomplus_member`
+    "DEN"-vs-"DENOM" support are C8.18 DO step 5 parser concerns; this
+    function only returns the layout substrate.
+    """
+    if 1983 <= year <= 1988:
+        return (
+            LINKED_DEN_RECLEN_1983_1988,
+            LINKED_BIRTH_1983_1988_FIELDS,
+            [],
+        )
+    if 1989 <= year <= 1991:
+        return (
+            LINKED_DENOMPLUS_RECLEN_1989_1991,
+            LINKED_BIRTH_1989_1991_FIELDS,
+            LINKED_DEATH_1989_1991_FIELDS,
+        )
     if 2005 <= year <= 2013:
         return (
             LINKED_DENOMPLUS_RECLEN_2005_2013,
@@ -80,7 +107,8 @@ def _layout_for_linked_year(
             LINKED_DEATH_2014_2020_FIELDS,
         )
     raise ValueError(
-        f"Year {year} not yet configured for linked files. Supported: 2005-2020."
+        f"Year {year} not yet configured for linked files. "
+        f"Supported: 1983-1991 (cohort denominator), 2005-2020."
     )
 
 
