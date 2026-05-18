@@ -1,5 +1,19 @@
 """DESIGN: tracks-current-state
 
+[6a-RECWT update — DECISION_LOG 2026-05-22T02:00:00Z, §3
+append-only-supersede / §4.2.1/Convention-2/L17] The (A′) finding
+narrative below (``record_weight`` conservatively NULL for ALL
+1983-1988) is **SUPERSEDED for 1983-1984**: the 6a-RECWT re-derivation
+FALSIFIED the head-sample artifact — LinkCO83Guide.pdf p13 places
+``1.f Record weight`` at Denominator byte 91 (the 3a transcription is
+correct) and Σ(RECWT@91 over the full 1983 den) == guide "By
+occurrence" 3,643,001 byte-exact. So ``record_weight`` =
+``float(RECWT@91)`` for year ∈ {1983,1984} (the 50%-non-VSCP weighted
+sample); NULL for 1985-1988 (full files; the genuine 1988 byte-91
+anomaly is harmless — soft-flag (ll) carry). The (A′) all-NULL stays
+correct for 1985-1988; the per-row assertions below were L17-reframed
+in the SAME 6a-RECWT commit.
+
 C8.18 DO step 5c-iii SMOKE — the **keyless 1983-1988 ``link_segment``
 den/num one-row-per-birth harmonized encoding** in
 ``harmonize_linked_v3._harmonize_cohort_1983_1988``: the highest-risk
@@ -262,7 +276,7 @@ def test_tier0_den_segment_birth_map_and_infant_death_null():
     assert d["maternal_hispanic"] == [None]
     assert d["father_hispanic"] == [None]
     assert d["maternal_race_ethnicity_5"] == [None]
-    assert d["record_weight"] == [None]                        # (A′) RECWT@91 era-unstable
+    assert d["record_weight"] == [None]                        # 1985 full file → NULL (6a-RECWT scope=1983-1984 ONLY)
     assert d["maternal_race_detail_15cat"] == [None]
     assert d["smoking_any_during_pregnancy"] == [None]
     assert d["delivery_method_recode"] == [None]
@@ -314,7 +328,8 @@ def test_tier0_num_segment_infant_death_true_icd9():
     assert d["cause_recode_130"] == [None]
     # no MANNER in the 1983-1988 numerator → manner_of_death NULL
     assert d["manner_of_death"] == [None]
-    # (A′): RECWT@91 era-unstable → record_weight conservatively NULL
+    # 1985 = full file (Record count == by-occurrence) → record_weight
+    # NULL (the §7-scoped 6a-RECWT fix populates 1983-1984 ONLY).
     assert d["record_weight"] == [None]
     assert d["link_segment"] == ["num"]
 
@@ -610,13 +625,28 @@ def _assert_real_1983_1988(rows, d, year):
         f"{year}: ICD-9 underlying cause must be numeric (0 alpha-prefixed; "
         "the §15.D DO step 1 / 5c-i resolved ≤1998 shape)"
     )
-    # (A′) Convention-3 finding resolution, real-data-asserted:
-    # record_weight conservatively NULL for ALL 1983-1988 (RECWT@91 not
-    # byte-stable across the era; the 5c-i/1989-1991 precedent).
-    assert all(w is None for w in d["record_weight"]), (
-        f"{year}: record_weight must be 100% NULL (the (A′) RECWT@91 "
-        "era-instability resolution; soft-flag (ll))"
-    )
+    # C8.18 DO step 6a-RECWT (DECISION_LOG 2026-05-22T02:00:00Z; the
+    # 5c-iii (A′) all-NULL SUPERSEDED for 1983-1984, correct 1985-1988).
+    # 1983-1984 = the documented 50%-non-VSCP weighted sample →
+    # record_weight = float(RECWT@91) ∈ {1.0,2.0} (the bounded head
+    # sample is all weight-1 VSCP — the den file is ordered by
+    # State-of-occurrence; the weight-2 non-VSCP records cluster later).
+    # 1985-1988 = full files → NULL (the §7 1983-1984-ONLY scope; the
+    # genuine 1988 byte-91 anomaly is harmless — no weighting needed;
+    # soft-flag (ll) carry).
+    if year in (1983, 1984):
+        assert all(w is not None for w in d["record_weight"]), (
+            f"{year}: record_weight must be non-NULL (the 6a-RECWT "
+            "root-cause fix; the head sample is all weight-1 VSCP)"
+        )
+        assert set(d["record_weight"]) <= {1.0, 2.0}, (
+            f"{year}: RECWT@91 weight domain must be {{1.0,2.0}}"
+        )
+    else:
+        assert all(w is None for w in d["record_weight"]), (
+            f"{year}: record_weight must stay NULL (full file; the §7 "
+            "scope = 1983-1984 ONLY; soft-flag (ll))"
+        )
     # manner_of_death NULL (no MANNER in the 1983-1988 numerator)
     assert all(m is None for m in d["manner_of_death"])
     # maternal_age plausible on the mapped rows

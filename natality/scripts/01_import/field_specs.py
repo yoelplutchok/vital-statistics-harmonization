@@ -936,7 +936,20 @@ LINKED_BIRTH_1983_1988_FIELDS: list[tuple[str, int, int]] = [
     ("LIVORD9", 88, 88),    # Live birth order recode 9
     ("PLDEL", 89, 89),      # Place of delivery (1 hosp / 2-3 nonhosp / 9)
     ("BIRATTND", 90, 90),   # Attendant at birth (1 MD / 2 midwife / 3 / 9)
-    ("RECWT", 91, 91),      # Record weight (denominator inflation weight)
+    ("RECWT", 91, 91),      # Record weight (denom inflation weight).
+    #   C8.18 DO step 6a-RECWT: byte 91 is CORRECT for the denominator
+    #   (LinkCO83Guide.pdf p13 coord-aligned "1.f Record weight" = Denom
+    #   byte 91; empirically Σ(RECWT@91 over the full 1983 den) == guide
+    #   "By occurrence" 3,643,001 byte-exact, 1984 off-by-1). The 5c-iii
+    #   (A′) "RECWT@91 era-unstable" was an over-conservative head-sample
+    #   artifact (file ordered by State-of-occurrence → head all weight-1
+    #   VSCP). 1983-1984 ∈ {1,2} (50%-non-VSCP sample); 1985-1987 uniform
+    #   "1"; 1988 trailing-byte IS genuinely anomalous (byte91==DMRACE@57
+    #   ~100%, multi-valued) but HARMLESS — 1988 is a full file (no
+    #   weighting); record_weight populated for 1983-1984 ONLY in
+    #   _harmonize_cohort_1983_1988. A per-year 1985-1988 trailing-byte
+    #   layout reconstruction is a 3a-class future task = soft-flag (ll)
+    #   carry (NOT 1983-2023-IMR-blocking). Position UNTOUCHED.
 ]
 
 LINKED_DEN_RECLEN_1983_1988 = 91

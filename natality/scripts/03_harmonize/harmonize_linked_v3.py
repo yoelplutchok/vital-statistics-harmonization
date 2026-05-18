@@ -1220,15 +1220,31 @@ def _harmonize_cohort_1983_1988(batch: pa.RecordBatch, year: int) -> pa.Table:
         (the 1983-1988 numerator carries NO AGED — only the AGER5
         recode; faithful "not on this file"). ``manner_of_death``
         NULL (no MANNER in the 1983-1988 numerator).
-      * **``record_weight`` conservatively NULL for ALL 1983-1988**
-        (the Convention-3 (A') finding: ``RECWT@91`` is NOT
-        byte-stable across 1983->1988 — clean "1" for 1983/1985,
-        == ``DMRACE@57`` 5000/5000 for 1988; the faithful no-patch
-        choice — the 5c-i/1989-1991 NULL-record_weight precedent; the
-        cohort IMR = num/den does not use it; ``field_specs.py`` left
-        UNTOUCHED — the full per-year (1984-1988) non-anchor
-        re-verification is the DO-step-6 NCHS-per-year-cohort-count
-        VERIFY, soft-flag (ll)).
+      * **``record_weight`` = ``float(RECWT@91)`` for year ∈
+        {1983,1984}; NULL for 1985-1988** — the C8.18 DO step
+        6a-RECWT bounded root-cause fix (DECISION_LOG
+        2026-05-22T02:00:00Z; the 5c-iii (A′) all-NULL is
+        **SUPERSEDED for 1983-1984**, correct for 1985-1988). 1983
+        and 1984 are a documented 50%-of-births-in-5-non-VSCP-areas
+        (DC/AZ/CA/DE/GA) weighted sample (LinkCO83/84Guide.pdf p4);
+        ``RECWT@91`` carries the {1,2} inflation weight
+        (even-numbered non-VSCP=2, odd-linked/bias-adjusted=1). The
+        3a ``RECWT@91`` byte position is CORRECT (LinkCO83Guide.pdf
+        p13 coord-aligned "1.f Record weight" = Denominator byte 91;
+        empirically Σ(RECWT@91 over the full 1983 den) == guide "By
+        occurrence" 3,643,001 byte-exact). The 5c-iii (A′)
+        "RECWT@91 era-unstable" conclusion was an over-conservative
+        head-sample artifact (the den file is ordered by
+        State-of-occurrence → the first records are all VSCP-area
+        weight-1; the weight-2 non-VSCP records cluster later).
+        1985-1988 stay NULL — full files (Record count ==
+        by-occurrence; no sampling; the cohort IMR there is the
+        unweighted count(num)/count(den)); the genuine 1988
+        trailing-byte anomaly (byte91==DMRACE@57 ~100%) is real but
+        harmless (no weighting needed) → soft-flag (ll) carry, a
+        3a-class future per-year layout task, NOT 1983-2023-IMR
+        blocking. ``field_specs.py`` ``("RECWT", 91, 91)`` left
+        UNTOUCHED (the byte is correct; re-parse a no-op).
       * Hispanic (``hispanic_origin``/``maternal_hispanic``/
         ``father_hispanic``/``maternal_race_ethnicity_5``)
         conservatively NULL (H7 parity with natality ``is_pre1989``;
@@ -1389,12 +1405,26 @@ def _harmonize_cohort_1983_1988(batch: pa.RecordBatch, year: int) -> pa.Table:
     out["cause_recode_61"] = pc.if_else(
         is_num, opt_int("UCODR61", pa.int16()), null_i16,
     )
-    # underlying_cause_icd10 / cause_recode_130 / manner_of_death /
-    # record_weight stay NULL (the dict default): cohort <= 1998 =
-    # ICD-9; no MANNER in the 1983-1988 numerator; RECWT@91 NOT
-    # byte-stable across 1983-1988 (the Convention-3 (A') finding —
-    # the faithful no-patch conservative-NULL; the 5c-i/1989-1991
-    # NULL-record_weight precedent; soft-flag (ll) DO step 6).
+    # underlying_cause_icd10 / cause_recode_130 / manner_of_death stay
+    # NULL (the dict default): cohort <= 1998 = ICD-9; no MANNER in the
+    # 1983-1988 numerator.
+    #
+    # record_weight — the C8.18 DO step 6a-RECWT bounded root-cause fix
+    # (DECISION_LOG 2026-05-22T02:00:00Z; the 5c-iii (A′) all-NULL
+    # SUPERSEDED for 1983-1984, correct for 1985-1988). 1983-1984 are
+    # the documented 50%-non-VSCP weighted sample (LinkCO83/84Guide.pdf
+    # p4) → record_weight = float(RECWT@91) ∈ {1.0,2.0} (guide p13 1.f
+    # Record weight = Denom byte 91; Σ==by-occurrence byte-exact;
+    # mirrors the 1995-2002/2003-2004 RECWT pattern). 1985-1988 stay
+    # the dict-default NULL — full files (Record count == by-occurrence;
+    # no sampling); the 1988 byte-91 anomaly is real but harmless
+    # (soft-flag (ll)). The era-gate is EXACTLY {1983,1984} (§7 scope).
+    if year in (1983, 1984):
+        recwt = _get_col_optional(batch, "RECWT")
+        out["record_weight"] = (
+            _to_float_or_null(recwt, pa.float64())
+            if recwt is not None else pa.nulls(n, type=pa.float64())
+        )
 
     return pa.Table.from_arrays(
         [out[f.name] for f in OUT_SCHEMA], schema=OUT_SCHEMA,
