@@ -250,15 +250,18 @@ def test_tier0_icd10_subera_boundary(year):
 
 
 # --------------------------------------------------------------------------
-# Tier 0: fail-closed — 5c-ii-b (2003/2004) + 5c-iii (1983-1988) still RAISE
+# Tier 0: fail-closed — the keyless 1983-1988 (5c-iii) still RAISES
+# (L17 tracks-current-state: 2003/2004 IMPLEMENTED at 5c-ii-b — the
+# pins trimmed in the SAME 5c-ii-b commit per §4.2.1/Convention-2/L17)
 # --------------------------------------------------------------------------
 
-@pytest.mark.parametrize("year", [2003, 2004, 1983, 1985, 1988])
+@pytest.mark.parametrize("year", [1983, 1985, 1988])
 def test_tier0_unimplemented_eras_still_failclosed(year):
-    """L3 / §2 fail-closed: 5c-ii-a implements ONLY 1995-2002. 2003/2004
-    (5c-ii-b) + the keyless 1983-1988 (5c-iii) MUST still RAISE
-    NotImplementedError so a premature DO step 6 on those years halts
-    loudly rather than silently mis-harmonizing."""
+    """L3 / §2 fail-closed: 5c-ii-a implements 1995-2002; 5c-ii-b adds
+    2003 + 2004 (the 2003-rev transition). The keyless 1983-1988
+    link_segment encoding (5c-iii) MUST still RAISE NotImplementedError
+    so a premature DO step 6 on those years halts loudly rather than
+    silently mis-harmonizing."""
     batch = pa.RecordBatch.from_arrays(
         [pa.array(["x"], type=pa.string()), pa.array([year], type=pa.int64())],
         names=["TOKEN", "year"],

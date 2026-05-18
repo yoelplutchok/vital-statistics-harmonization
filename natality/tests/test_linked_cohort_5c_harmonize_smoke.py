@@ -268,21 +268,23 @@ def test_tier0_1989_1991_reference_era_end_to_end():
 
 @pytest.mark.parametrize(
     "year,era_phase",
-    [(1985, "5c-iii"), (2003, "5c-ii-b"), (2004, "5c-ii-b")],
+    [(1985, "5c-iii")],
 )
 def test_tier0_unimplemented_cohort_eras_failclosed(year, era_phase):
     """L3 / §2 fail-closed: 5c-i implements 1989-1991; 5c-ii-a adds
-    1995-2002 (see test_linked_cohort_5cii_a_harmonize_smoke). The
-    still-unimplemented cohort eras must RAISE NotImplementedError (so a
-    premature DO step 6 on those years halts loudly rather than silently
-    mis-harmonizing) — the keyless 1983-1988 is 5c-iii; 2003-2004 (the
-    2003-revision transition) is 5c-ii-b.
+    1995-2002; 5c-ii-b adds 2003 + 2004 (the 2003-rev transition; see
+    test_linked_cohort_5cii_a/5cii_b_harmonize_smoke). The ONLY
+    still-unimplemented cohort era — the keyless 1983-1988 link_segment
+    encoding (5c-iii) — must RAISE NotImplementedError (so a premature
+    DO step 6 on those years halts loudly rather than silently
+    mis-harmonizing).
 
     L17 / Convention-2 / §4.2.1 `tracks-current-state` Edit, bundled in
-    the 5c-ii-a commit: the prior `(1995,"5c-ii")` + `(2002,"5c-ii")`
-    pins went stale when 5c-ii-a implemented the 1995-2002 era (they now
-    harmonize, not raise). This is stale-pin maintenance, NOT a
-    regression (PRE_FLIGHT_LOG 2026-05-19T14:00:00Z HALT 9)."""
+    the 5c-ii-b commit: the `(2003,"5c-ii-b")` + `(2004,"5c-ii-b")`
+    pins went stale when 5c-ii-b implemented 2003/2004 (they now
+    harmonize, not raise) — sibling of the 5c-ii-a-commit trim of the
+    `(1995,"5c-ii")` + `(2002,"5c-ii")` pins. Stale-pin maintenance,
+    NOT a regression (PRE_FLIGHT_LOG 2026-05-19T20:00:00Z HALT 9)."""
     # a 1-row batch with just `year` (+ a token col) is enough to reach
     # the cohort-era dispatch (the NotImplementedError fires before any
     # field access for the unconfigured eras)
@@ -339,21 +341,31 @@ def test_tier1_real_1990_parse_then_harmonize():
     assert set(d["infant_sex"]) <= {"M", "F", None}
 
     # INDEPENDENT cross-check (L3 / §7-#13): the harmonizer derives
-    # infant_death from AGED-non-blank; MATCHS@1 is the *separate*
-    # NCHS match-status field (the 5b/3b model: linked infant deaths =
-    # MATCHS ∈ {1,2}; surviving births = MATCHS 3). On real cohort data
-    # the two signals MUST agree row-for-row — a disagreement means the
-    # infant_death derivation (or the MATCHS interpretation) is wrong and
-    # is a §7 halt surfaced here at the cheap SMOKE moment, not at the
+    # infant_death from AGED-non-blank; MATCHS is the *separate* NCHS
+    # match-status field. The den-plus linked-infant-death code is
+    # uniformly **MATCHS == 1** (matched birth↔infant-death) across ALL
+    # cohort eras — real-data-verified (PRE_FLIGHT_LOG 2026-05-19
+    # T15:00:00Z + the 20:00:00Z (A) re-confirmation on LinkCO03/04);
+    # the SURVIVOR code is era-dependent (3 for 1989-1991; 2 for
+    # 1995-2002/2003/2004) so the prior `m in {1,2}` framing was
+    # imprecise (it would sweep in 1995-2002/2003/2004 survivors). This
+    # `m == "1"` is era-correct AND era-independent (STRICTER, not
+    # looser) — the §9-#4 fix-the-test-correctly tighten recommended by
+    # RECEIPTS/C8.18_step5c-ii-a HALT 9 / self-check #6 / DECISION_LOG
+    # 2026-05-19T17:00:00Z residual-risk #6, bundled into the 5c-ii-b
+    # commit (the 5c-i harness is edited anyway for the stale-pin trim;
+    # PRE_FLIGHT_LOG 2026-05-19T20:00:00Z scope decision (E)). On real
+    # cohort data the two signals MUST agree row-for-row — a disagreement
+    # is a §7 halt surfaced at the cheap SMOKE moment, not at the
     # expensive DO step 6 re-harmonize / NCHS-cohort-report VERIFY.
     matchs = [str(r.get("MATCHS", "")).strip() for r in rows]
-    death_by_matchs = [m in ("1", "2") for m in matchs]
+    death_by_matchs = [m == "1" for m in matchs]
     death_by_aged = [a is not None for a in d["age_at_death_days"]]
     assert d["infant_death"] == death_by_aged, "infant_death must == AGED-non-blank"
     assert death_by_aged == death_by_matchs, (
-        "infant_death (AGED-derived) disagrees with MATCHS∈{1,2} on real "
+        "infant_death (AGED-derived) disagrees with MATCHS==1 on real "
         f"LinkCO90 data — §7-#13 halt. AGED-deaths={sum(death_by_aged)}, "
-        f"MATCHS-deaths={sum(death_by_matchs)}"
+        f"MATCHS1={sum(death_by_matchs)}"
     )
     # the death rows carry the ICD-9 underlying cause; survivors do not
     for is_death, icd9 in zip(d["infant_death"], d["underlying_cause_icd9"]):

@@ -523,6 +523,35 @@ def _detail_order_to_recode9(
     return out
 
 
+def _mager41_to_age(
+    mager41: pa.Array | pa.ChunkedArray,
+) -> pa.Array | pa.ChunkedArray:
+    """Map the 2003-revision MAGER41 (01-41) age-of-mother recode to a
+    single-year age: code 1 -> 14 (under 15); codes 2-41 -> code + 13
+    (so 41 -> 54); 99 or > 41 -> null. Byte-identical to the
+    ``harmonize_v1_core`` inline ``is_2003revised`` MAGER41 conversion
+    (H7 fetal-death/natality sibling-parity; the cohort 2003 ``MAGER41``
+    AND the cohort 2004 ``MAGER`` @89-90 are BOTH this recode-41, NOT a
+    single-year age — field_specs 4b/4c + the 2026-05-19T20:00:00Z
+    real-data probe; asserted equal in
+    ``test_linked_cohort_5cii_b_harmonize_smoke.py``). Duplicated
+    locally, not imported, to match this file's existing
+    helper-duplication pattern.
+    """
+    i16 = pa.int16()
+    age = pc.if_else(
+        pc.equal(mager41, 1),
+        pa.scalar(14, type=i16),
+        pc.add(mager41, pa.scalar(13, type=i16)),
+    )
+    age = pc.if_else(
+        pc.or_(pc.equal(mager41, 99), pc.greater(mager41, 41)),
+        pa.scalar(None, type=i16),
+        age,
+    )
+    return age
+
+
 def _cohort_era(year: int) -> str | None:
     """Classify a linked year into its cohort-harmonize era, or None for
     the canonical >= 2005 v3 path (the cohort branch must NOT fire there
@@ -795,6 +824,289 @@ def _harmonize_cohort_1995_2002(batch: pa.RecordBatch, year: int) -> pa.Table:
     )
 
 
+def _harmonize_cohort_2003_2004(batch: pa.RecordBatch, year: int) -> pa.Table:
+    """Harmonize one batch of a 2003 OR 2004 cohort denominator-plus
+    parquet into the (extended) OUT_SCHEMA — C8.18 DO step 5c-ii-b.
+
+    2003 + 2004 are the **2003-revision dual-certificate transition**
+    (the natality V1-core ``is_2003revised`` analog). ONE function
+    handles BOTH (ONE §15.D sub-step 5c-ii-b, ONE cert revision; the
+    2003-vs-2004 deltas are pure raw-name aliasing — ``MAGER41``↔
+    ``MAGER`` @89-90; ``DBWT``↔``BRTHWGT`` @467-470; the death
+    match-status ``MATCHS``↔``FLGND`` is NOT consumed here, the
+    harmonizer is AGED-value-driven — resolved via ``_get_col_optional``
+    name-fallback, the natality V1-core single ``is_2003revised`` branch
+    pattern; §9-#8 PRE_FLIGHT_LOG 2026-05-19T20:00:00Z (B)).
+
+    The birth section ALIASES the cohort raw names onto the natality
+    V1-core 2003-rev recodes (H7 sibling-parity — reuse ``_meduc_to_cat4``
+    / ``_meduc_rec_to_cat4`` / ``_month_to_trimester`` /
+    ``_fagerec11_to_cat`` / ``_pldel_to_facility`` /
+    ``_mrace_detail_to_bridged4`` + the NEW ``_mager41_to_age``; do NOT
+    re-derive). Authored as a SEPARATE function (not a shared helper
+    with the 1989-1991 / 1995-2002 branches) so the 5c-i-verified
+    1989-1991 inline body + the 5c-ii-a ``_harmonize_cohort_1995_2002``
+    stay byte-untouched (§9-#7; the file's explicit-per-era
+    helper-duplication pattern).
+
+    Dual-cert handled faithfully via the natality V1-core coalesce
+    (real-data-verified at the Convention-3 snapshot, PRE_FLIGHT_LOG
+    2026-05-19T20:00:00Z (A) on LinkCO03US/LinkCO04US — the public-use
+    cohort 2003/2004 den-plus is predominantly REVISION='S'
+    1989-unrevised, so MEDUC/PRECARE/MBRACE are blank there and the
+    1989-unrevised siblings UMEDUC/MEDUC_REC/MPCB/MRACE carry the
+    values):
+      * ``certificate_revision`` = has_MEDUC -> revised_2003 ; else
+        has_MRACE -> unrevised_1989 ; else unknown (the natality V1-core
+        has_meduc/has_mrace heuristic; matches the schema `derivation`
+        column + REVISION@7 S/A semantics).
+      * ``maternal_education_cat4`` = if_else(is_null(_meduc_to_cat4(
+        MEDUC)), _meduc_rec_to_cat4(MEDUC_REC), _meduc_to_cat4(MEDUC))
+        (byte-identical to natality V1-core 2003-rev education).
+      * ``prenatal_care_start_month`` = if_else(is_null(PRECARE), MPCB,
+        PRECARE) (natality V1-core dual-cert).
+      * ``maternal_age`` = _mager41_to_age(MAGER41 [2003] / MAGER
+        [2004]); ``gestational_age_weeks_source`` = "combined" (2003-rev
+        COMBGEST; the per-era delta vs the 5c-ii-a "lmp"); ``MANNER``
+        present -> ``manner_of_death`` (NEW vs 1995-2002); ``RECWT``
+        present -> ``record_weight``; ALL ICD-10 (cohort 2003/2004
+        >= 1999 -> ``underlying_cause_icd10`` / ``cause_recode_130``;
+        the ICD-9 cols null — the 5c-i resolved shape, §15.D DO step 1).
+
+    Composite multi-field blocks (MEDRISK / OBSTETRC / LABOR / DELMETH /
+    NEWBORN / CONGENIT / ENTITY / RECORD) + smoking / diabetes /
+    hypertension / preterm_recode3 / father_race_ethnicity_5 /
+    father_education_cat4 / payment / prior_cesarean stay conservatively
+    NULL (soft-flag (gg) leaf decomposition = DO step 6; the natality
+    is_pre1989 / 5c-i / 5c-ii-a conservative-mapping precedent).
+    """
+    if _cohort_era(year) not in ("2003", "2004"):
+        raise ValueError(
+            f"_harmonize_cohort_2003_2004 is era-scoped to 2003-2004; got "
+            f"year {year} (era {_cohort_era(year)!r}). The sanctioned entry "
+            f"is the _harmonize_cohort_batch dispatch (§2 fail-closed — "
+            f"never silently mis-harmonize a wrong-era batch)."
+        )
+
+    n = batch.num_rows
+    null_s = pa.scalar(None, type=pa.string())
+
+    def opt_str(name: str) -> pa.Array:
+        c = _get_col_optional(batch, name)
+        return _to_str_or_null(c) if c is not None else pa.nulls(n, pa.string())
+
+    def opt_int(name: str, t: pa.DataType) -> pa.Array:
+        c = _get_col_optional(batch, name)
+        return _to_int_or_null(c, t) if c is not None else pa.nulls(n, t)
+
+    def _safe_cond(*parts):
+        from functools import reduce
+        return reduce(pc.and_, (pc.fill_null(p, False) for p in parts))
+
+    # Default EVERY OUT_SCHEMA column to a typed null; override the
+    # fields the 2003-revision cohort denominator-plus actually carries.
+    out: dict[str, pa.Array] = {
+        f.name: pa.nulls(n, type=f.type) for f in OUT_SCHEMA
+    }
+
+    year_arr = pc.cast(_get_col(batch, "year"), pa.int16())
+    out["data_year"] = year_arr
+
+    # === Dual-certificate revision (natality V1-core has_meduc/has_mrace
+    # heuristic; matches the schema `derivation` column + REVISION@7 S/A;
+    # H7). MEDUC (2003-rev 1-byte) is blank on S-rev rows; MRACE detail
+    # is populated on both. ===
+    meduc = opt_int("MEDUC", pa.int8())
+    race_detail_str = opt_str("MRACE")
+    has_meduc = pc.invert(pc.is_null(meduc))
+    has_mrace = pc.invert(pc.is_null(race_detail_str))
+    cert = pc.if_else(has_meduc, pa.scalar("revised_2003"), null_s)
+    cert = pc.if_else(
+        pc.and_(pc.is_null(cert), has_mrace),
+        pa.scalar("unrevised_1989"), cert,
+    )
+    cert = pc.if_else(pc.is_null(cert), pa.scalar("unknown"), cert)
+    out["certificate_revision"] = cert
+
+    restatus = opt_int("RESTATUS", pa.int8())
+    out["residence_status"] = restatus
+    out["is_foreign_resident"] = pc.equal(restatus, pa.scalar(4, type=pa.int8()))
+
+    # Maternal age: cohort 2003 = MAGER41, cohort 2004 = MAGER, BOTH the
+    # 2003-rev recode-41 @89-90 (field_specs 4b/4c; the 2026-05-19
+    # T20:00:00Z probe) -> the natality V1-core MAGER41 conversion.
+    age_recode41 = opt_int("MAGER41", pa.int16())
+    if _get_col_optional(batch, "MAGER41") is None:
+        age_recode41 = opt_int("MAGER", pa.int16())
+    out["maternal_age"] = _mager41_to_age(age_recode41)
+
+    # Birth order: the cohort 2003/2004 den-plus carries the NCHS
+    # LBO_REC / TBO_REC 1-9 recode directly (1-7 count, 8 = 8+, 9 =
+    # unknown) — no detail-order synthesis needed (the 5c-ii-a
+    # _detail_order_to_recode9 was for the 1989-rev DLIVORD detail).
+    out["live_birth_order_recode"] = opt_int("LBO_REC", pa.int8())
+    out["total_birth_order_recode"] = opt_int("TBO_REC", pa.int8())
+    out["marital_status"] = opt_int("MAR", pa.int8())
+
+    hisp = opt_int("UMHISP", pa.int8())
+    out["hispanic_origin"] = hisp
+    is_hisp = pc.and_(
+        pc.greater_equal(hisp, pa.scalar(1, type=pa.int8())),
+        pc.less_equal(hisp, pa.scalar(5, type=pa.int8())),
+    )
+    is_nonhisp = pc.equal(hisp, pa.scalar(0, type=pa.int8()))
+    mat_hisp = pc.if_else(
+        is_hisp, pa.scalar(True),
+        pc.if_else(is_nonhisp, pa.scalar(False),
+                   pa.scalar(None, type=pa.bool_())),
+    )
+    out["maternal_hispanic"] = mat_hisp
+
+    mrace_detail = opt_int("MRACE", pa.int16())
+    race_bridged = _mrace_detail_to_bridged4(mrace_detail)
+    out["maternal_race_bridged"] = race_bridged
+    out["maternal_race_detail"] = opt_str("MRACE")
+    race_eth = pc.if_else(
+        pc.fill_null(pc.equal(mat_hisp, pa.scalar(True)), False),
+        pa.scalar("Hispanic"), null_s,
+    )
+    is_nh = pc.fill_null(pc.equal(mat_hisp, pa.scalar(False)), False)
+    race_eth = pc.if_else(_safe_cond(is_nh, pc.equal(race_bridged, 1)),
+                          pa.scalar("NH_white"), race_eth)
+    race_eth = pc.if_else(_safe_cond(is_nh, pc.equal(race_bridged, 2)),
+                          pa.scalar("NH_black"), race_eth)
+    race_eth = pc.if_else(_safe_cond(is_nh, pc.equal(race_bridged, 3)),
+                          pa.scalar("NH_aian"), race_eth)
+    race_eth = pc.if_else(_safe_cond(is_nh, pc.equal(race_bridged, 4)),
+                          pa.scalar("NH_asian_pi"), race_eth)
+    out["maternal_race_ethnicity_5"] = race_eth
+    out["race_bridge_method"] = pc.if_else(
+        pc.is_null(year_arr), null_s, pa.scalar("approximate_pre2003"),
+    )
+
+    # Education (dual-cert coalesce; byte-identical to natality V1-core
+    # 2003-rev): revised MEDUC -> _meduc_to_cat4; else unrevised
+    # MEDUC_REC -> _meduc_rec_to_cat4.
+    meduc_cat = _meduc_to_cat4(meduc)
+    meduc_rec_cat = _meduc_rec_to_cat4(opt_int("MEDUC_REC", pa.int8()))
+    out["maternal_education_cat4"] = pc.if_else(
+        pc.is_null(meduc_cat), meduc_rec_cat, meduc_cat,
+    )
+
+    # Prenatal care start month (dual-cert: revised PRECARE vs unrevised
+    # MPCB; natality V1-core).
+    precare = opt_int("PRECARE", pa.int16())
+    mpcb = opt_int("MPCB", pa.int16())
+    pn_month = pc.if_else(pc.is_null(precare), mpcb, precare)
+    out["prenatal_care_start_month"] = pn_month
+    out["prenatal_care_start_trimester"] = _month_to_trimester(pn_month)
+    out["prenatal_visits"] = opt_int("UPREVIS", pa.int16())
+
+    out["plurality_recode"] = opt_int("DPLURAL", pa.int8())
+
+    # SEX is already decoded to "M"/"F" by the parser (the 2026-05-19
+    # T20:00:00Z probe) — NOT the 1989-rev CSEX int 1/2.
+    sex = opt_str("SEX")
+    out["infant_sex"] = pc.if_else(
+        pc.equal(sex, pa.scalar("M")), pa.scalar("M"),
+        pc.if_else(pc.equal(sex, pa.scalar("F")), pa.scalar("F"), null_s),
+    )
+
+    gw = opt_int("COMBGEST", pa.int16())
+    _keep = pc.or_(
+        pc.fill_null(pc.and_(
+            pc.greater_equal(gw, pa.scalar(17, type=pa.int16())),
+            pc.less_equal(gw, pa.scalar(47, type=pa.int16())),
+        ), False),
+        pc.fill_null(pc.equal(gw, pa.scalar(99, type=pa.int16())), False),
+    )
+    gw = pc.if_else(_keep, gw, pa.scalar(None, type=pa.int16()))
+    out["gestational_age_weeks"] = gw
+    # 2003-rev COMBGEST = the combined LMP/clinical gestation (the
+    # natality V1-core "combined" source; schema-documented "combined for
+    # 2003-2013"; the per-era delta vs the 5c-ii-a/5c-i "lmp" GESTAT).
+    out["gestational_age_weeks_source"] = pc.if_else(
+        pc.is_null(gw), null_s, pa.scalar("combined"),
+    )
+
+    # Birth weight grams: cohort 2003 = DBWT, cohort 2004 = BRTHWGT
+    # (both @467-470; field_specs 4b/4c).
+    bw = opt_int("DBWT", pa.int32())
+    if _get_col_optional(batch, "DBWT") is None:
+        bw = opt_int("BRTHWGT", pa.int32())
+    out["birthweight_grams"] = bw
+    out["apgar5"] = opt_int("APGAR5", pa.int16())
+
+    # Father age: UFAGECOMB (schema-documented "2003-2011: UFAGECOMB
+    # @184-185; 99 -> null; clip 9-98").
+    fage = opt_int("UFAGECOMB", pa.int16())
+    fage = pc.if_else(
+        pc.and_(
+            pc.greater_equal(fage, pa.scalar(9, type=pa.int16())),
+            pc.less_equal(fage, pa.scalar(98, type=pa.int16())),
+        ),
+        fage, pa.scalar(None, type=pa.int16()),
+    )
+    out["father_age"] = fage
+    out["father_age_cat_from_rec11"] = _fagerec11_to_cat(
+        opt_int("FAGEREC11", pa.int16())
+    )
+
+    out["birth_facility"] = _pldel_to_facility(opt_int("UBFACIL", pa.int8()))
+
+    attend = opt_int("ATTEND", pa.int8())
+    out["attendant_at_birth"] = pc.if_else(
+        pc.equal(attend, pa.scalar(9, type=pa.int8())),
+        pa.scalar(None, type=pa.int8()), attend,
+    )
+
+    forig = opt_int("UFHISP", pa.int8())
+    f_is_hisp = pc.and_(
+        pc.greater_equal(forig, pa.scalar(1, type=pa.int8())),
+        pc.less_equal(forig, pa.scalar(5, type=pa.int8())),
+    )
+    f_is_nonhisp = pc.equal(forig, pa.scalar(0, type=pa.int8()))
+    out["father_hispanic"] = pc.if_else(
+        f_is_hisp, pa.scalar(True),
+        pc.if_else(f_is_nonhisp, pa.scalar(False),
+                   pa.scalar(None, type=pa.bool_())),
+    )
+    # NO clean father-education value field on the cohort 2003/2004
+    # den-plus (F_MEDUC@571 is an EDIT FLAG, not a value) ->
+    # father_education_cat4 stays null (faithful "not on this file"; the
+    # 5c-ii-a no-DFEDUC precedent). father_race_ethnicity_5 conservatively
+    # null (soft-flag (gg); the receipt HALT 8 conservative-NULL set).
+
+    # === Death-side: the 2003/2004 cohort den-plus "plus" — ALL ICD-10
+    # (cohort birth-year >= 1999; the 5c-i resolved shape, §15.D DO
+    # step 1). MANNER present (NEW vs 1995-2002). ===
+    aged = opt_int("AGED", pa.int16())
+    # A den-plus row is a linked infant death IFF the appended death
+    # "plus" carries an age at death (blank for survivors, 000-366 days
+    # for deaths) — the value-driven signal (no match-status-code
+    # assumption; the SMOKE Tier-1 independently cross-checks it against
+    # the era-correct AND era-independent match-status == "1" on real
+    # LinkCO03/04 data, §7-#13; 2003 uses MATCHS, 2004 uses FLGND).
+    infant_death = pc.invert(pc.is_null(aged))
+    out["infant_death"] = pc.fill_null(infant_death, False)
+    out["age_at_death_days"] = aged
+    out["age_at_death_recode5"] = opt_int("AGER5", pa.int8())
+    out["underlying_cause_icd10"] = opt_str("UCOD")    # ICD-10, populated
+    out["cause_recode_130"] = opt_int("UCODR130", pa.int16())
+    # underlying_cause_icd9 / cause_recode_61 stay null (default) — cohort
+    # 2003/2004 birth-year >= 1999 = ICD-10 (the 5c-i resolved shape).
+    out["manner_of_death"] = opt_int("MANNER", pa.int8())
+    recwt = _get_col_optional(batch, "RECWT")
+    out["record_weight"] = (
+        _to_float_or_null(recwt, pa.float64())
+        if recwt is not None else pa.nulls(n, type=pa.float64())
+    )
+
+    return pa.Table.from_arrays(
+        [out[f.name] for f in OUT_SCHEMA], schema=OUT_SCHEMA,
+    )
+
+
 def _harmonize_cohort_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
     """Harmonize one batch of a cohort-linked denominator(-plus) parquet
     (year <= 2004) into the (extended) OUT_SCHEMA.
@@ -805,10 +1117,15 @@ def _harmonize_cohort_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
         sibling of 1989-1991; §15.D DO step 5c-ii decomposed ->
         5c-ii-a/5c-ii-b at the Convention-3 snapshot, PRE_FLIGHT_LOG
         2026-05-19T14:00:00Z; the 5c->5c-i/5c-ii/5c-iii precedent).
-      * 2003 + 2004 (5c-ii-b) + the keyless 1983-1988 link_segment
-        den/num one-row-per-birth encoding (5c-iii) RAISE
-        NotImplementedError (§2 fail-closed — a premature DO step 6 on
-        those years halts loudly rather than silently mis-harmonizing).
+      * 2003 + 2004 (5c-ii-b) — `_harmonize_cohort_2003_2004` (the
+        2003-revision dual-certificate transition; the natality V1-core
+        `is_2003revised` analog; one function for both years, the
+        2003-vs-2004 deltas pure raw-name aliasing; PRE_FLIGHT_LOG
+        2026-05-19T20:00:00Z).
+      * the keyless 1983-1988 link_segment den/num one-row-per-birth
+        encoding (5c-iii) RAISES NotImplementedError (§2 fail-closed — a
+        premature DO step 6 on those years halts loudly rather than
+        silently mis-harmonizing).
 
     Birth-side = the cohort raw names ALIASED onto the natality V1-core
     revision recodes (H7 sibling-parity). Death-side = the within_era
@@ -823,13 +1140,14 @@ def _harmonize_cohort_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
     era = _cohort_era(year)
     if era == "1995_2002":
         return _harmonize_cohort_1995_2002(batch, year)
+    if era in ("2003", "2004"):
+        return _harmonize_cohort_2003_2004(batch, year)
     if era != "1989_1991":
         raise NotImplementedError(
-            f"C8.18 DO step 5c-i/5c-ii-a implement the 1989-1991 + "
-            f"1995-2002 cohort eras; year {year} (era {era!r}) is "
-            f"configured at DO step 5c-ii-b (2003 / 2004 — the 2003-rev "
-            f"transition) or 5c-iii (the keyless 1983-1988 link_segment "
-            f"encoding)."
+            f"C8.18 DO step 5c-i/5c-ii-a/5c-ii-b implement the 1989-1991 "
+            f"+ 1995-2002 + 2003 + 2004 cohort eras; year {year} (era "
+            f"{era!r}) is the keyless 1983-1988 link_segment den/num "
+            f"one-row-per-birth encoding, configured at DO step 5c-iii."
         )
 
     n = batch.num_rows
