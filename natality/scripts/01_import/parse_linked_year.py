@@ -126,6 +126,47 @@ def _list_members(zip_path: Path) -> list[str]:
         return zf.namelist()
 
 
+def _find_numerator_member(zip_path: Path) -> str:
+    """Find the cohort NUMERATOR member in a linked zip archive.
+
+    C8.18 DO step 5b. The symmetric ``"NUM"`` sibling of
+    ``_find_denomplus_member`` (5a). One fail-closed rule — unlike
+    ``_find_denomplus_member`` there is NO behavior-preservation
+    constraint: the canonical v3 2005-2023 build reads only the
+    denominator-plus, so no shipped path calls this finder; it is used
+    by ``_iter_two_file_1983_1988`` (the keyless 1983-1988 era) and by
+    the DO step 6 re-harmonize.
+
+      The UNIQUE member whose upper-name contains ``"NUM"`` and not
+      ``"UNL"`` / ``"UNM"``. Cross-era-correct by name analysis:
+
+        1983-1991  ``LinkCO{yy}USnum.dat``
+        1995-2002  ``LinkCO{yy}US{Num,NUM}.dat``
+        2003/2004  ``VS0{3,4}LKBC.USNUMPUB``
+
+      The denominator (``USden`` / ``USDEN`` / ``USDENPUB`` /
+      ``DUSDENOM`` — ``"DENOM"`` has no ``"NUM"``) and unlinked
+      (``USUnl`` / ``USUNL`` = ``"UNL"``; ``USUNMPUB`` = ``"UNM"``, not
+      ``"NUM"``) members never contain ``"NUM"`` — the positive test
+      alone is unique; the ``not UNL/UNM`` guard is defense-in-depth +
+      symmetry with the 5a finder. Zero or >1 candidates ->
+      ``RuntimeError`` (§2 fail-closed; never silently pick wrong).
+    """
+    members = _list_members(zip_path)
+    candidates = [
+        name
+        for name in members
+        if "NUM" in name.upper()
+        and not any(tok in name.upper() for tok in ("UNL", "UNM"))
+    ]
+    if len(candidates) == 1:
+        return candidates[0]
+    raise RuntimeError(
+        f"No unique numerator member in {zip_path}. "
+        f"'NUM'-not-UNL/UNM candidates={candidates}; members={members}"
+    )
+
+
 def _layout_for_linked_year(
     year: int,
 ) -> tuple[int, list[tuple[str, int, int]], list[tuple[str, int, int]]]:
@@ -329,11 +370,109 @@ def _numerator_layout_for_linked_year(
     )
 
 
+def _iter_two_file_1983_1988(
+    zip_path: Path,
+    year: int,
+    max_rows: int | None = None,
+) -> Iterator[dict[str, str | int]]:
+    """The keyless 1983-1988 self-contained-numerator + aggregate-
+    denominator construction (C8.18 DO step 5b).
+
+    1983-1988 carry NO record-level public-use key (the C8.18 DO step
+    3b byte-confirmed finding), so a record-level numerator<->
+    denominator join is impossible; fabricating a proxy key would
+    violate §2 fail-closed. The per-year ``_raw`` representation is the
+    **lossless union** of two source segments, discriminated by a
+    synthetic ``link_segment`` column:
+
+      ``link_segment="den"`` — every 91-byte ``LinkCO{yy}USden.dat``
+        record via ``LINKED_BIRTH_1983_1988_FIELDS`` (the aggregate
+        birth denominator: ALL live births, one row per birth, no
+        death section — the den file carries none).
+
+      ``link_segment="num"`` — every 500-byte ``LinkCO{yy}USnum.dat``
+        record via ``LINKED_BIRTH_1983_1988_FIELDS`` (locs 1-91, the
+        deceased infant's own birth covariates) +
+        ``LINKED_NUM_DEATH_1983_1988_FIELDS`` (locs 194-500, the ICD-9
+        mortality section); the self-contained linked-infant-death set
+        (MATCHS in {1,2}; locs 92-193 numerator-only reserved, not
+        enumerated per DO step 3b).
+
+    Lossless; H6 row-count conservation (den rows == guide-stated
+    births; num rows == guide-stated infant deaths). The harmonized
+    one-row-per-birth / ``infant_death`` / ``record_weight`` semantics
+    for the keyless era are DO step 5c (the den segment = one row per
+    birth with ``infant_death`` null/unknown per-record since
+    un-linkable; the num segment = the within-era infant-death detail
+    surface — a documented within-era structural difference, not a
+    silent deviation: COMPARABILITY / harmonized_schema notes at
+    5c/6 + the manuscript Coverage paragraph = Phase-D D.4;
+    DECISION_LOG 2026-05-19T08:00:00Z).
+
+    ``max_rows`` caps **each segment independently** (up to
+    ``max_rows`` den rows + up to ``max_rows`` num rows), so a bounded
+    sample represents BOTH segments — a single shared counter would
+    fill entirely from the multi-million-row den segment and never
+    reach the num segment (surfaced + refined at the DO step 5b SMOKE;
+    PRE_FLIGHT_LOG 2026-05-19T08:00:00Z addendum). ``max_rows=None``
+    yields the full files (lossless; the DO step 6 re-harmonize).
+    """
+    den_member = _find_denomplus_member(zip_path)            # 5a -> USden
+    den_len, den_birth, den_death = _layout_for_linked_year(year)  # (91, BIRTH, [])
+    num_member = _find_numerator_member(zip_path)             # -> USnum
+    num_len, num_birth, num_death = _numerator_layout_for_linked_year(year)
+
+    for seg, member, expected_len, fields in (
+        ("den", den_member, den_len, den_birth + den_death),
+        ("num", num_member, num_len, num_birth + num_death),
+    ):
+        print(f"Reading {seg} member: {member}", file=sys.stderr)
+        line_iter = iter_lines_from_zip(zip_path, member_name=member)
+        bad_len = 0
+        n = 0  # per-segment counter (independent cap; see docstring)
+        try:
+            for raw_line in line_iter:
+                rec = raw_line.rstrip(b"\r\n")
+                if not rec:
+                    continue
+                if len(rec) != expected_len:
+                    bad_len += 1
+                    if bad_len <= 3:
+                        print(
+                            f"warning [{seg}]: expected {expected_len} bytes, "
+                            f"got {len(rec)}",
+                            file=sys.stderr,
+                        )
+                    continue
+                d: dict[str, str | int] = {"year": year, "link_segment": seg}
+                for name, a, b in fields:
+                    d[name] = _slice_field(rec, a, b)
+                yield d
+                n += 1
+                if max_rows is not None and n >= max_rows:
+                    break  # cap THIS segment; continue to the next
+        finally:
+            line_iter.close()
+        if bad_len:
+            print(
+                f"Skipped {bad_len:,} {seg} lines with unexpected length",
+                file=sys.stderr,
+            )
+
+
 def iter_parsed_records(
     zip_path: Path,
     year: int,
     max_rows: int | None = None,
 ) -> Iterator[dict[str, str | int]]:
+    if 1983 <= year <= 1988:
+        # C8.18 DO step 5b: the keyless pre-2005 cohort-linked era is a
+        # two-file (births-only denominator + self-contained numerator)
+        # construction, NOT a single denominator-PLUS member. The
+        # 1989-2004 + 2005+ single-member body below is byte-untouched
+        # (§9-#7-safe; the 5a behavior-preserving discipline).
+        yield from _iter_two_file_1983_1988(zip_path, year, max_rows=max_rows)
+        return
     expected_len, birth_fields, death_fields = _layout_for_linked_year(year)
     member = _find_denomplus_member(zip_path)
     print(f"Reading member: {member}", file=sys.stderr)
