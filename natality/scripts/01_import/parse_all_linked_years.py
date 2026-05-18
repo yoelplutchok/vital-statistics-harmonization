@@ -5,6 +5,16 @@ Batch driver: parse all linked cohort denominator-plus files to Parquet.
 Usage:
   python parse_all_linked_years.py                     # default: 2005-2015
   python parse_all_linked_years.py --years 2010-2015   # specific range
+  python parse_all_linked_years.py --years 1983-1991   # C8.18 pre-2005 cohort
+  python parse_all_linked_years.py --years 1995-2004   # C8.18 pre-2005 cohort
+
+C8.18 DO step 6a: the pre-2005 cohort year->zip mapping is era-keyed
+(``_zip_name_for_year``). 1983-1991 = ``LinkCO{yy}.zip`` (NO ``US``
+suffix); 1995-2015 = ``LinkCO{yy}US.zip`` (the 2005-2015 behavior is
+byte-preserved — §9-#7-safe). 1992-1994 is the permanent NCHS linkage
+gap (no source file -> fail closed). 2016-2023 uses the period-cohort
+naming and ``parse_linked_cohort_year.py`` (out of this driver's
+scope; the 2005-2023 _raw intermediates already exist on disk).
 """
 
 from __future__ import annotations
@@ -29,6 +39,41 @@ def _parse_years(spec: str) -> list[int]:
     return [int(x.strip()) for x in spec.split(",") if x.strip()]
 
 
+def _zip_name_for_year(year: int) -> str:
+    """The NCHS cohort-linked source-zip basename for ``year``.
+
+    C8.18 DO step 6a (additive; the 2005-2015 ``LinkCO{yy}US.zip`` path
+    byte-preserved — §9-#7-safe):
+
+      * 1983-1991 -> ``LinkCO{yy}.zip``   (NO ``US`` suffix pre-1995)
+      * 1995-2015 -> ``LinkCO{yy}US.zip`` (``US`` suffix 1995+)
+
+    1992-1994 is the permanent NCHS linkage gap (NCHS suspended ALL
+    linkage; no cohort, no period). Pre-1983 is out of the C8.18
+    cohort envelope. 2016-2023 uses the period-cohort naming
+    (``{YYYY}PE{YYYY-1}CO.zip``) parsed by ``parse_linked_cohort_year``
+    — out of this driver's scope. All three -> ValueError (§2 fail
+    closed; never fabricate a source name).
+    """
+    yy = f"{year % 100:02d}"
+    if 1983 <= year <= 1991:
+        return f"LinkCO{yy}.zip"
+    if 1995 <= year <= 2015:
+        return f"LinkCO{yy}US.zip"
+    if 1992 <= year <= 1994:
+        raise ValueError(
+            f"{year} is the permanent 1992-1994 NCHS linkage gap "
+            "(no cohort/period source file exists)"
+        )
+    if year >= 2016:
+        raise ValueError(
+            f"{year} uses the period-cohort naming "
+            f"({year + 1}PE{year}CO.zip); parse via "
+            "parse_linked_cohort_year.py, not this driver"
+        )
+    raise ValueError(f"{year} is out of the C8.18 cohort envelope (>=1983)")
+
+
 def main() -> None:
     repo = Path(__file__).resolve().parents[2]
     p = argparse.ArgumentParser(description=__doc__)
@@ -49,8 +94,12 @@ def main() -> None:
 
     results: list[tuple[int, int, float]] = []
     for year in years:
-        yy = f"{year % 100:02d}"
-        zip_path = args.linked_dir / f"LinkCO{yy}US.zip"
+        try:
+            zip_name = _zip_name_for_year(year)
+        except ValueError as e:
+            print(f"SKIP {year}: {e}", file=sys.stderr)
+            continue
+        zip_path = args.linked_dir / zip_name
         out_path = args.out_dir / f"linked_{year}_denomplus.parquet"
 
         if not zip_path.is_file():

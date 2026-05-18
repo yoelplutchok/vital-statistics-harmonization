@@ -1,6 +1,70 @@
-# STATUS — last updated 2026-05-20T02:00:00Z
+# STATUS — last updated 2026-05-21T12:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T12:00:00Z — **C8.18 DO step 6 PRE-FLIGHT + DO step 6a close** — DO step 6 decomposed → **6a / 6a-RECWT / 6b**; the additive `parse_all_linked_years._zip_name_for_year` pre-2005 year→zip mapping (1983-1991=`LinkCO{yy}.zip`/1995-2015=`LinkCO{yy}US.zip`; 2005-2015 byte-preserved; gap/pre-1983/2016+ fail-closed) + a NEW `DESIGN: tracks-current-state` SMOKE harness (17 tests incl. the **§7-fixed CHUNKED `run_parse`** at the keyless 1983-1988 den→num boundary on real `LinkCO83`/`LinkCO88` — the chunked production path the 5c-iii self-check #2 flagged, now closed at SMOKE scale; RED→GREEN §9-#9) + the full-file parse of the 19 pre-2005 cohort zips → gitignored `linked_{year}_denomplus.parquet` _raw + the L9-sourced **19-year guide control totals** (den/num File "Record count" + by-occurrence + by-residence, read off the SHA-anchored cohort guide PDFs) → **95 additive rows** in `external_validation_targets_v3_linked.csv` (2005-2023 byte-exact preserved) + the **H6 byte-exact parser-conservation VERIFY** (parsed `_raw` den/num == guide File "Record count", byte-exact, ALL parsed years; the §7-fixed chunked `run_parse` proven LOSSLESS at full scale — the 5b "Lossless" claim now holds) + **a binding §7 #4/#13 + §8 halt-and-ask** (the **1983-1984** cohort denominator is a documented 50%-of-births-in-5-non-VSCP-areas weighted sample → the 5c-iii `record_weight`=NULL makes the 1983-1984 IMR ~9% biased vs published; a latent defect in completed 5c-iii work; surfaced via `AskUserQuestion` with 3 options + the defect explicitly disclosed → user delegated judgment → **Option A fix-the-root-cause**) + the §7 scope **refined 1983-1988 → 1983-1984 ONLY**; **ZERO canonical parquet/`harmonized_schema.csv`/`field_specs.py` mutation** (11/11 gate parquet SHAs byte-exact)
+
+C8.18 DO step 6 PRE-FLIGHT (the 6→6a/6b decomposition; 10/10 5c-iii forward-HALTs re-verified; 11/11 gate SHAs byte-exact; pytest **303P+1S+1XF**/401.62s baseline) + **DO step 6a SHIPPED** under the five-phase discipline. DO step 6 RE-DECOMPOSED → **6a (this) / 6a-RECWT / 6b** at the DO-step-6a §7 snapshot (the 5→5a/5b/5c established precedent). The §7/§8 halt-and-ask was **performed + satisfied** (the binding KICKOFF/§7/§9-#3/anti-pattern-#7 discipline — I stated at kickoff I would halt-and-ask on any §7 gate regardless of the standing authorization, HALT 7 especially; it fired exactly as the 5c-iii receipt designed). Full narrative: `RECEIPTS/C8.18_step6a_2026-05-21T12-00-00Z.md` + `PRE_FLIGHT_LOG.md` 2026-05-21T00:00:00Z + the 12:00:00Z addendum + `DECISION_LOG.md` 2026-05-21T12:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 + C8.17 COMPLETE (2 of 7); C8.18 IN PROGRESS** (DO 1-2, 3/3a/3b, 4/4a/4b/4c, 5→5a/5b/5c, 5c→5c-i/5c-ii(→5c-ii-a/5c-ii-b)/5c-iii ALL closed → the full cohort 1983-2004 harmonize map complete; **DO step 6 decomposed → 6a (CLOSED this session) / 6a-RECWT (NEXT) / 6b**; then DO step 7 + tag `C8.18-complete`). The linked product remains v3 (2005-2023); the v3→v4 1983-2023 re-harmonize is DO step 6b. Cumulative Phase C ≈ 36 of 51-71 (cap 86 intact).
+
+### What was done this session (C8.18 DO step 6 PRE-FLIGHT + DO step 6a)
+
+1. Kickoff handshake (a)-(d); user authorized "proceed and make all relevant decisions by yourself in the best way"; I stated DO step 6 mutates canonical state so I would still halt-and-ask on any §7 gate (HALT 7 especially).
+2. PRE-FLIGHT (2026-05-21T00:00:00Z, before any DO mutation; L10-safe): 10/10 5c-iii forward-HALTs re-verified; 11/11 gate parquet SHAs byte-exact; canonical pytest `303 passed, 1 skipped, 1 xfailed in 401.62s`; Convention-3 Field-value snapshot of the `harmonized_schema.csv` HALT-6 rows + the (G) finding (no pre-2005 validation targets) + the (H) finding (`parse_all_linked_years` hard-codes the 1995+ naming) → DO step 6 decomposed → 6a/6b.
+3. SMOKE (§9-#9): NEW `test_linked_do6a_parse_smoke.py` authored FIRST → RED (ImportError) → GREEN **17/17** incl. the §7-fixed CHUNKED `run_parse` den→num boundary on real `LinkCO83`/`LinkCO88` (the 5c-iii self-check #2 residual closed at SMOKE scale).
+4. DO step 6a: the additive `_zip_name_for_year` driver extension + the full-file parse of the 19 pre-2005 cohort zips → gitignored `_raw` + the L9 sourcing of all 19 years' guide control totals → 95 additive validation-CSV rows.
+5. The H6 byte-exact parser-conservation VERIFY: parsed `_raw` den/num == guide File "Record count" byte-exact, ALL parsed years (1983-1991 + 1995-1999 at receipt; 2000-2004 finishing in background, identical pattern, re-verified at 6b); zero silent drops (the §7-fixed chunked `run_parse` LOSSLESS at full scale).
+6. **§7 #4/#13 + §8 halt-and-ask**: the 1983-1984 denominator is a documented 50%-non-VSCP weighted sample (guide den Record count ≠ by-occurrence; 1985-2004 == full files) → the 5c-iii `record_weight`=NULL makes the 1983-1984 IMR ~9% biased — a latent defect in completed 5c-iii work. Surfaced via `AskUserQuestion` (airtight finding + 3 options + the defect disclosed); user delegated judgment → **Option A (fix the root cause)** → the **6a-RECWT** sub-step. §7 scope refined 1983-1988 → **1983-1984 only**. The 5c-iii `record_weight`=NULL decision superseded for 1983-1984 (§3/§11).
+7. RECEIPT + DECISION_LOG + PRE_FLIGHT_LOG addendum + this STATUS appended; commit (no tag).
+
+### Last completed step
+
+C8.18 DO step 6a (this session). Single commit ships: `parse_all_linked_years.py` (additive `_zip_name_for_year` + docstring + gap-skip guard; 2005-2015 byte-preserved), `natality/tests/test_linked_do6a_parse_smoke.py` (NEW; 17 tests; `DESIGN: tracks-current-state`), `external_validation_targets_v3_linked.csv` (+95 additive pre-2005 rows; existing 2005-2023 byte-exact; 62→157 lines), `PRE_FLIGHT_LOG.md` (the 6 PRE-FLIGHT + the 6a §7 addendum), `RECEIPTS/C8.18_step6a_…`, `DECISION_LOG.md` 2026-05-21T12:00:00Z, this STATUS. **Zero canonical parquet/`harmonized_schema.csv`/`field_specs.py`/existing-validation-row mutation.** **No tag** (intermediate; `C8.18-pre-do`@`6632a15` rollback anchor; `C8.18-complete` is DO-step-7-only). The 19 `_raw` parquets are gitignored intermediates (idempotent/reproducible).
+
+### In-progress
+
+The background full-file parse of 2000-2004 (`PID 43935`; idempotent/resumable; gitignored `_raw`). 1983-1999 byte-exact done; 2000-2004 finishing — re-verified at 6b's full §15.D VERIFY regardless.
+
+### Next planned task
+
+**C8.18 DO step 6a-RECWT — the bounded 1983-1984 RECWT root-cause fix** (its OWN PRE-FLIGHT — it mutates `field_specs.py` canonical substrate + reopens the superseded 5c-iii `record_weight`=NULL for 1983-1984). Re-derive the correct 1983-1984 cohort-den RECWT byte position from the `LinkCO83/84Guide.pdf` record-layout sections (3a-class; the 3a `RECWT@91` is WRONG per the 5c-iii (A′) finding) + the soft-flag (ll) per-year 1983-1984 non-anchor re-verification; edit `field_specs.py`; reopen `_harmonize_cohort_1983_1988` `record_weight` (weighted 1983-1984; 1985-1988 RECWT≈1); re-parse 1983-1984; VERIFY the WEIGHTED den/IMR == guide by-occurrence/by-residence / NCHS-published (tolerance) — §7 halt if still divergent. Then **DO step 6b** (re-harmonize 1983-2023 → v4 + `harmonized_schema.csv` HALT 6 (a)-(f) + v3→v4 bump + Convention-2/L17 re-pins + the full §15.D VERIFY + the D.4 framing), then DO step 7 (docs/metadata; tag `C8.18-complete`). Entry cheap-check: the 10 forward-looking HALTs in `RECEIPTS/C8.18_step6a_2026-05-21T12-00-00Z.md`.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking DO step 6a-RECWT entry. The **§7/§8 halt-and-ask was performed + satisfied this session** (the 1983-1984 weighted-sample latent defect in completed 5c-iii work surfaced via `AskUserQuestion` with 3 options + the defect explicitly disclosed; the user delegated judgment; **Option A (fix the root cause)** applied → the 6a-RECWT sub-step). A NEW §7 halt-and-ask is required only if 6a-RECWT's corrected weighted figures still diverge from published. The §15.D model-clarification `[plan-update]` (soft-flag (ii)) remains proposed-not-applied (§11 human-merge; now also folds the **6→6a/6a-RECWT/6b re-decomposition + the §7-finding model note**). The LESSONS 2026-05-20 §8-row-sharpening (L13-extension year-axis + H6 heterogeneous-union) is owed §11 human-merge. On-disk PRE_FLIGHT_LOG/DECISION_LOG/RECEIPTs/LESSONS authoritative meanwhile.
+
+**Carried-forward (Phase D):** C8.13 PROPOSE-EDIT manuscript-timing; manuscript Coverage re-paragraph = **D.4** (natality 1968-2024 + forthcoming linked 1983-2023, incl. the keyless 1983-1988 within-era structural difference [IMR = count(num)/count(den), NOT a per-birth `infant_death` filter] **+ the NEW 1983-1984 50%-non-VSCP weighted-sample note** [the harmonized 1983-1984 uses RECWT per 6a-RECWT to reproduce published cohort figures]).
+
+**Open soft-flags (28; 0 NEW, (ll) being consumed at 6a-RECWT):** **(ll) CONSUMING at 6a-RECWT**: the RECWT@91 byte-instability + the full per-year 1983-1984 (spot 1985-1988) non-anchor byte-stability re-verification — elevated from optional to REQUIRED by the §7 finding (the 6a-RECWT root-cause fix). **(ii) REFINED**: now also folds the 6→6a/6a-RECWT/6b re-decomposition + the §7-finding model note — proposed-not-applied (§11 human-merge). **(gg) carry**: composite-block leaf decomposition stays conservatively NULL → 6b/post-C8.18. **(kk) carry**: pytest runtime advisory band (401.62s baseline this PRE-FLIGHT; the COUNT 303P+1S+1XF is the gate). **(jj) carry**: README 3-dir/"56 passed" stale. (hh)/(cc)/(dd)/(ee)/(bb)/(aa)/(w)/(x)/(z)/(u) carry.
+
+### Forward-looking HALTs for C8.18 DO step 6a-RECWT PRE-FLIGHT (Convention 4)
+
+Full enumeration (10) in `RECEIPTS/C8.18_step6a_2026-05-21T12-00-00Z.md`. Headlines: (1) `C8.18-pre-do`@`6632a15`; HEAD = the 6a commit; (2) 11 gate parquet SHAs unchanged; (3) pytest 303P+1S+1XF + the new 17-test harness (re-baseline); (4) **6a-RECWT scope** = re-derive the correct 1983-1984 RECWT byte from the guide record-layouts (the 3a @91 is WRONG per (A′)) + soft-flag (ll) per-year re-verify + `field_specs.py` corrective edit + reopen `_harmonize_cohort_1983_1988` `record_weight` (weighted 1983-1984) + re-parse 1983-1984 + the WEIGHTED-VERIFY vs the guide by-occurrence/by-residence (§7 halt if still divergent); its OWN PRE-FLIGHT (mutates `field_specs.py` + reopens a 5c-iii decision); (5) the 5c-iii `record_weight`=NULL is **SUPERSEDED for 1983-1984** (correct 1985-2004); (6) the H6 gate + the L9 control totals are state-on-disk (`external_validation_targets_v3_linked.csv` 1983-2004 rows; do NOT re-source; confirm the 2000-2004 parse finished + byte-exact); (7) DO step 6b after 6a-RECWT (re-harmonize → v4 + schema/version + the full §15.D VERIFY + D.4); (8) soft-flag (ll) consumed at 6a-RECWT, (gg) carries; (9) L17 grep-scope cohort/linked harnesses for v3/v4/schema pins at 6a-RECWT/6b; (10) the §7/§8 halt-and-ask satisfied (do NOT re-halt the same finding; 6a-RECWT EXECUTES Option A; re-halt only if the corrected weighted figures still diverge).
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (`~/Desktop/fetal-death-harmonization-build/`; UNCHANGED).
+- Natality v3.0.0 `acb5c48a…`/`c8a740eb…`; `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED).
+- Linked (cohort, v3; 2005-2023) `9b828a4d…` (UNCHANGED; → v4 1983-2023 at the C8.18 DO step 6b re-harmonize).
+- Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED).
+- 19 pre-2005 cohort `_raw` parquets at `~/Desktop/natality-harmonization/output/linked/linked_{1983..1991,1995..1999}_denomplus.parquet` (gitignored; 2000-2004 finishing). NEW git-tracked this step: `parse_all_linked_years.py` (additive), `test_linked_do6a_parse_smoke.py` (new), `external_validation_targets_v3_linked.csv` (+95 additive rows), `PRE_FLIGHT_LOG`/`DECISION_LOG`/1 RECEIPT/this STATUS. **No build-side canonical change** (11/11 gate parquet SHAs byte-exact).
+
+### Notes for next session
+
+- **C8.18 DO step 6a is CLOSED.** The pre-2005 parse substrate + the §7-fixed CHUNKED `run_parse` (SMOKE-verified + proven byte-exact lossless at full scale — the 5b "Lossless" claim now holds) + the 19-guide L9 control totals + the H6 byte-exact gate + the §7 finding/Option-A/re-decomposition are state-on-disk. The §7 weighting issue is bounded to **1983-1984 only**.
+- Next: **DO step 6a-RECWT** (the bounded 1983-1984 RECWT re-derivation + weight fix; its own PRE-FLIGHT — it mutates `field_specs.py` + reopens the superseded 5c-iii `record_weight`=NULL for 1983-1984), then **6b** (re-harmonize → v4 + schema/version + the full §15.D VERIFY + D.4), then DO step 7.
+- §2 cheap-before-expensive + the binding §7/§8 halt-and-ask governed 6a (the SMOKE caught the §7-chunked-path residual at the cheap-check; the L9 cheap read of the guide methodology caught the 1983-1984 weighted-sample defect BEFORE the expensive 6b re-harmonize; the §7/§8 condition surfaced + halt-and-asked + user-judged + scoped before the root-cause fix). Carry it.
+- soft-flag (ii) §11 human-merge + the LESSONS 2026-05-20 §8-row-sharpening owed the human; on-disk logs authoritative meanwhile.
+- `/tmp/c8_18_s6/*` scratch (gate-SHA + pytest baseline + the parse log + the L9 extractor) is OS-cleanable + reproducible. The background parse `PID 43935` finishes 2000-2004 (idempotent; confirm at 6a-RECWT entry).
 
 ---
 
