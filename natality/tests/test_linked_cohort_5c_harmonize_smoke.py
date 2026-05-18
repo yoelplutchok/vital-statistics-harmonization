@@ -30,9 +30,11 @@ canonical) vs ValueError (the 1992-1994 permanent gap / pre-1983); the
 harmonized batch has schema == the extended ``OUT_SCHEMA`` with the 2
 NEW within_era ICD-9 columns present and the ICD-10 cause columns
 **null for the ICD-9 era** (the §15.D DO-step-1 default-null +
-revision-tagged decision); an unimplemented cohort era *raises*
-``NotImplementedError`` (fail-closed, L3 — 5c-i is scoped to 1989-1991;
-1995-2004 = 5c-ii, the keyless 1983-1988 = 5c-iii); the cohort
+revision-tagged decision); the 1992-1994 permanent gap / pre-1983
+*raises* ``ValueError`` (fail-closed, L3 — ALL cohort eras 1983-1991 +
+1995-2004 are now implemented at 5c-i/5c-ii-a/5c-ii-b/5c-iii; L17
+tracks-current-state, the `(1985,"5c-iii")` keyless pin reframed in the
+5c-iii commit per §4.2.1/Convention-2); the cohort
 education/race recodes are byte-identical to the natality V1-core
 siblings (H7 sibling-parity, asserted by feeding the SAME array to
 both). No mutable annotation value is pinned (the planted synthetic
@@ -53,7 +55,7 @@ aliases the cohort raw names onto the natality V1-core era recodes
 Tier 0 (synthetic, always runs): the ``_cohort_era`` partition + L3
 negatives; a synthetic 1989-1991 cohort RecordBatch harmonized
 end-to-end (planted anchors recovered; ICD-9 default-null verified;
-fail-closed on the 5c-ii/5c-iii eras); the H7 sibling-parity recode
+fail-closed on the 1992-1994 gap / pre-1983); the H7 sibling-parity recode
 equivalence vs ``harmonize_v1_core``.
 
 Tier 1 (real data, skipif the gitignored out-of-tree cohort zip is
@@ -266,33 +268,34 @@ def test_tier0_1989_1991_reference_era_end_to_end():
     assert d["cause_recode_130"] == [None, None]           # NULL for ICD-9 era
 
 
-@pytest.mark.parametrize(
-    "year,era_phase",
-    [(1985, "5c-iii")],
-)
-def test_tier0_unimplemented_cohort_eras_failclosed(year, era_phase):
+@pytest.mark.parametrize("year", [1992, 1993, 1994, 1979])
+def test_tier0_gap_pre1983_failclosed(year):
     """L3 / §2 fail-closed: 5c-i implements 1989-1991; 5c-ii-a adds
-    1995-2002; 5c-ii-b adds 2003 + 2004 (the 2003-rev transition; see
-    test_linked_cohort_5cii_a/5cii_b_harmonize_smoke). The ONLY
-    still-unimplemented cohort era — the keyless 1983-1988 link_segment
-    encoding (5c-iii) — must RAISE NotImplementedError (so a premature
-    DO step 6 on those years halts loudly rather than silently
-    mis-harmonizing).
+    1995-2002; 5c-ii-b adds 2003 + 2004; 5c-iii adds the keyless
+    1983-1988 link_segment encoding (the LAST unimplemented cohort
+    era). ALL cohort eras (1983-1991 + 1995-2004) are now implemented
+    — NO NotImplementedError is raised for any real cohort year. The
+    genuine residual §2 fail-closed is the `_cohort_era` ValueError for
+    the 1992-1994 permanent NCHS linkage gap / pre-1983 (raised
+    UPSTREAM, before the dispatcher) — a premature DO step 6 on those
+    years halts loudly rather than silently mis-harmonized through the
+    2005+ body.
 
     L17 / Convention-2 / §4.2.1 `tracks-current-state` Edit, bundled in
-    the 5c-ii-b commit: the `(2003,"5c-ii-b")` + `(2004,"5c-ii-b")`
-    pins went stale when 5c-ii-b implemented 2003/2004 (they now
-    harmonize, not raise) — sibling of the 5c-ii-a-commit trim of the
-    `(1995,"5c-ii")` + `(2002,"5c-ii")` pins. Stale-pin maintenance,
-    NOT a regression (PRE_FLIGHT_LOG 2026-05-19T20:00:00Z HALT 9)."""
+    the 5c-iii commit: the `(1985,"5c-iii")` keyless pin went stale
+    when 5c-iii implemented 1983-1988 (it now harmonizes, not raises)
+    — sibling of this harness's own 5c-ii-a/5c-ii-b-commit trims of the
+    `(1995,"5c-ii")`/`(2003,"5c-ii-b")`/`(2004,"5c-ii-b")` pins.
+    Stale-pin maintenance, NOT a regression (PRE_FLIGHT_LOG
+    2026-05-20T00:00:00Z HALT 9)."""
     # a 1-row batch with just `year` (+ a token col) is enough to reach
-    # the cohort-era dispatch (the NotImplementedError fires before any
-    # field access for the unconfigured eras)
+    # the `_cohort_era` ValueError (raised before any field access for
+    # the 1992-1994 gap / pre-1983)
     batch = pa.RecordBatch.from_arrays(
         [pa.array(["x"], type=pa.string()), pa.array([year], type=pa.int64())],
         names=["TOKEN", "year"],
     )
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         _harmonize_batch(batch, year)
 
 

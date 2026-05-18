@@ -329,6 +329,22 @@ OUT_SCHEMA = pa.schema([
     ("cause_recode_61", pa.int16()),
     ("manner_of_death", pa.int8()),
     ("record_weight", pa.float64()),
+    # C8.18 DO step 5c-iii: the keyless 1983-1988 cohort-linked era is a
+    # two-file construction (the RESOLVED 5b model) — a births-only
+    # aggregate denominator + a self-contained linked-infant-death
+    # numerator, with NO record-level public-use key. ``link_segment``
+    # preserves that den/num provenance into the harmonized parquet
+    # (the 5b receipt self-check #6 mandate: dropping it loses the
+    # keyless-era denominator/numerator distinction). Value "den"/"num"
+    # for 1983-1988; NULL for every other era (single denominator-plus /
+    # 2005+ — there is exactly one segment; faithful "not applicable").
+    # This is the intended v3->v4 ADDITIVE schema extension (the 5c-i
+    # within_era-ICD-9-columns precedent); the harmonized_schema.csv row
+    # + the v3->v4 version bump are DO step 6 (Anti-Pattern #6). The
+    # cohort 1983-1988 IMR is count(num)/count(den) per stratum — NOT a
+    # per-birth ``infant_death`` filter (the documented within-era
+    # structural difference = Phase-D D.4).
+    ("link_segment", pa.string()),
 ])
 
 
@@ -493,6 +509,48 @@ def _mrace_detail_to_bridged4(
         pc.and_(pc.greater_equal(mrace, 18), pc.less_equal(mrace, 68)),
         pa.scalar(4, type=int8), out,
     )
+    return out
+
+
+def _mrace1digit_to_bridged4(
+    mrace: pa.Array | pa.ChunkedArray,
+) -> pa.Array | pa.ChunkedArray:
+    """Map the 1968-1988 (1968/1978-revision-certificate era) 1-DIGIT
+    detail race code to the approximate bridged 4-category: 1=White,
+    2=Black, 3=AIAN, 4=Asian/PI; 7 (residual "Other nonwhite") and 9
+    (not stated) -> null.
+
+        0 = Other Asian/PI        -> 4
+        1 = White                 -> 1
+        2 = Black                 -> 2
+        3 = AmIndian/Aleut/Eskimo -> 3
+        4 = Chinese               -> 4
+        5 = Japanese              -> 4
+        6 = Hawaiian              -> 4
+        7 = Other nonwhite        -> null
+        8 = Filipino              -> 4
+        9 = Not stated            -> null
+
+    Byte-identical to ``harmonize_v1_core._mrace1digit_to_bridged4``
+    (H7 fetal-death/natality sibling-parity on the shared
+    ``maternal_race_bridged`` concept — the cohort-linked 1983-1988
+    ``DMRACE`` is the SAME 1-digit pre-1989 detail-race frame as the
+    natality pre-1989 ``MRACE``; asserted equal in
+    ``test_linked_cohort_5ciii_harmonize_smoke.py``). The 7/9 -> null
+    integrity-over-false-categorization convention matches the V2
+    ``_mrace_detail_to_bridged4`` 09->null choice + the fetal-death
+    V3b B3 1982-1988 1-digit recode. Duplicated locally, not imported,
+    to match this file's existing helper-duplication pattern.
+    """
+    int8 = pa.int8()
+    null_i8 = pa.scalar(None, type=int8)
+    out = pc.if_else(pc.is_null(mrace), null_i8, null_i8)
+    out = pc.if_else(pc.equal(mrace, 1), pa.scalar(1, type=int8), out)
+    out = pc.if_else(pc.equal(mrace, 2), pa.scalar(2, type=int8), out)
+    out = pc.if_else(pc.equal(mrace, 3), pa.scalar(3, type=int8), out)
+    for code in (0, 4, 5, 6, 8):
+        out = pc.if_else(pc.equal(mrace, code), pa.scalar(4, type=int8), out)
+    # 7 (residual "Other nonwhite") and 9 (not stated) -> null (initial)
     return out
 
 
@@ -1107,6 +1165,242 @@ def _harmonize_cohort_2003_2004(batch: pa.RecordBatch, year: int) -> pa.Table:
     )
 
 
+def _harmonize_cohort_1983_1988(batch: pa.RecordBatch, year: int) -> pa.Table:
+    """Harmonize one batch of the keyless 1983-1988 two-file cohort
+    construction into the (extended) OUT_SCHEMA — C8.18 DO step 5c-iii.
+
+    1983-1988 carry NO record-level public-use key (the C8.18 DO step
+    3b finding). The RESOLVED 5b model (state-on-disk; do NOT re-open)
+    yields the lossless union of two segments discriminated by the
+    parser-injected ``link_segment`` column:
+
+      * ``link_segment="den"`` — the aggregate birth denominator (every
+        91-byte ``LinkCO{yy}USden.dat`` record; ALL live births, one
+        row per birth, NO death section). Harmonized ``infant_death``
+        = **NULL/unknown** (un-linkable per-record — the documented
+        within-era structural difference = Phase-D D.4); the death-side
+        columns NULL.
+      * ``link_segment="num"`` — the self-contained linked-infant-death
+        set (locs 1-91 the deceased infant's own birth covariates +
+        locs 194-500 the ICD-9 mortality section). Harmonized
+        ``infant_death`` = **True**; the death-side from the numerator.
+
+    The cohort 1983-1988 IMR is ``count(link_segment="num") /
+    count(link_segment="den")`` per stratum — NOT a per-birth
+    ``infant_death`` filter (the 1989+ form); the encoding MUST NOT
+    fabricate a record-level join (there is no key). ``link_segment``
+    carries the den/num provenance into the v4 parquet (the 5b
+    self-check #6 mandate).
+
+    Birth-side (the shared locs 1-91 natality section, present on BOTH
+    segments) ALIASES the cohort raw names onto the natality V1-core
+    ``is_pre1989`` 1968/1978-revision recodes (H7 sibling-parity —
+    reuse ``_dmeduc_years_to_cat4`` / ``_month_to_trimester`` /
+    ``_pldel_to_facility`` + the NEW ``_mrace1digit_to_bridged4`` (the
+    1-digit ``DMRACE``); do NOT re-derive). Authored as a SEPARATE
+    function (not a shared helper) so the 5c-i 1989-1991 inline body +
+    the 5c-ii-a ``_harmonize_cohort_1995_2002`` + the 5c-ii-b
+    ``_harmonize_cohort_2003_2004`` stay byte-untouched (§9-#7; this
+    file's explicit-per-era helper-duplication pattern).
+
+    Deltas / decisions (PRE_FLIGHT_LOG 2026-05-20T00:00:00Z (A)-(F)):
+      * ``certificate_revision`` = "unrevised_1968" (H7 parity with
+        natality ``is_pre1989`` ``pre1968_s``).
+      * birth order = the NCHS-native ``LIVORD9``/``TOTORD9`` recode-9
+        (present 1983-1988, unlike 1989-1991 → faithful + H7-parity
+        with natality is_pre1989 native LBORD_R9/TBORD_R9; NOT the
+        ``_detail_order_to_recode9`` synthesis).
+      * ``marital_status`` = ``DMAR`` (the LINKED 1983-1988 file
+        carries it — unlike natality's pre-1989 public-use file;
+        faithful + sibling-consistent with fetal-death 1982-1988).
+      * within_era ICD-9 (cohort birth-year 1983-1988 <= 1998; §15.D
+        DO step 1 / the 5c-i resolved shape): num rows ->
+        ``underlying_cause_icd9`` = UCOD, ``cause_recode_61`` =
+        UCODR61; the ICD-10 cols NULL. ``age_at_death_days`` NULL
+        (the 1983-1988 numerator carries NO AGED — only the AGER5
+        recode; faithful "not on this file"). ``manner_of_death``
+        NULL (no MANNER in the 1983-1988 numerator).
+      * **``record_weight`` conservatively NULL for ALL 1983-1988**
+        (the Convention-3 (A') finding: ``RECWT@91`` is NOT
+        byte-stable across 1983->1988 — clean "1" for 1983/1985,
+        == ``DMRACE@57`` 5000/5000 for 1988; the faithful no-patch
+        choice — the 5c-i/1989-1991 NULL-record_weight precedent; the
+        cohort IMR = num/den does not use it; ``field_specs.py`` left
+        UNTOUCHED — the full per-year (1984-1988) non-anchor
+        re-verification is the DO-step-6 NCHS-per-year-cohort-count
+        VERIFY, soft-flag (ll)).
+      * Hispanic (``hispanic_origin``/``maternal_hispanic``/
+        ``father_hispanic``/``maternal_race_ethnicity_5``)
+        conservatively NULL (H7 parity with natality ``is_pre1989``;
+        the 2-digit ``ORMOTH``/``ORFATH`` crosswalk is non-byte-stable
+        & unverified — 1983 all "88", 1988 "00"-dominant → soft-flag
+        (gg) DO step 6). Composite multi-field blocks
+        (DELMTH/MEDRISK/OBSTETRC/LABOR/ABNORMNB/ENTITY/RECORDAX) +
+        smoking/diabetes/hypertension/preterm_recode3/payment/
+        prior_cesarean stay conservatively NULL (soft-flag (gg) leaf
+        decomposition = DO step 6; the natality is_pre1989 / 5c-i /
+        5c-ii conservative-mapping precedent).
+    """
+    if _cohort_era(year) != "1983_1988":
+        raise ValueError(
+            f"_harmonize_cohort_1983_1988 is era-scoped to 1983-1988; got "
+            f"year {year} (era {_cohort_era(year)!r}). The sanctioned entry "
+            f"is the _harmonize_cohort_batch dispatch (§2 fail-closed — "
+            f"never silently mis-harmonize a wrong-era batch)."
+        )
+
+    n = batch.num_rows
+    null_s = pa.scalar(None, type=pa.string())
+    null_i8 = pa.scalar(None, type=pa.int8())
+    null_i16 = pa.scalar(None, type=pa.int16())
+
+    def opt_str(name: str) -> pa.Array:
+        c = _get_col_optional(batch, name)
+        return _to_str_or_null(c) if c is not None else pa.nulls(n, pa.string())
+
+    def opt_int(name: str, t: pa.DataType) -> pa.Array:
+        c = _get_col_optional(batch, name)
+        return _to_int_or_null(c, t) if c is not None else pa.nulls(n, t)
+
+    # Default EVERY OUT_SCHEMA column to a typed null; override the
+    # fields the 1983-1988 two-file construction actually carries.
+    out: dict[str, pa.Array] = {
+        f.name: pa.nulls(n, type=f.type) for f in OUT_SCHEMA
+    }
+
+    year_arr = pc.cast(_get_col(batch, "year"), pa.int16())
+    out["data_year"] = year_arr
+    out["certificate_revision"] = pc.if_else(
+        pc.is_null(year_arr), null_s, pa.scalar("unrevised_1968"),
+    )
+
+    # The parser-injected segment discriminator (RESOLVED 5b model).
+    # ``_get_col`` (required, NOT optional): a 1983-1988 batch MUST
+    # carry link_segment — its absence is a §2 fail-closed error, not a
+    # silently-null column.
+    seg = _to_str_or_null(_get_col(batch, "link_segment"))
+    is_num = pc.equal(seg, pa.scalar("num"))
+    out["link_segment"] = seg
+
+    restatus = opt_int("RESSTAT", pa.int8())
+    out["residence_status"] = restatus
+    out["is_foreign_resident"] = pc.equal(restatus, pa.scalar(4, type=pa.int8()))
+
+    out["maternal_age"] = opt_int("DMAGE", pa.int16())
+    # NCHS-native recode-9 (LIVORD9@88 / TOTORD9@85) — present
+    # 1983-1988 (unlike the 1989-1991 detail-only era); H7 parity with
+    # the natality is_pre1989 native LBORD_R9/TBORD_R9.
+    out["live_birth_order_recode"] = opt_int("LIVORD9", pa.int8())
+    out["total_birth_order_recode"] = opt_int("TOTORD9", pa.int8())
+    out["marital_status"] = opt_int("DMAR", pa.int8())
+
+    # Race: the 1-digit DMRACE (0-9) → approximate bridged-4 (H7
+    # sibling-parity with natality is_pre1989 / fetal-death V3b B3).
+    mrace_1d = opt_int("DMRACE", pa.int16())
+    out["maternal_race_bridged"] = _mrace1digit_to_bridged4(mrace_1d)
+    out["maternal_race_detail"] = opt_str("DMRACE")
+    out["race_bridge_method"] = pc.if_else(
+        pc.is_null(year_arr), null_s, pa.scalar("approximate_pre2003"),
+    )
+    # maternal_race_ethnicity_5 needs Hispanic status → NULL pre-1989
+    # (the 2-digit ORMOTH crosswalk is unverified/non-byte-stable;
+    # natality is_pre1989 parity; soft-flag (gg) DO step 6).
+
+    out["maternal_education_cat4"] = _dmeduc_years_to_cat4(
+        opt_int("DMEDUC", pa.int16())
+    )
+    out["father_education_cat4"] = _dmeduc_years_to_cat4(
+        opt_int("DFEDUC", pa.int16())
+    )
+
+    pn_month = opt_int("DMPCB", pa.int16())
+    out["prenatal_care_start_month"] = pn_month
+    out["prenatal_care_start_trimester"] = _month_to_trimester(pn_month)
+    out["prenatal_visits"] = opt_int("NPREVIS", pa.int16())
+
+    out["plurality_recode"] = opt_int("DPLURAL", pa.int8())
+
+    csex = opt_int("CSEX", pa.int8())
+    out["infant_sex"] = pc.if_else(
+        pc.equal(csex, pa.scalar(1, type=pa.int8())), pa.scalar("M"),
+        pc.if_else(pc.equal(csex, pa.scalar(2, type=pa.int8())),
+                   pa.scalar("F"), null_s),
+    )
+
+    # Gestation: DGEST → keep the harmonized domain 17-47 ∪ {99}
+    # (H7 parity with natality is_pre1989 DGESTAT clip; the harmonized
+    # gestational_age_weeks domain is consistent across products).
+    gw = opt_int("DGEST", pa.int16())
+    _keep = pc.or_(
+        pc.fill_null(pc.and_(
+            pc.greater_equal(gw, pa.scalar(17, type=pa.int16())),
+            pc.less_equal(gw, pa.scalar(47, type=pa.int16())),
+        ), False),
+        pc.fill_null(pc.equal(gw, pa.scalar(99, type=pa.int16())), False),
+    )
+    gw = pc.if_else(_keep, gw, pa.scalar(None, type=pa.int16()))
+    out["gestational_age_weeks"] = gw
+    out["gestational_age_weeks_source"] = pc.if_else(
+        pc.is_null(gw), null_s, pa.scalar("lmp"),
+    )
+
+    out["birthweight_grams"] = opt_int("DBIRWT", pa.int32())
+    out["apgar5"] = opt_int("APGAR5", pa.int16())
+
+    fage = opt_int("DFAGE", pa.int16())
+    fage = pc.if_else(
+        pc.and_(
+            pc.greater_equal(fage, pa.scalar(10, type=pa.int16())),
+            pc.less_equal(fage, pa.scalar(98, type=pa.int16())),
+        ),
+        fage, pa.scalar(None, type=pa.int16()),
+    )
+    out["father_age"] = fage
+
+    out["birth_facility"] = _pldel_to_facility(opt_int("PLDEL", pa.int8()))
+
+    attend = opt_int("BIRATTND", pa.int8())
+    out["attendant_at_birth"] = pc.if_else(
+        pc.equal(attend, pa.scalar(9, type=pa.int8())), null_i8, attend,
+    )
+
+    # === Death-side: the keyless two-segment encoding (RESOLVED 5b
+    # model; the documented within-era structural difference = D.4).
+    # den rows = the aggregate birth denominator → infant_death NULL
+    # (un-linkable per-record). num rows = the self-contained
+    # linked-infant-death set → infant_death True. The death-side is
+    # gated on the segment (explicit — L3-robust + self-documents the
+    # within-era rule; den rows physically lack locs 194-500 anyway).
+    # The 1983-1988 numerator carries NO AGED (only the AGER5 recode)
+    # → age_at_death_days NULL (faithful "not on this file"). ===
+    out["infant_death"] = pc.if_else(
+        is_num, pa.scalar(True), pa.scalar(None, type=pa.bool_()),
+    )
+    # age_at_death_days stays NULL (no AGED field in the 1983-1988
+    # numerator — the dict default).
+    out["age_at_death_recode5"] = pc.if_else(
+        is_num, opt_int("AGER5", pa.int8()), null_i8,
+    )
+    # within_era ICD-9 (cohort birth-year 1983-1988 <= 1998; §15.D DO
+    # step 1 / the 5c-i resolved shape) — the ICD-10 cols stay NULL.
+    out["underlying_cause_icd9"] = pc.if_else(
+        is_num, opt_str("UCOD"), null_s,
+    )
+    out["cause_recode_61"] = pc.if_else(
+        is_num, opt_int("UCODR61", pa.int16()), null_i16,
+    )
+    # underlying_cause_icd10 / cause_recode_130 / manner_of_death /
+    # record_weight stay NULL (the dict default): cohort <= 1998 =
+    # ICD-9; no MANNER in the 1983-1988 numerator; RECWT@91 NOT
+    # byte-stable across 1983-1988 (the Convention-3 (A') finding —
+    # the faithful no-patch conservative-NULL; the 5c-i/1989-1991
+    # NULL-record_weight precedent; soft-flag (ll) DO step 6).
+
+    return pa.Table.from_arrays(
+        [out[f.name] for f in OUT_SCHEMA], schema=OUT_SCHEMA,
+    )
+
+
 def _harmonize_cohort_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
     """Harmonize one batch of a cohort-linked denominator(-plus) parquet
     (year <= 2004) into the (extended) OUT_SCHEMA.
@@ -1123,9 +1417,17 @@ def _harmonize_cohort_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
         2003-vs-2004 deltas pure raw-name aliasing; PRE_FLIGHT_LOG
         2026-05-19T20:00:00Z).
       * the keyless 1983-1988 link_segment den/num one-row-per-birth
-        encoding (5c-iii) RAISES NotImplementedError (§2 fail-closed — a
-        premature DO step 6 on those years halts loudly rather than
-        silently mis-harmonizing).
+        encoding (5c-iii) — `_harmonize_cohort_1983_1988` (the RESOLVED
+        5b two-file construction; the natality V1-core `is_pre1989`
+        1968/1978-revision analog; PRE_FLIGHT_LOG 2026-05-20T00:00:00Z).
+
+    ALL cohort eras (1983-1991 + 1995-2004) are now implemented (DO step
+    5c-i/5c-ii-a/5c-ii-b/5c-iii). The residual §2 fail-closed is the
+    `_cohort_era` ValueError for the 1992-1994 permanent NCHS linkage
+    gap / pre-1983 (raised UPSTREAM, before this dispatcher) + each
+    `_harmonize_cohort_*` function's wrong-era ValueError; a premature
+    DO step 6 on an unconfigured year halts loudly, not silently
+    mis-harmonized.
 
     Birth-side = the cohort raw names ALIASED onto the natality V1-core
     revision recodes (H7 sibling-parity). Death-side = the within_era
@@ -1138,16 +1440,25 @@ def _harmonize_cohort_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
     (the natality is_pre1989 conservative-mapping precedent).
     """
     era = _cohort_era(year)
+    if era == "1983_1988":
+        return _harmonize_cohort_1983_1988(batch, year)
     if era == "1995_2002":
         return _harmonize_cohort_1995_2002(batch, year)
     if era in ("2003", "2004"):
         return _harmonize_cohort_2003_2004(batch, year)
     if era != "1989_1991":
-        raise NotImplementedError(
-            f"C8.18 DO step 5c-i/5c-ii-a/5c-ii-b implement the 1989-1991 "
-            f"+ 1995-2002 + 2003 + 2004 cohort eras; year {year} (era "
-            f"{era!r}) is the keyless 1983-1988 link_segment den/num "
-            f"one-row-per-birth encoding, configured at DO step 5c-iii."
+        # Unreachable for a real cohort year: `_cohort_era` returns
+        # exactly {1983_1988, 1989_1991, 1995_2002, 2003, 2004} for
+        # year <= 2004 (None for >=2005 — guarded in `_harmonize_batch`
+        # before this is called; ValueError for the 1992-1994 gap /
+        # pre-1983). A reach here means a new unconfigured era slipped
+        # in — fail closed loudly (§2; never silently mis-harmonize).
+        raise RuntimeError(
+            f"_harmonize_cohort_batch reached an unconfigured cohort era "
+            f"{era!r} for year {year}; ALL cohort eras (1983-1991 + "
+            f"1995-2004) are implemented and 1992-1994/pre-1983/>=2005 "
+            f"are handled upstream. This is a §2 fail-closed guard — a "
+            f"new era must be wired into _cohort_era + a dispatch branch."
         )
 
     n = batch.num_rows
@@ -1879,6 +2190,15 @@ def _harmonize_batch(batch: pa.RecordBatch, year: int) -> pa.Table:
             pa.nulls(batch.num_rows, type=pa.int16()),    # cause_recode_61
             manner_of_death,
             record_weight,
+            # C8.18 DO step 5c-iii: link_segment is the keyless-1983-1988
+            # den/num discriminator; NULL for the 2005+ single
+            # denominator-plus path (there is exactly one segment). The
+            # 1989-1991/1995-2002/2003-2004 dict-pattern era functions
+            # auto-default it NULL via {f.name: pa.nulls for f in
+            # OUT_SCHEMA}; this 2005+ explicit-list body needs the one
+            # matching entry (the 5c-i ICD-9-columns precedent;
+            # §9-#7-safe — existing 2005-2023 VALUES byte-identical).
+            pa.nulls(batch.num_rows, type=pa.string()),   # link_segment
         ],
         schema=OUT_SCHEMA,
     )

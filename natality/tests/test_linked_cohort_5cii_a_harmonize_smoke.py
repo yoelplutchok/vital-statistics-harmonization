@@ -43,8 +43,10 @@ columns populate per the cohort-birth-year split with the OTHER pair
 null; the 1989-rev recodes are byte-identical to the natality V1-core
 siblings (H7, asserted by feeding the SAME array to both); the
 per-era deltas (RECWT→record_weight present; father_education_cat4
-null; manner_of_death null) hold; 2003/2004 (5c-ii-b) + 1983-1988
-(5c-iii) still RAISE NotImplementedError (fail-closed L3); the
+null; manner_of_death null) hold; the 1992-1994 permanent gap /
+pre-1983 still RAISE ValueError (fail-closed L3 — ALL cohort eras now
+implemented at 5c-iii; L17 tracks-current-state, the `[1983,1985,1988]`
+keyless pin reframed in the 5c-iii commit per §4.2.1/Convention-2); the
 5c-i-verified 1989-1991 path is unperturbed (regression-lock). No
 mutable annotation value is pinned (planted synthetic inputs are
 fixed; reclens/field names are fixed NCHS facts).
@@ -250,23 +252,28 @@ def test_tier0_icd10_subera_boundary(year):
 
 
 # --------------------------------------------------------------------------
-# Tier 0: fail-closed — the keyless 1983-1988 (5c-iii) still RAISES
-# (L17 tracks-current-state: 2003/2004 IMPLEMENTED at 5c-ii-b — the
-# pins trimmed in the SAME 5c-ii-b commit per §4.2.1/Convention-2/L17)
+# Tier 0: residual §2 fail-closed = the 1992-1994 gap / pre-1983
+# (L17 tracks-current-state: 5c-iii IMPLEMENTED the keyless 1983-1988 —
+# the `[1983,1985,1988]` NotImplementedError pin went stale; reframed
+# in the SAME 5c-iii commit per §4.2.1/Convention-2/L17 — sibling of
+# this harness's own 5c-ii-b-commit `[2003,2004,…]`→`[1983,1985,1988]`
+# trim. ALL cohort eras 1983-1991 + 1995-2004 are now implemented.)
 # --------------------------------------------------------------------------
 
-@pytest.mark.parametrize("year", [1983, 1985, 1988])
-def test_tier0_unimplemented_eras_still_failclosed(year):
+@pytest.mark.parametrize("year", [1992, 1993, 1994, 1979])
+def test_tier0_gap_pre1983_still_failclosed(year):
     """L3 / §2 fail-closed: 5c-ii-a implements 1995-2002; 5c-ii-b adds
-    2003 + 2004 (the 2003-rev transition). The keyless 1983-1988
-    link_segment encoding (5c-iii) MUST still RAISE NotImplementedError
-    so a premature DO step 6 on those years halts loudly rather than
-    silently mis-harmonizing."""
+    2003 + 2004; 5c-iii adds the keyless 1983-1988 link_segment
+    encoding (the LAST unimplemented cohort era). NO NotImplementedError
+    is raised for any real cohort year now; the residual fail-closed is
+    the `_cohort_era` ValueError for the 1992-1994 permanent NCHS
+    linkage gap / pre-1983 — a premature DO step 6 on those years halts
+    loudly rather than silently mis-harmonized."""
     batch = pa.RecordBatch.from_arrays(
         [pa.array(["x"], type=pa.string()), pa.array([year], type=pa.int64())],
         names=["TOKEN", "year"],
     )
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         _harmonize_batch(batch, year)
 
 

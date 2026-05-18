@@ -508,6 +508,47 @@ def iter_parsed_records(
         print(f"Skipped {bad_len:,} lines with unexpected length", file=sys.stderr)
 
 
+def _expected_parsed_schema(year: int) -> pa.Schema | None:
+    """The explicit unified parquet schema ``iter_parsed_records``
+    emits for ``year`` — or ``None`` for the homogeneous single-member
+    years, whose existing ``pa.Table.from_pylist(rows)`` inference is
+    correct and MUST stay byte-identical (the shipped single-member
+    parquets; §9-#7).
+
+    The keyless 1983-1988 two-file construction (the RESOLVED 5b model)
+    yields a HETEROGENEOUS den/num union: ``link_segment="den"`` rows
+    carry only the 91-byte birth section; ``link_segment="num"`` rows
+    add the 194-500 ICD-9 mortality section. ``_iter_two_file_1983_1988``
+    yields ALL den rows BEFORE any num row, and ``pa.*.from_pylist``
+    infers the Arrow schema from the FIRST record's keys ONLY — so a
+    naive materialization SILENTLY DROPS the entire numerator ICD-9
+    mortality section (single-chunk path) / the chunked
+    ``ParquetWriter`` is fixed to a den-only schema and CRASHES at the
+    den->num boundary. This helper returns the deterministic den∪num
+    column union (from the parser's OWN layout dispatchers — the same
+    ``_layout_for_linked_year`` + ``_numerator_layout_for_linked_year``
+    ``_iter_two_file_1983_1988`` itself uses; no data scan, no new
+    layout logic) so ``run_parse`` materializes the 1983-1988 _raw
+    parquet LOSSLESSLY (H6 column-conservation). C8.18 DO step 5c-iii:
+    a §7 latent defect in the RESOLVED-5b ``run_parse`` surfaced at the
+    5c-iii Convention-3/SMOKE cheap-check; the human-authorized minimal
+    root-cause fix (PRE_FLIGHT_LOG 2026-05-20T00:00:00Z addendum +
+    DECISION_LOG + LESSONS; anti-pattern #7 fix-the-root-cause).
+    """
+    if not (1983 <= year <= 1988):
+        return None
+    _dl, den_birth, den_death = _layout_for_linked_year(year)
+    _nl, num_birth, num_death = _numerator_layout_for_linked_year(year)
+    names: list[str] = []
+    for nm, _a, _b in den_birth + den_death + num_birth + num_death:
+        if nm not in names:
+            names.append(nm)
+    return pa.schema(
+        [(nm, pa.string()) for nm in names]
+        + [("year", pa.int64()), ("link_segment", pa.string())]
+    )
+
+
 def run_parse(
     zip_path: Path,
     year: int,
@@ -521,11 +562,24 @@ def run_parse(
 
     out.parent.mkdir(parents=True, exist_ok=True)
 
+    # 1983-1988 ONLY: an explicit unified den∪num schema (the keyless
+    # two-file construction is per-row heterogeneous; from_pylist infers
+    # from the first record only). None for every homogeneous year →
+    # the original from_pylist(rows)/tbl.schema path byte-untouched
+    # (§9-#7 — the byte-exact shipped single-member parquets).
+    _schema = _expected_parsed_schema(year)
+
+    def _tbl(recs):
+        return (
+            pa.Table.from_pylist(recs, schema=_schema)
+            if _schema is not None else pa.Table.from_pylist(recs)
+        )
+
     if chunk_rows is None:
         rows = list(iter_parsed_records(zip_path, year, max_rows=max_rows))
         if not rows:
             raise RuntimeError("No rows parsed; check zip path and record width.")
-        tbl = pa.Table.from_pylist(rows)
+        tbl = _tbl(rows)
         pq.write_table(tbl, str(out))
         print(f"Wrote {len(rows):,} rows to {out}")
         return len(rows)
@@ -537,16 +591,22 @@ def run_parse(
         for row in iter_parsed_records(zip_path, year, max_rows=max_rows):
             buffer.append(row)
             if len(buffer) >= chunk_rows:
-                tbl = pa.Table.from_pylist(buffer)
+                tbl = _tbl(buffer)
                 if writer is None:
-                    writer = pq.ParquetWriter(str(out), tbl.schema)
+                    writer = pq.ParquetWriter(
+                        str(out),
+                        _schema if _schema is not None else tbl.schema,
+                    )
                 writer.write_table(tbl)
                 total += len(buffer)
                 buffer.clear()
         if buffer:
-            tbl = pa.Table.from_pylist(buffer)
+            tbl = _tbl(buffer)
             if writer is None:
-                writer = pq.ParquetWriter(str(out), tbl.schema)
+                writer = pq.ParquetWriter(
+                    str(out),
+                    _schema if _schema is not None else tbl.schema,
+                )
             writer.write_table(tbl)
             total += len(buffer)
     finally:
