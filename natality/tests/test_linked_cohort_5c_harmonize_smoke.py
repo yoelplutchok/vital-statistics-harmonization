@@ -268,14 +268,21 @@ def test_tier0_1989_1991_reference_era_end_to_end():
 
 @pytest.mark.parametrize(
     "year,era_phase",
-    [(1985, "5c-iii"), (1995, "5c-ii"), (2002, "5c-ii"), (2003, "5c-ii"),
-     (2004, "5c-ii")],
+    [(1985, "5c-iii"), (2003, "5c-ii-b"), (2004, "5c-ii-b")],
 )
 def test_tier0_unimplemented_cohort_eras_failclosed(year, era_phase):
-    """L3 / §2 fail-closed: 5c-i implements ONLY 1989-1991. The other
-    cohort eras must RAISE NotImplementedError (so a premature DO step 6
-    on those years halts loudly rather than silently mis-harmonizing) —
-    the keyless 1983-1988 is 5c-iii; 1995-2004 is 5c-ii."""
+    """L3 / §2 fail-closed: 5c-i implements 1989-1991; 5c-ii-a adds
+    1995-2002 (see test_linked_cohort_5cii_a_harmonize_smoke). The
+    still-unimplemented cohort eras must RAISE NotImplementedError (so a
+    premature DO step 6 on those years halts loudly rather than silently
+    mis-harmonizing) — the keyless 1983-1988 is 5c-iii; 2003-2004 (the
+    2003-revision transition) is 5c-ii-b.
+
+    L17 / Convention-2 / §4.2.1 `tracks-current-state` Edit, bundled in
+    the 5c-ii-a commit: the prior `(1995,"5c-ii")` + `(2002,"5c-ii")`
+    pins went stale when 5c-ii-a implemented the 1995-2002 era (they now
+    harmonize, not raise). This is stale-pin maintenance, NOT a
+    regression (PRE_FLIGHT_LOG 2026-05-19T14:00:00Z HALT 9)."""
     # a 1-row batch with just `year` (+ a token col) is enough to reach
     # the cohort-era dispatch (the NotImplementedError fires before any
     # field access for the unconfigured eras)
