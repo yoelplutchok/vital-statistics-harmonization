@@ -71,14 +71,53 @@ def _slice_field(record: bytes, start: int, end: int) -> str:
 
 
 def _find_denomplus_member(zip_path: Path) -> str:
-    """Find the denominator-plus member in a linked zip archive."""
-    with zipfile.ZipFile(zip_path) as zf:
-        for name in zf.namelist():
-            if "DENOM" in name.upper():
-                return name
+    """Find the denominator(-plus) member in a linked zip archive (cross-era).
+
+    C8.18 DO step 5a broadens this finder to span the cohort-linked
+    member-naming conventions across all eras (probed at the DO step 5a
+    PRE-FLIGHT, PRE_FLIGHT_LOG 2026-05-19T05:00:00Z):
+
+      1983-1991  ``LinkCO{yy}USden.dat``   (no ``US`` zip suffix)
+      1995-2002  ``LinkCO{yy}US{Den,DEN}.dat``
+      2003       ``VS03LKBC.USDENPUB``     (DEFLATE64; ``iter_lines_from_zip``
+                                            auto-shells to ``7z``)
+      2004 / 2005+ ``VS{yy}LKBC.DUSDENOM``
+
+    Two rules, **behavior-preserving for the canonical 2005-2023 path**
+    (§9-#7-safe):
+
+      Rule 1 (DENOM-first) — the FIRST member whose upper-name contains
+      ``"DENOM"``. This is the pre-5a rule verbatim, so the 2004/2005+
+      ``DUSDENOM`` selection is **byte-identical** to before (the
+      canonical v3 2005-2015 ``parse_linked_year`` build is unperturbed;
+      2016-2023 uses ``parse_linked_cohort_year``, a different finder).
+
+      Rule 2 (cross-era fallback, only if no ``"DENOM"`` member exists) —
+      the UNIQUE member whose upper-name contains ``"DEN"`` and not
+      ``"NUM"`` / ``"UNL"`` / ``"UNM"`` (covers 1983-1991 ``USden``,
+      1995-2002 ``USDen`` / ``USDEN``, 2003 ``USDENPUB``). Zero or >1
+      candidates -> ``RuntimeError`` (§2 fail-closed; never silently
+      pick a wrong member).
+    """
+    members = _list_members(zip_path)
+    # Rule 1 — DENOM-first (pre-5a behavior; 2004/2005+ unchanged).
+    for name in members:
+        if "DENOM" in name.upper():
+            return name
+    # Rule 2 — cross-era fallback for the 1983-2003 cohort members
+    # ("DEN" but not "DENOM"); must resolve to exactly one member.
+    candidates = [
+        name
+        for name in members
+        if "DEN" in name.upper()
+        and not any(tok in name.upper() for tok in ("NUM", "UNL", "UNM"))
+    ]
+    if len(candidates) == 1:
+        return candidates[0]
     raise RuntimeError(
-        f"No denominator-plus member found in {zip_path}. "
-        f"Members: {_list_members(zip_path)}"
+        f"No unique denominator(-plus) member in {zip_path}. "
+        f"DENOM-rule matched none; cross-era 'DEN'-not-NUM/UNL "
+        f"candidates={candidates}; members={members}"
     )
 
 
