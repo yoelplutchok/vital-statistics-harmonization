@@ -1,6 +1,60 @@
-# STATUS — last updated 2026-05-23T22:15:00Z
+# STATUS — last updated 2026-05-23T23:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T23:00:00Z — **v3-linked-comparison-v4-verify COMPLETE** — `external_validation_v3_linked_comparison.{md,csv}` carried "v4 regen" deferral **discharged-as-verified**: the committed artifact (last committed @ `127f101`=C8.18 6b) is **already v4-current AND byte-identically reproducible** from the SHA-stable v4 parquet (`f630d8cf20db72ea`) via the deterministic, deliberately-2005-2023-owned-surface-scoped validator (35 pass/0 fail/0 missing). **Zero net artifact + zero canonical mutation** (honest §4.4/§10 disposition: verify+discharge, no manufactured commit). Mutation guard green. Tags **`v3-linked-comparison-v4-verify-pre-do`@`c4287b9`** + **`v3-linked-comparison-v4-verify-complete`**.
+
+TaskList #4 of the "Pre-D cleanup first" block. The §2 PRE-FLIGHT hypothesis (SHA-stable input + deterministic generator ⇒ byte-identical re-run) held. Full narrative: `RECEIPTS/v3-linked-comparison-v4-verify_2026-05-23T23-00-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T22:45/23:00.
+
+### Current phase
+
+**Phase C — pre-Zenodo scope COMPLETE (C8.16–C8.22 = 7/7).** Internal Pre-D cleanup block: #1 plan-merge ✓, #2 CODEBOOK/COMPARABILITY v2.4.0 ✓, #3 file_inventory imported-flag ✓, **#4 v3-linked-comparison verified-v4-current ✓** (this section); **only #5 convenience/benchmark v4 remains.** Settled pre-Zenodo envelope **unchanged**. Manuscript Coverage re-paragraph = D.4. Phase D externally-irreversible + human-authorization-gated.
+
+### What was done this session (cumulative)
+
+KICKOFF handshake → "Pre-D cleanup first" → "do whatever you think is best". Shipped under full five-phase discipline, all zero canonical-state mutation: #1 `plan-merge-owed-backlog` (`9753160`), #2 `fetal-death-codebook-comparability-v240` (`6eecda2`), #3 `file-inventory-imported-flag-v4` (`84a9af3`), **#4 `v3-linked-comparison-v4-verify`** (this section; verified-current, no artifact change).
+
+### Last completed step
+
+`v3-linked-comparison-v4-verify` (this session) — **COMPLETE**. No artifact/canonical change (byte-identical re-render proven); ships RECEIPT/STATUS/DECISION_LOG/PRE_FLIGHT_LOG only. Tag `v3-linked-comparison-v4-verify-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**TaskList #5 — convenience/benchmark v4 refresh (soft-flag (ee)).** PRE-FLIGHT to enumerate exactly which convenience subsets + `docs/PIPELINE_TIMING_BENCHMARK.md` are linked-v4-dependent vs envelope-independent, apply the same verify-current-vs-stale discipline (a re-measure of timing may be infeasible/unneeded pre-D). Last internal Pre-D cleanup task; then only the human-authorization-gated Phase D remains.
+
+### Blocked
+
+**Phase D** — explicit human authorization (externally irreversible). **C8.5b (Dockerfile)** / **C8.7b (Orchestrator)** — DEFERRED.
+
+### Open questions for human
+
+Phase-D authorization remains the gating question. **Owed §11 human-merge: (none)** (cleared #1). **Phase-D deferrals owed (carried, internal):** ~~CODEBOOK/COMPARABILITY v2.4.0~~ (#2 ✓), ~~`file_inventory.csv` `imported`-flag~~ (#3 ✓), ~~`external_validation_v3_linked_comparison.{md,csv}` v4~~ **discharged-as-verified this session (#4)**; remaining: convenience/benchmark v4 (#5). **Manuscript Coverage re-paragraph = D.4** (untouched).
+
+**Open soft-flags (29; 0 NEW):** all carried unchanged. (jj) README "56 passed" baseline stale. (kk) pytest memory-safe per-file split. (ll-docs) §8 L12-row literal-pipe (non-blocking).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Full enumeration (4) in `RECEIPTS/v3-linked-comparison-v4-verify_2026-05-23T23-00-00Z.md`. Headlines: (1) task CLOSED; deferral discharged-as-verified (artifact already v4-current + H10-reproducible). (2) the v3-linked validator is **deliberately** scoped to 2005-2023 (FIX_LOG 2026-05-23T02:00:00Z); the pre-2005 cohort is the C8.18 DO-step VERIFY's domain — do NOT "expand" it (by-design, not a gap). (3) 3 gate parquet SHAs unchanged. (4) only #5 remains; manuscript = D.4; Phase D human-authorization-gated.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`/`acb5c48a…` (UNCHANGED). Linked v4.0.0 `f630d8cf…` (re-verified this session: read-only validator run, SHA byte-exact)/`ea89ab3c…`/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- MODIFIED git-tracked this session: `NEXT_STEPS.md`,`LESSONS.md` (#1); `fetal_death/CODEBOOK.md`,`fetal_death/COMPARABILITY.md` (#2); `natality/metadata/file_inventory.csv` (#3); (#4 = no tracked artifact change) (+ state files). **No build-side change; 3 gate SHAs byte-exact.**
+
+### Notes for next session
+
+- #4 CLOSED as verified-current (no artifact change — the committed v3-linked comparison is already v4-correct + reproducible). Next: TaskList #5 (convenience/benchmark v4) under five-phase discipline — apply the same verify-current-vs-stale discipline; then the internal Pre-D cleanup is complete and only the human-authorization-gated Phase D remains.
+- §2/§4.4/§9-#3/§10/H10 honored: cheap PRE-FLIGHT predicted byte-identical; DO proved it; honest disposition = verify+discharge, no spurious commit.
+
+### Session summary
+
+Fourth task of the "Pre-D cleanup first" block. `v3-linked-comparison-v4-verify` SHIPPED under full five-phase discipline — the carried "`external_validation_v3_linked_comparison.{md,csv}` v4 regen" deferral was reconciled against the deliberate FIX_LOG 2026-05-23 v3-validator-owned-surface scoping and **discharged-as-verified**: re-running the deterministic, correctly-2005-2023-scoped validator against the SHA-stable v4 parquet (`f630d8cf20db72ea`, unchanged since 6b) reproduced the committed artifact **byte-identically** (H10), proving it was already v4-current. Honest §4.4/§10 disposition: verify + formally discharge, no manufactured commit (zero net artifact + zero canonical mutation; mutation guard green). Tags `…-pre-do`@`c4287b9` + `…-complete`. Only #5 (convenience/benchmark v4) remains in the internal Pre-D cleanup; manuscript = D.4; Phase D human-authorization-gated.
 
 ---
 
