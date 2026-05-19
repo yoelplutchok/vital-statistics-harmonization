@@ -1,6 +1,66 @@
-# STATUS — last updated 2026-05-23T23:00:00Z
+# STATUS — last updated 2026-05-23T23:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T23:45:00Z — **convenience-benchmark-v4-scope COMPLETE — the ENTIRE internal Pre-D cleanup block (TaskList #1-#5) is COMPLETE.** soft-flag (ee) discharged: a dated post-C8.13 scope note added to `docs/PIPELINE_TIMING_BENCHMARK.md` (the one genuinely-stale in-scope git-tracked artifact) documenting that its natality+linked section + H10 linked-SHA row are superseded pre-C8.17/pre-C8.18 point-in-time figures and the v4 re-measure is a Phase-D post-final-rebuild item (already routed to D.4 by C8.13's own PROPOSE-EDIT); convenience CSVs precisely scoped OUT of (ee) (NVSR-static / natality-v3.0.0-derived, not linked-v4-dependent). **No fabricated v4 times (L6); no canonical rebuild (§7-#17/C8.7b-deferred); doc-only +7/-0; zero canonical-state mutation.** Tags **`convenience-benchmark-v4-scope-pre-do`@`09bf813`** + **`convenience-benchmark-v4-scope-complete`**.
+
+TaskList #5 (final) of the "Pre-D cleanup first" block. Full narrative: `RECEIPTS/convenience-benchmark-v4-scope_2026-05-23T23-45-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T23:30/23:45.
+
+### Current phase
+
+**Phase C — pre-Zenodo scope COMPLETE (C8.16–C8.22 = 7/7) AND the internal Pre-D cleanup block COMPLETE (TaskList #1-#5 = 5/5).** The ONLY remaining work is the externally-irreversible, human-authorization-gated **Phase D** (D.1 GitHub redirects → D.2 unified Zenodo deposit → D.3 public-repo v1.x sync → D.4 manuscript re-pass + submit). Settled pre-Zenodo envelope **unchanged** (the entire cleanup block was zero canonical-state mutation). **Do NOT begin Phase D autonomously.**
+
+### What was done this session
+
+KICKOFF handshake → user "Pre-D cleanup first" → "do whatever you think is best". The full internal Pre-D cleanup block, each task under full five-phase discipline, **all zero canonical-state mutation**, all `*-pre-do`/`*-complete` tagged:
+1. **`plan-merge-owed-backlog`** (`9753160`) — owed §11 human-merge backlog cleared (§8 +4 sharpenings; §15.D C8.18 model-clar + C8.21/C8.22 blocks; LESSONS (A′) addendum; append-only-supersede).
+2. **`fetal-death-codebook-comparability-v240`** (`6eecda2`) — CODEBOOK+COMPARABILITY hand-bodies re-paragraphed to v2.4.0/1982-2024/7-era (Option-A; numbers parquet-derived; C8.20 appendix byte-identical).
+3. **`file-inventory-imported-flag-v4`** (`84a9af3`) — the 19 pre-2005 cohort rows flipped `imported`=true; inventory now {true:95,false:0}; §7-gate proven (inventory tests 6 passed).
+4. **`v3-linked-comparison-v4-verify`** (`516b621`) — the v3-linked comparison artifact proven already-v4-current + H10-reproducible (verify+discharge, no manufactured commit).
+5. **`convenience-benchmark-v4-scope`** (this section) — soft-flag (ee) documented + scoped.
+
+### Last completed step
+
+`convenience-benchmark-v4-scope` (this session) — **COMPLETE**. Single DO commit ships `docs/PIPELINE_TIMING_BENCHMARK.md` (+RECEIPT/STATUS/DECISION_LOG/PRE_FLIGHT_LOG). **Zero parquet/schema/test-target/test/script/CSV mutation.** Tag `convenience-benchmark-v4-scope-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (externally irreversible; requires EXPLICIT human authorization — do NOT begin autonomously).** Per KICKOFF Phase D: D.1 Task 9 (redirect notices on the two old GitHub repos) → D.2 Task 10 (unified Zenodo deposit + version patches + PROVENANCE refresh) → D.3 public-repo v1.x sync (exclude-list incl. `.claude/`, `AUDITS/`, state files; the v2.4.0 CODEBOOK/COMPARABILITY + the new pre-computed tabulations SHIP) → D.4 manuscript re-pass + submit (the once-after-all-data Coverage re-paragraph + the C8.13/C8.18 timing reconciliation + admin-section markers). All internal prerequisites are now clear: §11 backlog empty; fetal-death docs at v2.4.0; inventory `imported` accurate; v3-linked comparison verified-current; the timing-benchmark staleness documented + scoped.
+
+### Blocked
+
+**Phase D** — explicit human authorization (externally irreversible). **C8.5b (Dockerfile)** / **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+**Phase-D authorization is now the SOLE gating question** — pre-Zenodo Phase-C scope complete AND the internal Pre-D cleanup complete. **Owed §11 human-merge: (none)** (cleared #1). **Phase-D deferrals owed: all internal ones discharged** (#2 CODEBOOK/COMPARABILITY v2.4.0; #3 `file_inventory.csv` `imported`; #4 v3-linked-comparison verified-current; #5 convenience/benchmark documented+scoped). **Remaining Phase-D-owned items (by design, NOT pre-D):** manuscript Coverage re-paragraph = D.4; the C8.13/C8.18 natality+linked timing re-measure = D.4-post-rebuild (the manuscript fetal-death timing PROPOSE-EDIT is already D.4); the GitHub-redirects/Zenodo-deposit/public-repo-sync are D.1-D.3 (externally irreversible).
+
+**Open soft-flags (29; 0 NEW; (ee) now DOCUMENTED+SCOPED, not latent):** carried. (jj) README "56 passed" baseline stale. (kk) pytest memory-safe per-file split. (ll-docs) §8 L12-row literal-pipe (non-blocking). The convenience-CSV year-coverage-extension question (non-(ee), non-blocking) is newly noted (not owed by this cleanup).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Full enumeration (4) in `RECEIPTS/convenience-benchmark-v4-scope_2026-05-23T23-45-00Z.md`. Headlines: (1) **internal Pre-D cleanup 5/5 COMPLETE; only the externally-irreversible, human-authorization-gated Phase D remains — do NOT begin autonomously.** (2) the natality+linked v4 timing re-measure is a Phase-D post-final-rebuild item (same pass as the D.4 manuscript timing reconciliation; use the `PIPELINE_TIMING_BENCHMARK.md` driver scripts). (3) 3 gate parquet SHAs unchanged across the entire session (`185c071e…`/`acb5c48a…`/`f630d8cf…`). (4) repo append-only clock runs ahead of harness `currentDate` (2026-05-19) — keep timestamps monotonic-after.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`/`acb5c48a…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`/`ea89ab3c…`/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible. **3 gate SHAs byte-exact across all 5 cleanup tasks.**
+- MODIFIED git-tracked this session: `NEXT_STEPS.md`,`LESSONS.md` (#1); `fetal_death/CODEBOOK.md`,`fetal_death/COMPARABILITY.md` (#2); `natality/metadata/file_inventory.csv` (#3); (#4 = none — verified-current); `docs/PIPELINE_TIMING_BENCHMARK.md` (#5) (+ state files). **No build-side change.**
+
+### Notes for next session
+
+- **Internal Pre-D cleanup is COMPLETE (5/5).** D.3 (public-repo v1.x sync) and D.4 (manuscript re-pass) will now be a clean one-pass: the §11 plan is current, fetal-death docs describe v2.4.0, the inventory `imported` flag is accurate, the v3-linked comparison is verified-current, and the timing-benchmark staleness is documented + scoped (its v4 re-measure folds into the D.4 timing reconciliation).
+- **Phase D is externally irreversible and human-authorization-gated.** Surface the (a)-(d) handshake / await explicit authorization before any D.1-D.4 action.
+- §2/§4.4/§9-#2/#3/#8/§10/L6/L11/H10 honored throughout: cheap PRE-FLIGHT before every DO; §7 gates analyzed+cleared (not rubber-stamped — incl. the #2 false-appendix-alarm investigated via marker re-extraction, and the #4 verify+discharge); no fabricated numbers; no canonical rebuild; each task its own five-phase unit (not compressed).
+
+### Session summary
+
+The full user-authorized internal "Pre-D cleanup first" block SHIPPED this session — **5/5 tasks COMPLETE under full five-phase discipline, every one zero canonical-state mutation, all `*-pre-do`/`*-complete` tagged**: (#1) the owed §11 human-merge backlog cleared as one `[plan-update]`; (#2) the fetal-death CODEBOOK+COMPARABILITY hand-bodies re-paragraphed to the canonical v2.4.0 1982-2024 7-era envelope (Option-A; every number parquet-derived; C8.20 generated appendix byte-identical); (#3) `file_inventory.csv` `imported` flipped to true for the 19 C8.18 pre-2005 cohort rows (now {true:95,false:0}; §7-gate proven green); (#4) the v3-linked comparison artifact proven already-v4-current + H10-reproducible (honest verify+discharge, no manufactured commit); (#5) soft-flag (ee) converted from undocumented latent staleness into a documented, scoped limitation on the C8.13 timing benchmark (no fabricated v4 times; no canonical rebuild). The 3 gate parquet SHAs are byte-exact across the entire session. **The entire pre-Zenodo Phase-C scope AND the internal Pre-D cleanup are now COMPLETE; the only remaining work is the externally-irreversible, human-authorization-gated Phase D — which must NOT be begun autonomously.**
 
 ---
 
