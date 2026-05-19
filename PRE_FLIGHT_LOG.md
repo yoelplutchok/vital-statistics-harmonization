@@ -8,6 +8,42 @@
 
 ---
 
+## PRE-FLIGHT for v3-linked-comparison-v4-verify — 2026-05-23T22:45:00Z — **`external_validation_v3_linked_comparison.{md,csv}` v4 refresh (= verify-already-v4-current + H10 reproducibility)** — **RESULT: PROCEED.**
+
+TaskList #4 of the user-authorized 2026-05-23 "Pre-D cleanup first" block (standing "do whatever you think is best"; halt only on a genuine §7 gate). Reconciles the carried "full-v4 regen" deferral wording against the **deliberate** FIX_LOG 2026-05-23T02:00:00Z v3-validator-owned-surface scoping.
+
+### Inputs
+- [x] `natality/output/validation/external_validation_v3_linked_comparison.{md,csv}` (the validator-generated deliverable) + `natality/scripts/05_validate/compare_external_targets_v3_linked.py` (the generator) + `natality/metadata/external_validation_targets_v3_linked.csv` (targets) + `tests/mutations/test_compare_external_targets_v3_linked_mutation.py` (the L14/L3 guard). present ✓
+- [x] v4 linked-derived parquet on disk: `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet`, **SHA `f630d8cf20db72ea` == the gate SHA `f630d8cf…`** (UNCHANGED since C8.18 6b — the byte-exact input that produced the committed artifact). ✓
+- [x] Upstream complete: C8.18 6b (FIX_LOG 2026-05-23T02:00:00Z — the v3 validator deliberately scoped to its 2005-2023 owned surface: skip `data_year<2005` + non-`SUPPORTED_METRICS` rows with a `[load_targets] SKIPPED` disclosure; the pre-2005 cohort is verified by the C8.18 DO-step VERIFY, NOT this validator). ✓
+- [x] No stale checkpoints: tree clean except untracked `.claude/`, `AUDITS/`. ✓
+
+### Environment
+- [x] Working dir clean (tracked); branch `main`; HEAD `84a9af3`. `uv` env available.
+
+### Field-value snapshot (Convention 3)
+- [x] Committed artifact (`natality/output/validation/external_validation_v3_linked_comparison.md`) **last committed at `127f101` = "C8.18 DO step 6b"** — i.e., the FIX_LOG 2026-05-23T02:00:00Z scoping fix already regenerated it against the v4 parquet AND committed it. Current committed state: **Pass:35 / Fail:0 / Missing:0**, 2005-2023 owned surface, the documented within-tolerance "differ by 1" cells (e.g. unweighted_infant_deaths 2015 23326 vs 23327 = pass), `.csv` = 35 targets + header (36 lines). The validator was also last committed at `127f101` (post-6b-fix scoping).
+- [x] Determinism: validator has no `datetime`/`now()`/`today`/`strftime`/timestamp; only `repo_root = Path(__file__).resolve().parents[2]` (deterministic script-relative root). Output via `write_text(... + "\n")` — deterministic. Default `--in`/`--targets`/`--out-dir` are `repo_root`-relative; will invoke with explicit `--in <SHA-confirmed v4 parquet>` + `--out-dir natality/output/validation` (the FIX_LOG 2026-05-23 verified-by invocation pattern).
+- [x] Mutation-test baseline GREEN (`tests/mutations/test_compare_external_targets_v3_linked_mutation.py` = 1 passed) — the L14/L3 adversarial guard holds pre-DO.
+- [x] **Inference**: input parquet (SHA-confirmed unchanged since 6b) + validator (unchanged since `127f101`) + targets CSV (committed at 6a/6b) + deterministic generator ⇒ a re-run MUST reproduce the committed `.md`/`.csv` **byte-identically** (the H10 gate). Expected disposition: artifact already v4-current; the carried "deferral" is **discharged-as-verified** with zero net mutation (byte-identical regen ⇒ empty `git diff`).
+
+### DO scope (decided under standing authorization)
+Run `uv run python natality/scripts/05_validate/compare_external_targets_v3_linked.py --in <SHA-confirmed v4 parquet> --out-dir natality/output/validation`; `git diff` the regenerated `.md`/`.csv` vs the committed (`127f101`) version. **If byte-identical** (the expected H10 outcome): the artifact is already v4-current/reproducible; discharge the deferral as verified (no artifact mutation; receipt/state-files only). **If drift**: §7-class (reproducibility regression §7-#18 OR the 6b artifact was non-final) → investigate + halt-and-ask, do NOT rubber-stamp. NOT a re-scoping: the FIX_LOG 2026-05-23 2005-2023-owned-surface scoping is deliberate + correct (the pre-2005 cohort is the C8.18 DO-step VERIFY's domain) — re-adding pre-2005 cohort cells here is explicitly out of scope.
+
+### Outputs
+- [x] (Re)generation of the validator deliverable in place + RECEIPT/STATUS/DECISION_LOG/this-log appends. Read-only wrt canonical parquet/schema (the validator only reads the parquet; the `.md`/`.csv` IS the deliverable).
+
+### Date convention
+- [x] 2026-05-23T22:45:00Z (monotonic-after 22:15:00Z; repo append-only clock ahead of harness `currentDate` 2026-05-19).
+
+### Halt conditions tripped
+None. The "deferral" is a verify-current task; the only §7 trigger would be a DO-time reproducibility drift, handled by halt-and-ask if it occurs.
+
+### Result
+**PROCEED.**
+
+---
+
 ## PRE-FLIGHT for file-inventory-imported-flag-v4 — 2026-05-23T22:00:00Z — **`natality/metadata/file_inventory.csv` `imported`-flag refresh (linked v4)** — **RESULT: PROCEED.**
 
 TaskList #3 of the user-authorized 2026-05-23 "Pre-D cleanup first" block (standing "do whatever you think is best" authorization; halt only on a genuine §7 gate). Discharges the carried Phase-D deferral: C8.18 DO step 6b deliberately did not flip `imported` for the pre-2005 cohort-linked rows it harmonized into v4.
