@@ -8,6 +8,57 @@
 
 ---
 
+## PRE-FLIGHT for C8.19 — 2026-05-23T08:00:00Z — **Perinatal-record pre-joined parquet (C.8; methodology research)** — **RESULT: HALT (plan-mandated §7.13 / Sub-Q42 / §15.D Tier-0 trigger). Expected unique-sibling match rate = 0.00000% ≪ the 5% threshold. ZERO DO performed; ZERO canonical-state mutation. Recommendation: DEFER C8.19 to a post-submission v1.1 methodology-paper subproject via a §11 `[plan-update]` (human-merge). Halt-and-asked via AskUserQuestion.**
+
+This PRE-FLIGHT is the cheap-check (§2) that the §15.D C8.19 spec explicitly designed to surface a too-sparse-to-be-useful halt ("If join success rate is too low (NCHS identifier suppression limits joinability), task PRE-FLIGHT may surface as too-sparse-to-be-useful and DEFER to v1.1 methodology-paper subproject"; EXPLORATION_REPORT §C.8 "manuscript-level contribution if it works; zero if it doesn't"; §15.D Halt-condition flags: "Sub-Q42 trigger: PRE-FLIGHT Tier-0 entropy analysis may surface a §7.13 halt → defer to v1.1"). It fired. **No DO phase begins** (this entry documents PROCEED/HALT = **HALT**, L10-safe — written before any DO mutation; in fact none occurs).
+
+### Inputs
+- [x] All four settled-envelope parquets exist + gate SHAs byte-exact (forward-HALT #2): linked **v4** derived `f630d8cf20db72eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` ✓ (the C8.18 6b canonical mutation; NOT `9b828a4d` — that is the preserved `.v3_baseline`, confirmed `9b828a4de4e59b…` ✓); fetal-death **v2.4.0** derived `185c071ec76ab8…` ✓ / harmonized `38e2cecb03ff49…` ✓; natality v3.0.0 + matched-multiples present (context — not consumed by the join itself). `/tmp` not used; read-only `pyarrow.dataset` filtered+projected reads only.
+- [x] Upstream task complete in STATUS.md: **C8.18 COMPLETE** (DO steps 1–7; STATUS 2026-05-23T05:00:00Z; `C8.18-complete` tag present; HEAD `1902415`). The final pre-Zenodo data envelope is settled.
+- [x] No stale checkpoints: working tree clean (`git status --porcelain` empty); branch `main`.
+
+### Environment
+- [x] Python 3.13.9 (≥3.11) ✓ · pandas 2.3.2 (≥2.3) ✓ · pyarrow 18.1.0 (≥18.0) ✓ · git clean on `main` @ `1902415` ✓.
+- [x] pytest baseline unchanged (no test/code touched this session; baseline 347P+1S+1XF per the C8.18 step7 receipt — irrelevant here, zero mutation).
+
+### Source documentation
+- [x] WebFetch `https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm`: NCHS distributes the fetal-death file and the (period + cohort) linked birth–infant death files as **separate** products; **no integrated perinatal-record file**, **no published record-level fetal-death↔infant-death linkage**, **no perinatal-record tabulations**. ⇒ There is **no NCHS validation target** for a record-level pre-joined parquet (only aggregate perinatal-mortality rates as sub-component validation — and those validate the existing single products, already covered by `notebooks/joint_use_demo.ipynb` Section C + `docs/JOINT_USE_GUIDE.md` §128, not a join).
+
+### Field-value snapshot for the join the task would mutate (Convention 3)
+
+Full column enumeration of both derived parquets (`pq.read_schema`):
+- **Linked v4 derived**: 149,386,620 rows × **97 cols**. Geography columns present: **NONE** — only `residence_status` (int8; resident/non-resident/foreign recode). No state/county/region; no maternal/household/pregnancy identifier.
+- **Fetal-death v2.4.0 derived**: 2,427,233 rows × **89 cols**. Geography columns present: **NONE** — only `residence_status` (int8). No state; no maternal/household/pregnancy identifier.
+- The §15.D-proposed proxy key "maternal demographics + **state** + delivery year + gestation": **`state` is entirely absent** from public-use (consistent with this repo's own `PROJECT_STRUCTURE.md` which-file matrix: "Get state-level data → not available from public-use NCHS files"). `maternal_nativity` exists on FD but **not on the linked derived parquet** (no maternal nativity column). `maternal_race_bridged` is **100% NULL in both products for 2020** (the documented post-2018 NCHS bridged-race discontinuation; JOINT_USE_GUIDE caveat 4 / STATUS Task-1 HALT). Education label vocabularies differ across products (`maternal_education_cat4` {ba_plus,some_college,hs_grad,lt_hs} vs `education_cat4` {BA+,Some college,HS grad,< HS}) — no shared value-level cross-product record key (the existing `shared/helpers/canonical_join_keys.py` aliases column *names* for the aggregate stratified-denominator use case only; it is not a record-join key).
+
+### SMOKE Tier-0 — join-key entropy + expected-match-rate (2020 fixture; §15.D Tier-0; read-only)
+
+Canonical filters applied (per `docs/JOINT_USE_GUIDE.md` / which-file matrix): linked `residence_status != 4`; fetal-death `tabulation_flag == 2 AND residence_status != 4 AND ga_gte20wks` (the reportable-stillbirth "sibling" pool). 2020 universe: **3,561,914** linked births; **17,560** fetal deaths ≥20wk.
+
+Best **value-harmonized** maternal sibling-key {maternal_age(single-yr), hispanic_origin, education_cat4(4-cat hand-mapped), infant/fetal sex} — race_bridged unusable (100% null post-2018); geography & maternal-ID absent; pregnancy-specific attributes (GA/plurality/sex of the *stillbirth*) are methodologically invalid as a *sibling* key since the live birth is a different pregnancy:
+
+| Metric | Value | §15.D threshold | Verdict |
+|---|---|---|---|
+| Join-key Shannon entropy (FD side) | 8.56 bits → ~377 effective strata | — | low-entropy |
+| Mean candidate linked births per fetal death | **15,985** (median 14,908; max 50,891) | ~1 for a real link | cartesian, not a link |
+| Fetal deaths uniquely sibling-assignable | **0 / 17,560 = 0.0000%** | — | none |
+| **Expected-match-rate (unique-sib-assignable / linked universe)** | **0 / 3,561,914 = 0.00000%** | **≥ 5%** | **BELOW → FAIL/defer** |
+| Trivial stratum-existence "flag" TRUE | 3,506,821 / 3,561,914 = **98.5%** of births | — | ~0 bits true-sibling info |
+| False proxy pairings if cartesian-joined | ~280,692,652 (vs 17,560 real stillbirths; ×15,985 blow-up) | — | uninformative |
+
+Result is **structural and permanent** (year-invariant; 2020 representative — earlier years are worse: pre-2005 cohort era is keyless, smaller, still no maternal-ID/geography). Root cause: NCHS public-use suppression removes (a) all maternal/household/pregnancy identifiers, (b) all sub-national geography, (c) post-2018 bridged race; and a stillbirth vs the same mother's live birth are **different pregnancies with no shared key**. The only genuinely linkable perinatal pairing on public-use data — a stillborn fetus and its liveborn co-multiple — is **already a shipped HVS product** (`matched_multiples/`, C8.16); C8.19's incremental scope is precisely the unlinkable singleton/cross-pregnancy maternal-sibling case.
+
+### §10 self-check — what could make this conclusion wrong (considered, rejected)
+1. *Is C8.19 actually a stratum-level aggregate perinatal-mortality computation?* No — §15.D goal is explicitly "one row per linked-file infant with fetal-death sibling records flagged" (a record-level 5th parquet); aggregate perinatal rate already exists (`joint_use_demo.ipynb` §C). 2. *Is geography available in some years?* No — full column enumeration of both derived parquets shows zero geography columns; repo docs concur. 3. *Is the linkable case the co-multiple?* Yes, and it is already `matched_multiples/` (C8.16) — strengthens defer. 4. *Would more test years change 0.00000%?* No — the blockers are year-invariant; structural, not sampling. 5. *Code-alignment artifact?* No — the decisive metric was computed on the BEST hand-value-harmonized key; the 0% holds.
+
+### Halt conditions tripped
+- **§7.13 (validity-domain ambiguity — the analytic filter / linkage is unconstructible)** + **§7.16 (output would be plausible-looking but the join is uninformative)** + **§15.D Tier-0 explicit numeric threshold (<5% → halt for human review; Sub-Q42 trigger → defer to v1.1 methodology-paper subproject)**. Per §7 / §9-#3 / KICKOFF this halt is binding and cannot be self-waived under the standing "make all relevant decisions yourself" authorization (I committed at kickoff to halt-and-ask on any §7 gate; and the plan itself routes this outcome to human review). Deferring C8.19 is a scope/plan change requiring a §11 `[plan-update]` the **human merges** (LLM proposes; human approves).
+
+### Result
+**HALT.** No SMOKE-Tier-1+ / DO / VERIFY / RECEIPT. Recommendation surfaced to the human via `AskUserQuestion`: **defer C8.19 to a post-submission v1.1 methodology-paper subproject** (the only genuine perinatal record-linkage that public-use data supports — the stillborn↔liveborn co-multiple — already ships as `matched_multiples/`); proceed to **C8.20** next (KICKOFF Tier 3+5 sequence; C8.20/21/22 do NOT depend on C8.19 — it would only ADD a 5th parquet; the settled envelope natality v3.0.0 + linked v4.0.0 + fetal-death v2.4.0 + matched-multiples is unchanged). A §11 `[plan-update]` formally deferring C8.19 + a DECISION_LOG entry + a STATUS section to be written after the human's decision.
+
+---
+
 ## PRE-FLIGHT for C8.18 DO step 7 — 2026-05-23T05:00:00Z — the **FINAL C8.18 sub-step: docs/metadata consumer-surface sync linked v3→v4 (1983-2023; 149,386,620 rows; permanent 1992-1994 gap) + tag `C8.18-complete`** — **RESULT: PROCEED to SMOKE/DO. Docs-only (zero parquet/schema/`harmonized_schema.csv`/validation-CSV-row/test/script/metadata-CSV mutation — the C8.17 step7 invariant). All cheap checks PASS: 8/8 6b forward-HALTs verified; 11-gate SHA proof (10 byte-exact + the linked-derived `9b828a4d…`→`f630d8cf…` v4 transition by design + `.v3_baseline`==`9b828a4d…` preserved); git clean on `main` @ `127f101`; Convention-3 Field-value snapshot of every scoped doc. Three scope decisions made under the user's standing 2026-05-23 "make all relevant decisions yourself" authorization + the C8.17 step7 precedent (documented here + DECISION_LOG; NOT §7 halts — precedented + standing-authorized + plan-mandated):**
 
 1. **Scope-breadth = the C8.17 step7 "Option A — Honest propagation" precedent.** §15.D DO-step-7 names 6 files (`natality/.zenodo.json`, `CITATION.cff`, `natality/docs/ABOUT_THIS_RELEASE.md`, `natality/README.md`, `PROJECT_STRUCTURE.md`, root `README.md`) + the C8.18-specific cross-product `docs/COMPARABILITY.md`. The Convention-3 snapshot surfaced ~10 more consumer files carrying stale linked-coverage strings (CHANGELOG, VERSION_ROADMAP Currently-shipped, NCHS_SOURCE_MANIFEST, GETTING_STARTED, FAQ, VALIDATION, REPRODUCING, CODEBOOK, natality/COMPARABILITY, notebooks/README, PIPELINE_TIMING_BENCHMARK, JOINT_USE_GUIDE). Resolution: the exact C8.17 precedent — mechanical coverage/version/count/framing swaps in the consumer surface; substantive bodies left + scope-noted (NOT a §7-#17 trip: identical to the precedented + already-decided C8.17 Option-A pattern under standing authorization).

@@ -202,7 +202,7 @@ Authorized 2026-05-14 in response to user directive *"i want to do everything po
 - **C8.16** — A.5 Matched-multiples ancillary release (4th HVS product)  [1-2 sessions]
 - **C8.17** — A.2 Natality 1968-1989 backward extension (22 new years; 4 layouts) [6-10 sessions]
 - **C8.18** — A.3 Linked 1983-2004 backward extension (19 new years; 1992-94 gap) [8-14 sessions]
-- **C8.19** — C.8 Perinatal-record pre-joined parquet (methodology research)  [2-3 sessions]
+- **C8.19** — C.8 Perinatal-record feasibility + methodology note (record-level public-use join proven infeasible at Tier-0; re-scoped 2026-05-23 per §11 — see §15.D block) [~1 session]
 - **C8.20** — E.7 CODEBOOK extensions (per-variable historical distributions)  [2-4 sessions]
 - **C8.21** — C.3 Stata/SAS quickstart pointer files                          [0.5 sessions]
 - **C8.22** — C.5 Pre-computed cross-tab CSVs (`csv/published_tabulations/`) [1 session]
