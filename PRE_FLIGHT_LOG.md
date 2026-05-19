@@ -8,6 +8,39 @@
 
 ---
 
+## PRE-FLIGHT for C8.21 — 2026-05-23T16:00:00Z — **Stata + SAS quickstart pointer files (C.3)** — **RESULT: PROCEED.**
+
+One **upfront** PRE-FLIGHT (L10-safe: single docs-only deliverable + cross-link wiring; no code ⇒ no §9-#9 fixture). KICKOFF Tier-3+5 next after C8.20 (+ its audit) closed (`C8.20-auditfix-complete`@`be5be0d`); STATUS 2026-05-23T15:00:00Z names C8.21 next; no STATUS↔KICKOFF divergence. Pure docs; **zero canonical-state mutation** (no parquet/schema/validation-target/metadata-CSV/test surface).
+
+### Inputs (L9 — every cited external doc anchor verified this PRE-FLIGHT via WebFetch/WebSearch on official domains)
+- [x] **DuckDB CSV/Parquet `COPY`** — verified against official DuckDB docs: `COPY tbl TO 'out.csv' (HEADER, DELIMITER ',');` and `COPY (SELECT …) TO 'out.csv' (HEADER, DELIMITER ',');` (duckdb.org/docs/…/csv_export). The conversion path reuses the **already-shipped `views.sql`** (C8.9).
+- [x] **Stata** — verified: native `import parquet` exists **only in StataNow** (stata.com/manuals/dimportparquet.pdf — "This command is part of StataNow"; stata.com/statanow/import-data-parquet-files/), NOT in base Stata 17/18. Community: `parquet` SSC package (github.com/mcaceresb/stata-parquet — Apache-Arrow plugin, **Unix/Linux only**). Universally-correct base command: `import delimited` ([D] import delimited — stata.com/manuals/dimportdelimited.pdf).
+- [x] **SAS** — verified: **SAS 9.4 has NO native Parquet read** (LIBNAME Parquet engine unsupported in SAS 9); **SAS Viya** reads Parquet via the **ORC/Parquet LIBNAME engine** (documentation.sas.com — "SAS Viya LIBNAME Engines for ORC and Parquet"), not `PROC IMPORT DBMS=PARQUET`. Universally-correct base: `PROC IMPORT … DBMS=CSV` (documentation.sas.com — PROC IMPORT Statement).
+- [x] Repo-side inputs present: `views.sql` (root, DuckDB path), `fetal_death/quickstart.py`/`.R`, `natality/quickstart.R`/`quickstart_linked.R` (sibling style), `docs/JOINT_USE_GUIDE.md` "## Cross-language access: R and DuckDB" (the cross-link home), `PROJECT_STRUCTURE.md` "Load the data in R / Stata / SAS" matrix row (line ~228), `docs/WORKED_EXAMPLE_FAQ.md`, `README.md`.
+- [x] Upstream complete: C8.16-C8.20 + C8.20-auditfix COMPLETE (HEAD `be5be0d`; tags present). Settled envelope unchanged.
+- [x] No stale checkpoints: no prior `STATA_SAS_QUICKSTART.md`; no `C8.21-*` tag.
+
+### Field-value snapshot for cells / docs being mutated
+- **NEW** `STATA_SAS_QUICKSTART.md` (monorepo root, sibling to `views.sql`). Does not exist (good).
+- `docs/JOINT_USE_GUIDE.md` — section header currently `## Cross-language access: R and DuckDB`; plan: rename → `…: R, DuckDB, Stata, SAS` + add a `### Stata / SAS` subsection after `### DuckDB views`. Snapshot matches.
+- `PROJECT_STRUCTURE.md` line ~228 — currently `| Load the data in R / Stata / SAS | per-product quickstart.R / quickstart.py | … | docs/JOINT_USE_GUIDE.md §174 |`; plan: add `STATA_SAS_QUICKSTART.md` to the Start-with cell. Snapshot matches (the `§174` numeric anchor is pre-existing/stale — point at the section name, not a new stale number — L6/L11).
+- `docs/WORKED_EXAMPLE_FAQ.md` — currently NO language-access entry; plan: add a compact "Loading in R, Stata, SAS, or SQL" Q before "## Citing this resource". Snapshot matches.
+- `README.md` — no language-access line; plan: add a short pointer (the §15.D "update README if needed").
+
+### L9 / §7-#12 finding (handled in-scope; NOT a §7 human-halt)
+The §15.D C8.21 plan text *"Stata 17+ supports `import parquet`"* is **inaccurate** (native is StataNow-only; SAS 9.4 has no native Parquet). Resolution: do **not** propagate the inaccurate claim; center the verified **universal parquet→CSV path** (the §15.D spec itself names "older Stata + SAS need a conversion path (Python or DuckDB)") + cite native options with correct version caveats + verified official anchors. This is fix-on-contact within C8.21's docs scope (recorded in DECISION_LOG 2026-05-23T16:00:00Z) — not a §7-#12/#14 trip (no data/validation/new-mistake-class; the spec offers the pointer-file deliverable + the conversion path, which is exactly what ships).
+
+### Outputs
+- [x] Intended: 1 NEW root doc + 4 cross-link edits (JOINT_USE_GUIDE, PROJECT_STRUCTURE, WORKED_EXAMPLE_FAQ, README). All docs-only.
+
+### Halt conditions tripped
+None. Docs-only; zero canonical-state mutation; L9 anchors verified; the plan-text inaccuracy is fix-on-contact within scope (DECISION_LOG), not a halt. Halt-flags L6 (only verified-published syntax cited) + L9 (every anchor verified) actively satisfied.
+
+### Result
+**PROCEED.** Tag `C8.21-pre-do` after committing this PRE-FLIGHT + the DECISION_LOG decision.
+
+---
+
 ## PRE-FLIGHT for C8.20-auditfix — 2026-05-23T15:00:00Z — **Remediate the C8.20 fresh-eyes audit finding (continuous-float 6-sig-fig key collision) at root cause** — **RESULT: PROCEED.**
 
 One **upfront** PRE-FLIGHT (L10-safe: single deterministic builder edit + regenerate; written **before any DO mutation** and before the SMOKE-fixture authoring, per §9-#9). Trigger: `AUDITS/C8.20_20260519T152156Z.md` (fresh-eyes adversarial audit, run by the user in a separate session per the C8.20 STATUS plan) — verdict **1 FINDING, minor, non-blocking, no HALT**: `scripts/_build_codebook_extensions.py` `_fmt_val` `f"{v:g}"` (6 sig-fig) collapses **72 distinct float64 `record_weight` values into shared table keys** in the linked sub-appendix (i)/(iii) — class **L6/H8 family (precision/format loss); explicitly NOT a new mistake class** (so no §7-#14 / LESSONS trip; the audit + §8 H8/L6 already cover it). Routed per §8/§11 (bug in already-completed work) → user (2026-05-23 chat) authorized *"do whatever is necessary to make the output best quality (within reason)"* → root-cause fix chosen over the audit's options (a)/(c) (see DECISION_LOG 2026-05-23T15:00:00Z).
