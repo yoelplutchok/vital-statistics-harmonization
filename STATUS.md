@@ -1,6 +1,63 @@
-# STATUS — last updated 2026-05-23T18:00:00Z
+# STATUS — last updated 2026-05-23T20:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T20:00:00Z — **`[plan-update]` plan-merge-owed-backlog COMPLETE** — the owed §11 human-merge backlog is CLEARED in one `[plan-update]` commit: NEXT_STEPS §8 +4 sharpening rows (`L13-ext (year-axis)`, `H6-ext (heterogeneous-union)`, `L13-ext (shared CSV)`, `L17-ext (grep-scope)`), §15.D C8.18 model-clarification block (resolves soft-flag (ii)) + C8.21 premise-correction + C8.22 scope-clarification blocks (append-only-supersede; all originals preserved), LESSONS +1 dated entry (the owed 2026-05-22 (A′)-falsification addendum). **Zero canonical-state mutation** (diff = `NEXT_STEPS.md` + `LESSONS.md` only; +28 ins / 0 del; 3 gate parquet SHAs byte-exact by construction; no test/script touched). Tags **`plan-merge-owed-backlog-pre-do`@`453c2b3`** + **`plan-merge-owed-backlog-complete`**.
+
+First task of the user-authorized 2026-05-23 "Pre-D cleanup first" block (KICKOFF handshake → AskUserQuestion). Full narrative: `RECEIPTS/plan-merge-owed-backlog_2026-05-23T20-00-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T20:00:00Z.
+
+### Current phase
+
+**Phase C — pre-Zenodo scope COMPLETE (Tier 1+2+3+5 = C8.16–C8.22 = 7/7).** Now executing the user-authorized **internal Pre-D cleanup block** (reversible, no external/irreversible action) before the human-authorization-gated Phase D. This session: the §11-process item shipped (this section). Settled pre-Zenodo envelope **unchanged** (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples) — plan/lessons-doc only.
+
+### What was done this session
+
+1. KICKOFF handshake (a)-(d); no §7 halt tripped; user chose **"Pre-D cleanup first"** (AskUserQuestion) — clear the owed §11 plan-merges + the carried internal Phase-D prep under five-phase discipline, no external/irreversible action.
+2. TaskList created (5 internal tasks; manuscript Coverage re-paragraph excluded — that is D.4 by KICKOFF mandate).
+3. **Task 1 (this section) — `plan-merge-owed-backlog`** shipped under full five-phase discipline (PRE-FLIGHT→SMOKE→DO→VERIFY→RECEIPT). One `[plan-update]` commit (the 2026-05-11 protocol-sync precedent — one §11 process commit may carry multiple owed amendments; NOT §9-#8 compression). Every merged text was already drafted verbatim in append-only LESSONS/FIX_LOG/DECISION_LOG (owed *merges*, not new proposals). The 4 internal-prep items are SEPARATE five-phase tasks (not compressed).
+
+### Last completed step
+
+`plan-merge-owed-backlog` (this session) — **COMPLETE**. Single `[plan-update]` DO commit ships: `NEXT_STEPS.md` (§8 +4 rows; §15.D C8.18/C8.21/C8.22 prepended blocks) + `LESSONS.md` (+1 entry) + RECEIPT/STATUS/DECISION_LOG/PRE_FLIGHT_LOG. **Zero parquet/schema/test-target/metadata-CSV/test/script mutation.** Tag `plan-merge-owed-backlog-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**TaskList #2 — fetal-death CODEBOOK + COMPARABILITY v2.4.0 full-body re-paragraph** (the C8.20 deferral: hand-authored bodies still say "V2.0 1992-2022"; canonical = v2.4.0 1982-2024 / 2,427,233 records; C8.20 added only a minimal L11 scope note + the generated appendix). Then #3 (`file_inventory.csv` `imported`-flag), #4 (`external_validation_v3_linked_comparison.{md,csv}` v4 refresh), #5 (convenience/benchmark v4). Each its own five-phase task. After #2-#5: internal Pre-D cleanup complete; only the externally-irreversible, human-authorization-gated Phase D remains.
+
+### Blocked
+
+**Phase D** — gated on explicit human authorization (externally irreversible). **C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+**Phase-D authorization remains the gating question** (unchanged; pre-Zenodo scope complete; whether/when to begin externally-irreversible Phase D is a human decision). **Owed §11 human-merge: NOW (none)** — the entire carried backlog (the §15.D model-clarification soft-flag (ii); LESSONS 2026-05-20 §8-row + 2026-05-22 (A′) addendum + L13-extension-shared-CSV + L17 grep-scope sharpenings; the optional C8.21 + C8.22 §15.D-wording fixes) was cleared this session. **Phase-D deferrals owed (carried, internal — in-flight as TaskList #2-#5 this cleanup block):** fetal-death CODEBOOK/COMPARABILITY full-body v2.4.0 re-paragraph; `file_inventory.csv` `imported`-flag refresh; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; convenience/benchmark v4 refresh. **Manuscript Coverage re-paragraph = D.4** (untouched here, by KICKOFF mandate).
+
+**Open soft-flags (29; +1 NEW):** all 28 carried unchanged + **(ll-docs) NEW:** §8 matrix line ~320 (the L12 row) carries a literal `|` inside a code span (`git ls-files | xargs grep -n`) → a strict CSV-split sees 6 cells; GitHub renders it; pre-existing project-wide; candidate for a future docs-hygiene pass (escape `\|`/`&#124;`); not on any VERIFY gate; do not fix mid-other-task (§7-#17). (jj) README "56 passed"/"uv run pytest" baseline stale (now 355P+1S+1XF + the C8.22 11P smoke). (kk) pytest memory-safe per-file split unchanged.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Full enumeration (5) in `RECEIPTS/plan-merge-owed-backlog_2026-05-23T20-00-00Z.md`. Headlines: (1) `plan-merge-owed-backlog-pre-do`@`453c2b3` + `-complete` set ⇒ task CLOSED; **owed §11 backlog now empty** (a future session citing pre-2026-05-23T20:00:00Z owed §11 merges is reading a stale STATUS section). (2) 3 gate parquet SHAs unchanged (`185c071e…`/`acb5c48a…`/`f630d8cf…`; plan/doc-only). (3) internal-prep TaskList #2-#5 still owed before Phase D; manuscript = D.4. (4) NEW soft-flag (ll-docs) L12-row literal-pipe — non-blocking, future docs-hygiene. (5) repo append-only clock (2026-05-2x) runs ahead of harness `currentDate` (2026-05-19); keep timestamps monotonic-after the newest STATUS section.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`(deriv)/`ea89ab3c…`(harm)/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- MODIFIED git-tracked this session: `NEXT_STEPS.md`, `LESSONS.md` (+ state files). **No build-side change (3 gate SHAs byte-exact; no parquet/script/test/metadata touched).**
+
+### Notes for next session
+
+- The §11 human-merge backlog is **empty**. Proceed to TaskList #2 (fetal-death CODEBOOK/COMPARABILITY v2.4.0 re-paragraph) under five-phase discipline; #3/#4/#5 follow. None of #2-#5 is externally irreversible — all are internal repo doc/metadata work that makes the future D.3/D.4 a one-pass.
+- §2/§3/§9-#8 honored: cheap Convention-3 PRE-FLIGHT before any edit; pure append-only-supersede (0 deletions; originals preserved); §11 backlog = one process commit, internal-prep explicitly NOT compressed into it.
+- Phase D stays human-authorization-gated; do NOT begin autonomously.
+
+### Session summary
+
+First task of the user-authorized "Pre-D cleanup first" block. `plan-merge-owed-backlog` SHIPPED in one `[plan-update]` commit under full five-phase discipline — the entire owed §11 human-merge backlog cleared: NEXT_STEPS §8 gained 4 sharpening rows (`L13-ext (year-axis)` / `H6-ext (heterogeneous-union)` from LESSONS 2026-05-20; `L13-ext (shared CSV)` / `L17-ext (grep-scope)` from FIX_LOG 2026-05-23), §15.D got the C8.18 model-clarification block (resolving soft-flag (ii)) + C8.21 premise-correction + C8.22 scope-clarification blocks (append-only-supersede; every original Goal/DO-step preserved), and LESSONS gained the owed 2026-05-22 (A′)-falsification addendum entry. Zero canonical-state mutation (diff = `NEXT_STEPS.md` + `LESSONS.md`; +28 ins / 0 del; reversible). Tags `plan-merge-owed-backlog-pre-do`@`453c2b3` + `plan-merge-owed-backlog-complete`. **Owed §11 backlog now empty.** Remaining internal Pre-D cleanup = TaskList #2-#5; manuscript = D.4; Phase D human-authorization-gated.
 
 ---
 
