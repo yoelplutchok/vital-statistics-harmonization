@@ -115,6 +115,68 @@ def test_tier0_marker_block_replacement_is_idempotent(cbx, tmp_path):
     assert "Hand-authored body — must survive." in swapped
 
 
+# ── Tier 0: continuous-float summary-stats panel (C8.20-auditfix) ───────────
+# The fresh-eyes audit (AUDITS/C8.20_20260519T152156Z.md) found the 6-sig-fig
+# frequency table collapses distinct float64 keys. A continuous variable's (i)
+# panel is now per-era SUMMARY STATISTICS (exact). These assert the structural
+# contract + a hand-computable fixture (Tier-0 synthetic; not a canonical pin).
+
+def _float_fixture():
+    # 1.0×5, 2.0×3, 4.0×2 (10 non-null) + 4 null + 1 blank = n 15
+    return Counter({1.0: 5, 2.0: 3, 4.0: 2, None: 4, "": 1})
+
+
+def test_tier0_float_summary_exact_on_synthetic_multiset(cbx):
+    s = cbx._float_summary(_float_fixture())
+    assert s["n"] == 15 and s["nonnull"] == 10 and s["nullblank"] == 5
+    assert s["distinct"] == 3
+    assert s["min"] == 1.0 and s["max"] == 4.0
+    assert s["mean"] == 1.9                       # (5+6+8)/10
+    assert s["p25"] == 1.0 and s["p50"] == 1.0 and s["p75"] == 2.0
+    # monotone non-decreasing across the 5-number summary (the structural law)
+    five = [s["min"], s["p25"], s["p50"], s["p75"], s["max"]]
+    assert five == sorted(five), f"non-monotone summary: {five}"
+    assert s["min"] <= s["mean"] <= s["max"]
+    # all-null era → counted, no stats; empty era → None
+    allnull = cbx._float_summary(Counter({None: 7}))
+    assert allnull["n"] == 7 and allnull["nonnull"] == 0 and allnull["min"] is None
+    assert cbx._float_summary(Counter()) is None
+
+
+def test_tier0_float_var_renders_summary_not_frequency(cbx):
+    eras = [("1992-2002", 1992, 2002), ("2014-2024", 2014, 2024)]
+    fx = _float_fixture()
+    md = cbx.render_appendix(
+        product="natality-linked", var_order=["wt"],
+        var_stats={"wt": {"1992-2002": fx, "2014-2024": fx}},
+        schema_notes={"wt": "1.0+|null — sampling weight"},
+        sentinel_candidates=set(), eras=eras,
+        provenance="SMOKE-FIXTURE",
+        float_cols=frozenset({"wt"}),
+        float_summaries={"wt": {e[0]: cbx._float_summary(fx) for e in eras}},
+    )
+    # the three §15.D subsection phrases still present (Tier-1/2 stays green)
+    assert re.search(r"(?i)historical[- ]value[- ]distribution", md)
+    assert re.search(r"(?i)sentinel", md)
+    assert re.search(r"(?i)era[- ]by[- ]era|coding[- ]scheme diff|era diff", md)
+    # (i) is a summary-stats panel, NOT the colliding frequency table
+    assert re.search(r"(?i)summary statistic", md)
+    assert "median" in md and "p25" in md and "non-null" in md and "distinct" in md
+    assert "Top values (`code`: count" not in md, "float var kept the lossy freq table"
+    # (iii) is the continuous line, not an added/dropped code-frame diff
+    assert re.search(r"(?i)continuous numeric", md)
+    assert "added {" not in md and "dropped {" not in md
+    # n preserved (audit Check-2 H6 invariant): era total still rendered
+    assert "15" in md
+    # deterministic
+    kw = dict(product="natality-linked", var_order=["wt"],
+              var_stats={"wt": {"1992-2002": fx, "2014-2024": fx}},
+              schema_notes={}, sentinel_candidates=set(), eras=eras,
+              provenance="SMOKE-FIXTURE", float_cols=frozenset({"wt"}),
+              float_summaries={"wt": {e[0]: cbx._float_summary(fx) for e in eras}})
+    assert cbx.render_appendix(**kw) == cbx.render_appendix(**kw)
+
+
 # ── Tier 1/2: real generated CODEBOOK appendices (post-DO structural re-assert)
 
 @pytest.mark.parametrize("doc", [

@@ -8,6 +8,41 @@
 
 ---
 
+## PRE-FLIGHT for C8.20-auditfix — 2026-05-23T15:00:00Z — **Remediate the C8.20 fresh-eyes audit finding (continuous-float 6-sig-fig key collision) at root cause** — **RESULT: PROCEED.**
+
+One **upfront** PRE-FLIGHT (L10-safe: single deterministic builder edit + regenerate; written **before any DO mutation** and before the SMOKE-fixture authoring, per §9-#9). Trigger: `AUDITS/C8.20_20260519T152156Z.md` (fresh-eyes adversarial audit, run by the user in a separate session per the C8.20 STATUS plan) — verdict **1 FINDING, minor, non-blocking, no HALT**: `scripts/_build_codebook_extensions.py` `_fmt_val` `f"{v:g}"` (6 sig-fig) collapses **72 distinct float64 `record_weight` values into shared table keys** in the linked sub-appendix (i)/(iii) — class **L6/H8 family (precision/format loss); explicitly NOT a new mistake class** (so no §7-#14 / LESSONS trip; the audit + §8 H8/L6 already cover it). Routed per §8/§11 (bug in already-completed work) → user (2026-05-23 chat) authorized *"do whatever is necessary to make the output best quality (within reason)"* → root-cause fix chosen over the audit's options (a)/(c) (see DECISION_LOG 2026-05-23T15:00:00Z).
+
+### Inputs
+- [x] Audit file present + read end-to-end: `AUDITS/C8.20_20260519T152156Z.md` (1 finding; 7 checks PASS; gate SHAs recorded).
+- [x] Settled-envelope parquets present + **gate SHAs byte-exact** vs the audit + C8.20 PRE-FLIGHT (`shasum -a 256`, this PRE-FLIGHT):
+  - fetal-death derived `185c071ec76a…` ✓ (canonical `-build/output/harmonized/` path; flat tree stale — unchanged from C8.20)
+  - natality v3.0.0 derived `acb5c48a9abf…` ✓
+  - linked v4.0.0 derived `f630d8cf20db…` ✓
+- [x] Builder present: `scripts/_build_codebook_extensions.py` (369 ln; `C8.20-complete`@`0e514c0`). SMOKE: `tests/test_codebook_extensions_smoke.py` (139 ln; `DESIGN: tracks-current-state`).
+- [x] Upstream complete: C8.16-C8.20 COMPLETE (`C8.20-complete` tag; HEAD `0e514c0`).
+- [x] No stale checkpoints: no prior `C8.20-auditfix-*` tag; `/tmp/c8_20_*` is OS-cleanable scratch only.
+
+### Environment
+- [x] `uv run python` (Python 3.13, pyarrow per `uv.lock`) — same pinned env as C8.20. Working tree clean (only untracked `.claude/`, `AUDITS/`). Branch `main`.
+
+### Field-value snapshot for cells being mutated
+- Target artifact: `scripts/_build_codebook_extensions.py` (`_fmt_val` float branch + `scan_product` + `render_appendix`) and the **generated marker block of `natality/docs/CODEBOOK.md` only**.
+- Floating-point columns enumerated from the gate parquet schemas (blast radius): **fetal-death 0** (its CODEBOOK appendix is byte-unchanged); **natality block 1** (`bmi_prepregnancy`, float32); **linked block 1** (`record_weight`, float64 — the audit-finding column). Exactly **2 variable blocks** change, both in `natality/docs/CODEBOOK.md`.
+- Current state verified: `record_weight` (i) panel renders the colliding `1.00714`/`1.02887`/… tail + `_(+510 more codes)_`; (iii) renders the meaningless `dropped {2}` continuous "code frame" diff (lines 3141-3170). Matches the audit. Plan assumption (continuous-float → frequency-table-is-wrong-representation) confirmed against on-disk state.
+- (ii) sentinel sub-table for both float vars derives from the unchanged `_fmt_val` Counter ⇒ **byte-identical post-fix** (record_weight (ii) = null/blank only; bmi_prepregnancy `99.9` sentinel still flagged) — verified by design (the fix touches only (i)/(iii) for float cols).
+- Per-era `n` (audit Check-2 H6 invariant: n constant across vars == era rowcount) is **preserved** — the new stats table keeps an `n` column = era total (incl null/blank).
+
+### Outputs
+- [x] `natality/docs/CODEBOOK.md` marker block (regenerated; idempotent splice — existing-overwrite is the designed maintenance path, DECISION_LOG 2026-05-23T11:00:00Z). `fetal_death/CODEBOOK.md`/both FAQ blocks: **must be byte-identical** (0 float cols / static FAQ) — a VERIFY signal.
+
+### Halt conditions tripped
+None. Audit verdict explicitly non-blocking/no-HALT; finding is L6/H8 (in §8 matrix, not a new class → no §7-#14). Zero canonical-state mutation (no parquet/schema/validation-target/metadata-CSV). Not §7-#17 scope-creep (the §15.D C8.20 surface — the CODEBOOK appendix builder — is exactly what is being corrected; no new files beyond the builder/its SMOKE/the regenerated CODEBOOK + state files).
+
+### Result
+**PROCEED.** Tag `C8.20-auditfix-pre-do` after committing this PRE-FLIGHT + the SMOKE-fixture update (§9-#9: fixture authored + red before the builder edit).
+
+---
+
 ## PRE-FLIGHT for C8.20 — 2026-05-23T11:00:00Z — **CODEBOOK extensions (E.7; per-variable historical distributions + sentinel disambiguation + era diffs)** — **RESULT: PROCEED.**
 
 One **upfront** PRE-FLIGHT enumerating every sub-step's inputs (L10-safe: C8.20 is a multi-sub-step task; per §4.1 the L10-safe choice for a multi-sub-step task is one upfront PRE-FLIGHT — chosen over per-sub-step because the builder/render/FAQ sub-steps share one input set and one deterministic builder). Written **before any DO mutation**. KICKOFF Tier-3+5 next task after C8.19-complete (`f32c0ab`); STATUS 2026-05-23T09:00:00Z names C8.20 next; no STATUS↔KICKOFF divergence.
