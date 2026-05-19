@@ -8,6 +8,51 @@
 
 ---
 
+## PRE-FLIGHT for file-inventory-imported-flag-v4 — 2026-05-23T22:00:00Z — **`natality/metadata/file_inventory.csv` `imported`-flag refresh (linked v4)** — **RESULT: PROCEED.**
+
+TaskList #3 of the user-authorized 2026-05-23 "Pre-D cleanup first" block (standing "do whatever you think is best" authorization; halt only on a genuine §7 gate). Discharges the carried Phase-D deferral: C8.18 DO step 6b deliberately did not flip `imported` for the pre-2005 cohort-linked rows it harmonized into v4.
+
+### Inputs
+- [x] `natality/metadata/file_inventory.csv` (95 data rows; cols `year,source_url,source_org,raw_filename,file_format,doc_filename,imported,notes`). present ✓
+- [x] `tests/test_inventory_invariants.py` + `tests/test_source_zip_sha_stability.py` (the only git-tracked readers of this CSV / inventory). present ✓
+- [x] Upstream complete: C8.18 DO step 6b (linked v3→v4 1983-2023 149,386,620 rows; DECISION_LOG 2026-05-23T02:00:00Z) + step 7 (the deferral; 2026-05-23T05:00:00Z). ✓
+- [x] No stale checkpoints: tree clean except untracked `.claude/`, `AUDITS/`. ✓
+
+### Environment
+- [x] Working dir clean (tracked); branch `main`; HEAD `6eecda2`. CSV edit only (no build/runtime).
+
+### Source documentation
+- [x] No external PDFs in scope. Canonical truth = the C8.18 DO step 6b receipt/DECISION_LOG (the 19 pre-2005 cohort zips WERE imported into v4).
+
+### Field-value snapshot (Convention 3)
+- [x] Parsed via Python `csv` (NOT awk — the CSV has embedded commas in quoted `notes`; naive `awk -F,` mis-parses, L7/L12). `imported` value counts = **{true: 76, false: 19}**.
+- [x] The **19 `imported=false` rows are exactly and only** the C8.18 pre-2005 cohort-linked zips: `<YYYY>_linked` for `LinkCO83-91.zip` (1983-1991, 9) + `LinkCO95US-04US.zip` (1995-2004, 10). Canonical truth: all 19 were harmonized into the v4 linked parquet at C8.18 DO step 6b ⇒ `imported` should be **`true`**. (natality 1968-1989 = 22 rows already `true` — C8.17, not this task; linked 2005-2023 = `true`.)
+- [x] Each of the 19 rows carries TWO clauses that become self-contradictory once `imported=true`: col5 `file_format` `"… record byte-width = C8.18 DO step 3 (per LinkCO<YY>Guide.pdf)"` (stale forward-ref — DO step 3 done) and `notes` `"… (imported=false until C8.18 re-harmonize). …"` (the re-harmonize = DO step 6b, done). SHA-anchored member byte-sizes in `notes` are facts (C8.18 DO step 2) — preserved verbatim, NOT touched (L6).
+
+### §7 gate analysis (the load-bearing PRE-FLIGHT question — CLEARED)
+- [x] `tests/test_inventory_invariants.py`: `test_natality_inventory_years_match_schema_years_available()` uses `imported_only=True` **and skips `<YYYY>_linked` keys** (non-integer year) — the 19 rows are skipped regardless of `imported`; flip has **zero** test effect. The module docstring **explicitly anticipates** this flip ("re-asserts when the imported flag flips true … when DO step 6 ships pre-1990 [linked]"). `test_fetal_death_*` reads a different file. **No natality record-length/file_format populated-ness assertion exists** (only `test_fetal_death_inventory_record_length_populated_for_all_rows`, fetal_death-specific) ⇒ the col5 "DO step 3" reword is not test-gated.
+- [x] `tests/test_source_zip_sha_stability.py`: gates on `docs/NCHS_SOURCE_MANIFEST.md` + raw-zip SHA + **filename-classified** row counts (43+57+38+3), NOT on the natality `imported` column. Flip = **zero** effect.
+- [x] No git-tracked script consumes the natality `imported` column for behaviour. ⇒ **No §7 condition** (no PRE-FLIGHT input wrong; no L17 stale pin to bundle; no test breakage; canonical-truth flip; doc/metadata-CSV only; minimal-diff achievable; reversible).
+
+### DO scope (decided under standing authorization)
+1. Flip `imported` `false`→`true` for exactly the 19 `<YYYY>_linked` pre-2005 cohort rows.
+2. Fix-on-contact (L11; **same rows**, internal-consistency, NOT §7-#17 scope creep — the C8.17/C8.18-step7 honest-propagation precedent): col5 `"record byte-width = C8.18 DO step 3 (per "` → `"layout reconstructed at C8.18 (per "` (removes the stale forward-ref; **no invented byte-widths** — L6); notes `"(imported=false until C8.18 re-harmonize)"` → `"(imported=true; C8.18 v4 re-harmonize complete — DO step 6b, linked 1983-2023)"`.
+- Mechanism: 3 byte-identical-across-19 substring replacements (`replace_all`), each provably hitting exactly the 19 rows; the other 76 rows byte-identical (minimal diff; no CSV re-quoting — avoids an H10/round-trip reformat).
+
+### Outputs
+- [x] EDIT-in-place of `natality/metadata/file_inventory.csv` (a metadata CSV, edited in place — not an append-only state file). + RECEIPT/STATUS/DECISION_LOG/this-log appends.
+
+### Date convention
+- [x] 2026-05-23T22:00:00Z (monotonic-after 21:30:00Z; repo append-only clock ahead of harness `currentDate` 2026-05-19; ordering is the invariant).
+
+### Halt conditions tripped
+None. §7 gate analyzed + CLEARED above.
+
+### Result
+**PROCEED.**
+
+---
+
 ## PRE-FLIGHT for fetal-death-codebook-comparability-v240 — 2026-05-23T21:00:00Z — **fetal-death CODEBOOK + COMPARABILITY full-body v2.4.0 re-paragraph (Option A — envelope + cross-era narrative)** — **RESULT: PROCEED.**
 
 TaskList #2 of the user-authorized 2026-05-23 "Pre-D cleanup first" block. Depth confirmed via AskUserQuestion 2026-05-23 = **Option A** (envelope + cross-era narrative; keep still-correct within-era per-variable statements; add V3b/V3a/V2.1 behavior where a variable differs; **every number derived, none hand-invented — L6/§9-#2**; point to the C8.20 generated appendix for exhaustive per-variable per-era evidence; do NOT duplicate or hand-edit the appendix). The C8.20 generated-appendix architecture is honored (lowest H8/L6 risk); this is NOT append-only-supersede — CODEBOOK/COMPARABILITY are hand-authored product docs, edited in place.
