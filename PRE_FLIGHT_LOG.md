@@ -8,6 +8,59 @@
 
 ---
 
+## PRE-FLIGHT for C8.20 — 2026-05-23T11:00:00Z — **CODEBOOK extensions (E.7; per-variable historical distributions + sentinel disambiguation + era diffs)** — **RESULT: PROCEED.**
+
+One **upfront** PRE-FLIGHT enumerating every sub-step's inputs (L10-safe: C8.20 is a multi-sub-step task; per §4.1 the L10-safe choice for a multi-sub-step task is one upfront PRE-FLIGHT — chosen over per-sub-step because the builder/render/FAQ sub-steps share one input set and one deterministic builder). Written **before any DO mutation**. KICKOFF Tier-3+5 next task after C8.19-complete (`f32c0ab`); STATUS 2026-05-23T09:00:00Z names C8.20 next; no STATUS↔KICKOFF divergence.
+
+### Inputs
+- [x] All four settled-envelope derived/harmonized parquets exist + **11-gate SHAs byte-exact** vs C8.19 forward-HALT #2 (`/tmp/c8_20_gate_sha.txt`, computed this PRE-FLIGHT):
+  - fetal-death derived `185c071ec76ab8aa…` ✓ / harmonized `38e2cecb03ff4947…` ✓ — **canonical path = `~/Desktop/fetal-death-harmonization-build/output/harmonized/`** (path-drift resolved: the flat `~/Desktop/fetal-death-harmonization/` tree is a STALE different build — `f09beb4a…`/`90af89b9…` ≠ gate; documented monorepo-path-drift class — see Field-value snapshot + DECISION_LOG; the C8.20 builder pins the `-build/output/harmonized/` path, consistent with `notebooks/_build_cross_race_fetal_mortality.py` + `scripts/perinatal_feasibility_analysis.py`).
+  - natality v3.0.0 derived `acb5c48a9abf82ac…` ✓ / harmonized `c8a740eb48d4f3de…` ✓ ; `.v28_baseline` `e16ad5323d68e28d…`/`230efed2ac34c794…` ✓
+  - linked v4 derived `f630d8cf20db72ea…` ✓ / harmonized `ea89ab3c009de00c…` ✓ ; `.v3_baseline` derived `9b828a4de4e59b17…` ✓
+  - matched-multiples harmonized `adbec1087370941f…` ✓ + 3 raw `5c22308b…`/`7c682668…`/`d98b4296…` ✓ (context only — MM is OUT of C8.20 named scope; §15.D names only fetal_death + natality CODEBOOKs)
+- [x] Schema CSVs (variable lists / source-of-truth for variable enumeration): `fetal_death/harmonized_schema.csv` (73 harmonized rows) ; `natality/metadata/harmonized_schema.csv` (97 rows incl. v4 linked death-side). Era-boundary catalogs (Convention-3 input): `fetal_death/COMPARABILITY.md`, `natality/docs/COMPARABILITY.md`.
+- [x] Target docs exist: `fetal_death/CODEBOOK.md` (255 ln), `natality/docs/CODEBOOK.md` (169 ln), `fetal_death/FAQ.md` (8366 B), `natality/docs/FAQ.md` (15020 B). No `C8.20`/`GENERATED` markers present in either CODEBOOK (first run appends).
+- [x] Upstream complete: C8.16+C8.17+C8.18+C8.19 COMPLETE (STATUS 2026-05-23T09:00:00Z; `C8.19-complete` tag; HEAD `f32c0ab`). Final pre-Zenodo envelope settled.
+- [x] No stale checkpoints: no prior `_build_codebook_extensions.py`; no CODEBOOK generated block; no `/tmp/c8_20_*` canonical outputs.
+
+### Environment
+- [x] Python 3.13.9 (≥3.11) ✓ · pandas 2.3.2 (≥2.3) ✓ · pyarrow 18.1.0 (≥18.0) ✓ · uv 0.11.10 ✓
+- [x] Working tree: only the pre-existing untracked `FDA_REGDOCS_EXECUTION_PLAN.md` (carried C8.19 flag; NOT C8.20 scope; never `git add -A`); otherwise clean. Branch `main` @ `f32c0ab`. ✓
+- [x] L10 prior-task check: C8.19 PRE-FLIGHT (08:00:00Z + 08:30:00Z addendum) precedes its DO commit `f32c0ab` — no back-fill.
+
+### Source documentation
+- [x] No external NVSR/NCHS PDF consumed by C8.20 (pure parquet-derived distributions + documented era constants). Era partitions cite the in-repo COMPARABILITY.md + layout-source CSVs + the C8.16/C8.17/C8.18/C8.2 receipts (no new external source; no SHA-pinned PDF in scope).
+
+### Outputs (intended)
+- [x] `scripts/_build_codebook_extensions.py` — NEW (does not exist) — per-product deterministic, idempotent, read-only builder.
+- [x] `fetal_death/CODEBOOK.md` — extended (append a marker-delimited generated appendix; hand-authored body untouched; + a minimal L11 fix-on-contact scope note mirroring the natality CODEBOOK's existing C8.20 scope note).
+- [x] `natality/docs/CODEBOOK.md` — extended (generated appendix covering natality 1968-2024 + linked-v4 death-side 1983-2023; resolves the file's own "tracked at task C8.20, not yet reflected" note).
+- [x] `fetal_death/FAQ.md` + `natality/docs/FAQ.md` — minimal additive pointer to the new CODEBOOK appendix (DO scope step 4).
+- All NEW/extended; none overwrite an append-only state file. The CODEBOOK generated block carries `<!-- C8.20-GENERATED:BEGIN … -->`/`END` markers so re-running the builder replaces only between markers (idempotent → byte-identical; VERIFY criterion).
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+- **Zero canonical-state mutation**: no parquet / `harmonized_schema.csv` / validation-target CSV / test / metadata-CSV touched (pure docs + a read-only analysis builder — the C8.19-class additive shape). 11-gate SHAs are an output-invariant (VERIFY re-checks byte-exact).
+- **Real envelope vs CODEBOOK-assumed state — divergences surfaced now (the cheap-check payoff), resolved at PRE-FLIGHT, NOT mid-DO:**
+  - **(d1) fetal-death CODEBOOK/COMPARABILITY headers say "V2.0, 1992-2022" (4 eras, 1,634,195 rows); the canonical parquet is v2.4.0 1982-2024, 43 contiguous years, 2,427,233 rows.** Resolution: the generated appendix carries the FULL v2.4.0 per-era evidence; the hand-authored per-variable tables are left untouched (no H8 hand-edit drift / no §7-#17 rewrite-the-CODEBOOK creep); a single minimal L11 scope note added at the fetal-death CODEBOOK head pointing to the appendix (symmetric to the natality CODEBOOK's existing C8.20 scope note). Recorded in DECISION_LOG 2026-05-23T11:00:00Z.
+  - **(d2) natality CODEBOOK/COMPARABILITY explicitly defer the pre-1990 (1968-1989) per-variable extension to "task C8.20 … not yet reflected" / soft-flag (aa).** Resolution: in scope — the appendix covers natality 1968-2024 (incl. the C8.17 pre-1990 era) + the linked-v4 death-side 1983-2023 (incl. the 1992-1994 gap, keyless 1983-1988 `link_segment`, weighted 1983-1984 `record_weight`, ICD-9 1983-1998 `underlying_cause_icd9`/`cause_recode_61`).
+  - **(d3) fetal-death harmonized columns are uniformly `string`; natality/linked are typed (int/bool/float/string); MM is window-keyed (`data_window`), int64-typed.** Resolution: the builder is dtype-agnostic (value_counts on the raw stored representation) and per-product era-keyed (`data_year` for FD/natality/linked; MM excluded from scope). Era partitions are **documented constants** grounded in COMPARABILITY.md + layout-source CSVs + the C8.16/17/18/2 receipts (era boundaries are an NCHS layout fact, not data-derivable — only the *distributions within* each era are parquet-derived; H8/L6 satisfied: every number auto-derived, only the era-boundary constants are documented + cited).
+- [x] Current values match the (now-amended) task plan ✓ — the three divergences are resolved by plan amendment at this cheap-check moment (architecture + scope recorded in DECISION_LOG 2026-05-23T11:00:00Z, the §15.D C8.16 "record the design decision" precedent); no silent proceed.
+
+### Sub-step enumeration (one upfront PRE-FLIGHT; L10)
+1. DO-1 Author `scripts/_build_codebook_extensions.py` — deterministic / idempotent / read-only; memory-safe per-(variable,era) projected `pyarrow.dataset` scans + `pc.value_counts` (never materialize a 2 GB parquet — soft-flag (kk)-aware); marker-delimited block writer; provenance header = input path + sha256-prefix + rowcount + era-partition constant (no wall-clock → byte-identical re-run).
+2. DO-2 Render fetal-death CODEBOOK appendix (smaller surface first, per §15.D SMOKE Tier-1 ordering) + the L11 scope note.
+3. DO-3 Render natality CODEBOOK appendix (natality 1968-2024 + linked-v4 death-side 1983-2023).
+4. DO-4 FAQ pointers (`fetal_death/FAQ.md` + `natality/docs/FAQ.md`).
+Inputs for all four = the gate-verified parquets + schema CSVs + COMPARABILITY catalogs above; one builder, two CODEBOOK targets, two FAQ targets.
+
+### Halt conditions tripped
+None. Additive docs + read-only builder ⇒ §7-#5/#6/#18 not in play (zero canonical mutation; VERIFY re-asserts 11-gate byte-exact). The three Convention-3 divergences (d1/d2/d3) are plan-amendable at the cheap-check (resolved + DECISION_LOG'd), NOT §7-#13/#17 trips (in §15.D's named scope; the appendix-not-rewrite design bounds scope explicitly). The fetal-death-path-drift is RESOLVED (canonical path determinable + gate-matched), the documented monorepo-path-drift fix-on-contact class — not a §7 halt. A NEW §7 gate would only arise if SMOKE/DO surfaced a data/validity defect (e.g., a builder distribution contradicting a documented NVSR-validated count) — surface, do not absorb.
+
+### Result
+**PROCEED** to SMOKE (Tier 0: one fetal-death variable's panel hand-checked; Tier 1: all fetal-death variables; Tier 2: + natality/linked; assert idempotent byte-identical re-run + cross-link integrity — SHAPE-not-VALUE, `DESIGN:` tag) → DO-1..DO-4 (tag `C8.20-pre-do` first) → VERIFY (both CODEBOOKs carry the 3 subsections per variable; builder byte-identical on re-run; 11-gate SHAs byte-exact; pytest 347P+1S+1XF unaffected; cross-links resolve; every appendix number traces to the builder) → RECEIPT + STATUS + DECISION_LOG + commit + tag `C8.20-complete`.
+
+---
+
 ## PRE-FLIGHT ADDENDUM for C8.19 (re-scoped deliverable) — 2026-05-23T08:30:00Z — **RESULT: PROCEED to SMOKE/DO.** Re-scoped per the §11 `[plan-update]` commit `6912534` (user-authorized AskUserQuestion Option 1). The original record-level-parquet PRE-FLIGHT (2026-05-23T08:00:00Z, below) returned **HALT**; this dated addendum is the PRE-FLIGHT for the **re-scoped deliverable** (feasibility/methodology note + reproducible analysis script). L10-safe: this addendum is written **before any DO mutation of the re-scoped deliverable** (the established C8.18 5c-iii/6a/6b/6b-continuation dated-addendum precedent; the 08:00:00Z HALT entry is preserved unedited per §3 append-only-supersede).
 
 ### Inputs
