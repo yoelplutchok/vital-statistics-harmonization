@@ -77,3 +77,13 @@ For demographic-stratified live-birth denominators (needed to compute race-, age
 
 - **V2.1**: add the 2003 and 2004 transition years (distinct layouts), bringing coverage to 1992-2022 with 31 years complete.
 - **V3**: extend backward to 1982 (earlier 1978-revision layouts).
+
+<!-- C8.20-GENERATED:BEGIN (do not hand-edit; regenerate via scripts/_build_codebook_extensions.py) -->
+
+## Per-variable historical distributions (C8.20)
+
+**Q: How do I see how a variable's codes/sentinels behaved in each era?**
+
+See the auto-generated **Appendix C8.20 — Per-variable historical evidence** at the end of the CODEBOOK. For every harmonized variable it gives, per documented layout era: the value distribution, a sentinel-code disambiguation table, and an era-by-era coding-scheme diff. Every number is derived from the shipped parquet by `scripts/_build_codebook_extensions.py` (deterministic; regenerate to reproduce byte-identically).
+
+<!-- C8.20-GENERATED:END -->

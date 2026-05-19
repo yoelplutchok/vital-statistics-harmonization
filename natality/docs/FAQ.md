@@ -198,3 +198,13 @@ See `docs/VALIDATION.md`. Key artifacts:
 - `output/validation/invariants_report_v3_linked_2005_2023.md` (V3 linked equivalent)
 - `output/validation/harmonized_missingness_by_year.csv` (per-variable per-year null rates)
 - `output/validation/harmonized_missingness_breaks.csv` (>5 ppt year-over-year jumps)
+
+<!-- C8.20-GENERATED:BEGIN (do not hand-edit; regenerate via scripts/_build_codebook_extensions.py) -->
+
+## Per-variable historical distributions (C8.20)
+
+**Q: How do I see how a variable's codes/sentinels behaved in each era?**
+
+See the auto-generated **Appendix C8.20 — Per-variable historical evidence** at the end of the CODEBOOK. For every harmonized variable it gives, per documented layout era: the value distribution, a sentinel-code disambiguation table, and an era-by-era coding-scheme diff. Every number is derived from the shipped parquet by `scripts/_build_codebook_extensions.py` (deterministic; regenerate to reproduce byte-identically).
+
+<!-- C8.20-GENERATED:END -->

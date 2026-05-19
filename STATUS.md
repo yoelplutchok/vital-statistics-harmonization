@@ -1,6 +1,68 @@
-# STATUS — last updated 2026-05-23T09:00:00Z
+# STATUS — last updated 2026-05-23T13:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T13:00:00Z — **C8.20 COMPLETE** — CODEBOOK extensions (E.7): deterministic marker-delimited generated appendix in `fetal_death/CODEBOOK.md` (73 vars × 3 §15.D subsections, 7 fetal-death eras 1982-2024) + `natality/docs/CODEBOOK.md` (84 natality vars 1968-2024 + 13 linked-v4 death-side vars 1983-2023 = 97 var blocks × 3 subsections). Builder `scripts/_build_codebook_extensions.py` (deterministic/idempotent/read-only) + SHAPE-not-VALUE SMOKE + FAQ pointers + 3 L11 scope notes. **Zero canonical-state mutation** (11-gate SHAs byte-exact; pytest 353P+1S+1XF — the 347P baseline +6 new, zero regression). Tags **`C8.20-pre-do`@`743b4b4`** + **`C8.20-complete`**. A fresh-eyes adversarial audit is prepared for a separate user-run session.
+
+C8.20 shipped in one session under the full five-phase discipline (PRE-FLIGHT→SMOKE→DO→VERIFY→RECEIPT). Full narrative: `RECEIPTS/C8.20_2026-05-23T13-00-00Z.md` + `PRE_FLIGHT_LOG.md` 2026-05-23T11:00:00Z + `DECISION_LOG.md` 2026-05-23T11:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16+C8.17+C8.18+C8.19+C8.20 COMPLETE (5 of 7); C8.21 NEXT.** Settled pre-Zenodo envelope unchanged (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples) — C8.20 added zero canonical state. Cumulative Phase C ≈ 41-42 of 51-71 (C8.20 came in ~1 session, under the 2-4 estimate; cap 86 intact).
+
+### What was done this session
+
+1. Kickoff handshake (a)-(d); user "proceed and make all decisions by yourself in the best way possible"; committed to still halt-and-ask on any NEW §7 gate (none arose).
+2. PRE-FLIGHT (one upfront, L10-safe for the multi-sub-step task): 11-gate SHAs byte-exact (settled envelope confirmed); Convention-3 surfaced 3 divergences (d1 stale fetal-death "V2.0 1992-2022" header vs v2.4.0 parquet; d2 natality pre-1990 C8.20-tracked deferral; d3 mixed dtypes/MM-window-keyed) + the fetal-death **monorepo-path-drift** (canonical = `-build/output/harmonized/`; flat tree stale) — all resolved at the cheap-check + recorded in DECISION_LOG. Tag `C8.20-pre-do`@`743b4b4`.
+3. SMOKE Tier 0 (4 synthetic-fixture tests) / Tier 1 (fetal-death real render, per-era n reconciles to parquet) / Tier 2 (natality+linked, 0 unresolved cross-links) — all PASS.
+4. DO: builder + both CODEBOOK appendices + 2 FAQ pointers + 3 minimal L11 scope notes (fetal-death head + 2 natality notes now point to the appendix).
+5. VERIFY A-F all PASS: scope (docs+scripts+tests only); read-only (parquet mtimes unchanged); idempotent byte-identical re-run (incl. post-head-edit); cross-links 0 unresolved; pytest 353P+1S+1XF (347 baseline preserved + 6 new, 0 failed); every appendix `n` reconciles byte-exact to parquet.
+6. RECEIPT + this STATUS + DECISION_LOG + PRE_FLIGHT_LOG appended; commit + tag `C8.20-complete`.
+7. Prepared an optimized fresh-eyes adversarial audit prompt (KICKOFF audit-variant) delivered to the user for a separate session (independent recomputation of the builder's logic; the §10 self-check primary residual risk routed there, not silently accepted).
+
+### Last completed step
+
+C8.20 (this session) — **COMPLETE**. Single DO commit ships: `scripts/_build_codebook_extensions.py` (NEW), `tests/test_codebook_extensions_smoke.py` (NEW), `fetal_death/CODEBOOK.md` + `natality/docs/CODEBOOK.md` (generated appendix + L11 notes), `fetal_death/FAQ.md` + `natality/docs/FAQ.md` (pointers), + RECEIPT/STATUS. **Zero parquet/schema/test-target/metadata-CSV mutation.** Tag `C8.20-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**C8.21 — Stata + SAS quickstart pointer files (C.3; ~0.5 session)** per KICKOFF Tier 3+5 sequence + §15.D, then C8.22 (pre-computed cross-tab CSVs), then Phase D. Entry cheap-check: the 7 forward-looking HALTs in `RECEIPTS/C8.20_2026-05-23T13-00-00Z.md`. C8.21 may proceed independently of the pending C8.20 audit (if the audit finds an issue it is handled via FIX_LOG/§11 against the committed state).
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.21 entry. **Pending (user-initiated):** a fresh-eyes adversarial **C8.20 audit** — the optimized prompt was delivered in chat for the user to run in a separate session (writes findings to `AUDITS/C8.20_<UTC>.md`); if it reports a blocker, treat per §8/§11 before acting on it (do not pre-empt). **Resolved this session:** the pre-existing stray `FDA_REGDOCS_EXECUTION_PLAN.md` is **no longer present** at repo root (relocated/removed per the C8.19 flag) — the carried flag is closed; it should still be on the Phase-D D.3 public-repo-sync exclude-list if it ever returns. **Owed §11 human-merge (carried, unchanged):** the §15.D model-clarification `[plan-update]` (soft-flag (ii)); the LESSONS 2026-05-20 §8-row + 2026-05-22 (A′) addendum + L13-extension-shared-CSV + L17 grep-scope sharpenings. **Phase-D deferrals owed (carried):** manuscript Coverage re-paragraph = D.4 (+ now also the fetal-death CODEBOOK/COMPARABILITY full-body v2.4.0 re-paragraph — C8.20 added only a minimal L11 scope note + the generated appendix); `file_inventory.csv` `imported`-flag refresh; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; convenience/benchmark v4 refresh (soft-flag (ee)).
+
+**Open soft-flags (28; 0 NEW):** all carried unchanged from C8.19 (C8.20 added zero canonical state). (jj) README "56 passed" stale — now further off (baseline 353P+1S+1XF). (kk) pytest memory-safe split unchanged. **C8.20 added NO new LESSONS entry by design** — the §15.D spec executed as designed (not a new mistake class).
+
+### Forward-looking HALTs for C8.21 PRE-FLIGHT (Convention 4)
+
+Full enumeration (7) in `RECEIPTS/C8.20_2026-05-23T13-00-00Z.md`. Headlines: (1) `C8.20-pre-do`@`743b4b4` + `C8.20-complete` set → C8.20 CLOSED; next = C8.21. (2) 11-gate parquet SHAs unchanged (settled envelope; C8.20 additive). (3) pytest baseline now **353P+1S+1XF** via the memory-safe split (+6 = the new smoke file vs the 347P prior). (4) **A fresh-eyes C8.20 audit is pending in a separate user session** — if it blocks, §8/§11 before remediation; C8.21 not gated on it. (5) canonical fetal-death path = `-build/output/harmonized/` (flat tree stale — never consume). (6) fetal-death CODEBOOK/COMPARABILITY hand-bodies still V2.0 1992-2022 (full-body v2.4.0 re-paragraph = Phase-D deferral; only the L11 note + appendix carry v2.4.0). (7) owed §11 human-merge items carry; C8.20 added no LESSONS by design.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`(deriv)/`ea89ab3c…`(harm)/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- NEW git-tracked this session: `scripts/_build_codebook_extensions.py` (`11c44396…`), `tests/test_codebook_extensions_smoke.py` (`4d389011…`); MODIFIED: `fetal_death/CODEBOOK.md` (`eb6ace53…`), `natality/docs/CODEBOOK.md` (`88c5afbb…`), `fetal_death/FAQ.md` (`1707554e…`), `natality/docs/FAQ.md` (`9e8a6912…`) + state files. **No build-side change (11-gate SHAs byte-exact; input-parquet mtimes unchanged).**
+
+### Notes for next session
+
+- **C8.20 is CLOSED.** Per-variable historical evidence (distribution/sentinel/era-diff) for the full envelope now lives in a regenerable marker-delimited appendix in both CODEBOOKs; hand-authored bodies untouched. Refresh after any envelope change via `uv run python scripts/_build_codebook_extensions.py --product all` (byte-identical unless parquets changed).
+- Next: **C8.21 (Stata/SAS pointer files)**, then C8.22 (cross-tab CSVs), then Phase D.
+- §2 cheap-before-expensive worked (PRE-FLIGHT Convention-3 surfaced the path-drift + 3 doc divergences before any DO). §9-#9 honored (SMOKE harness authored before the builder). The user-requested fresh-eyes audit is the recommended next assurance step, run separately; C8.20 is committed/tagged so it reviews the shipped state.
+- `/tmp/c8_20_*` scratch is OS-cleanable + reproducible.
+
+### Session summary
+
+C8.20 SHIPPED in one session (PRE-FLIGHT+SMOKE+DO+VERIFY+RECEIPT) — **COMPLETE**. A deterministic, idempotent, read-only builder renders the three §15.D per-variable subsections (per-era distribution / sentinel disambiguation / era-by-era coding-scheme diff) into a marker-delimited generated appendix in both CODEBOOKs (FD 73 vars × 7 eras 1982-2024; natality 84 vars 1968-2024 + 13 linked-v4 death-side 1983-2023). Every number parquet-derived (per-era n byte-exact to the parquet); era boundaries cited documented constants; hand-authored bodies untouched (3 minimal L11 scope notes only). Zero canonical-state mutation (11-gate SHAs byte-exact; mtimes unchanged); pytest 353P+1S+1XF (347 baseline preserved, zero regression, +6 new SHAPE-not-VALUE smoke). Tags `C8.20-pre-do`@`743b4b4` + `C8.20-complete`. An optimized fresh-eyes adversarial audit prompt was delivered to the user for an independent session. Tier 3+5 = **5/7 done**; **C8.21 (Stata/SAS pointers) is next**; settled pre-Zenodo envelope unchanged.
 
 ---
 
