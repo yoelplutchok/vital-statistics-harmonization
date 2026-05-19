@@ -1,0 +1,58 @@
+data_year,resident_live_births,nvsr_expected,nvsr_tolerance,reconciliation
+1968,1750782,,,not NVSR-benchmarked (pre-1990; planned)
+1969,1800103,,,not NVSR-benchmarked (pre-1990; planned)
+1970,1865693,,,not NVSR-benchmarked (pre-1990; planned)
+1971,1777985,,,not NVSR-benchmarked (pre-1990; planned)
+1972,1745434,,,not NVSR-benchmarked (pre-1990; planned)
+1973,1835088,,,not NVSR-benchmarked (pre-1990; planned)
+1974,2023726,,,not NVSR-benchmarked (pre-1990; planned)
+1975,2227625,,,not NVSR-benchmarked (pre-1990; planned)
+1976,2455749,,,not NVSR-benchmarked (pre-1990; planned)
+1977,2767140,,,not NVSR-benchmarked (pre-1990; planned)
+1978,2861083,,,not NVSR-benchmarked (pre-1990; planned)
+1979,3179428,,,not NVSR-benchmarked (pre-1990; planned)
+1980,3305078,,,not NVSR-benchmarked (pre-1990; planned)
+1981,3313350,,,not NVSR-benchmarked (pre-1990; planned)
+1982,3372317,,,not NVSR-benchmarked (pre-1990; planned)
+1983,3334315,,,not NVSR-benchmarked (pre-1990; planned)
+1984,3356887,,,not NVSR-benchmarked (pre-1990; planned)
+1985,3760561,,,not NVSR-benchmarked (pre-1990; planned)
+1986,3756547,,,not NVSR-benchmarked (pre-1990; planned)
+1987,3809394,,,not NVSR-benchmarked (pre-1990; planned)
+1988,3909510,,,not NVSR-benchmarked (pre-1990; planned)
+1989,4040958,,,not NVSR-benchmarked (pre-1990; planned)
+1990,4158212,4158212,0,match
+1991,4110907,4110907,0,match
+1992,4065014,4065014,0,match
+1993,4000240,4000240,0,match
+1994,3952767,3952767,0,match
+1995,3899589,3899589,0,match
+1996,3891494,3891494,0,match
+1997,3880894,3880894,0,match
+1998,3941553,3941553,0,match
+1999,3959417,3959417,0,match
+2000,4058814,4058814,0,match
+2001,4025933,4025933,0,match
+2002,4021726,4021726,0,match
+2003,4089950,4089950,0,match
+2004,4112052,4112052,0,match
+2005,4138349,4138349,0,match
+2006,4265555,4265555,0,match
+2007,4316233,4316233,0,match
+2008,4247694,4247694,0,match
+2009,4130665,4130665,0,match
+2010,3999386,3999386,0,match
+2011,3953590,3953590,0,match
+2012,3952841,3952841,0,match
+2013,3932181,3932181,0,match
+2014,3988076,3988076,0,match
+2015,3978497,3978497,0,match
+2016,3945875,3945875,0,match
+2017,3855500,3855500,0,match
+2018,3791712,3791712,0,match
+2019,3747540,3747540,0,match
+2020,3613647,3613647,0,match
+2021,3664292,3664292,0,match
+2022,3667758,3667758,0,match
+2023,3596017,3596017,0,match
+2024,3628934,,,(no NVSR target)

@@ -120,6 +120,10 @@ The full mechanics for all four languages are in [`docs/JOINT_USE_GUIDE.md`](JOI
 
 ## Citing this resource
 
+### Q: Is there a pre-computed table I can cite without loading the parquet?
+
+Yes. [`csv/published_tabulations/`](../csv/published_tabulations/) ships ten plain-CSV cross-tabulations of the most NVSR-cited HVS figures — resident live births, fetal-death counts, fetal-mortality rate, and infant-mortality rate, each by year and (where the data supports it) by bridged race or maternal-age band. Every cell is auto-derived under the product's canonical filter by the deterministic builder `scripts/_build_published_tabulations.py`, and each NVSR-overlapping cell carries a `reconciliation` column reporting the comparison to its validated NVSR target (within-tolerance differences are shown, not hidden). Open the CSV, read the figure, cite it — no Python required. Start with [`csv/published_tabulations/README.md`](../csv/published_tabulations/README.md) for the canonical filter and the bridged-race discontinuity note. There is **no per-state** table (NCHS suppresses sub-national geography in public-use files — see "How do I get state-level data?" above); the per-state slice is substituted by the race and maternal-age stratifications.
+
 ### Q: How do I cite HVS?
 
 The citation metadata is in [`CITATION.cff`](../CITATION.cff). Until the unified HVS Zenodo concept DOI lands at Phase D (post-Phase-C), cite the two existing product DOIs:

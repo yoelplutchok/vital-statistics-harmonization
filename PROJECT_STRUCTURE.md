@@ -14,6 +14,7 @@ vital-statistics-harmonization/
 ├── .gitignore                Excludes parquets, zips, raw NCHS data
 ├── requirements.txt          Combined Python dependencies
 ├── docs/                     Cross-product documentation
+├── csv/published_tabulations/ Pre-computed top-NVSR-cited cross-tab CSVs (C8.22; cite without loading the parquet)
 ├── natality/                 Natality + linked birth–infant death subproject
 ├── fetal_death/              Fetal death subproject
 ├── matched_multiples/        Matched-multiples subproject (4th HVS product; C8.16)
@@ -131,6 +132,20 @@ Data Resource Profile manuscript drafts.
 
 Style and structural decisions are noted in commit messages and the agent transcript.
 
+## csv/published_tabulations/
+
+Pre-computed top-NVSR-cited cross-tabulations (C8.22), so a reader can cite an HVS headline figure without loading a multi-GB parquet. Every cell is auto-derived by the deterministic builder `scripts/_build_published_tabulations.py` from the gate-verified derived parquets (canonical filter applied on every side; `reconciliation` column reports the NVSR comparison); re-running the builder reproduces every CSV byte-identically. There is no per-state tabulation — NCHS suppresses all sub-national geography in the public-use files (documented in the folder README and `docs/WORKED_EXAMPLE_FAQ.md`).
+
+| Path | Purpose |
+|---|---|
+| `csv/published_tabulations/README.md` | Canonical filter, bridged-race discontinuity, the 10-tabulation index, reproduction command |
+| `natality_births_by_year{,_x_maternal_race,_x_maternal_age}.csv` | Resident live births 1968–2024, total + by bridged race + by NCHS age band |
+| `natality_rates_lbw_preterm_singleton_by_year.csv` / `natality_rates_cesarean_multiple_by_year.csv` | NVSR-reconciled rate series (era-dependent cesarean crosswalk; plurality rates) |
+| `fetal_death_counts_by_year.csv` / `fetal_mortality_rate_by_year{,_x_maternal_race}.csv` | ≥20-wk resident fetal deaths 1982–2024 + FMR (joint fetal+natality, both sides canonical-filtered) |
+| `linked_imr_by_year{,_x_maternal_race}.csv` | Unweighted IMR / neonatal / postneonatal, 2005–2023 (the validator-owned surface; pre-2005 cohort pointer-documented) |
+
+Builder: `scripts/_build_published_tabulations.py` (`--check` asserts byte-identical re-render). SMOKE: `tests/test_published_tabulations_smoke.py` (SHAPE-not-VALUE; Convention 1/2).
+
 ## notebooks/
 
 Cross-product worked examples. Each notebook should be runnable end-to-end against the shipped parquets.
@@ -231,5 +246,6 @@ Given an analytic question, this matrix points at the right starting file.
 | Check per-year totals against published *NVSR* figures | per-product `validation_results.csv` + each subproject's `output/validation/*.md` | — | per-subproject `VALIDATION.md` |
 | Add a new harmonized column | Per-product `harmonized_schema.csv` (then propagate through 03_harmonize/04_derive scripts) | — | per-subproject `REPRODUCING.md` |
 | Investigate a per-year discrepancy from *NVSR* | `<product>/output/validation/<target>_<year>.csv` (PASS/FAIL per cell) | — | per-product `05_validate/` source |
+| Cite a headline figure without loading the parquet | `csv/published_tabulations/` (10 pre-computed NVSR-cited cross-tabs) | (canonical filter pre-applied; reconciliation column reports the NVSR comparison) | `csv/published_tabulations/README.md` + `docs/WORKED_EXAMPLE_FAQ.md` |
 | Cite this resource | `CITATION.cff` + Zenodo concept DOIs | — | `docs/WORKED_EXAMPLE_FAQ.md` |
 | Get state-level data | (not available from public-use NCHS files) | — | `docs/WORKED_EXAMPLE_FAQ.md` "How do I get state-level data?" |

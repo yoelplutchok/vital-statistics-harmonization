@@ -1,0 +1,249 @@
+data_year,maternal_race,live_births,pct_within_year,note
+1968,White,1461234,83.46,pre-1990 (not NVSR-benchmarked; planned)
+1968,Black,261402,14.93,pre-1990 (not NVSR-benchmarked; planned)
+1968,AIAN,10738,0.61,pre-1990 (not NVSR-benchmarked; planned)
+1968,Asian or Pacific Islander,8631,0.49,pre-1990 (not NVSR-benchmarked; planned)
+1968,Not stated / not bridged,8777,0.50,pre-1990 (not NVSR-benchmarked; planned)
+1969,White,1502465,83.47,pre-1990 (not NVSR-benchmarked; planned)
+1969,Black,266770,14.82,pre-1990 (not NVSR-benchmarked; planned)
+1969,AIAN,10411,0.58,pre-1990 (not NVSR-benchmarked; planned)
+1969,Asian or Pacific Islander,12976,0.72,pre-1990 (not NVSR-benchmarked; planned)
+1969,Not stated / not bridged,7481,0.42,pre-1990 (not NVSR-benchmarked; planned)
+1970,White,1552544,83.22,pre-1990 (not NVSR-benchmarked; planned)
+1970,Black,280337,15.03,pre-1990 (not NVSR-benchmarked; planned)
+1970,AIAN,11107,0.60,pre-1990 (not NVSR-benchmarked; planned)
+1970,Asian or Pacific Islander,13790,0.74,pre-1990 (not NVSR-benchmarked; planned)
+1970,Not stated / not bridged,7915,0.42,pre-1990 (not NVSR-benchmarked; planned)
+1971,White,1467607,82.54,pre-1990 (not NVSR-benchmarked; planned)
+1971,Black,276634,15.56,pre-1990 (not NVSR-benchmarked; planned)
+1971,AIAN,11598,0.65,pre-1990 (not NVSR-benchmarked; planned)
+1971,Asian or Pacific Islander,13484,0.76,pre-1990 (not NVSR-benchmarked; planned)
+1971,Not stated / not bridged,8662,0.49,pre-1990 (not NVSR-benchmarked; planned)
+1972,White,1431332,82.00,pre-1990 (not NVSR-benchmarked; planned)
+1972,Black,279624,16.02,pre-1990 (not NVSR-benchmarked; planned)
+1972,AIAN,11775,0.67,pre-1990 (not NVSR-benchmarked; planned)
+1972,Asian or Pacific Islander,13547,0.78,pre-1990 (not NVSR-benchmarked; planned)
+1972,Not stated / not bridged,9156,0.52,pre-1990 (not NVSR-benchmarked; planned)
+1973,White,1510314,82.30,pre-1990 (not NVSR-benchmarked; planned)
+1973,Black,287406,15.66,pre-1990 (not NVSR-benchmarked; planned)
+1973,AIAN,11657,0.64,pre-1990 (not NVSR-benchmarked; planned)
+1973,Asian or Pacific Islander,13819,0.75,pre-1990 (not NVSR-benchmarked; planned)
+1973,Not stated / not bridged,11892,0.65,pre-1990 (not NVSR-benchmarked; planned)
+1974,White,1669936,82.52,pre-1990 (not NVSR-benchmarked; planned)
+1974,Black,311519,15.39,pre-1990 (not NVSR-benchmarked; planned)
+1974,AIAN,12536,0.62,pre-1990 (not NVSR-benchmarked; planned)
+1974,Asian or Pacific Islander,15361,0.76,pre-1990 (not NVSR-benchmarked; planned)
+1974,Not stated / not bridged,14374,0.71,pre-1990 (not NVSR-benchmarked; planned)
+1975,White,1817599,81.59,pre-1990 (not NVSR-benchmarked; planned)
+1975,Black,362363,16.27,pre-1990 (not NVSR-benchmarked; planned)
+1975,AIAN,15185,0.68,pre-1990 (not NVSR-benchmarked; planned)
+1975,Asian or Pacific Islander,16834,0.76,pre-1990 (not NVSR-benchmarked; planned)
+1975,Not stated / not bridged,15644,0.70,pre-1990 (not NVSR-benchmarked; planned)
+1976,White,2009475,81.83,pre-1990 (not NVSR-benchmarked; planned)
+1976,Black,392762,15.99,pre-1990 (not NVSR-benchmarked; planned)
+1976,AIAN,16432,0.67,pre-1990 (not NVSR-benchmarked; planned)
+1976,Asian or Pacific Islander,19006,0.77,pre-1990 (not NVSR-benchmarked; planned)
+1976,Not stated / not bridged,18074,0.74,pre-1990 (not NVSR-benchmarked; planned)
+1977,White,2260229,81.68,pre-1990 (not NVSR-benchmarked; planned)
+1977,Black,446381,16.13,pre-1990 (not NVSR-benchmarked; planned)
+1977,AIAN,18096,0.65,pre-1990 (not NVSR-benchmarked; planned)
+1977,Asian or Pacific Islander,21817,0.79,pre-1990 (not NVSR-benchmarked; planned)
+1977,Not stated / not bridged,20617,0.75,pre-1990 (not NVSR-benchmarked; planned)
+1978,White,2333776,81.57,pre-1990 (not NVSR-benchmarked; planned)
+1978,Black,456245,15.95,pre-1990 (not NVSR-benchmarked; planned)
+1978,AIAN,20100,0.70,pre-1990 (not NVSR-benchmarked; planned)
+1978,Asian or Pacific Islander,40295,1.41,pre-1990 (not NVSR-benchmarked; planned)
+1978,Not stated / not bridged,10667,0.37,pre-1990 (not NVSR-benchmarked; planned)
+1979,White,2580981,81.18,pre-1990 (not NVSR-benchmarked; planned)
+1979,Black,509707,16.03,pre-1990 (not NVSR-benchmarked; planned)
+1979,AIAN,21441,0.67,pre-1990 (not NVSR-benchmarked; planned)
+1979,Asian or Pacific Islander,51918,1.63,pre-1990 (not NVSR-benchmarked; planned)
+1979,Not stated / not bridged,15381,0.48,pre-1990 (not NVSR-benchmarked; planned)
+1980,White,2683297,81.19,pre-1990 (not NVSR-benchmarked; planned)
+1980,Black,523277,15.83,pre-1990 (not NVSR-benchmarked; planned)
+1980,AIAN,23701,0.72,pre-1990 (not NVSR-benchmarked; planned)
+1980,Asian or Pacific Islander,61044,1.85,pre-1990 (not NVSR-benchmarked; planned)
+1980,Not stated / not bridged,13759,0.42,pre-1990 (not NVSR-benchmarked; planned)
+1981,White,2688656,81.15,pre-1990 (not NVSR-benchmarked; planned)
+1981,Black,519926,15.69,pre-1990 (not NVSR-benchmarked; planned)
+1981,AIAN,23940,0.72,pre-1990 (not NVSR-benchmarked; planned)
+1981,Asian or Pacific Islander,68952,2.08,pre-1990 (not NVSR-benchmarked; planned)
+1981,Not stated / not bridged,11876,0.36,pre-1990 (not NVSR-benchmarked; planned)
+1982,White,2733080,81.04,pre-1990 (not NVSR-benchmarked; planned)
+1982,Black,524140,15.54,pre-1990 (not NVSR-benchmarked; planned)
+1982,AIAN,27827,0.83,pre-1990 (not NVSR-benchmarked; planned)
+1982,Asian or Pacific Islander,74596,2.21,pre-1990 (not NVSR-benchmarked; planned)
+1982,Not stated / not bridged,12674,0.38,pre-1990 (not NVSR-benchmarked; planned)
+1983,White,2699591,80.96,pre-1990 (not NVSR-benchmarked; planned)
+1983,Black,518466,15.55,pre-1990 (not NVSR-benchmarked; planned)
+1983,AIAN,28475,0.85,pre-1990 (not NVSR-benchmarked; planned)
+1983,Asian or Pacific Islander,75603,2.27,pre-1990 (not NVSR-benchmarked; planned)
+1983,Not stated / not bridged,12180,0.37,pre-1990 (not NVSR-benchmarked; planned)
+1984,White,2713593,80.84,pre-1990 (not NVSR-benchmarked; planned)
+1984,Black,522222,15.56,pre-1990 (not NVSR-benchmarked; planned)
+1984,AIAN,28739,0.86,pre-1990 (not NVSR-benchmarked; planned)
+1984,Asian or Pacific Islander,77444,2.31,pre-1990 (not NVSR-benchmarked; planned)
+1984,Not stated / not bridged,14889,0.44,pre-1990 (not NVSR-benchmarked; planned)
+1985,White,3028337,80.53,pre-1990 (not NVSR-benchmarked; planned)
+1985,Black,580306,15.43,pre-1990 (not NVSR-benchmarked; planned)
+1985,AIAN,33909,0.90,pre-1990 (not NVSR-benchmarked; planned)
+1985,Asian or Pacific Islander,104048,2.77,pre-1990 (not NVSR-benchmarked; planned)
+1985,Not stated / not bridged,13961,0.37,pre-1990 (not NVSR-benchmarked; planned)
+1986,White,3010384,80.14,pre-1990 (not NVSR-benchmarked; planned)
+1986,Black,591481,15.75,pre-1990 (not NVSR-benchmarked; planned)
+1986,AIAN,34072,0.91,pre-1990 (not NVSR-benchmarked; planned)
+1986,Asian or Pacific Islander,107186,2.85,pre-1990 (not NVSR-benchmarked; planned)
+1986,Not stated / not bridged,13424,0.36,pre-1990 (not NVSR-benchmarked; planned)
+1987,White,3036203,79.70,pre-1990 (not NVSR-benchmarked; planned)
+1987,Black,609938,16.01,pre-1990 (not NVSR-benchmarked; planned)
+1987,AIAN,35208,0.92,pre-1990 (not NVSR-benchmarked; planned)
+1987,Asian or Pacific Islander,115913,3.04,pre-1990 (not NVSR-benchmarked; planned)
+1987,Not stated / not bridged,12132,0.32,pre-1990 (not NVSR-benchmarked; planned)
+1988,White,3094411,79.15,pre-1990 (not NVSR-benchmarked; planned)
+1988,Black,637142,16.30,pre-1990 (not NVSR-benchmarked; planned)
+1988,AIAN,37004,0.95,pre-1990 (not NVSR-benchmarked; planned)
+1988,Asian or Pacific Islander,128494,3.29,pre-1990 (not NVSR-benchmarked; planned)
+1988,Not stated / not bridged,12459,0.32,pre-1990 (not NVSR-benchmarked; planned)
+1989,White,3192355,79.00,pre-1990 (not NVSR-benchmarked; planned)
+1989,Black,673124,16.66,pre-1990 (not NVSR-benchmarked; planned)
+1989,AIAN,39478,0.98,pre-1990 (not NVSR-benchmarked; planned)
+1989,Asian or Pacific Islander,133075,3.29,pre-1990 (not NVSR-benchmarked; planned)
+1989,Not stated / not bridged,2926,0.07,pre-1990 (not NVSR-benchmarked; planned)
+1990,White,3290273,79.13,approximate crosswalk (not official NCHS bridged race)
+1990,Black,684336,16.46,approximate crosswalk (not official NCHS bridged race)
+1990,AIAN,39051,0.94,approximate crosswalk (not official NCHS bridged race)
+1990,Asian or Pacific Islander,141635,3.41,approximate crosswalk (not official NCHS bridged race)
+1990,Not stated / not bridged,2917,0.07,approximate crosswalk (not official NCHS bridged race)
+1991,White,3241273,78.85,approximate crosswalk (not official NCHS bridged race)
+1991,Black,682602,16.60,approximate crosswalk (not official NCHS bridged race)
+1991,AIAN,38841,0.94,approximate crosswalk (not official NCHS bridged race)
+1991,Asian or Pacific Islander,145372,3.54,approximate crosswalk (not official NCHS bridged race)
+1991,Not stated / not bridged,2819,0.07,approximate crosswalk (not official NCHS bridged race)
+1992,White,3201678,78.76,approximate crosswalk (not official NCHS bridged race)
+1992,Black,673633,16.57,approximate crosswalk (not official NCHS bridged race)
+1992,AIAN,39453,0.97,approximate crosswalk (not official NCHS bridged race)
+1992,Asian or Pacific Islander,120362,2.96,approximate crosswalk (not official NCHS bridged race)
+1992,Not stated / not bridged,29888,0.74,approximate crosswalk (not official NCHS bridged race)
+1993,White,3149833,78.74,approximate crosswalk (not official NCHS bridged race)
+1993,Black,658875,16.47,approximate crosswalk (not official NCHS bridged race)
+1993,AIAN,38732,0.97,approximate crosswalk (not official NCHS bridged race)
+1993,Asian or Pacific Islander,121285,3.03,approximate crosswalk (not official NCHS bridged race)
+1993,Not stated / not bridged,31515,0.79,approximate crosswalk (not official NCHS bridged race)
+1994,White,3121004,78.96,approximate crosswalk (not official NCHS bridged race)
+1994,Black,636391,16.10,approximate crosswalk (not official NCHS bridged race)
+1994,AIAN,37740,0.95,approximate crosswalk (not official NCHS bridged race)
+1994,Asian or Pacific Islander,124720,3.16,approximate crosswalk (not official NCHS bridged race)
+1994,Not stated / not bridged,32912,0.83,approximate crosswalk (not official NCHS bridged race)
+1995,White,3098885,79.47,approximate crosswalk (not official NCHS bridged race)
+1995,Black,603139,15.47,approximate crosswalk (not official NCHS bridged race)
+1995,AIAN,37278,0.96,approximate crosswalk (not official NCHS bridged race)
+1995,Asian or Pacific Islander,126094,3.23,approximate crosswalk (not official NCHS bridged race)
+1995,Not stated / not bridged,34193,0.88,approximate crosswalk (not official NCHS bridged race)
+1996,White,3093057,79.48,approximate crosswalk (not official NCHS bridged race)
+1996,Black,594781,15.28,approximate crosswalk (not official NCHS bridged race)
+1996,AIAN,37880,0.97,approximate crosswalk (not official NCHS bridged race)
+1996,Asian or Pacific Islander,132302,3.40,approximate crosswalk (not official NCHS bridged race)
+1996,Not stated / not bridged,33474,0.86,approximate crosswalk (not official NCHS bridged race)
+1997,White,3072640,79.17,approximate crosswalk (not official NCHS bridged race)
+1997,Black,599913,15.46,approximate crosswalk (not official NCHS bridged race)
+1997,AIAN,38572,0.99,approximate crosswalk (not official NCHS bridged race)
+1997,Asian or Pacific Islander,133547,3.44,approximate crosswalk (not official NCHS bridged race)
+1997,Not stated / not bridged,36222,0.93,approximate crosswalk (not official NCHS bridged race)
+1998,White,3118727,79.12,approximate crosswalk (not official NCHS bridged race)
+1998,Black,609902,15.47,approximate crosswalk (not official NCHS bridged race)
+1998,AIAN,40272,1.02,approximate crosswalk (not official NCHS bridged race)
+1998,Asian or Pacific Islander,136543,3.46,approximate crosswalk (not official NCHS bridged race)
+1998,Not stated / not bridged,36109,0.92,approximate crosswalk (not official NCHS bridged race)
+1999,White,3132501,79.12,approximate crosswalk (not official NCHS bridged race)
+1999,Black,605970,15.30,approximate crosswalk (not official NCHS bridged race)
+1999,AIAN,40170,1.01,approximate crosswalk (not official NCHS bridged race)
+1999,Asian or Pacific Islander,142555,3.60,approximate crosswalk (not official NCHS bridged race)
+1999,Not stated / not bridged,38221,0.97,approximate crosswalk (not official NCHS bridged race)
+2000,White,3194005,78.69,approximate crosswalk (not official NCHS bridged race)
+2000,Black,622598,15.34,approximate crosswalk (not official NCHS bridged race)
+2000,AIAN,41668,1.03,approximate crosswalk (not official NCHS bridged race)
+2000,Asian or Pacific Islander,157659,3.88,approximate crosswalk (not official NCHS bridged race)
+2000,Not stated / not bridged,42884,1.06,approximate crosswalk (not official NCHS bridged race)
+2001,White,3177626,78.93,approximate crosswalk (not official NCHS bridged race)
+2001,Black,606156,15.06,approximate crosswalk (not official NCHS bridged race)
+2001,AIAN,41872,1.04,approximate crosswalk (not official NCHS bridged race)
+2001,Asian or Pacific Islander,156396,3.88,approximate crosswalk (not official NCHS bridged race)
+2001,Not stated / not bridged,43883,1.09,approximate crosswalk (not official NCHS bridged race)
+2002,White,3174760,78.94,approximate crosswalk (not official NCHS bridged race)
+2002,Black,593691,14.76,approximate crosswalk (not official NCHS bridged race)
+2002,AIAN,42368,1.05,approximate crosswalk (not official NCHS bridged race)
+2002,Asian or Pacific Islander,164348,4.09,approximate crosswalk (not official NCHS bridged race)
+2002,Not stated / not bridged,46559,1.16,approximate crosswalk (not official NCHS bridged race)
+2003,White,3225848,78.87,
+2003,Black,599847,14.67,
+2003,AIAN,43052,1.05,
+2003,Asian or Pacific Islander,221203,5.41,
+2004,White,3222928,78.38,
+2004,Black,616074,14.98,
+2004,AIAN,43927,1.07,
+2004,Asian or Pacific Islander,229123,5.57,
+2005,White,3229294,78.03,
+2005,Black,633134,15.30,
+2005,AIAN,44813,1.08,
+2005,Asian or Pacific Islander,231108,5.58,
+2006,White,3310308,77.61,
+2006,Black,666481,15.62,
+2006,AIAN,47721,1.12,
+2006,Asian or Pacific Islander,241045,5.65,
+2007,White,3336626,77.30,
+2007,Black,675676,15.65,
+2007,AIAN,49443,1.15,
+2007,Asian or Pacific Islander,254488,5.90,
+2008,White,3274163,77.08,
+2008,Black,670809,15.79,
+2008,AIAN,49537,1.17,
+2008,Asian or Pacific Islander,253185,5.96,
+2009,White,3173293,76.82,
+2009,Black,657618,15.92,
+2009,AIAN,48665,1.18,
+2009,Asian or Pacific Islander,251089,6.08,
+2010,White,3069315,76.74,
+2010,Black,636425,15.91,
+2010,AIAN,46760,1.17,
+2010,Asian or Pacific Islander,246886,6.17,
+2011,White,3020355,76.40,
+2011,Black,632901,16.01,
+2011,AIAN,46419,1.17,
+2011,Asian or Pacific Islander,253915,6.42,
+2012,White,2999820,75.89,
+2012,Black,634126,16.04,
+2012,AIAN,46093,1.17,
+2012,Asian or Pacific Islander,272802,6.90,
+2013,White,2985757,75.93,
+2013,Black,634760,16.14,
+2013,AIAN,45991,1.17,
+2013,Asian or Pacific Islander,265673,6.76,
+2014,White,3019863,75.72,
+2014,Black,640562,16.06,
+2014,AIAN,44928,1.13,
+2014,Asian or Pacific Islander,282723,7.09,
+2015,White,3012855,75.73,
+2015,Black,640079,16.09,
+2015,AIAN,44299,1.11,
+2015,Asian or Pacific Islander,281264,7.07,
+2016,White,2945970,74.66,
+2016,Black,654067,16.58,
+2016,AIAN,43555,1.10,
+2016,Asian or Pacific Islander,302283,7.66,
+2017,White,2857845,74.12,
+2017,Black,658115,17.07,
+2017,AIAN,41916,1.09,
+2017,Asian or Pacific Islander,297624,7.72,
+2018,White,2834713,74.76,
+2018,Black,633552,16.71,
+2018,AIAN,42145,1.11,
+2018,Asian or Pacific Islander,281302,7.42,
+2019,White,2790446,74.46,
+2019,Black,634642,16.93,
+2019,AIAN,41750,1.11,
+2019,Asian or Pacific Islander,280702,7.49,
+2020,Not stated / not bridged,3613647,100.00,bridged-race discontinued by NCHS 2020+ (use maternal_race_ethnicity_5)
+2021,Not stated / not bridged,3664292,100.00,bridged-race discontinued by NCHS 2020+ (use maternal_race_ethnicity_5)
+2022,Not stated / not bridged,3667758,100.00,bridged-race discontinued by NCHS 2020+ (use maternal_race_ethnicity_5)
+2023,Not stated / not bridged,3596017,100.00,bridged-race discontinued by NCHS 2020+ (use maternal_race_ethnicity_5)
+2024,Not stated / not bridged,3628934,100.00,bridged-race discontinued by NCHS 2020+ (use maternal_race_ethnicity_5)

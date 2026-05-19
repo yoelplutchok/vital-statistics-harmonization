@@ -55,6 +55,7 @@ vital-statistics-harmonization/
 │   ├── record_layout_*.csv
 │   ├── scripts/
 │   └── output/
+├── csv/published_tabulations/    ← pre-computed top-NVSR-cited cross-tab CSVs (cite without loading the parquet)
 ├── notebooks/                    ← cross-product worked examples
 ├── paper/                        ← Data Resource Profile manuscript drafts
 ├── figures/                      ← cross-product figures
@@ -66,6 +67,8 @@ See [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md) for the full map and where to
 ## Loading the data (Python, R, SQL, Stata, SAS)
 
 The harmonized data ship as Apache Parquet. Entry points: **Python** — per-product `quickstart.py`; **R** — per-product `quickstart.R` (`arrow`); **SQL** — [`views.sql`](views.sql) (DuckDB canonical-filter views); **Stata / SAS** — [`STATA_SAS_QUICKSTART.md`](STATA_SAS_QUICKSTART.md) (Parquet→CSV bridge for any release, plus the build-dependent native options). Cross-language mechanics: [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md) "Cross-language access".
+
+**No code at all?** [`csv/published_tabulations/`](csv/published_tabulations/) ships ten pre-computed top-NVSR-cited cross-tabulations (births / fetal-death counts / fetal-mortality / IMR by year, race, and maternal age) as plain CSVs, each cell auto-derived under the canonical filter and reconciled to its NVSR target. Cite a headline figure without touching the parquet. See [`csv/published_tabulations/README.md`](csv/published_tabulations/README.md).
 
 ## Validation
 

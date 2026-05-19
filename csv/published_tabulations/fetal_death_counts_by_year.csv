@@ -1,0 +1,44 @@
+data_year,fetal_deaths_ge20wk_resident,nvsr_expected,nvsr_source,reconciliation
+1982,32694,32694,validate_external_v2 guide control,match
+1983,30752,30752,validate_external_v2 guide control,match
+1984,30099,30099,validate_external_v2 guide control,match
+1985,29661,29661,validate_external_v2 guide control,match
+1986,28972,28972,validate_external_v2 guide control,match
+1987,29349,29349,validate_external_v2 guide control,match
+1988,29442,29442,validate_external_v2 guide control,match
+1989,30469,30469,1989 NCHS Fetal Death User Guide control count,match
+1990,31386,31386,1990 NCHS Fetal Death User Guide control count,match
+1991,30160,30160,1991 NCHS Fetal Death User Guide control count,match
+1992,30256,30256,1992 NCHS Fetal Death User Guide control count,match
+1993,28766,28766,1993 NCHS Fetal Death User Guide control count,match
+1994,27937,27937,1994 NCHS Fetal Death User Guide control count,match
+1995,27294,27294,NVSR 57-08 Table B,match
+1996,27069,27069,NVSR 57-08 Table B,match
+1997,26486,26486,NVSR 57-08 Table B,match
+1998,26702,26702,NVSR 57-08 Table B,match
+1999,26884,26884,NVSR 57-08 Table B,match
+2000,27003,27003,NVSR 57-08 Table B,match
+2001,26373,26373,NVSR 57-08 Table B,match
+2002,25943,25943,NVSR 57-08 Table B,match
+2003,26004,26004,validate_external_v2 NVSR 57-08,match
+2004,26001,26001,validate_external_v2 NVSR 57-08,match
+2005,25894,25894,NVSR 73-09 Table 1,match
+2006,25972,25972,NVSR 73-09 Table 1,match
+2007,26593,26593,NVSR 73-09 Table 1,match
+2008,26335,26335,NVSR 73-09 Table 1,match
+2009,24872,24872,NVSR 73-09 Table 1,match
+2010,24258,24258,NVSR 73-09 Table 1,match
+2011,24289,24289,NVSR 73-09 Table 1,match
+2012,24073,24073,NVSR 73-09 Table 1,match
+2013,23595,23595,NVSR 73-09 Table 1,match
+2014,23980,23980,NVSR 73-09 Table 1,match
+2015,23776,23776,NVSR 73-09 Table 1,match
+2016,23880,23880,NVSR 73-09 Table 1,match
+2017,22827,22827,NVSR 73-09 Table 1,match
+2018,22459,22459,NVSR 73-09 Table 1,match
+2019,21478,21478,NVSR 73-09 Table 1,match
+2020,20854,20854,NVSR 73-09 Table 1,match
+2021,21105,21105,NVSR 73-09 Table 1,match
+2022,20202,20202,NVSR 73-09 Table 1,match
+2023,20005,20005,2023 NCHS Fetal Death User Guide control block,match
+2024,19837,19837,2024 NCHS Fetal Death User Guide control block,match

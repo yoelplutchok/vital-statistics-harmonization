@@ -1,6 +1,67 @@
-# STATUS — last updated 2026-05-23T16:00:00Z
+# STATUS — last updated 2026-05-23T18:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T18:00:00Z — **C8.22 COMPLETE** — Pre-computed cross-tab CSVs (C.5): NEW `csv/published_tabulations/` (10 top-NVSR-cited cross-tabs + README) + deterministic builder `scripts/_build_published_tabulations.py` + SHAPE-not-VALUE SMOKE. Every cell auto-derived (L6) under the canonical filter on every side incl. the cross-product FMR join (F1/F2); NVSR-overlapping cells reconciled (**0 RECONCILE_FAIL**: 198 byte-exact match + 53 within-documented-tolerance, diffs surfaced not hidden); H6 conserved. The §15.D "per-**state**" slice found structurally infeasible (no public-use geography) → substituted by feasible race/age stratifications + documented (D1, the C8.19/C8.21 §15.D-vs-reality fix-on-contact precedent — not a §7 halt). **Zero canonical-state mutation** (3 gate SHAs byte-exact; pytest C8.22 surface 78P+1S/0F incl. the new 11P smoke; determinism `--check`=`(none)`). Tags **`C8.22-pre-do`@`224444d`** + **`C8.22-complete`**. **Tier 3+5 = 7/7 — the entire pre-Zenodo Phase-C scope is COMPLETE; only Phase D remains.**
+
+C8.22 shipped in one session under the full five-phase discipline. Full narrative: `RECEIPTS/C8.22_2026-05-23T18-00-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T18:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 COMPLETE (C8.16–C8.22 = 7/7; the C8.20 fresh-eyes audit closed). The entire pre-Zenodo Phase-C scope is done. Next = Phase D (externally irreversible; explicit human authorization required).** Settled pre-Zenodo envelope **unchanged** (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples) — C8.22 added zero canonical state (read-only derivation into new CSVs). Cumulative Phase C ≈ 43-44 of 51-71 (C8.22 ~1 session as estimated; cap 86 intact).
+
+### What was done this session
+
+Single task C8.22, full five-phase discipline under the user's standing 2026-05-23 "make all decisions yourself for best-quality (within reason); still halt-and-ask on any genuine §7 gate" authorization + the explicit C8.22 guardrails (L6 auto-derive / F1+F2 canonical filter both sides / H6 conservation / reconcile-and-report within-tol diffs / explicit post-boundary bridged-race handling / deterministic byte-identical / docs-pointer wiring / zero canonical mutation / stop at C8.22-complete, no Phase D):
+1. PRE-FLIGHT (`PRE_FLIGHT_LOG.md` 18:00:00Z): 3 gate SHAs byte-exact (C8.21 HALT 2 verified); Convention-3 value-distribution snapshot byte-exact-reconciled the canonical filters to known NVSR cells (fetal 2022=20,202 / 2017=22,827 / 1995+S=27,294; natality 2005=4,138,349 / 2022=3,667,758 / lbw%2005=8.19 / preterm%=12.73 / twin=31.2; linked IMR 2015=5.86/2020=5.35/2023=5.49); pinned the exact per-product bridged-race NULL boundaries (fetal 2018+, natality 2020+); proved the §15.D "per-state" infeasibility (0 geography columns in all 3 parquets). D1-D5 in DECISION_LOG. Tag `C8.22-pre-do`@`224444d`.
+2. SMOKE: harness authored RED before the builder (§9-#9); Tier 0 (6 pure-classifier tests) + Tier 1 (5 structural incl. frozen-NVSR-cell reconciliation + H6 + no-geography) all GREEN post-builder.
+3. DO: `scripts/_build_published_tabulations.py` (mirrors the 3 canonical validators' exact definitions — D2) + 10 CSVs + README + the SMOKE + 3 pointer edits (README/PROJECT_STRUCTURE/WORKED_EXAMPLE_FAQ, §15.D DO-scope 5). 0 RECONCILE_FAIL.
+4. VERIFY A–F all PASS (scope/zero-canonical-mutation; 10/10 present; 0 RECONCILE_FAIL [198 match + 53 within-tol + 102 no-target]; determinism `(none)`; pytest C8.22 surface 78P+1S/0F incl. the new 11P; H6).
+5. RECEIPT + this STATUS + DECISION_LOG + PRE_FLIGHT_LOG appended; commit + tag `C8.22-complete`.
+
+### Last completed step
+
+C8.22 (this session) — **COMPLETE**. Single DO commit ships: `scripts/_build_published_tabulations.py` (NEW), `tests/test_published_tabulations_smoke.py` (NEW), `csv/published_tabulations/` (10 CSVs + README, NEW), `README.md` + `PROJECT_STRUCTURE.md` + `docs/WORKED_EXAMPLE_FAQ.md` (pointer wiring) + RECEIPT/STATUS. **Zero parquet/schema/test-target/metadata-CSV/existing-test mutation.** Tag `C8.22-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (externally irreversible; requires EXPLICIT human authorization — do NOT begin autonomously).** Sequence per KICKOFF Phase D: D.1 Task 9 (redirect notices on the two old GitHub repos) → D.2 Task 10 (unified Zenodo deposit + version patches + PROVENANCE refresh) → D.3 KICKOFF step 5 (public-repo v1.x sync; exclude-list incl. `.claude/`, `AUDITS/`, state files; `csv/published_tabulations/` SHIPS) → D.4 manuscript re-pass + submit (the once-after-all-data Coverage re-paragraph + numerics + admin-section markers). The owed §11 human-merge items + Phase-D deferrals (RECEIPT Notes) should be merged as part of D. Entry cheap-check: the 5 forward-looking HALTs in `RECEIPTS/C8.22_2026-05-23T18-00-00Z.md`.
+
+### Blocked
+
+**Phase D** — gated on explicit human authorization (externally irreversible: GitHub redirects, Zenodo deposits, public-repo push, manuscript submission). **C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+**Phase-D authorization is the gating question** — the entire pre-Zenodo Phase-C scope is complete; whether/when to begin the externally-irreversible Phase D is a human decision (KICKOFF: "Do NOT begin Phase D without explicit human authorization"). **Owed §11 human-merge (carried + 1 new optional):** the §15.D model-clarification `[plan-update]` (soft-flag (ii)); LESSONS 2026-05-20 §8-row + 2026-05-22 (A′) addendum + L13-extension-shared-CSV + L17 grep-scope sharpenings; the optional C8.21 §15.D "Stata 17+ import parquet" wording fix; **NEW (optional, non-blocking):** the §15.D Task C8.22 "per-year × per-state × per-race counts" wording is structurally infeasible (no public-use geography) and was substituted in-deliverable (DECISION_LOG D1) — an optional one-clause §11 plan-update to that §15.D line is flagged for the next human plan-merge pass (deliverable/scope unchanged ⇒ not a §7 trip, not blocking; identical disposition to the C8.21 §15.D flag). **No new LESSONS/§8 owed by design** (C8.22 = the established §15.D-vs-reality fix-on-contact pattern, not a new mistake class). **Phase-D deferrals owed (carried, unchanged):** manuscript Coverage re-paragraph = D.4; fetal-death CODEBOOK/COMPARABILITY full-body v2.4.0 re-paragraph; `file_inventory.csv` `imported`-flag refresh; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; convenience/benchmark v4 refresh.
+
+**Open soft-flags (28; 0 NEW):** all carried unchanged (C8.22 added zero canonical state). (jj) README "56 passed" stale — baseline now far off (the memory-safe per-file split; C8.22 adds an 11P smoke file). (kk) pytest memory-safe per-file split unchanged.
+
+### Forward-looking HALTs for Phase-D / next-session PRE-FLIGHT (Convention 4)
+
+Full enumeration (5) in `RECEIPTS/C8.22_2026-05-23T18-00-00Z.md`. Headlines: (1) `C8.22-pre-do`@`224444d` + `C8.22-complete` set ⇒ C8.22 CLOSED, **Tier 3+5 = 7/7, pre-Zenodo scope COMPLETE; next = Phase D, which is externally irreversible and needs explicit human authorization — do NOT begin autonomously.** (2) 3 gate SHAs unchanged (`185c071ec76a`/`acb5c48a9abf`/`f630d8cf20db`; settled envelope; C8.22 read-only). (3) `csv/published_tabulations/` deterministic manifest sha=`122b279cc8cf…`; `_build_published_tabulations.py --check` must be `(none)` (non-`(none)` after no envelope change = determinism regression → halt; after an envelope change = expected → regenerate + re-reconcile). (4) the reconciliation gate is L14-wired (any RECONCILE_FAIL ⇒ non-zero exit ⇒ §7-#4 halt-and-ask; never silently ship a beyond-tolerance NVSR cell). (5) owed §11 human-merge + the optional C8.21 + C8.22-D1 §15.D-wording fixes + Phase-D deferrals carry; no LESSONS owed by design.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`(deriv)/`ea89ab3c…`(harm)/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- NEW git-tracked this session (C8.22): `scripts/_build_published_tabulations.py` (`2a057bcd…`), `tests/test_published_tabulations_smoke.py` (`1c51f810…`), `csv/published_tabulations/` (10 CSVs + README; manifest `122b279c…`); MODIFIED: `README.md`, `PROJECT_STRUCTURE.md`, `docs/WORKED_EXAMPLE_FAQ.md` (+ state files). **No build-side change (3 gate SHAs byte-exact; input-parquet mtimes unchanged).**
+
+### Notes for next session
+
+- C8.22 CLOSED — **the entire pre-Zenodo Phase-C scope (Tier 1+2+3+5) is COMPLETE.** Only Phase D remains (paper + Zenodo + public-repo sync + submit) — externally irreversible, explicit-human-authorization-gated.
+- `csv/published_tabulations/` is regenerable: `uv run python scripts/_build_published_tabulations.py` (`--check` ⇒ `(none)`). The L14 reconciliation gate halts on any future beyond-tolerance NVSR cell.
+- §2/§9-#5/§9-#9/L6/F1/F2/H6 honored: PRE-FLIGHT Convention-3 cheap-check byte-exact-reconciled the filters before any DO; the builder mirrors the canonical validators (not reinvented); SMOKE authored red-before-green; every cell auto-derived + reconciled; canonical filter on every side incl. the cross-product join; H6 asserted in-builder + smoke. The §15.D "per-state" infeasibility is the established C8.19/C8.21 fix-on-contact pattern (documented, substituted, flagged optional §11), not a §7 trip.
+- `/tmp/claude-*` scratch (pytest split logs) is OS-cleanable + reproducible.
+
+### Session summary
+
+C8.22 SHIPPED in one session (PRE-FLIGHT+SMOKE+DO+VERIFY+RECEIPT) — **COMPLETE**. A new deterministic read-only builder generates `csv/published_tabulations/` (10 top-NVSR-cited cross-tabs + README) by mirroring the three canonical NVSR validators' exact definitions; every cell auto-derived under each product's canonical filter on every side incl. the cross-product FMR join; NVSR-overlapping cells reconciled (**0 RECONCILE_FAIL**: 198 byte-exact + 53 within-documented-tolerance with diffs surfaced, not hidden); H6 row-count conservation asserted (NULL/sentinel surfaced as explicit categories, never dropped); deterministic byte-identical re-render. The §15.D "per-state" slice was proven structurally infeasible at the PRE-FLIGHT cheap-check (NCHS suppresses all public-use geography) and substituted by the feasible race/age stratifications + documented prominently (D1; the C8.19/C8.21 §15.D-vs-reality fix-on-contact precedent — not a §7 halt). Zero canonical-state mutation (3 gate SHAs byte-exact; pytest C8.22 surface 78P+1S/0F incl. the new 11P SHAPE-not-VALUE smoke; determinism `--check`=`(none)`). Tags `C8.22-pre-do`@`224444d` + `C8.22-complete`. **Tier 3+5 = 7/7 — the entire pre-Zenodo Phase-C scope is COMPLETE; only the externally-irreversible Phase D (human-authorization-gated) remains.**
 
 ---
 

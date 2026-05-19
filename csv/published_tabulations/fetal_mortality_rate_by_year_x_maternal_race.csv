@@ -1,0 +1,181 @@
+data_year,maternal_race,fetal_deaths_ge20wk,resident_live_births,fetal_mortality_rate_per_1000,note
+1982,White,22901,2733080,8.31,
+1982,Black,7889,524140,14.83,
+1982,AIAN,330,27827,11.72,
+1982,Asian or Pacific Islander,611,74596,8.12,
+1982,Not stated / not bridged,963,12674,70.62,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1983,White,21207,2699591,7.79,
+1983,Black,7620,518466,14.48,
+1983,AIAN,298,28475,10.36,
+1983,Asian or Pacific Islander,621,75603,8.15,
+1983,Not stated / not bridged,1006,12180,76.29,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1984,White,21119,2713593,7.72,
+1984,Black,7293,522222,13.77,
+1984,AIAN,272,28739,9.38,
+1984,Asian or Pacific Islander,541,77444,6.94,
+1984,Not stated / not bridged,874,14889,55.45,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1985,White,20577,3028337,6.75,
+1985,Black,7329,580306,12.47,
+1985,AIAN,275,33909,8.04,
+1985,Asian or Pacific Islander,552,104048,5.28,
+1985,Not stated / not bridged,928,13961,62.33,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1986,White,19794,3010384,6.53,
+1986,Black,7429,591481,12.40,
+1986,AIAN,264,34072,7.69,
+1986,Asian or Pacific Islander,581,107186,5.39,
+1986,Not stated / not bridged,904,13424,63.09,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1987,White,19702,3036203,6.45,
+1987,Black,7850,609938,12.71,
+1987,AIAN,295,35208,8.31,
+1987,Asian or Pacific Islander,579,115913,4.97,
+1987,Not stated / not bridged,923,12132,70.70,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1988,White,19478,3094411,6.26,
+1988,Black,8219,637142,12.74,
+1988,AIAN,295,37004,7.91,
+1988,Asian or Pacific Islander,670,128494,5.19,
+1988,Not stated / not bridged,780,12459,58.92,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1989,White,20520,3192355,6.39,
+1989,Black,8938,673124,13.10,
+1989,AIAN,302,39478,7.59,
+1989,Asian or Pacific Islander,686,133075,5.13,
+1989,Not stated / not bridged,23,2926,7.80,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1990,White,21081,3290273,6.37,approximate natality crosswalk
+1990,Black,9201,684336,13.27,approximate natality crosswalk
+1990,AIAN,297,39051,7.55,approximate natality crosswalk
+1990,Asian or Pacific Islander,747,141635,5.25,approximate natality crosswalk
+1990,Not stated / not bridged,60,2917,20.15,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1991,White,20257,3241273,6.21,approximate natality crosswalk
+1991,Black,8879,682602,12.84,approximate natality crosswalk
+1991,AIAN,272,38841,6.95,approximate natality crosswalk
+1991,Asian or Pacific Islander,701,145372,4.80,approximate natality crosswalk
+1991,Not stated / not bridged,51,2819,17.77,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1992,White,20131,3201678,6.25,approximate natality crosswalk
+1992,Black,9055,673633,13.26,approximate natality crosswalk
+1992,AIAN,339,39453,8.52,approximate natality crosswalk
+1992,Asian or Pacific Islander,731,120362,6.04,approximate natality crosswalk
+1992,Not stated / not bridged,0,29888,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1993,White,19222,3149833,6.07,approximate natality crosswalk
+1993,Black,8510,658875,12.75,approximate natality crosswalk
+1993,AIAN,251,38732,6.44,approximate natality crosswalk
+1993,Asian or Pacific Islander,783,121285,6.41,approximate natality crosswalk
+1993,Not stated / not bridged,0,31515,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1994,White,18803,3121004,5.99,approximate natality crosswalk
+1994,Black,8071,636391,12.52,approximate natality crosswalk
+1994,AIAN,268,37740,7.05,approximate natality crosswalk
+1994,Asian or Pacific Islander,794,124720,6.33,approximate natality crosswalk
+1994,Not stated / not bridged,1,32912,0.03,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1995,White,18452,3098885,5.92,approximate natality crosswalk
+1995,Black,7766,603139,12.71,approximate natality crosswalk
+1995,AIAN,267,37278,7.11,approximate natality crosswalk
+1995,Asian or Pacific Islander,809,126094,6.37,approximate natality crosswalk
+1995,Not stated / not bridged,0,34193,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1996,White,18448,3093057,5.93,approximate natality crosswalk
+1996,Black,7524,594781,12.49,approximate natality crosswalk
+1996,AIAN,245,37880,6.43,approximate natality crosswalk
+1996,Asian or Pacific Islander,852,132302,6.40,approximate natality crosswalk
+1996,Not stated / not bridged,0,33474,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1997,White,17838,3072640,5.77,approximate natality crosswalk
+1997,Black,7566,599913,12.45,approximate natality crosswalk
+1997,AIAN,262,38572,6.75,approximate natality crosswalk
+1997,Asian or Pacific Islander,820,133547,6.10,approximate natality crosswalk
+1997,Not stated / not bridged,0,36222,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1998,White,17974,3118727,5.73,approximate natality crosswalk
+1998,Black,7603,609902,12.31,approximate natality crosswalk
+1998,AIAN,237,40272,5.85,approximate natality crosswalk
+1998,Asian or Pacific Islander,888,136543,6.46,approximate natality crosswalk
+1998,Not stated / not bridged,0,36109,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+1999,White,17904,3132501,5.68,approximate natality crosswalk
+1999,Black,7750,605970,12.63,approximate natality crosswalk
+1999,AIAN,248,40170,6.14,approximate natality crosswalk
+1999,Asian or Pacific Islander,982,142555,6.84,approximate natality crosswalk
+1999,Not stated / not bridged,0,38221,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2000,White,17883,3194005,5.57,approximate natality crosswalk
+2000,Black,7846,622598,12.45,approximate natality crosswalk
+2000,AIAN,232,41668,5.54,approximate natality crosswalk
+2000,Asian or Pacific Islander,1042,157659,6.57,approximate natality crosswalk
+2000,Not stated / not bridged,0,42884,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2001,White,17629,3177626,5.52,approximate natality crosswalk
+2001,Black,7446,606156,12.13,approximate natality crosswalk
+2001,AIAN,249,41872,5.91,approximate natality crosswalk
+2001,Asian or Pacific Islander,1049,156396,6.66,approximate natality crosswalk
+2001,Not stated / not bridged,0,43883,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2002,White,17468,3174760,5.47,approximate natality crosswalk
+2002,Black,7159,593691,11.91,approximate natality crosswalk
+2002,AIAN,266,42368,6.24,approximate natality crosswalk
+2002,Asian or Pacific Islander,1050,164348,6.35,approximate natality crosswalk
+2002,Not stated / not bridged,0,46559,0.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2003,White,17264,3225848,5.32,
+2003,Black,7347,599847,12.10,
+2003,AIAN,273,43052,6.30,
+2003,Asian or Pacific Islander,1120,221203,5.04,
+2004,White,17396,3222928,5.37,
+2004,Black,7229,616074,11.60,
+2004,AIAN,270,43927,6.11,
+2004,Asian or Pacific Islander,1106,229123,4.80,
+2005,White,17238,3229294,5.31,
+2005,Black,7269,633134,11.35,
+2005,AIAN,278,44813,6.17,
+2005,Asian or Pacific Islander,1109,231108,4.78,
+2006,White,17245,3310308,5.18,
+2006,Black,7253,666481,10.77,
+2006,AIAN,290,47721,6.04,
+2006,Asian or Pacific Islander,1184,241045,4.89,
+2007,White,17551,3336626,5.23,
+2007,Black,7585,675676,11.10,
+2007,AIAN,257,49443,5.17,
+2007,Asian or Pacific Islander,1200,254488,4.69,
+2008,White,17346,3274163,5.27,
+2008,Black,7477,670809,11.02,
+2008,AIAN,315,49537,6.32,
+2008,Asian or Pacific Islander,1197,253185,4.71,
+2009,White,16445,3173293,5.16,
+2009,Black,6992,657618,10.52,
+2009,AIAN,263,48665,5.38,
+2009,Asian or Pacific Islander,1172,251089,4.65,
+2010,White,15836,3069315,5.13,
+2010,Black,6934,636425,10.78,
+2010,AIAN,259,46760,5.51,
+2010,Asian or Pacific Islander,1229,246886,4.95,
+2011,White,15684,3020355,5.17,
+2011,Black,7016,632901,10.96,
+2011,AIAN,267,46419,5.72,
+2011,Asian or Pacific Islander,1322,253915,5.18,
+2012,White,15505,2999820,5.14,
+2012,Black,6980,634126,10.89,
+2012,AIAN,308,46093,6.64,
+2012,Asian or Pacific Islander,1280,272802,4.67,
+2013,White,15280,2985757,5.09,
+2013,Black,6777,634760,10.56,
+2013,AIAN,288,45991,6.22,
+2013,Asian or Pacific Islander,1250,265673,4.68,
+2014,White,15492,3019863,5.10,
+2014,Black,6881,640562,10.63,
+2014,AIAN,296,44928,6.55,
+2014,Asian or Pacific Islander,1311,282723,4.62,
+2015,White,15305,3012855,5.05,
+2015,Black,6938,640079,10.72,
+2015,AIAN,276,44299,6.19,
+2015,Asian or Pacific Islander,1257,281264,4.45,
+2016,White,15339,2945970,5.18,
+2016,Black,6900,654067,10.44,
+2016,AIAN,284,43555,6.48,
+2016,Asian or Pacific Islander,1357,302283,4.47,
+2017,White,14603,2857845,5.08,
+2017,Black,6636,658115,9.98,
+2017,AIAN,305,41916,7.22,
+2017,Asian or Pacific Islander,1283,297624,4.29,
+2018,White,0,2834713,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2018,Black,0,633552,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2018,AIAN,0,42145,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2018,Asian or Pacific Islander,0,281302,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2018,Not stated / not bridged,22459,0,1000.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2019,White,0,2790446,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2019,Black,0,634642,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2019,AIAN,0,41750,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2019,Asian or Pacific Islander,0,280702,0.00,fetal bridged-race NULL 2018+ — race signal ends 2017
+2019,Not stated / not bridged,21478,0,1000.00,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2020,Not stated / not bridged,20854,3613647,5.74,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2021,Not stated / not bridged,21105,3664292,5.73,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2022,Not stated / not bridged,20202,3667758,5.48,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2023,Not stated / not bridged,20005,3596017,5.53,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
+2024,Not stated / not bridged,19837,3628934,5.44,"unraced residual (fetal NULL 2018+, natality NULL 2020+)"
