@@ -1,6 +1,60 @@
-# STATUS — last updated 2026-05-23T21:30:00Z
+# STATUS — last updated 2026-05-23T22:15:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T22:15:00Z — **file-inventory-imported-flag-v4 COMPLETE** — `natality/metadata/file_inventory.csv` `imported` flipped `false`→`true` for the **19 pre-2005 cohort-linked rows** (`LinkCO83-91` 1983-1991 + `LinkCO95US-04US` 1995-2004) that C8.18 DO step 6b harmonized into v4 but step 7 deferred; +fix-on-contact the 2 now-self-contradictory clauses (col5 stale "DO step 3" forward-ref; notes "imported=false until C8.18 re-harmonize"), no invented numbers (L6). `imported` now uniformly **{true:95, false:0}**. **§7-gate proof: `test_inventory_invariants.py` + `test_source_zip_sha_stability.py` = 6 passed** post-flip. **Zero canonical-state mutation** (diff = the CSV only; 19 ins/19 del, other 76 rows byte-identical; 3 gate SHAs byte-exact). Tags **`file-inventory-imported-flag-v4-pre-do`@`7521366`** + **`file-inventory-imported-flag-v4-complete`**.
+
+TaskList #3 of the "Pre-D cleanup first" block. Carried Phase-D deferral "`file_inventory.csv` `imported`-flag refresh" **discharged**. Full narrative: `RECEIPTS/file-inventory-imported-flag-v4_2026-05-23T22-15-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T22:00/22:15.
+
+### Current phase
+
+**Phase C — pre-Zenodo scope COMPLETE (C8.16–C8.22 = 7/7).** Internal Pre-D cleanup block: #1 plan-merge ✓, #2 CODEBOOK/COMPARABILITY v2.4.0 ✓, **#3 file_inventory imported-flag ✓** (this section); #4 `external_validation_v3_linked_comparison.{md,csv}` v4, #5 convenience/benchmark v4 remain. Settled pre-Zenodo envelope **unchanged** (metadata-CSV only). Manuscript Coverage re-paragraph = D.4. Phase D externally-irreversible + human-authorization-gated.
+
+### What was done this session (cumulative)
+
+KICKOFF handshake → user "Pre-D cleanup first" then "do whatever you think is best". Shipped under full five-phase discipline: #1 `plan-merge-owed-backlog` (`9753160`), #2 `fetal-death-codebook-comparability-v240` (`6eecda2`), **#3 `file-inventory-imported-flag-v4`** (this section). All zero canonical-state mutation.
+
+### Last completed step
+
+`file-inventory-imported-flag-v4` (this session) — **COMPLETE**. Single DO commit ships `natality/metadata/file_inventory.csv` (19 rows; +RECEIPT/STATUS/DECISION_LOG/PRE_FLIGHT_LOG). **Zero parquet/schema/test-target/test/script mutation.** Tag `file-inventory-imported-flag-v4-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**TaskList #4 — `external_validation_v3_linked_comparison.{md,csv}` v4 refresh.** PRE-FLIGHT must reconcile "full-v4 refresh" against the **deliberate** FIX_LOG 2026-05-23T02:00:00Z v3-validator-owned-surface scoping (the v3 linked validator is intentionally scoped to its 2005-2023 NVSR surface; the pre-2005 cohort is verified by the C8.18 DO-step VERIFY, not this validator) — likely a re-run + recommit of the already-correctly-scoped artifact, not a re-scoping. Then #5. Each its own five-phase task.
+
+### Blocked
+
+**Phase D** — explicit human authorization (externally irreversible). **C8.5b (Dockerfile)** / **C8.7b (Orchestrator)** — DEFERRED.
+
+### Open questions for human
+
+Phase-D authorization remains the gating question. **Owed §11 human-merge: (none)** (cleared at #1). **Phase-D deferrals owed (carried, internal):** ~~CODEBOOK/COMPARABILITY v2.4.0~~ (#2 ✓), ~~`file_inventory.csv` `imported`-flag~~ **discharged this session (#3)**; remaining: `external_validation_v3_linked_comparison.{md,csv}` v4 (#4); convenience/benchmark v4 (#5). **Manuscript Coverage re-paragraph = D.4** (untouched).
+
+**Open soft-flags (29; 0 NEW):** all carried unchanged (incl. (ll-docs) the §8 L12-row literal-pipe — non-blocking). (jj) README "56 passed" baseline stale. (kk) pytest memory-safe per-file split.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Full enumeration (4) in `RECEIPTS/file-inventory-imported-flag-v4_2026-05-23T22-15-00Z.md`. Headlines: (1) task CLOSED; `imported`-flag deferral discharged; natality inventory `imported` now uniformly `true` (95/95). (2) 3 gate parquet SHAs unchanged (metadata-CSV only). (3) #4 PRE-FLIGHT must reconcile "v4 refresh" vs the deliberate FIX_LOG 2026-05-23 v3-validator 2005-2023-owned-surface scoping (do not re-scope a validator that was correctly scoped on purpose). (4) repo append-only clock ahead of harness `currentDate` — keep timestamps monotonic-after.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`/`acb5c48a…`; `.v28_baseline` (UNCHANGED). Linked v4.0.0 `f630d8cf…`/`ea89ab3c…`/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- MODIFIED git-tracked this session: `NEXT_STEPS.md`,`LESSONS.md` (#1); `fetal_death/CODEBOOK.md`,`fetal_death/COMPARABILITY.md` (#2); `natality/metadata/file_inventory.csv` (#3) (+ state files). **No build-side change; 3 gate SHAs byte-exact.**
+
+### Notes for next session
+
+- #3 CLOSED. The natality inventory `imported` column now accurately reflects the v4 envelope (95/95 true). Next: TaskList #4 under five-phase discipline (PRE-FLIGHT reconciles the "v4 refresh" wording vs the deliberate v3-validator scoping per FIX_LOG 2026-05-23); then #5; then internal Pre-D cleanup complete and only the human-authorization-gated Phase D remains.
+- §2/§7/§9-#8/L6/L11 honored: §7 gate analyzed + cleared at the cheap PRE-FLIGHT before mutation; deterministic count-asserted minimal-diff edits; fix-on-contact kept to the same 19 rows with no invented numbers; not compressed with #2/#4.
+
+### Session summary
+
+Third task of the "Pre-D cleanup first" block. `file-inventory-imported-flag-v4` SHIPPED under full five-phase discipline — `natality/metadata/file_inventory.csv` `imported` flipped `false`→`true` for exactly the 19 pre-2005 cohort-linked rows C8.18 DO step 6b harmonized into v4 (step 7 had deferred the flip), with fix-on-contact of the 2 clauses that become self-contradictory after the flip (no invented numbers — L6). `imported` now uniformly {true:95,false:0}; the §7 gate (would the flip break the inventory tests?) was analyzed + cleared at PRE-FLIGHT and proven green post-edit (6 passed). Zero canonical-state mutation; minimal 19-line diff. Carried Phase-D `imported`-flag deferral discharged. Tags `…-pre-do`@`7521366` + `…-complete`. Remaining Pre-D cleanup = #4/#5; manuscript = D.4; Phase D human-authorization-gated.
 
 ---
 
