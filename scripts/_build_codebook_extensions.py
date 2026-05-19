@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import math
 import os
 import re
 from collections import Counter, defaultdict
@@ -117,9 +118,66 @@ def _frame(counter: Counter) -> set[str]:
             if k not in ("", None) and (c / tot) >= _FRAME_FLOOR}
 
 
+def _float_summary(rawc: Counter):
+    """Exact per-era descriptive statistics from a raw {value: count} multiset.
+
+    `rawc` keys are python floats plus possibly None / "" (null/blank). For a
+    *continuous* (floating-point) variable a top-N frequency table is the wrong
+    representation (and the 6-sig-fig key format was lossy — the C8.20 fresh-eyes
+    audit finding); a per-era five-number summary + mean is correct and exact.
+
+    Returns dict(n, nonnull, nullblank, distinct, min, p25, p50, p75, mean, max)
+    or None if the era has zero rows. `n` keeps the era total (incl. null/blank)
+    so the audit's per-variable n-conservation invariant still holds. Quantiles
+    use the nearest-rank (lower) method on the weighted ECDF: rank = ceil(p·N),
+    1-indexed, clamped to [1, N] — deterministic, exact, no interpolation.
+    """
+    n = sum(rawc.values())
+    if not n:
+        return None
+    nullblank = sum(c for k, c in rawc.items() if k is None or k == "")
+    vals = sorted((float(k), c) for k, c in rawc.items()
+                  if not (k is None or k == ""))
+    nn = sum(c for _, c in vals)
+    if nn == 0:
+        return dict(n=n, nonnull=0, nullblank=nullblank, distinct=0,
+                    min=None, p25=None, p50=None, p75=None, mean=None, max=None)
+
+    def _q(p: float) -> float:
+        rank = max(1, min(nn, math.ceil(p * nn)))
+        acc = 0
+        for v, c in vals:
+            acc += c
+            if acc >= rank:
+                return v
+        return vals[-1][0]
+
+    return dict(
+        n=n, nonnull=nn, nullblank=nullblank, distinct=len(vals),
+        min=vals[0][0], p25=_q(0.25), p50=_q(0.50), p75=_q(0.75),
+        mean=sum(v * c for v, c in vals) / nn, max=vals[-1][0])
+
+
+def _fmt_stat(x) -> str:
+    """Format one scalar descriptive statistic. `%.6g` is the conventional
+    precision for summary statistics; a scalar aggregate has no key-collision
+    semantics (the audited defect was distinct *value keys* merging), so the
+    L6/H8 precision class does not recur here."""
+    return "—" if x is None else f"{x:.6g}"
+
+
 def render_appendix(*, product, var_order, var_stats, schema_notes,
-                    sentinel_candidates, eras, provenance) -> str:
-    """Render the marker-delimited generated appendix (deterministic)."""
+                    sentinel_candidates, eras, provenance,
+                    float_cols=frozenset(), float_summaries=None) -> str:
+    """Render the marker-delimited generated appendix (deterministic).
+
+    `float_cols` (a frozenset of variable names whose parquet dtype is
+    floating-point) get a per-era SUMMARY-STATISTICS panel in (i) and a
+    "continuous numeric — no discrete code frame" line in (iii); their (ii)
+    sentinel table is unchanged. All other variables are byte-identical to the
+    pre-auditfix render (the C8.20 fresh-eyes audit verified that contract).
+    """
+    float_summaries = float_summaries or {}
     era_labels = [e[0] for e in eras]
     L: list[str] = [BEGIN, ""]
     L.append(f"## Appendix C8.20 — Per-variable historical evidence (auto-generated)")
@@ -146,26 +204,55 @@ def render_appendix(*, product, var_order, var_stats, schema_notes,
             short = note if len(note) <= 240 else note[:237] + "…"
             L.append(f"_Schema note:_ {short}")
             L.append("")
+        is_float = v in float_cols
         # (i) Historical-value distribution
-        L.append("**(i) Historical-value distribution (per era)**")
-        L.append("")
-        L.append("| Era | n | Top values (`code`: count, %) | null/blank |")
-        L.append("|---|--:|---|--:|")
-        for era in era_labels:
-            c = stats.get(era) or Counter()
-            n = sum(c.values())
-            if not n:
-                L.append(f"| `{era}` | 0 | — _(no records)_ | — |")
-                continue
-            nullblank = sum(cnt for k, cnt in c.items() if k in ("", None))
-            ranked = sorted(((k, cnt) for k, cnt in c.items() if k not in ("", None)),
-                            key=lambda kv: (-kv[1], str(kv[0])))
-            top = ranked[:8]
-            cell = "; ".join(f"`{k}`: {cnt:,} ({_pct(cnt, n)})" for k, cnt in top)
-            if len(ranked) > 8:
-                cell += f"; _(+{len(ranked) - 8} more codes)_"
-            L.append(f"| `{era}` | {n:,} | {cell or '—'} | {_pct(nullblank, n)} |")
-        L.append("")
+        if is_float:
+            # Continuous numeric → per-era summary statistics (exact). A top-N
+            # frequency table is the wrong representation for a continuous
+            # variable and its 6-sig-fig keys were lossy (C8.20 audit finding).
+            L.append("**(i) Historical-value distribution (per era)** — "
+                     "_continuous numeric: per-era summary statistics over raw "
+                     "non-null values (quantiles = nearest-rank on the weighted "
+                     "ECDF, rank ⌈p·N⌉; values formatted `%.6g`); documented "
+                     "sentinel codes are listed in (ii) and are **not** trimmed "
+                     "here_")
+            L.append("")
+            L.append("| Era | n | non-null | null/blank | distinct | min | "
+                     "p25 | median | mean | p75 | max |")
+            L.append("|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|")
+            fs = float_summaries.get(v) or {}
+            for era in era_labels:
+                s = fs.get(era)
+                if not s:
+                    L.append(f"| `{era}` | 0 | 0 | — | 0 | — | — | — | — | — | — |")
+                    continue
+                L.append(
+                    f"| `{era}` | {s['n']:,} | {s['nonnull']:,} | "
+                    f"{_pct(s['nullblank'], s['n'])} | {s['distinct']:,} | "
+                    f"{_fmt_stat(s['min'])} | {_fmt_stat(s['p25'])} | "
+                    f"{_fmt_stat(s['p50'])} | {_fmt_stat(s['mean'])} | "
+                    f"{_fmt_stat(s['p75'])} | {_fmt_stat(s['max'])} |")
+            L.append("")
+        else:
+            L.append("**(i) Historical-value distribution (per era)**")
+            L.append("")
+            L.append("| Era | n | Top values (`code`: count, %) | null/blank |")
+            L.append("|---|--:|---|--:|")
+            for era in era_labels:
+                c = stats.get(era) or Counter()
+                n = sum(c.values())
+                if not n:
+                    L.append(f"| `{era}` | 0 | — _(no records)_ | — |")
+                    continue
+                nullblank = sum(cnt for k, cnt in c.items() if k in ("", None))
+                ranked = sorted(((k, cnt) for k, cnt in c.items() if k not in ("", None)),
+                                key=lambda kv: (-kv[1], str(kv[0])))
+                top = ranked[:8]
+                cell = "; ".join(f"`{k}`: {cnt:,} ({_pct(cnt, n)})" for k, cnt in top)
+                if len(ranked) > 8:
+                    cell += f"; _(+{len(ranked) - 8} more codes)_"
+                L.append(f"| `{era}` | {n:,} | {cell or '—'} | {_pct(nullblank, n)} |")
+            L.append("")
         # (ii) Sentinel-code disambiguation
         L.append("**(ii) Sentinel-code disambiguation**")
         L.append("")
@@ -196,6 +283,13 @@ def render_appendix(*, product, var_order, var_stats, schema_notes,
         # (iii) Era-by-era coding-scheme diff
         L.append("**(iii) Era-by-era coding-scheme diff**")
         L.append("")
+        if is_float:
+            L.append("- Continuous numeric variable — no discrete code frame; "
+                     "see the per-era summary statistics in (i). (A "
+                     "frequency/code-frame diff is not meaningful for a "
+                     "continuous measurement.)")
+            L.append("")
+            continue
         frames = {era: _frame(stats.get(era) or Counter()) for era in era_labels}
         diffs: list[str] = []
         prev = None
@@ -250,20 +344,38 @@ def _read_schema_csv(path: Path):
 
 
 def scan_product(parquet_path: str, var_names, eras, year_col="data_year"):
-    """Era-major streaming value_counts (predicate pushdown, bounded memory)."""
+    """Era-major streaming value_counts (predicate pushdown, bounded memory).
+
+    Returns (out, cols, float_cols, float_summaries):
+      out   — {var: {era: Counter(_fmt_val-key)}} (drives (ii) + non-float (i)/(iii);
+              byte-identical to the pre-auditfix path for every variable)
+      float_cols — frozenset of floating-point columns (pyarrow dtype)
+      float_summaries — {float_var: {era: _float_summary(...) | None}} computed
+              exactly from the raw per-era value multiset (no key formatting).
+    """
     dset = ds.dataset(parquet_path, format="parquet")
     have = set(dset.schema.names)
     cols = [v for v in var_names if v in have]
+    float_cols = frozenset(
+        v for v in cols if pa.types.is_floating(dset.schema.field(v).type))
     out = {v: {e[0]: Counter() for e in eras} for v in cols}
+    rawf = {v: {e[0]: Counter() for e in eras} for v in float_cols}
     for label, lo, hi in eras:
         flt = (ds.field(year_col) >= lo) & (ds.field(year_col) <= hi)
         scanner = dset.scanner(columns=cols, filter=flt, batch_size=1 << 19)
         for batch in scanner.to_batches():
             for v in cols:
                 vc = pc.value_counts(batch.column(v))
+                isf = v in float_cols
                 for s, cnt in zip(vc.field("values"), vc.field("counts")):
-                    out[v][label][_fmt_val(s.as_py())] += cnt.as_py()
-    return out, cols
+                    py = s.as_py()
+                    k = cnt.as_py()
+                    out[v][label][_fmt_val(py)] += k
+                    if isf:
+                        rawf[v][label][py] += k
+    float_summaries = {v: {e[0]: _float_summary(rawf[v][e[0]]) for e in eras}
+                       for v in float_cols}
+    return out, cols, float_cols, float_summaries
 
 
 def _write_doc(doc_path: Path, block: str) -> tuple[str, str]:
@@ -303,11 +415,12 @@ def main() -> int:
                 f"sha256[:12]=`{_sha12(FETAL)}` · "
                 f"{ds.dataset(FETAL).count_rows():,} rows · builder "
                 "`scripts/_build_codebook_extensions.py`")
-        stats, cols = scan_product(FETAL, sch_order, ERAS_FETAL)
+        stats, cols, fcols, fsum = scan_product(FETAL, sch_order, ERAS_FETAL)
         block = render_appendix(
             product="fetal_death", var_order=cols, var_stats=stats,
             schema_notes=sch_notes, sentinel_candidates=GLOBAL_SENTINELS,
-            eras=ERAS_FETAL, provenance=prov)
+            eras=ERAS_FETAL, provenance=prov,
+            float_cols=fcols, float_summaries=fsum)
         targets.append((REPO / "fetal_death" / "CODEBOOK.md", block,
                         REPO / "fetal_death" / "FAQ.md"))
 
@@ -325,18 +438,20 @@ def main() -> int:
             f"sha256[:12]=`{_sha12(LINKED)}` · {ds.dataset(LINKED).count_rows():,} rows "
             "(1992-1994 permanent NCHS-linkage gap) · builder "
             "`scripts/_build_codebook_extensions.py`")
-        nstats, ncols = scan_product(NATAL, nat_vars, ERAS_NATAL)
+        nstats, ncols, nfcols, nfsum = scan_product(NATAL, nat_vars, ERAS_NATAL)
         nat_block = render_appendix(
             product="natality", var_order=ncols, var_stats=nstats,
             schema_notes=sch_notes, sentinel_candidates=GLOBAL_SENTINELS,
-            eras=ERAS_NATAL, provenance=prov + " — natality columns (1968-2024)")
-        lstats, lcols = scan_product(LINKED, lnk_only, ERAS_LINKED)
+            eras=ERAS_NATAL, provenance=prov + " — natality columns (1968-2024)",
+            float_cols=nfcols, float_summaries=nfsum)
+        lstats, lcols, lfcols, lfsum = scan_product(LINKED, lnk_only, ERAS_LINKED)
         lnk_block = render_appendix(
             product="natality-linked", var_order=lcols, var_stats=lstats,
             schema_notes=sch_notes, sentinel_candidates=GLOBAL_SENTINELS,
             eras=ERAS_LINKED,
             provenance=prov + " — linked-v4 death-side columns (1983-2023; "
-            "1992-1994 gap)")
+            "1992-1994 gap)",
+            float_cols=lfcols, float_summaries=lfsum)
         block = (nat_block.replace(END, "").rstrip() + "\n\n"
                  + lnk_block.replace(BEGIN, "").lstrip())
         targets.append((REPO / "natality" / "docs" / "CODEBOOK.md", block,

@@ -1,6 +1,68 @@
-# STATUS — last updated 2026-05-23T13:00:00Z
+# STATUS — last updated 2026-05-23T15:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T15:00:00Z — **C8.20-auditfix COMPLETE** — fresh-eyes audit finding remediated at root cause: continuous (floating-point) variables now get a per-era **exact summary-statistics** panel in CODEBOOK §(i) + a "continuous — no discrete code frame" §(iii) line, replacing the lossy 6-sig-fig frequency table. **Zero canonical-state mutation** (3 gate SHAs byte-exact; pytest 355P+1S+1XF = the 353P+1S+1XF C8.20 baseline +2 intended float Tier-0; determinism `--check ×2` = `(none)`). Tags **`C8.20-auditfix-pre-do`@`cf2a59e`** + **`C8.20-auditfix-complete`**.
+
+The user-run fresh-eyes adversarial audit `AUDITS/C8.20_20260519T152156Z.md` landed (1 FINDING, minor, non-blocking, no-HALT, class L6/H8 — explicitly NOT a new mistake class): `_fmt_val` `f"{v:g}"` collapsed 72 distinct float64 `record_weight` values into shared frequency-table keys in the linked sub-appendix. Per §8/§11 (bug-in-completed-work) + the user's 2026-05-23 *"do whatever is necessary to make the output best quality (within reason)"* mandate, fixed at **root cause** (the audit's options (a) accept-as-doc / (c) widen-format were rejected — a frequency table is the wrong representation for a continuous variable regardless of precision). Full narrative: `RECEIPTS/C8.20-auditfix_2026-05-23T15-00-00Z.md` + `FIX_LOG.md`/`DECISION_LOG.md`/`PRE_FLIGHT_LOG.md` 2026-05-23T15:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16–C8.20 COMPLETE (5 of 7) + the C8.20 fresh-eyes audit dispositioned/closed; C8.21 NEXT.** Settled pre-Zenodo envelope **unchanged** (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples) — C8.20-auditfix added zero canonical state. Cumulative Phase C ≈ 41-42 of 51-71 (the audit-fix was a sub-session remediation, not a new Tier task; cap 86 intact).
+
+### What was done this session
+
+1. Kickoff handshake (a)-(d); user authorized *"do whatever is necessary to make the output best quality (within reason)"* + delegated the C8.20-audit disposition. Surfaced the freshly-landed `AUDITS/C8.20_20260519T152156Z.md` (STATUS had it as "pending in a separate session"; it completed). Verdict 1 FINDING minor/non-blocking.
+2. Chose root-cause remediation over the audit's accept-as-doc/widen-format options (DECISION_LOG 15:00:00Z); five-phase discipline applied to the fix.
+3. PRE-FLIGHT (upfront, L10-safe; `PRE_FLIGHT_LOG.md` 15:00:00Z): 3 gate SHAs byte-exact; floating-col blast radius enumerated (fetal **0** → appendix byte-unchanged; natality `bmi_prepregnancy` f32; linked `record_weight` f64) — exactly 2 var blocks, both in `natality/docs/CODEBOOK.md`.
+4. SMOKE §9-#9: authored 2 float Tier-0 tests + committed pre-do (`cf2a59e`, tag `C8.20-auditfix-pre-do`); ran **red** vs unmodified builder (`AttributeError: no _float_summary`); green (8 passed) post-builder-edit.
+5. DO: builder edit (`_float_summary`/`_fmt_stat`; `render_appendix` float (i)/(iii) branch; `scan_product` dtype-detect + raw multiset; 3 call sites; inline quantile-method disclosure) + regenerated both CODEBOOK appendices (full ~350M-row scan ×3).
+6. VERIFY A–H all PASS: scope (builder + natality CODEBOOK only); gate SHAs byte-exact; fetal CODEBOOK + both FAQ byte-identical; collision tail gone; n-conservation preserved; determinism `--check ×2`=`(none)` (twice — pre/post the method-note edit); pytest **355P+1S+1XF** (baseline +2 intended, 0 fail across the full 34-file split); independent DuckDB+numpy recompute byte-matched 3 eras.
+7. RECEIPT + FIX_LOG (L6/H8) + DECISION_LOG + this STATUS appended; commit + tag `C8.20-auditfix-complete`.
+
+### Last completed step
+
+C8.20-auditfix (this session) — **COMPLETE**. Single DO commit ships: `scripts/_build_codebook_extensions.py` + `tests/test_codebook_extensions_smoke.py` (+2 float Tier-0) + regenerated `natality/docs/CODEBOOK.md` (2 var blocks) + RECEIPT/FIX_LOG/STATUS. `fetal_death/CODEBOOK.md` + both `FAQ.md` byte-identical. **Zero parquet/schema/test-target/metadata-CSV mutation.** Tag `C8.20-auditfix-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**C8.21 — Stata + SAS quickstart pointer files (C.3; ~0.5 session)** per KICKOFF Tier 3+5 sequence + §15.D Task C8.21, then C8.22 (pre-computed cross-tab CSVs), then Phase D. Entry cheap-check: the 5 forward-looking HALTs in `RECEIPTS/C8.20-auditfix_2026-05-23T15-00-00Z.md`.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.21 entry. **The C8.20 fresh-eyes audit is now fully dispositioned + closed** (root-cause fix committed + tagged; do NOT re-litigate). **Owed §11 human-merge (carried, unchanged):** the §15.D model-clarification `[plan-update]` (soft-flag (ii)); LESSONS 2026-05-20 §8-row + 2026-05-22 (A′) addendum + L13-extension-shared-CSV + L17 grep-scope sharpenings. **No new LESSONS/§8 owed by C8.20-auditfix** — the audit explicitly classed the finding L6/H8 (in-matrix), not a new class. **Phase-D deferrals owed (carried, unchanged):** manuscript Coverage re-paragraph = D.4; fetal-death CODEBOOK/COMPARABILITY full-body v2.4.0 re-paragraph; `file_inventory.csv` `imported`-flag refresh; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; convenience/benchmark v4 refresh.
+
+**Open soft-flags (28; 0 NEW):** all carried unchanged (C8.20-auditfix added zero canonical state). (jj) README "56 passed" stale — now further off (baseline 355P+1S+1XF). (kk) pytest memory-safe per-file split unchanged (a bare `pytest tests/` collects nothing; `tests/mutations/`, `matched_multiples/tests/`, `fetal_death/tests/`, `natality/tests/` are part of the split).
+
+### Forward-looking HALTs for C8.21 PRE-FLIGHT (Convention 4)
+
+Full enumeration (5) in `RECEIPTS/C8.20-auditfix_2026-05-23T15-00-00Z.md`. Headlines: (1) `C8.20-auditfix-pre-do`@`cf2a59e` + `C8.20-auditfix-complete` set → C8.20 + its audit CLOSED; next = C8.21. (2) 3 gate SHAs unchanged (`185c071ec76a`/`acb5c48a9abf`/`f630d8cf20db`; settled envelope; auditfix additive). (3) pytest baseline now **355P+1S+1XF** via the memory-safe per-file split (+2 vs the 353P prior = the new float Tier-0). (4) the CODEBOOK appendix is regenerable — re-run `_build_codebook_extensions.py --product all` + re-VERIFY `--check ×2`=`(none)` after any envelope change. (5) owed §11 human-merge + Phase-D deferrals carry; C8.20-auditfix added no LESSONS by design.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`(deriv)/`ea89ab3c…`(harm)/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- MODIFIED git-tracked this session: `scripts/_build_codebook_extensions.py`, `tests/test_codebook_extensions_smoke.py`, `natality/docs/CODEBOOK.md` (+ state files). **No build-side change (3 gate SHAs byte-exact; input-parquet mtimes unchanged); `fetal_death/CODEBOOK.md` + both `FAQ.md` byte-identical.**
+
+### Notes for next session
+
+- **C8.20 + its fresh-eyes audit are CLOSED.** The CODEBOOK per-variable evidence now uses the *correct* representation for continuous variables (exact per-era summary statistics, self-describing quantile method); the lossy 6-sig-fig frequency-table class is eliminated builder-wide.
+- Next: **C8.21 (Stata/SAS pointer files)**, then C8.22 (cross-tab CSVs), then Phase D.
+- §2 (the audit is the cheap external re-probe; remediated before shipping a known-lossy artifact); §9-#7 (root-cause builder fix, not a hand-patch of the generated doc); §9-#9 (SHAPE-not-VALUE float fixture authored red-before-green); §7-#7 (no sentinel-as-data — stats raw, sentinels stay in (ii)). The fresh-eyes adversarial audit worked exactly as designed (caught a subtle representation issue a SHAPE smoke won't bite).
+- `/tmp/claude-*` + `/tmp/audit_recompute.py` scratch is OS-cleanable + reproducible.
+
+### Session summary
+
+The user-run C8.20 fresh-eyes adversarial audit landed with 1 minor non-blocking finding (6-sig-fig float64 `record_weight` key collisions, class L6/H8, not a new class). Under the user's "best quality (within reason)" mandate it was remediated at **root cause** in one sub-session under the full five-phase discipline: floating-point columns now render a per-era **exact summary-statistics** panel (i) + a "continuous — no code frame" line (iii), eliminating the lossy frequency-table class for the entire float family and giving the correct codebook representation for continuous variables. Blast radius: 2 var blocks in `natality/docs/CODEBOOK.md`; `fetal_death/CODEBOOK.md` + both FAQs byte-identical. **Zero canonical-state mutation** (3 gate SHAs byte-exact; pytest 355P+1S+1XF = baseline +2 intended; determinism `--check ×2`=`(none)`; independent DuckDB recompute byte-matched). Tags `C8.20-auditfix-pre-do`@`cf2a59e` + `C8.20-auditfix-complete`. Tier 3+5 = **5/7 done + the C8.20 audit closed**; **C8.21 (Stata/SAS pointers) is next**; settled pre-Zenodo envelope unchanged.
 
 ---
 
