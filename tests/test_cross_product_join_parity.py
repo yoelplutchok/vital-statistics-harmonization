@@ -174,8 +174,8 @@ _LINKED_NATALITY_DRIFT_TOLERANCE = 1e-4  # 0.01%
 def test_linked_per_year_count_within_drift_tolerance_of_natality(
     natality_derived_join_cols, linked_derived_join_cols
 ):
-    """For each joint year (2005-2023): the absolute relative drift between
-    linked and natality resident-filtered counts is ≤ 0.01%. Catches a
+    """For each joint year: the absolute relative drift between linked
+    BIRTHS and natality resident-filtered counts is ≤ 0.01%. Catches a
     linked-pipeline regression that would expand the documented NCHS
     re-tabulation drift beyond the established envelope.
 
@@ -183,13 +183,43 @@ def test_linked_per_year_count_within_drift_tolerance_of_natality(
     years showed linked > natality by 1-228 records (max 0.0055%). NCHS
     constructs the period-/cohort-linked files from NVSR-style tabulations
     that include small post-release adjustments to the natality microdata
-    base; see DECISION_LOG 2026-05-13 for the consolidating finding."""
+    base; see DECISION_LOG 2026-05-13 for the consolidating finding.
+
+    C8.18 v4 scope-correction (DECISION_LOG 2026-05-23T02:00:00Z; same
+    structural facts as the §7 cohort_num disposition + 6a-RECWT — NOT
+    new judgments, the test's own "every linked BIRTH IS a natality
+    birth" intent applied to the v4 envelope):
+
+    * The keyless **1983-1988** cohort era stacks den+num
+      (`link_segment` ∈ {den,num}); the num rows are the stacked
+      infant-death numerator, NOT births (the documented within-era
+      structural difference — schema `link_segment` row / COMPARABILITY
+      / manuscript D.4). Count linked BIRTHS = `link_segment != "num"`
+      (NULL for 1989+/2005+ one-row-per-birth → kept; "den" kept; "num"
+      excluded). Without this, 1983-1988 drift ≈ the num/den ratio (~1%).
+    * **1983-1984** are the documented 50%-of-births-in-5-non-VSCP-areas
+      RECWT-weighted sample (6a-RECWT): the *unweighted* den row count is
+      not a full birth count by NCHS design (the *weighted* den ==
+      published `resident_births`, byte-exact — the gate is
+      `verify_6b_peryear.py` + `external_validation_targets_v3_linked.csv`,
+      not this raw-count test). Excluded from this unweighted-raw-count
+      drift invariant. 1985-2004 (full-den) + 2005-2023 stay in-scope —
+      a real linked-pipeline regression there is still caught."""
+    _WEIGHTED_SAMPLE_YEARS = {1983, 1984}  # 6a-RECWT 50%-non-VSCP sample
     nat = natality_derived_join_cols[natality_derived_join_cols["residence_status"] != 4]
-    linked = linked_derived_join_cols[linked_derived_join_cols["residence_status"] != 4]
+    linked = linked_derived_join_cols[
+        (linked_derived_join_cols["residence_status"] != 4)
+        # births only: exclude the keyless 1983-1988 stacked numerator
+        # (link_segment is NULL for every one-row-per-birth era → kept).
+        & (linked_derived_join_cols["link_segment"] != "num")
+    ]
     nat_per_year = nat["data_year"].value_counts()
     linked_per_year = linked["data_year"].value_counts()
 
-    joint_years = sorted(set(nat_per_year.index) & set(linked_per_year.index))
+    joint_years = sorted(
+        (set(nat_per_year.index) & set(linked_per_year.index))
+        - _WEIGHTED_SAMPLE_YEARS
+    )
     assert joint_years, "no joint-coverage years between natality and linked — empty intersection"
 
     violations: list[str] = []

@@ -42,11 +42,19 @@ FD_EXPECTED_YEARS = list(range(1982, 2025))  # 43 contiguous
 NATALITY_EXPECTED_TOTAL = 201_161_456
 NATALITY_EXPECTED_YEARS = list(range(1968, 2025))  # 57 contiguous
 
-# Linked birth-infant death (cohort-linked, v3); 19 yrs 2005-2023.
-# (The linked file may extend to 2024-cohort at a future task when NCHS
-# releases `2025PE2024CO.zip`; see DECISION_LOG 2026-05-12T22:30:00Z.)
-LINKED_EXPECTED_TOTAL = 74_943_824
-LINKED_EXPECTED_YEARS = list(range(2005, 2024))  # 19 contiguous
+# Linked birth-infant death (cohort-linked, v4); 38 yrs 1983-2023 with
+# the permanent 1992-1994 NCHS linkage gap. C8.18 DO step 6b re-harmonize
+# (v3->v4 backward extension; DECISION_LOG 2026-05-23T02:00:00Z). The
+# 1983-1988 keyless era stacks den+num (two segments per the 5c-iii
+# link_segment model) so the total counts den+num there, not births-only.
+# May extend to 2024-cohort at a future task when NCHS releases
+# `2025PE2024CO.zip` (DECISION_LOG 2026-05-12T22:30:00Z).
+# `tracks-current-state` (Convention 2 / L17): re-pinned in the SAME
+# commit as the v4 re-harmonize canonical mutation.
+LINKED_EXPECTED_TOTAL = 149_386_620
+LINKED_EXPECTED_YEARS = sorted(
+    set(range(1983, 1992)) | set(range(1995, 2024))
+)  # 38; 1992-1994 = permanent NCHS linkage gap
 
 # Documented row drops between pipeline stages.
 # Keys are (product, source_stage, target_stage); value is per-year dict of
@@ -212,7 +220,7 @@ def test_linked_per_year_rows_conserved_through_derive(linked_per_year_counts):
 
 
 def test_linked_year_coverage_matches_expected(linked_per_year_counts):
-    """Convention 2 release-state pin: year coverage 2005-2023 (19 years)."""
+    """Convention 2 release-state pin: year coverage 1983-2023 (38 years; permanent 1992-1994 NCHS linkage gap)."""
     actual = sorted(int(y) for y in linked_per_year_counts["harmonized"].index)
     assert actual == LINKED_EXPECTED_YEARS, (
         f"linked year coverage mismatch: expected {len(LINKED_EXPECTED_YEARS)} years "

@@ -2,7 +2,7 @@
 
 Computed from `natality_v3_linked_harmonized_derived.parquet` (resident-only: `is_foreign_resident == false`).
 
-- Targets: `/Users/yoelplutchok/Desktop/natality-harmonization/metadata/external_validation_targets_v3_linked.csv`
+- Targets: `/Users/yoelplutchok/Desktop/vital-statistics-harmonization/natality/metadata/external_validation_targets_v3_linked.csv`
 - Output CSV: `external_validation_v3_linked_comparison.csv`
 
 ## Summary
@@ -51,7 +51,7 @@ Computed from `natality_v3_linked_harmonized_derived.parquet` (resident-only: `i
 | neonatal_imr_per_1000 | 2023 | 3.59 | 3.59 | 0.00 | pass |
 | postneonatal_imr_per_1000 | 2023 | 1.91 | 1.91 | 0.00 | pass |
 
-## IMR trend (all years, residents only)
+## IMR trend (2005-2023 owned surface, residents only)
 
 | Year | Births | Deaths (unw) | Deaths (w) | IMR (unw) | IMR (w) | Neonatal | Postneonatal |
 |------|--------|-------------|------------|-----------|---------|----------|--------------|
@@ -81,4 +81,5 @@ Computed from `natality_v3_linked_harmonized_derived.parquet` (resident-only: `i
 - 2015 user guide reports **unweighted** counts (explicitly labeled).
 - 2015 and 2020 guides: 'For cohort file use: do not apply the weight.'
 - Small differences (1-2 records) expected due to LATEREC (late-filed births) edge cases.
+- This validator owns the **2005-2023** shipped-product NVSR surface only. The C8.18 pre-2005 cohort backward-extension (1983-2004; the keyless 1983-1988 link_segment den/num era + the 1983-1984 RECWT-weighted sample + the 1989-2004 denominator-plus) is verified by the C8.18 DO-step VERIFY (`verify_6b_peryear.py`) + the `cohort_*` / `resident_infant_deaths` rows in `external_validation_targets_v3_linked.csv` — NOT by this script (FIX_LOG 2026-05-23). A naive unweighted den+num trend row for 1983-1988 here would misstate the published-comparable cohort figures.
 

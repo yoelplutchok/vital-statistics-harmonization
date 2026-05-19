@@ -147,6 +147,11 @@ def linked_derived_join_cols() -> pd.DataFrame:
             "maternal_age",
             "maternal_race_bridged",
             "hispanic_origin",
+            # C8.18 v4: the keyless 1983-1988 cohort era stacks den+num
+            # (link_segment ∈ {den,num}; NULL for 1989+ one-row-per-birth).
+            # Cross-product birth-count parity must count den (births), not
+            # the stacked numerator — so the fixture exposes link_segment.
+            "link_segment",
         ],
     )
 

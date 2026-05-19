@@ -1,4 +1,4 @@
-"""DESIGN: tracks-current-state — asserts each of the 340 canonical parquet
+"""DESIGN: tracks-current-state — asserts each of the 343 canonical parquet
 columns hashes identically to the most-recent committed baseline under
 tests/snapshots/v<X>_<UTC>_columns.csv.
 
@@ -9,9 +9,11 @@ upstream NCHS silently-reformatted year, a dtype coercion that changes
 in-place) that would not change row count or schema is caught by per-
 column hash equality.
 
-Convention 1 SHAPE-not-VALUE for the structural anchors (340 total
-columns; 73 + 89 + 84 + 94 per-parquet split). The per-column SHA test
-IS value-pinning by design — that is exactly what a regression baseline
+Convention 1 SHAPE-not-VALUE for the structural anchors (343 total
+columns; 73 + 89 + 84 + 97 per-parquet split; the linked 94->97 is the
+C8.18 6b v3->v4 +link_segment/underlying_cause_icd9/cause_recode_61).
+The per-column SHA test IS value-pinning by design — that is exactly
+what a regression baseline
 asserts. Re-snapshot is triggered ONLY by an authorized §11 plan-update
 (e.g., C8.13's dictionary-encoding reshape), which produces a sibling
 `v<X+1>_<UTC>_columns.csv` and a DECISION_LOG entry naming the cause.
@@ -35,13 +37,21 @@ from tests.snapshots._build_snapshot import (
     load_baseline_csv,
 )
 
+# `tracks-current-state` (Convention 2 / L17): re-pinned in the SAME commit
+# as the C8.18 DO step 6b linked v3->v4 re-harmonize canonical mutation
+# (DECISION_LOG 2026-05-23T02:00:00Z). The v4 linked-derived parquet adds 3
+# columns (link_segment + underlying_cause_icd9 + cause_recode_61): 94 -> 97;
+# total 340 -> 343. FD + natality_v2 unchanged. Sibling of the
+# test_row_count_conservation.py LINKED re-pin (same commit). FIX_LOG
+# 2026-05-23 (the PRE-FLIGHT L17 grep-scope initially missed these two
+# count constants — caught by the authoritative consolidated VERIFY-E).
 EXPECTED_COLUMN_COUNTS = {
     "fetal_death_harmonized": 73,
     "fetal_death_derived": 89,
     "natality_v2_harmonized_derived": 84,
-    "natality_v3_linked_harmonized_derived": 94,
+    "natality_v3_linked_harmonized_derived": 97,
 }
-EXPECTED_TOTAL = sum(EXPECTED_COLUMN_COUNTS.values())  # 340
+EXPECTED_TOTAL = sum(EXPECTED_COLUMN_COUNTS.values())  # 343 (73+89+84+97)
 
 
 def _baseline_by_parquet() -> dict[str, list[dict[str, str]]]:
@@ -53,10 +63,12 @@ def _baseline_by_parquet() -> dict[str, list[dict[str, str]]]:
 
 
 def test_baseline_anchor_row_count() -> None:
-    """340 = 73 + 89 + 84 + 94 columns total in the committed baseline."""
+    """343 = 73 + 89 + 84 + 97 columns total in the committed baseline
+    (C8.18 6b: linked v3->v4 added link_segment + underlying_cause_icd9 +
+    cause_recode_61, 94->97)."""
     rows = load_baseline_csv(latest_baseline_path())
     assert len(rows) == EXPECTED_TOTAL, (
-        f"expected {EXPECTED_TOTAL} baseline rows (73+89+84+94); got {len(rows)}"
+        f"expected {EXPECTED_TOTAL} baseline rows (73+89+84+97); got {len(rows)}"
     )
 
 

@@ -130,7 +130,13 @@ def main() -> None:
     # (natality_v2 84-col block changes; the other 3 parquets' per-column
     # SHAs are byte-identical to the v1 baseline). v1 baseline retained
     # (Anti-Pattern #10). See DECISION_LOG 2026-05-16T08:00:00Z.
-    out = BASELINE_DIR / "v2_2026-05-16T08-00-00Z_columns.csv"
+    # v3 re-snap: C8.18 DO step 6b linked v3->v4 1983-2023 re-harmonize
+    # (the natality_v3_linked_harmonized_derived block changes — 1983-2004
+    # rows added + the new link_segment / underlying_cause_icd9 /
+    # cause_recode_61 columns; FD + natality_v2 per-column SHAs are
+    # byte-identical to the v2 baseline). v1 + v2 baselines retained
+    # (Anti-Pattern #10). See DECISION_LOG 2026-05-23T02:00:00Z.
+    out = BASELINE_DIR / "v3_2026-05-23T02-00-00Z_columns.csv"
     n = write_baseline_csv(out)
     print(f"wrote {n} rows to {out}")
 

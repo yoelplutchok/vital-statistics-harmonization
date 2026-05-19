@@ -94,6 +94,7 @@ def load_targets(path: Path) -> list[Target]:
         raise FileNotFoundError(path)
 
     targets: list[Target] = []
+    skipped: dict[str, int] = {}
     with path.open("r", encoding="utf-8", newline="") as f:
         rows = (line for line in f if not line.lstrip().startswith("#") and line.strip())
         r = csv.DictReader(rows)
@@ -104,8 +105,36 @@ def load_targets(path: Path) -> list[Target]:
 
             if not metric_id or not universe or not year_s:
                 continue
+            # The targets CSV is a SHARED file. This validator OWNS the
+            # 2005-2023 shipped-product NVSR surface (the "existing 33/35
+            # + 2 docs" §15.D criterion). The C8.18 pre-2005 cohort
+            # backward-extension cells — every year < 2005 (the keyless
+            # 1983-1988 link_segment den/num era + the 1983-1984
+            # RECWT-weighted den + the 1989-2004 denominator-plus cohort)
+            # AND the cohort-only metrics (cohort_den/num_file_records,
+            # resident_infant_deaths) — are verified by the C8.18 DO-step
+            # VERIFY (the 6a-established bespoke per-year cohort
+            # verification), NOT by this v3-NVSR script whose
+            # resident_births/IMR computation has no link_segment /
+            # RECWT-weighting logic. Skip-with-disclosure rather than
+            # crash or mis-compute (FIX_LOG 2026-05-23 — the 6a
+            # shared-CSV integration gap; the monorepo-path-drift
+            # fix-on-contact class). L14-safe: this validator still exits
+            # non-zero on any per-row FAIL within its OWNED 2005-2023
+            # surface; the pre-2005 cohort surface is fully verified by
+            # the DO-step VERIFY (not silently passed here).
+            try:
+                _yr = int(year_s)
+            except ValueError:
+                _yr = None
             if metric_id not in SUPPORTED_METRICS:
-                raise ValueError(f"Unsupported metric_id={metric_id!r}. Supported: {sorted(SUPPORTED_METRICS)}")
+                skipped[f"metric:{metric_id}"] = (
+                    skipped.get(f"metric:{metric_id}", 0) + 1)
+                continue
+            if _yr is not None and _yr < 2005:
+                skipped[f"pre2005-cohort:{metric_id}"] = (
+                    skipped.get(f"pre2005-cohort:{metric_id}", 0) + 1)
+                continue
 
             targets.append(
                 Target(
@@ -118,6 +147,16 @@ def load_targets(path: Path) -> list[Target]:
                     notes=(row.get("notes") or "").strip(),
                 )
             )
+    if skipped:
+        total = sum(skipped.values())
+        detail = ", ".join(f"{m}={c}" for m, c in sorted(skipped.items()))
+        print(
+            f"[load_targets] SKIPPED {total} target rows of "
+            f"{len(skipped)} non-owned metric_id(s) [{detail}] — these are "
+            f"the C8.18 cohort parser-conservation / published-comparability "
+            f"gates verified by the DO-step VERIFY, not this v3-NVSR "
+            f"validator (FIX_LOG 2026-05-23)."
+        )
     return targets
 
 
@@ -273,8 +312,16 @@ def main() -> None:
         w.writeheader()
         w.writerows(rows_out)
 
-    # Write MD with trend table
-    all_years = sorted(accum.keys())
+    # Write MD with trend table — scoped to this validator's OWNED
+    # 2005-2023 surface (same owned-surface scoping as load_targets;
+    # FIX_LOG 2026-05-23). The pre-2005 cohort per-year figures require
+    # the keyless-1983-1988 link_segment + 1983-1984 RECWT-weighting
+    # logic this v3-NVSR validator does NOT implement — a naive den+num /
+    # unweighted trend row for 1983-1988 would MISLEAD in a shipped doc
+    # (§9-#2 / L6). The pre-2005 cohort per-year verification is the
+    # C8.18 DO-step VERIFY (verify_6b_peryear.py) + the cohort_* /
+    # resident_* rows in external_validation_targets_v3_linked.csv.
+    all_years = [y for y in sorted(accum.keys()) if y >= 2005]
     trend_rows: list[dict] = []
     for yr in all_years:
         a = accum[yr]
@@ -317,7 +364,7 @@ def main() -> None:
 
     md_lines += [
         "",
-        "## IMR trend (all years, residents only)",
+        "## IMR trend (2005-2023 owned surface, residents only)",
         "",
         "| Year | Births | Deaths (unw) | Deaths (w) | IMR (unw) | IMR (w) | Neonatal | Postneonatal |",
         "|------|--------|-------------|------------|-----------|---------|----------|--------------|",
@@ -336,6 +383,13 @@ def main() -> None:
         "- 2015 user guide reports **unweighted** counts (explicitly labeled).",
         "- 2015 and 2020 guides: 'For cohort file use: do not apply the weight.'",
         "- Small differences (1-2 records) expected due to LATEREC (late-filed births) edge cases.",
+        "- This validator owns the **2005-2023** shipped-product NVSR surface only. The C8.18 "
+        "pre-2005 cohort backward-extension (1983-2004; the keyless 1983-1988 link_segment "
+        "den/num era + the 1983-1984 RECWT-weighted sample + the 1989-2004 denominator-plus) is "
+        "verified by the C8.18 DO-step VERIFY (`verify_6b_peryear.py`) + the `cohort_*` / "
+        "`resident_infant_deaths` rows in `external_validation_targets_v3_linked.csv` — NOT "
+        "by this script (FIX_LOG 2026-05-23). A naive unweighted den+num trend row for "
+        "1983-1988 here would misstate the published-comparable cohort figures.",
         "",
     ]
 

@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
 """
-Harmonize linked birth-infant death Parquet files (2005-2015) into a single
-stacked file with both birth-side and death-side harmonized columns.
+Harmonize linked birth-infant death Parquet files into a single stacked
+file with both birth-side and death-side harmonized columns.
+
+Coverage: cohort-linked **1983-2023** (C8.18 DO step 6b v3->v4 backward
+extension; the permanent **1992-1994** NCHS linkage gap is skipped
+automatically). The 2005-2023 canonical path is byte-identical
+(``_cohort_era(y) is None`` for y>=2005 -> the existing 2005+ body is
+untouched, §9-#7-safe); the pre-2005 cohort eras route to
+``_harmonize_cohort_*`` (1983-1988 keyless two-file den/num; 1989-1991
++ 1995-2004 single-member denominator-plus).
 
 Birth-side columns match the natality V2 harmonized schema.
-Death-side columns are new: infant_death, age_at_death_days, age_at_death_recode5,
-underlying_cause_icd10, cause_recode_130, manner_of_death, record_weight.
+Death-side columns: infant_death, age_at_death_days,
+age_at_death_recode5, underlying_cause_icd10, cause_recode_130,
+underlying_cause_icd9, cause_recode_61, manner_of_death,
+record_weight, link_segment.
 
 Output is written in a memory-bounded streaming fashion.
 
 Usage:
-  python harmonize_linked_v3.py
+  python harmonize_linked_v3.py                       # default 1983-2023
   python harmonize_linked_v3.py --years 2010-2015
 """
 
@@ -40,14 +50,25 @@ def parse_args() -> argparse.Namespace:
         help="Output Parquet path",
     )
     p.add_argument(
-        "--years", type=str, default="2005-2023",
-        help="Comma years or range like 2005-2023 (default = full V3 linked coverage)",
+        "--years", type=str, default="1983-2023",
+        help="Comma years or range like 1983-2023 (default = full v4 "
+             "cohort-linked coverage; the permanent 1992-1994 NCHS "
+             "linkage gap is skipped automatically)",
     )
     p.add_argument(
         "--batch-rows", type=int, default=500_000,
         help="Rows per Parquet batch scan",
     )
     return p.parse_args()
+
+
+# The permanent 1983-2023 NCHS cohort-linkage gap: NCHS suspended ALL
+# linkage (no cohort, no period) for 1992-1994 — there is no source
+# file. ``main()`` skips these years (mirrors ``parse_all_linked_years``
+# + ``_cohort_era``'s §2 fail-closed discipline — never route a gap year
+# through the 2005+ body or fail on a legitimately-absent ``_raw``).
+# C8.18 DO step 6b.
+_LINKAGE_GAP = frozenset({1992, 1993, 1994})
 
 
 def _parse_years(spec: str) -> list[int]:
@@ -2243,6 +2264,10 @@ def main() -> None:
     total = 0
     try:
         for year in years:
+            if year in _LINKAGE_GAP:
+                print(f"  {year}: SKIP (permanent 1992-1994 NCHS "
+                      f"linkage gap — no source file)")
+                continue
             in_path = args.linked_dir / f"linked_{year}_denomplus.parquet"
             if not in_path.is_file():
                 raise FileNotFoundError(in_path)
