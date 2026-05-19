@@ -171,6 +171,8 @@ The cross-product validation notebook reproduces:
 - **Section B-legacy**: 2017 bridged-race joint-use machinery (no NVSR cell — no NCHS *Fetal Mortality 2017* report exists).
 - **Section C**: 2022 perinatal mortality rate joint computation, sub-components validated individually.
 
+> **Perinatal *rate* vs perinatal *record*.** The computation above is the aggregate perinatal mortality **rate** (stratum-level counts; no record linkage). A record-*level* "perinatal record" — one infant row with its same-mother fetal-death sibling joined on — is **not constructible from public-use NCHS data** (no maternal/household identifier, no sub-national geography). See [`docs/PERINATAL_RECORD_FEASIBILITY.md`](PERINATAL_RECORD_FEASIBILITY.md) for the quantitative evidence and the two perinatal analyses HVS *does* support (this rate; and the stillborn↔liveborn co-multiple linkage shipped as `matched_multiples/`).
+
 ## Cross-language access: R and DuckDB
 
 Beyond the Python pattern shown above, HVS ships two additional access paths:

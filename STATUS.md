@@ -1,6 +1,71 @@
-# STATUS — last updated 2026-05-23T05:00:00Z
+# STATUS — last updated 2026-05-23T09:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T09:00:00Z — **C8.19 COMPLETE (re-scoped per §11)** — record-level public-use perinatal *sibling* parquet proven structurally infeasible at the §15.D-designed Tier-0 cheap-check (0.00118% max unique-sibling match ≪ 5%) → §7.13/Sub-Q42 halt → AskUserQuestion → user-authorized **Option 1** → re-scoped to a pre-submission **feasibility/methodology note + deterministic analysis script + restricted-data future-work** (no 5th parquet; zero canonical-state mutation; manuscript = D.4). Tags **`C8.19-pre-do`@`6912534`** + **`C8.19-complete`**.
+
+C8.19 shipped in one session under the full five-phase discipline (PRE-FLIGHT→SMOKE→DO→VERIFY→RECEIPT) as a §11 `[plan-update]` re-scope (own commit `6912534`) + a DO commit. Full narrative: `RECEIPTS/C8.19_2026-05-23T09-00-00Z.md` + `PRE_FLIGHT_LOG.md` 2026-05-23T08:00:00Z (Tier-0 HALT) + 08:30:00Z (re-scoped-deliverable addendum) + `DECISION_LOG.md` 2026-05-23T08:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 + C8.17 + C8.18 + C8.19 COMPLETE (4 of 7); C8.20 NEXT.** The settled pre-Zenodo data envelope is **unchanged** (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples) — C8.19 added zero canonical state (a feasibility note + a read-only analysis script + 3 doc pointers). Cumulative Phase C ≈ 40-41 of 51-71 (C8.19 came in at ~1 re-scoped session, under estimate; cap 86 intact).
+
+### What was done this session
+
+1. Kickoff handshake (a)-(d); user "proceed and make all relevant decisions by yourself"; I committed to still halt-and-ask on any NEW §7 gate.
+2. C8.19 PRE-FLIGHT: 7/7 C8.18-step7 forward-HALTs verified; 11-gate SHAs (linked-v4 `f630d8cf…`/`.v3_baseline` `9b828a4d…`/fetal-death `185c071e…`); env OK; WebFetch (no NCHS perinatal-record file); Convention-3 full-column enumeration of both derived parquets (no geography / no maternal-ID anywhere; `maternal_race_bridged` 100% NULL post-2018).
+3. Tier-0 entropy / expected-match-rate cheap-check on the 2020 fixture (best value-harmonized maternal key): **0.00000% unique-sibling match, mean 15,985 candidate births/fetal death** → **§7.13/§7.16/Sub-Q42 HALT** (the §15.D-designed off-ramp). PRE_FLIGHT_LOG HALT entry written (state-on-disk).
+4. **Halt-and-asked via AskUserQuestion** (not self-waived under standing authorization); user requested clarification; I gave the full assessment (does-not-ruin-project; no public-use path; rate-vs-record distinction; matched_multiples already covers the only linkable case); user selected **Option 1 (re-scope & ship now)**.
+5. §11 `[plan-update]` (own commit `6912534`): §15.D C8.19 append-only-supersede block + KICKOFF Tier-3+5 line + DECISION_LOG 2026-05-23T08:00:00Z + the PRE_FLIGHT_LOG Tier-0 trace.
+6. PRE-FLIGHT addendum (08:30:00Z; L10-safe) for the re-scoped deliverable; tag `C8.19-pre-do`@`6912534`.
+7. DO: deterministic `scripts/perinatal_feasibility_analysis.py` (multi-year 2000/2007/2015/2020 × 2 key variants) + SMOKE (byte-identical re-run; fixed one era-sparse-education row-drop bug) + `docs/PERINATAL_RECORD_FEASIBILITY.md` (every numeric provenance-pointed to the script; L6) + 3 surgical pointer additions (PROJECT_STRUCTURE which-file matrix / JOINT_USE_GUIDE §C rate-vs-record note / WORKED_EXAMPLE_FAQ Q&A).
+8. VERIFY A/A2/B/C/D/E all PASS (additive scope; gate SHAs byte-exact; deterministic; pytest **347P+1S+1XF** zero regression; numbers trace to the script; cross-links resolve). VERIFY-A caught a pre-existing stray untracked `FDA_REGDOCS_EXECUTION_PLAN.md` → excluded + flagged, NOT deleted.
+9. RECEIPT + this STATUS appended; commit (explicit C8.19 paths, FDA file excluded); tag `C8.19-complete`.
+
+### Last completed step
+
+C8.19 (this session) — **COMPLETE (re-scoped)**. Two commits: `[plan-update]` `6912534` (re-scope) + the C8.19 DO commit (deliverable + receipt + state). Deliverable = `docs/PERINATAL_RECORD_FEASIBILITY.md` + `scripts/perinatal_feasibility_analysis.py` + 3 doc pointers. **Zero parquet/`harmonized_schema.csv`/test/validation-CSV/metadata-CSV mutation** (11-gate SHAs byte-exact; the linked-derived = the v4 `f630d8cf…`). Tag `C8.19-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**C8.20 — CODEBOOK extensions (E.7; per-variable historical distributions + sentinel disambiguation + era diffs)** per KICKOFF Tier 3+5 sequence + §15.D. Covers `fetal_death/CODEBOOK.md` + `natality/docs/CODEBOOK.md`. Consumes the settled envelope (unchanged by C8.19). Entry cheap-check: the 7 forward-looking HALTs in `RECEIPTS/C8.19_2026-05-23T09-00-00Z.md`.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.20 entry. The C8.19 §7.13/Sub-Q42 halt was surfaced + user-authorized (Option 1 re-scope; DECISION_LOG 2026-05-23T08:00:00Z) — do NOT re-litigate. **Flagged (NOT C8.20-blocking):** a pre-existing untracked **`FDA_REGDOCS_EXECUTION_PLAN.md`** at repo root (mtime 2026-05-18; "# RegHarmonize — Execution Plan"; unrelated to HVS; never git-tracked) — deliberately NOT added/deleted by C8.19 (§9-#10/#12, out of scope); the human should relocate/remove it and it must be added to the Phase-D D.3 public-repo-sync exclude-list so it never leaks. **Owed §11 human-merge (carried, unchanged):** the §15.D model-clarification `[plan-update]` (soft-flag (ii)); the LESSONS 2026-05-20 §8-row + 2026-05-22 (A′) addendum + L13-extension-shared-CSV + L17 grep-scope sharpenings. **Phase-D deferrals owed (carried from C8.18 step 7; + the C8.19 perinatal limitations paragraph is now also a D.4 input):** manuscript Coverage re-paragraph = D.4; `file_inventory.csv` `imported`-flag refresh; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; convenience/benchmark v4 refresh (soft-flag (ee)).
+
+**Open soft-flags (28; 0 NEW):** all carried unchanged from C8.18 step 7 (C8.19 added zero canonical state). (ee)/(ll)/(gg)/(ii)/(kk)/(jj)/(hh)/(cc)/(dd)/(bb)/(aa)/(w)/(x)/(z)/(u) carry. **C8.19 added NO new LESSONS entry by design** — the §15.D Tier-0 off-ramp performed exactly as specified (not a new mistake class; DECISION_LOG 2026-05-23T08:00:00Z rationale).
+
+### Forward-looking HALTs for C8.20 PRE-FLIGHT (Convention 4)
+
+Full enumeration (7) in `RECEIPTS/C8.19_2026-05-23T09-00-00Z.md`. Headlines: (1) `C8.19-pre-do`@`6912534`; **`C8.19-complete` present** — C8.19 CLOSED (re-scoped per §11 `6912534`); next = C8.20. (2) 11-gate parquet SHAs unchanged (settled envelope; C8.19 additive). (3) pytest baseline 347P+1S+1XF via the memory-safe split (`tests/` top-level run **per-file** — a bare `pytest tests/` collects nothing; soft-flag (kk)). (4) NO 5th perinatal parquet; the perinatal limitations paragraph is a D.4 manuscript input. (5) pre-existing stray `FDA_REGDOCS_EXECUTION_PLAN.md` — flag/relocate + D.3 exclude-list; never `git add -A`. (6) owed §11 human-merge items carry; C8.19 added no LESSONS by design. (7) C8.5b/C8.7b DEFERRED; Tier 3+5 = 4/7 done.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED).
+- **Linked v4.0.0 (1983-2023; 149,386,620 rows; permanent 1992-1994 gap)**: `natality_v3_linked_harmonized_derived.parquet` = the v4 gate SHA **`f630d8cf…`** (UNCHANGED — C8.19 touched no parquet); `.v3_baseline` `9b828a4d…` preserved. All gitignored/reproducible.
+- NEW git-tracked this session: `docs/PERINATAL_RECORD_FEASIBILITY.md` + `scripts/perinatal_feasibility_analysis.py` + 3 doc-pointer edits + `NEXT_STEPS.md`/`KICKOFF.md` §11 re-scope + state files. **No build-side change (11-gate SHAs byte-exact).** Pre-existing untracked `FDA_REGDOCS_EXECUTION_PLAN.md` left in working tree, unmanaged (flagged).
+
+### Notes for next session
+
+- **C8.19 is CLOSED (re-scoped).** A record-level public-use perinatal *sibling* join is provably impossible (documented + reproducible). The two supported perinatal analyses already ship: aggregate perinatal-mortality rate (`joint_use_demo.ipynb` §C); stillborn↔liveborn co-multiple linkage (`matched_multiples/`, C8.16). The feasibility doc = future-researcher signpost + a D.4 manuscript rigor/limitations input.
+- Next: **C8.20 — CODEBOOK extensions**, then C8.21 (Stata/SAS pointer) / C8.22 (cross-tab CSVs); then Phase D.
+- §2 cheap-before-expensive worked exactly as the §15.D Tier-0 spec intended (the entropy cheap-check off-ramped an infeasible build before any expensive DO). §7/§9-#3/KICKOFF halt-and-ask honored. VERIFY-A's no-rubber-stamp catch (the stray FDA file) is L7 working as designed. State-on-disk authoritative.
+- `/tmp/c8_19_run*.txt` scratch is OS-cleanable + reproducible.
+
+### Session summary
+
+C8.19 SHIPPED in one session (PRE-FLIGHT+SMOKE+DO+VERIFY+RECEIPT) — **COMPLETE via §11 re-scope**. The §15.D-designed Tier-0 cheap-check proved a record-level public-use perinatal *sibling* parquet structurally infeasible (max **0.00118%** unique-sibling match across all years/keys ≪ the 5% threshold; permanent NCHS suppression of all maternal-IDs + geography + post-2018 bridged race). §7.13/Sub-Q42 halt → AskUserQuestion → user clarified → **Option 1**: re-scope to a pre-submission **feasibility/methodology note** (`docs/PERINATAL_RECORD_FEASIBILITY.md`) + a deterministic reproducible analysis script (`scripts/perinatal_feasibility_analysis.py`) + 3 doc pointers + a restricted-data (RDC/state) future-work note. `[plan-update]` `6912534` (own commit) + the C8.19 DO commit. **Zero canonical-state mutation** (11-gate SHAs byte-exact; pytest 347P+1S+1XF zero regression). Manuscript impact "zero → small positive" (rigor/limitations). The only public-use-supportable perinatal linkage already ships (`matched_multiples/`). Tags `C8.19-pre-do`@`6912534` + **`C8.19-complete`**. Tier 3+5 = **4/7 done**; **C8.20 (CODEBOOK extensions) is next**; the settled pre-Zenodo envelope is unchanged.
 
 ---
 

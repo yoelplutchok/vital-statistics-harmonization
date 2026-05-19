@@ -221,6 +221,7 @@ Given an analytic question, this matrix points at the right starting file.
 | Compute fetal mortality rate by demographic stratum | `fetal_death/fetal_death_derived.parquet` + `fetal_death/stratified_denominators.csv` | as above + groupby stratum | `notebooks/joint_use_demo.ipynb` Section B |
 | Compute infant mortality rate (overall or by maternal stratum) | linked `natality_v3_linked_harmonized_derived.parquet` | `residence_status != 4` | `notebooks/maternal_age_stratified_imr.ipynb` |
 | Compute perinatal mortality rate | All three derived parquets | per-product canonical filter | `docs/JOINT_USE_GUIDE.md` §128 + `notebooks/joint_use_demo.ipynb` Section C |
+| Build a record-level perinatal record (link a fetal death to the mother's infant) | (not possible from public-use NCHS data) | — | `docs/PERINATAL_RECORD_FEASIBILITY.md` (why; + the two supported alternatives) |
 | Compute preterm-birth rate (any product, any era) | natality `_derived` (use `preterm_lt37`) | `residence_status != 4` + filter to relevant gestational-age era | `notebooks/preterm_outcomes_time_series.ipynb` |
 | Reproduce a specific *NVSR* cell | Per-product `external_validation_targets*.csv` + the corresponding `05_validate/*.py` script | per-product canonical filter | each subproject's `metadata/external_validation_targets*.csv` |
 | Understand era boundaries / which years are comparable | `docs/COMPARABILITY.md` (cross-product) + per-product `COMPARABILITY.md` | — | `docs/COMPARABILITY.md` |
