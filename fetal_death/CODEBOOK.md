@@ -1,17 +1,17 @@
-# Codebook: U.S. Fetal Death Harmonized Dataset (V2.0, 1992-2022)
+# Codebook: U.S. Fetal Death Harmonized Dataset (v2.4.0, 1982–2024)
 
 This codebook documents every variable in the harmonized and derived datasets.
 
-- **Harmonized file**: `fetal_death_harmonized.parquet` (1,634,195 rows × 73 columns)
-- **Derived file**: `fetal_death_derived.parquet` (1,634,195 rows × 89 columns)
+- **Harmonized file**: `fetal_death_harmonized.parquet` (2,427,233 rows × 73 columns)
+- **Derived file**: `fetal_death_derived.parquet` (2,427,233 rows × 89 columns)
 
 (In the GitHub source repository these live under `output/harmonized/`. In the Zenodo deposit they are at the deposit root.)
 
 All variables are stored as strings in the Parquet files. Numeric values should be cast after loading.
 
-Year coverage: **1992-2002** (V2 era, 1989-revision uniform; 700,704 rows) **+ 2005-2022** (V1 era, 2003-revision transition; 933,491 rows). Years **2003 and 2004** are deferred to V2.1.
+Year coverage: **1982–2024, 43 contiguous years, 2,427,233 rows** across seven NCHS layout eras — **1982-1988** (V3b, 1978-revision; 421,125 rows) · **1989-1991** (V3a, early 1989-revision; 188,909) · **1992-2002** (V2, 1989-revision uniform; 700,704) · **2003-2004** (V2.1, 1989→2003 transition layouts; 107,782) · **2005-2013** (V1, 2003-revision staggered adoption; 510,528) · **2014-2017** (V1; 204,923) · **2018-2024** (V1, all 2003-revision; 293,262). Per-era counts are parquet-derived (Appendix C8.20); they sum byte-exact to 2,427,233. In the per-variable notes below, the legacy **"V2"** label refers to the pre-2003-revision S-synthesized eras (1982-2002 = V3b+V3a+V2; 1989-revision behaviour for 1989-2002, 1978-revision for 1982-1988) and **"V1"** to the 2003-revision-transition era (2005+); **2003-2004 (V2.1)** is the dual-certificate boundary.
 
-> **v2.4.0 scope note (C8.20).** The canonical shipped fetal-death parquet is now **v2.4.0: 1982–2024, 43 contiguous years, 2,427,233 rows** (V3b 1982–1988 + V3a 1989–1991 + V2 1992–2002 + V2.1 2003–2004 + V1 2005–2024 — see `COMPARABILITY.md` + the V3a/V3b/V2.1/C8.2 receipts). The hand-authored per-variable tables below still describe the **V2.0 1992–2022** envelope (the full-body v2.4.0 re-paragraph is a tracked Phase-D doc-sync deferral). The complete per-era, full-envelope evidence — per-variable value-distribution panels, sentinel-code disambiguation, and era-by-era coding-scheme diffs across all 7 documented layout eras — is in the auto-generated **Appendix C8.20 — Per-variable historical evidence** at the end of this file. Every count there is derived from the gate-verified parquet by `scripts/_build_codebook_extensions.py` (deterministic; regenerate to reproduce byte-identically).
+> **v2.4.0 scope note (C8.20).** The envelope and cross-era narrative in this hand-authored body were **re-paragraphed to v2.4.0** (the `fetal-death-codebook-comparability-v240` task, 2026-05-23). The per-variable tables below give the **V2/V1-era detail narrative and remain accurate for those eras**; the complete per-variable, per-era value-distribution panels, sentinel-code disambiguation, and era-by-era coding-scheme diffs across **all 7 documented layout eras (incl. 1982-1991 V3b/V3a and 2003-2004 V2.1)** are in the auto-generated **Appendix C8.20 — Per-variable historical evidence** at the end of this file. Every count there is derived from the gate-verified parquet by `scripts/_build_codebook_extensions.py` (deterministic; regenerate to reproduce byte-identically) — it is the authoritative full-envelope per-variable evidence; do not hand-edit it.
 
 ---
 
@@ -31,16 +31,23 @@ V2 cross-era code-system fixes — split between **5 value-level normalizations 
 
 ## Variable availability matrix (era summary)
 
-| Era | Years | Source layout | Records | version_flag |
+Row counts and `version_flag` mix are parquet-derived (Appendix C8.20; fetal-death derived parquet sha256[:12]=`185c071ec76a`):
+
+| Era | Years | Revision / source layout | Records | version_flag |
 |---|---|---|---|---|
-| **1992 era** | 1992-2002 | `FETAL_1992_2002_FIELDS` (360 bytes) | 700,704 | `S` (synthesized, since 1989 revision was the only revision) |
-| 2006 era | 2005-2013 | `FETAL_2005_2006_FIELDS` (3351/801/3338 bytes) | 510,528 | mixed `A`/`S` |
-| 2014 era | 2014-2017 | `FETAL_2014_2017_FIELDS` (3050 bytes) | 204,923 | mixed `A`/`S` |
-| 2022 era | 2018-2022 | `FETAL_2018_2022_FIELDS` (2652 bytes) | 218,040 | `A` only |
+| **V3b** | 1982-1988 | 1978-revision (`record_layout_1982_1988.csv`) | 421,125 | `S` (synthesized; 1978-rev predates the 2003-rev A/S split) |
+| **V3a** | 1989-1991 | early 1989-revision (1989-rev `record_layout` family) | 188,909 | `S` (synthesized; no native VERSION field) |
+| **V2 (1992 era)** | 1992-2002 | 1989-revision uniform (`FETAL_1992_2002_FIELDS`, 360 bytes) | 700,704 | `S` (synthesized) |
+| **V2.1** | 2003-2004 | 1989→2003 transition (`record_layout_2003.csv` / `record_layout_2004.csv`) | 107,782 | `S` 97.26% / `A` 2.74% |
+| **V1 (2006 era)** | 2005-2013 | 2003-rev staggered adoption (`FETAL_2005_2006_FIELDS`) | 510,528 | `S` 59.73% / `A` 40.27% |
+| **V1 (2014 era)** | 2014-2017 | 2003-revision (`FETAL_2014_2017_FIELDS`, 3050 bytes) | 204,923 | `A` 87.20% / `S` 12.80% |
+| **V1 (2022 era)** | 2018-2024 | 2003-revision (`FETAL_2018_2024_FIELDS`) | 293,262 | `A` 100% |
 
-V1 sub-era subtotals: 510,528 + 204,923 + 218,040 = 933,491. Plus 700,704 V2 = 1,634,195 total.
+Era row counts sum byte-exact to **2,427,233** (= the v2.4.0 total: 421,125 + 188,909 + 700,704 + 107,782 + 510,528 + 204,923 + 293,262).
 
-The "Years" column in the variable tables below uses these era labels.
+**Pre-1992 and transition eras (V3b / V3a / V2.1).** 1982-1988 (V3b) uses the 1978-revision Standard Report of Fetal Death — it predates the 1989 revision, so `version_flag` is synthesized `S` and the 2003-revision-only ("Version A only") variables are uniformly blank. 1989-1991 (V3a) is the earliest slice of the same 1989-revision certificate as V2 (1992-2002) and follows the V2 variable-availability pattern. 2003-2004 (V2.1) is the dual-certificate 1989→2003 transition (distinct 1351-/1501-byte layouts; predominantly `S` with a small early-adopter `A` fraction). The cross-era `B`-normalization family (B1-B6; §5 below / [Comparability §10](COMPARABILITY.md)) is applied to the pre-2003-revision eras and was extended to V3a/V3b — notably **B3 race**, with a 1978-revision 1-digit-`MRACE` recode for V3b (documented null caveat for the 1978-rev "other/unknown" codes). **The exhaustive per-variable, per-era value-distribution / sentinel / coding-diff evidence for all seven eras is the auto-generated Appendix C8.20 — Per-variable historical evidence at the end of this file.** The per-variable tables that follow give the V2/V1 detail narrative (accurate for those eras); consult the appendix for the 1982-1991 (V3b/V3a) and 2003-2004 (V2.1) distributions.
+
+The "Years" column in the variable tables below uses the V2/V1 era labels.
 
 ---
 
@@ -50,9 +57,9 @@ The "Years" column in the variable tables below uses these era labels.
 
 | Variable | Label | Values | Comparability | Years | Notes |
 |----------|-------|--------|---------------|-------|-------|
-| `data_year` | Data year (added by pipeline) | 1992-2022 | full | All | int32 sibling of `delivery_year`, computed as `int(delivery_year)` during harmonization. Always equal to `int(delivery_year)` for every row (verified 1,634,195/1,634,195 in V2.0). Recommended filter/join key for cross-year analyses. |
+| `data_year` | Data year (added by pipeline) | 1992-2022 | full | All | int32 sibling of `delivery_year`, computed as `int(delivery_year)` during harmonization. Always equal to `int(delivery_year)` for every row. Recommended filter/join key for cross-year analyses. |
 | `version_flag` | Revision flag | A, S | full | All | A=2003 revision; S=1989 revision. **Synthesized to `S` for 1992-2002** (no native VERSION field in 1989-rev files) |
-| `tabulation_flag` | NCHS tabulated subset flag | 1, 2 | partial | All | 1=exclude from NVSR tabulations; 2=include. NCHS's compound criterion (typically "GA >= 20 weeks OR BW >= 350g when GA unknown") — not a pure GA cutoff. ~5,400 V1 flag-2 rows (almost all in 2014+) have `gestational_age_combined < 20`, and ~63,700 flag-1 rows across all 29 years (~42,200 in V1 alone) have GA >= 20 (use `gestational_age_combined` directly when you need a pure GA filter). Field name and position changed across eras (V2:TABFLAG; V1 2006:TABFLG; V1 2014+:OE_TABFLG) |
+| `tabulation_flag` | NCHS tabulated subset flag | 1, 2 | partial | All | 1=exclude from NVSR tabulations; 2=include. NCHS's compound criterion (typically "GA >= 20 weeks OR BW >= 350g when GA unknown") — not a pure GA cutoff. a small share of flag-2 rows (almost all in 2014+) have `gestational_age_combined < 20`, and a non-trivial share of flag-1 rows have GA >= 20 (in the V2.0 1992-2022 slice this was ~5,400 and ~63,700 rows respectively; for the full v2.4.0 per-era `tabulation_flag` distribution see Appendix C8.20). Use `gestational_age_combined` directly when you need a pure GA filter. Field name and position changed across eras (V2:TABFLAG; V1 2006:TABFLG; V1 2014+:OE_TABFLG) |
 | `delivery_year` | Year of delivery | 1992-2022 | partial | All | Same concept; field positions differ by era. V2 sources from DELYR (190-193) |
 | `residence_status` | Residence status | 1-4 | full | All | 1=Resident; 2=Intrastate NR; 3=Interstate NR; 4=Foreign |
 
@@ -166,7 +173,7 @@ The "Years" column in the variable tables below uses these era labels.
 
 ---
 
-**Note on reporting flags**: The individual reporting flags (F_MEDUC, F_CLINEST, F_TOBACO, F_RF_PDIAB, V2-era ORIGM/EDUCM/PNCF/etc.) are available in the per-year raw Parquet files (bundled in `fetal_death_yearly_raw_1992-2022.zip`; in the GitHub source repo they live under `output/yearly_clean/`). They are not carried through to the harmonized schema because each flag is era-specific with different positions and naming conventions. Researchers who need item-level reporting flags should work directly with the raw yearly files.
+**Note on reporting flags**: The individual reporting flags (F_MEDUC, F_CLINEST, F_TOBACO, F_RF_PDIAB, V2-era ORIGM/EDUCM/PNCF/etc.) are available in the per-year raw Parquet files (one per data year 1982-2024; in the GitHub source repo they live under `output/yearly_clean/`, and they are bundled in the per-year raw archive in the Zenodo deposit). They are not carried through to the harmonized schema because each flag is era-specific with different positions and naming conventions. Researchers who need item-level reporting flags should work directly with the raw yearly files.
 
 ---
 
@@ -206,7 +213,7 @@ These variables are computed from harmonized fields and added in the derived fil
 | Variable | Label | Logic | Notes |
 |----------|-------|-------|-------|
 | `maternal_age_cat` | Maternal age category | <20, 20-24, 25-29, 30-34, 35-39, 40+ | "" if age unknown. V2 ages 50-54 (108 rows) correctly fall in 40+ bucket |
-| `education_cat4` | Education 4-level | < HS, HS grad, Some college, BA+ | "" if education unknown or blank. **Blank for all V2 records** (V2 populates `maternal_education_unrevised` years-of-school instead of the revised 1-9 categorical scale that the derivation maps from). Cross-era education trends require building a 1989→2003 binning bridge — not provided by V2.0 |
+| `education_cat4` | Education 4-level | < HS, HS grad, Some college, BA+ | "" if education unknown or blank. **Blank for all V2 records** (V2 populates `maternal_education_unrevised` years-of-school instead of the revised 1-9 categorical scale that the derivation maps from). Cross-era education trends require building a 1989→2003 binning bridge — not provided by this resource |
 | `singleton` | Singleton indicator | "1" if plurality=1; "0" if plurality>1; "" if unknown (plurality=9 or blank) | V2: 1,713 blanks total, of which 1,686 are Louisiana 1992-1994 non-reporters (DPLURAL=9, LA-occurrence); the remaining 27 are scattered V2 plurality=9 records across other state-years |
 
 ### Cause-of-Death Grouping
@@ -247,14 +254,15 @@ Cause group mapping:
    - Maryland Hispanic-origin non-reporting 1992-1998; Massachusetts 1992-1997.
    - 108 V2 rows (1997-2002) have `maternal_age` 50-54 (outside the 1992-guide-documented range of 10-49); real NCHS bytes preserved.
    - 3 V2 1992 rows have non-canonical single-digit `gestational_age_combined` (`'2'`/`'3'`/`'4'` instead of zero-padded `'02'`/`'03'`/`'04'`) due to upstream NCHS data-quality issue; all three rows have `birthweight=9999`.
+   - The analogous documented quirks for the V3b (1982-1988), V3a (1989-1991), and V2.1 (2003-2004) eras — incl. the V3b 1978-revision 1-digit-`MRACE` recode and its null caveat, and the 2003-2004 dual-certificate handling — are in [`COMPARABILITY.md`](COMPARABILITY.md) and the per-era panels of Appendix C8.20.
 
 ---
 
 ## Source Crosswalk
 
-For the complete raw-field-to-harmonized mapping by era (4 eras: 1992, 2006, 2014, 2022), see `variable_crosswalk_working.csv` (in the GitHub source repo: `metadata/variable_crosswalk_working.csv`).
+For the complete raw-field-to-harmonized mapping by era, see `variable_crosswalk_working.csv` (in the GitHub source repo: `metadata/variable_crosswalk_working.csv`).
 For the full schema definition including allowed_values, see `harmonized_schema.csv`.
-For the full 1989-revision 360-byte layout, see `record_layout_1992.csv` and `V2_1992_LAYOUT_DECISIONS.md`.
+For the per-era byte-position layouts, see `record_layout_*.csv` (e.g. `record_layout_1982_1988.csv` for the V3b 1978-revision, the 1989-rev `record_layout` family for V3a/V2, `record_layout_2003.csv`/`record_layout_2004.csv` for the V2.1 transition) and `V2_1992_LAYOUT_DECISIONS.md` for the 1989-revision 360-byte layout reconstruction notes.
 
 <!-- C8.20-GENERATED:BEGIN (do not hand-edit; regenerate via scripts/_build_codebook_extensions.py) -->
 

@@ -1,6 +1,61 @@
-# STATUS — last updated 2026-05-23T20:00:00Z
+# STATUS — last updated 2026-05-23T21:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T21:30:00Z — **fetal-death-codebook-comparability-v240 COMPLETE** — `fetal_death/CODEBOOK.md` + `fetal_death/COMPARABILITY.md` hand-bodies re-paragraphed from the stale **V2.0 / 1992-2022 / 29-year / 1,634,195-rec** envelope to canonical **v2.4.0 / 1982-2024 / 43-year / 2,427,233-rec / 7-era** (Option A — envelope + cross-era narrative; per-variable V2/V1 within-era statements preserved; V3b/V3a/V2.1 added; **every number parquet-derived from the C8.20 appendix**, none hand-invented). **C8.20 generated appendix byte-identical** (`b27640eeb6eda142`, marker-extracted). **Zero canonical-state mutation** (diff = the 2 hand-docs; 3 gate SHAs byte-exact). Tags **`fetal-death-codebook-comparability-v240-pre-do`@`560c754`** + **`fetal-death-codebook-comparability-v240-complete`**.
+
+TaskList #2 of the "Pre-D cleanup first" block. The carried Phase-D deferral "fetal-death CODEBOOK/COMPARABILITY full-body v2.4.0 re-paragraph" is **discharged**. Full narrative: `RECEIPTS/fetal-death-codebook-comparability-v240_2026-05-23T21-30-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T21:00/21:30.
+
+### Current phase
+
+**Phase C — pre-Zenodo scope COMPLETE (C8.16–C8.22 = 7/7).** Internal Pre-D cleanup block in progress: #1 plan-merge ✓, **#2 CODEBOOK/COMPARABILITY v2.4.0 ✓** (this section); #3 `file_inventory.csv` `imported`-flag, #4 `external_validation_v3_linked_comparison.{md,csv}` v4, #5 convenience/benchmark v4 remain. Settled pre-Zenodo envelope **unchanged** (doc-only). Manuscript Coverage re-paragraph = D.4 (untouched). Phase D externally-irreversible + human-authorization-gated.
+
+### What was done this session (cumulative)
+
+1. KICKOFF handshake; user "Pre-D cleanup first" (AskUserQuestion). 2. **#1 plan-merge-owed-backlog** COMPLETE (`[plan-update]` `9753160`). 3. **#2 fetal-death-codebook-comparability-v240** COMPLETE (this section) — five-phase; Option-A depth user-confirmed via AskUserQuestion; the §4.4/L7 catch (a false "APPENDIX CHANGED" alarm investigated → line-range artifact → re-verified byte-identical by marker extraction).
+
+### Last completed step
+
+`fetal-death-codebook-comparability-v240` (this session) — **COMPLETE**. Single DO commit ships `fetal_death/CODEBOOK.md` + `fetal_death/COMPARABILITY.md` (+ RECEIPT/STATUS/DECISION_LOG/PRE_FLIGHT_LOG). **Zero parquet/schema/test-target/metadata-CSV/test/script mutation; C8.20 generated appendix byte-identical.** Tag `fetal-death-codebook-comparability-v240-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**TaskList #3 — `file_inventory.csv` `imported`-flag refresh (linked v4).** PRE-FLIGHT must confirm `natality/tests/test_inventory_invariants.py` (the metadata-CSV's own invariant test) tolerates/expects the pre-2005-cohort flag flip (C8.18 DO step 6b deliberately did not flip it). Then #4, #5. Each its own five-phase task.
+
+### Blocked
+
+**Phase D** — explicit human authorization (externally irreversible). **C8.5b (Dockerfile)** / **C8.7b (Orchestrator)** — DEFERRED.
+
+### Open questions for human
+
+Phase-D authorization remains the gating question (unchanged). **Owed §11 human-merge: (none)** (cleared at #1). **Phase-D deferrals owed (carried, internal):** ~~fetal-death CODEBOOK/COMPARABILITY v2.4.0 re-paragraph~~ **discharged this session (#2)**; remaining: `file_inventory.csv` `imported`-flag (#3); `external_validation_v3_linked_comparison.{md,csv}` v4 (#4); convenience/benchmark v4 (#5). **Manuscript Coverage re-paragraph = D.4** (untouched, by KICKOFF mandate).
+
+**Open soft-flags (29; 0 NEW):** all carried unchanged (incl. (ll-docs) the L12-row literal-pipe — non-blocking). (jj) README "56 passed"/"uv run pytest" baseline stale. (kk) pytest memory-safe per-file split.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Full enumeration (5) in `RECEIPTS/fetal-death-codebook-comparability-v240_2026-05-23T21-30-00Z.md`. Headlines: (1) task CLOSED; the CODEBOOK/COMPARABILITY v2.4.0 deferral discharged. (2) **C8.20 appendix invariant**: future `CODEBOOK.md` edits must keep the marker-delimited block byte-identical — verify by **marker extraction, not a hardcoded line range** (the marker moved 259→267 this task; a line-range check false-alarms whenever the hand-body length changes). (3) 3 gate parquet SHAs unchanged (doc-only). (4) remaining Pre-D cleanup = #3/#4/#5; manuscript = D.4. (5) repo append-only clock runs ahead of harness `currentDate`; keep timestamps monotonic-after the newest STATUS section.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`/`acb5c48a…`; `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`/`ea89ab3c…`/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- MODIFIED git-tracked this session: `NEXT_STEPS.md`, `LESSONS.md` (#1); `fetal_death/CODEBOOK.md`, `fetal_death/COMPARABILITY.md` (#2) (+ state files). **No build-side change; C8.20 generated appendix byte-identical.**
+
+### Notes for next session
+
+- #2 CLOSED. The fetal-death hand-docs describe the v2.4.0 1982-2024 7-era envelope; the C8.20 appendix (untouched) is the single source of per-variable per-era truth.
+- Next: TaskList #3 (`file_inventory.csv` `imported`-flag) under five-phase discipline; then #4, #5; then internal Pre-D cleanup complete and only the human-authorization-gated Phase D remains.
+- §2/§4.4/§9-#2/L6/L7 honored (cheap parquet-derived fact extraction; numbers derived not invented; the false appendix alarm investigated not rubber-stamped). Option A preserved the C8.20 generated-appendix architecture.
+
+### Session summary
+
+Second task of the "Pre-D cleanup first" block. `fetal-death-codebook-comparability-v240` SHIPPED under full five-phase discipline — the fetal-death CODEBOOK + COMPARABILITY hand-bodies re-paragraphed from the stale V2.0/1992-2022/29-year envelope to canonical v2.4.0/1982-2024/43-year/7-era, at the user-confirmed Option-A depth (envelope + cross-era narrative; per-variable V2/V1 within-era statements preserved; V3b/V3a/V2.1 added; every number parquet-derived from the C8.20 appendix, none hand-invented). The C8.20 generated appendix is byte-identical (a false "APPENDIX CHANGED" VERIFY alarm was investigated per §4.4/L7 and shown to be a line-range artifact, then re-verified by marker extraction). Zero canonical-state mutation; the carried Phase-D CODEBOOK/COMPARABILITY re-paragraph deferral is discharged. Tags `…-pre-do`@`560c754` + `…-complete`. Remaining Pre-D cleanup = #3/#4/#5; manuscript = D.4; Phase D human-authorization-gated.
 
 ---
 

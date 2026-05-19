@@ -1,23 +1,26 @@
-# Comparability Notes: U.S. Fetal Death Harmonized Dataset (V2.0, 1992-2022)
+# Comparability Notes: U.S. Fetal Death Harmonized Dataset (v2.4.0, 1982–2024)
 
-This document describes cross-year comparability issues that researchers must consider when analyzing trends across the 29-year dataset.
+This document describes cross-year comparability issues that researchers must consider when analyzing trends across the 43-year dataset (1982–2024, 2,427,233 records). Many sections below give the detailed V2 (1989-revision, 1992-2002) vs V1 (2003-revision, 2005+) narrative; that narrative remains accurate for those eras. The 1982-1991 (V3b 1978-revision + V3a early-1989-revision) and 2003-2004 (V2.1 transition) eras are summarized in **Era Structure** below, and the authoritative per-variable, per-era value-distribution / sentinel / coding-diff evidence for **all seven eras** is the auto-generated **Appendix C8.20** in [`CODEBOOK.md`](CODEBOOK.md).
 
 ---
 
 ## Era Structure
 
-The dataset spans **four** file-format eras, each based on a different NCHS record layout:
+The dataset spans **seven** file-format eras, each based on a different NCHS record layout. Records and `version_flag` mix are parquet-derived (CODEBOOK Appendix C8.20):
 
-| Era | Years | Layout Source | Record Length | Revision |
-|-----|-------|---------------|---------------|---------|
-| **1992 era** | 1992-2002 | `FETAL_1992_2002_FIELDS` | 360 bytes (362 with CRLF) | 1989 only (synthesized `version_flag = 'S'`) |
-| 2006 era | 2005-2013 | `FETAL_2005_2006_FIELDS` | 3,351 / 801 / 3,338 bytes | mixed 1989 (S) and 2003 (A) |
-| 2014 era | 2014-2017 | `FETAL_2014_2017_FIELDS` | 3,050 bytes | mostly 2003 (A) with stragglers (S) |
-| 2022 era | 2018-2022 | `FETAL_2018_2022_FIELDS` | 2,652 bytes | 2003 (A) only |
+| Era | Years | Layout Source | Record Length | Records | Revision / version_flag |
+|-----|-------|---------------|---------------|--------:|---------|
+| **V3b** | 1982-1988 | `record_layout_1982_1988.csv` | ~200 bytes (1978-rev) | 421,125 | 1978-revision; predates the 2003-rev split → synthesized `S` |
+| **V3a** | 1989-1991 | 1989-rev `record_layout` family | (see `record_layout_*.csv`) | 188,909 | early 1989-revision; synthesized `S` |
+| **V2 (1992 era)** | 1992-2002 | `FETAL_1992_2002_FIELDS` | 360 bytes (362 with CRLF) | 700,704 | 1989-revision uniform; synthesized `S` |
+| **V2.1** | 2003-2004 | `record_layout_2003.csv` / `record_layout_2004.csv` | 1,351 / 1,501 bytes | 107,782 | 1989→2003 transition; `S` 97.26% / `A` 2.74% |
+| **V1 (2006 era)** | 2005-2013 | `FETAL_2005_2006_FIELDS` | 3,351 / 801 / 3,338 bytes | 510,528 | mixed 1989 (S) / 2003 (A); `S` 59.73% / `A` 40.27% |
+| **V1 (2014 era)** | 2014-2017 | `FETAL_2014_2017_FIELDS` | 3,050 bytes | 204,923 | 2003 (A) with S stragglers; `A` 87.20% / `S` 12.80% |
+| **V1 (2022 era)** | 2018-2024 | `FETAL_2018_2024_FIELDS` | 2,652 bytes | 293,262 | 2003 (A) only; `A` 100% |
 
-Record lengths shown are the full layout including end-of-record FILLER. For the 2022 era the last named field (`F_ICOD`) ends at position 2651; the record extends to position 2652 with a 1-byte trailing FILLER. The same convention applies to the 2006-era 3,351-byte layout (last named field at position 801; trailing FILLER to 3,351). See `record_layout_*.csv` for byte-exact field positions.
+Era records sum byte-exact to **2,427,233** (the v2.4.0 total). Record lengths shown (where listed) are the full layout including end-of-record FILLER. For the 2022 era the last named field (`F_ICOD`) ends at position 2651; the record extends to position 2652 with a 1-byte trailing FILLER. The same convention applies to the 2006-era 3,351-byte layout (last named field at position 801; trailing FILLER to 3,351). See `record_layout_*.csv` for byte-exact field positions.
 
-**Years 2003 and 2004 are deferred to V2.1** because of distinct, non-uniform transition layouts (1351-byte and 1501-byte records respectively); see NCHS's `fetaldeath0304problems.pdf` (downloadable from the CDC FTP server) for documentation of their idiosyncrasies.
+**2003 and 2004 (V2.1) are now included** (they were deferred in V2.0): the 1989→2003 transition years use distinct, non-uniform 1,351-byte (2003) and 1,501-byte (2004) layouts; see NCHS's `fetaldeath0304problems.pdf` (downloadable from the CDC FTP server) for documentation of their idiosyncrasies. **1982-1988 (V3b)** uses the 1978-revision Standard Report of Fetal Death (predating the 1989 revision; 2003-revision-only "Version A only" variables are uniformly blank), and **1989-1991 (V3a)** is the earliest slice of the same 1989-revision certificate as V2 and follows the V2 availability pattern. The exhaustive per-variable, per-era evidence for all seven eras is the auto-generated **Appendix C8.20** in [`CODEBOOK.md`](CODEBOOK.md).
 
 Field positions differ across eras, but harmonized variable names are stable. The `data_year` column always identifies the source year.
 
@@ -29,6 +32,7 @@ The single most important comparability issue is the staggered adoption of the 2
 
 | Year | % A-version | % S-version | Implication |
 |------|-------------|-------------|-------------|
+| 1982-1991 | 0% | 100% (synthesized) | V3b 1982-1988 (1978-revision, predates the 2003-rev split) + V3a 1989-1991 (early 1989-revision); no native VERSION field, `version_flag = 'S'` synthesized for all 610,034 rows (421,125 + 188,909) |
 | 1992-2002 | 0% | 100% (synthesized) | All V2 records are uniformly 1989-revision; the source files have no native VERSION field, so harmonize.py synthesizes `version_flag = 'S'` for all 700,704 rows |
 | 2005 | 6.6% | 93.4% | Almost all records on 1989 revision |
 | 2006 | 23.1% | 76.9% | 16 states on 2003 revision |
@@ -46,7 +50,7 @@ The single most important comparability issue is the staggered adoption of the 2
 
 ## 2. Race and Ethnicity
 
-Race coding underwent multiple major changes across the 29-year span:
+Race coding underwent multiple major changes across the 43-year span (the table details 1992+ ; for the 1982-1991 V3b/V3a bridged-race recode — incl. the V3b 1978-revision 1-digit-`MRACE` recode and its documented null caveat — see the B3 note below and Appendix C8.20 in [`CODEBOOK.md`](CODEBOOK.md)):
 
 | Period | Race Classification | Available Variables |
 |--------|--------------------|--------------------|
@@ -58,9 +62,9 @@ Race coding underwent multiple major changes across the 29-year span:
 
 **Key V2 normalization (B3)**: The 1989-revision `MRACE` (positions 79-80) is a 2-digit code (`01` = White, `02` = Black, `03` = AIAN, `04-07` = Asian/PI single subgroups, `18-78` = expanded API subgroups, `99` = Unknown). harmonize.py recodes this to V1's 4-category bridged scheme: `01→1`, `02→2`, `03→3`, `04-78→4`, `99→blank`. The earlier 3-category `MRACE3` (position 81) was rejected because it collapses AIAN and API together, losing the distinction the V1 4-cat scheme preserves. The B3 normalization is byte-equivalent to using MRACE3 plus the AIAN/API split — a clean bijection on documented codes, with 2 V2 records (raw MRACE='99' Unknown) mapped to blank.
 
-**Key break at 2018**: Starting in 2018, all states reported using the 1997 OMB multi-race standards. Before 2018, multi-race data are only available from states on the 2003 revision. The bridged-race variable (`maternal_race_bridged`) was discontinued in the 2022-era layout, leaving 218,040 V1 records with `maternal_race_bridged=''` for 2018-2022.
+**Key break at 2018**: Starting in 2018, all states reported using the 1997 OMB multi-race standards. Before 2018, multi-race data are only available from states on the 2003 revision. The bridged-race variable (`maternal_race_bridged`) was discontinued in the 2022-era layout, leaving the 293,262 records of the 2018-2024 era with `maternal_race_bridged=''` (count parquet-derived; Appendix C8.20).
 
-**Recommendation**: For race trend analysis spanning the full 1992-2022 period, use `hispanic_origin` (available and consistently coded all years; subject to V2 state-level non-reporting documented in §11) combined with `maternal_race_bridged` for 1992-2017 and `maternal_race_recode6` for 2014+. Be aware that 1992-2002 + 2005-2013 use bridged-race (collapsing multi-race into single categories) while 2018+ uses OMB multi-race directly. Do NOT cross-era groupby on `maternal_race_bridged_detail` (V2 carries 1989-rev MRACE codes; V1 2006 carries MBRACE codes — the same numerics 04-07 mean different subgroups in each era).
+**Recommendation**: For race trend analysis spanning the full 1982-2024 period, use `hispanic_origin` (available and consistently coded all years; subject to V2 state-level non-reporting documented in §11) combined with `maternal_race_bridged` for 1982-2017 (recoded by harmonize from the era-specific raw race field — incl. the V3b 1978-rev 1-digit recode) and `maternal_race_recode6` for 2014+. Be aware that 1992-2002 + 2005-2013 use bridged-race (collapsing multi-race into single categories) while 2018+ uses OMB multi-race directly. Do NOT cross-era groupby on `maternal_race_bridged_detail` (V2 carries 1989-rev MRACE codes; V1 2006 carries MBRACE codes — the same numerics 04-07 mean different subgroups in each era).
 
 ---
 
@@ -80,7 +84,7 @@ Race coding underwent multiple major changes across the 29-year span:
 
 **Recommendation**: 
 - For 1992-2006 + 2014+, education analysis is possible but requires choosing a column. Years-of-school (`maternal_education_unrevised`) is available for 1992-2002 + 2005-2006 only (blank for 2007-2013, not in 2014+ layouts); revised 4-level categories (`education_cat4`) are available for 2005-2006 + 2014+ but not for 1992-2004 or 2007-2013.
-- A 1989→2003 binning bridge (mapping years-of-school 00-17 into the revised <HS / HS / Some college / BA+ buckets) is **not provided by V2.0**: the year-of-schooling and degree-level concepts are not 1:1 mappable, and any bridge would impose modeling choices best left to the analyst. Researchers needing cross-era education trends must build their own bridge.
+- A 1989→2003 binning bridge (mapping years-of-school 00-17 into the revised <HS / HS / Some college / BA+ buckets) is **not provided by this resource**: the year-of-schooling and degree-level concepts are not 1:1 mappable, and any bridge would impose modeling choices best left to the analyst. Researchers needing cross-era education trends must build their own bridge.
 
 ---
 
@@ -90,7 +94,7 @@ Race coding underwent multiple major changes across the 29-year span:
 |--------|-------------|-------|
 | 1992-2013 | Not available in public-use file | ICD-9 cause data exists in NCHS internal files but is restricted-use only (NCHS Research Data Center); NOT in any public-use fetal death file pre-2014 |
 | 2014-2017 | Available (COD variant) | ICD-10 codes for A-version records with cause reported |
-| 2018-2022 | Available (COD-only) | All records are A-version; ~47-51% have cause reported |
+| 2018-2024 | Available (COD-only) | All records are A-version; ~47-51% have cause reported |
 
 **Key break at 2014**: Cause-of-death data begins with the 2014 data year. There is no ICD-10 cause data in the public-use file before 2014. The 2006 user guide states this directly on p. 54: *"Cause-of-fetal-death data are also not currently available."* This is a structural limitation of the source data, not a pipeline gap.
 
@@ -195,7 +199,7 @@ The 2003-revision DMETH_REC is documented as a 3-code recode (`1`=Vaginal, `2`=C
 
 The pattern appears in both A-version and S-version records, and disappears entirely from 2014 onward. The most plausible explanation is residual 1989-revision coding leaking into the 2003-revision DMETH_REC field during the multi-state transition window — under the 1989-rev scheme, code `3` meant "Primary C-section" — followed by full coding cleanup in the 2014 layout migration. Neither the 2006 nor the 2014 NCHS User Guide documents this anomaly. Because the pipeline faithfully reproduces the NCHS-published codes, the harmonized data preserves these records as-is — no silent remapping is performed.
 
-**Impact.** A researcher filtering `delivery_method_recode == '2'` to count C-sections will undercount by ~258-573 rows per year in 2006-2013. The undercounted rows are most likely true C-sections (under 1989-rev semantics for code `3`), so simple C-section rate calculations on the full 1992-2022 file are slightly biased low for those eight years.
+**Impact.** A researcher filtering `delivery_method_recode == '2'` to count C-sections will undercount by ~258-573 rows per year in 2006-2013. The undercounted rows are most likely true C-sections (under 1989-rev semantics for code `3`), so simple C-section rate calculations on the full 1982-2024 file are slightly biased low for those eight years.
 
 **Recommendation for researchers.** For C-section analyses spanning 2006-2013, treat code `3` as C-section:
 
@@ -252,7 +256,7 @@ The 1989-revision (V2) and 2003-revision (V1) coding systems differ for a number
 | `delivery_place_unrevised` | Raw PLDEL: `1`=Hospital, `2`=Doctor/home/public collapsed, `3`=En route, `9`=Unknown | Raw UBFACIL: `1`=Hospital, `2`=Birth Center, `3`=Home (intended), `4`=Home (unintended), `5`=Other, `9`=Unknown | Codes `2` and `3` mean entirely different things across eras. V2 has 4-cat scheme; V1 has 5-cat scheme. |
 | `breech_unrevised` | BREECH = "**Breech/Malpresentation**" (broader: includes any malpresentation — breech, transverse, brow, face) | ULD_BREECH = "**Breech Delivery**" (narrower: actual breech-position deliveries only) | Different clinical concepts in the same column. Verified in 1998 user guide p.57 + 2006 user guide p.28. |
 
-For users who need V2-specific detail beyond the harmonized normalization, the yearly raw parquets — bundled in this Zenodo deposit as `fetal_death_yearly_raw_1992-2022.zip` (29 files inside; in the GitHub source repo they live under `output/yearly_clean/`) — preserve every documented field at its source coding.
+For users who need era-specific detail beyond the harmonized normalization, the per-year raw parquets — one per data year 1982-2024 (in the GitHub source repo under `output/yearly_clean/`; bundled in the per-year raw archive in the Zenodo deposit) — preserve every documented field at its source coding.
 
 ---
 
@@ -296,7 +300,9 @@ The pipeline's parse is byte-correct; the guide figures for those three years ar
 
 ## Summary: Variable Availability Matrix (V2 + V1 eras)
 
-| Variable Group | 1992-2002 | 2005-2006 | 2007-2013 | 2014-2017 | 2018-2022 |
+This matrix details the V2 (1992-2002) and V1 (2005-2024) eras. **1982-1991 (V3b 1978-revision + V3a early-1989-revision)** is a pre-2003-revision, fully-`S`-synthesized regime: it follows the `1992-2002` column's availability pattern (2003-revision-only "Version A only" fields are uniformly blank; bridged race / unrevised fields populated via the era-specific harmonize recode), with the V3b 1978-revision layout carrying a narrower documented field set. **2003-2004 (V2.1)** is the 1989→2003 dual-certificate boundary (predominantly `S`). The authoritative per-variable, per-era availability + distributions for **all seven eras** are in the auto-generated **Appendix C8.20** of [`CODEBOOK.md`](CODEBOOK.md).
+
+| Variable Group | 1992-2002 | 2005-2006 | 2007-2013 | 2014-2017 | 2018-2024 |
 |----------------|-----------|-----------|-----------|-----------|-----------|
 | Core demographics (age, sex, GA, BW) | All | All | All | All | All |
 | Hispanic origin | All (subject to OK/MD/MA non-reporting) | All | All | All | All |
