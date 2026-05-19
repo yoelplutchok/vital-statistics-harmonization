@@ -8,6 +8,41 @@
 
 ---
 
+## PRE-FLIGHT for convenience-benchmark-v4-scope — 2026-05-23T23:30:00Z — **convenience/benchmark v4 refresh (soft-flag (ee)) → document the scoped staleness; no fabricated times; no canonical rebuild** — **RESULT: PROCEED.**
+
+TaskList #5 (final) of the user-authorized 2026-05-23 "Pre-D cleanup first" block (standing "do whatever you think is best"; halt only on a genuine §7 gate).
+
+### Inputs
+- [x] `docs/PIPELINE_TIMING_BENCHMARK.md` (+ `_fetal_raw.csv` / `_natality_raw.csv`) — last committed @ `0155a6f` (C8.13, 2026-05-13). `fetal_death/live_births_by_year.csv`, `fetal_death/stratified_denominators.csv`, `natality/scripts/06_convenience/write_residents_only.py`. present ✓
+- [x] Upstream complete: C8.13 (benchmark), C8.17 (natality 1968-1989), C8.18 (linked v3→v4). Settled envelope confirmed. ✓
+- [x] No stale checkpoints: tree clean except untracked `.claude/`, `AUDITS/`. ✓
+
+### Environment
+- [x] Working dir clean (tracked); branch `main`; HEAD `516b621`. Doc-only DO (no build/runtime).
+
+### Field-value snapshot (Convention 3) — per-artifact v4-dependence
+- [x] **`docs/PIPELINE_TIMING_BENCHMARK.md`** = the ONLY git-tracked soft-flag-(ee) artifact genuinely stale + in-scope. A point-in-time C8.13 (2026-05-13) measurement with **no post-C8.13 staleness note** (grep: only "stale orchestrator" refs, no v4/C8.17/C8.18/superseded note). Stale sections: natality "1990-2024 (35 years, 138.8M)" (pre-C8.17; now 1968-2024 / 201,161,456 / 57 yr), linked "2005-2023 (19 cohort years, 74.9M) / Derive linked V3 (94 cols)" + the H10 table's linked row SHA `9b828a4de4e59b17…` (the **v3** SHA = now `.v3_baseline`; current v4 = `f630d8cf…` / 1983-2023 / 149,386,620 / 97 cols). The **fetal-death section (1982-2024 / 2,427,233 / 43 yr)** + methodology + how-to-reproduce are CORRECT (fetal was already v2.4.0 at C8.13). Measured wall-clock for natality+linked is a v3/pre-1968 figure (the v4+1968 envelope is ~1.5-2× → a faithful re-measure = a multi-hour canonical natality+linked rebuild).
+- [x] **`fetal_death/live_births_by_year.csv`** (27 rows, `source` = "NVSR 57-08 / NVSR 73-09 / NCHS Vital Statistics", 1995-2022) — **NVSR-transcribed static table, NOT linked- or parquet-derived** ⇒ NOT linked-v4-dependent / NOT (ee)-stale. (Any year-coverage extension for the fetal v2.4.0 envelope is a separate non-(ee) convenience question — soft-flag-able, not this task.)
+- [x] **`fetal_death/stratified_denominators.csv`** (4907 rows, from `build_stratified_denominators.py`, natality-derived) — natality v3.0.0 is the source and is **UNCHANGED** (gate SHAs `c8a740eb…`/`acb5c48a…` byte-exact); NOT linked-v4-derived ⇒ NOT (ee)-stale. (Natality-1968 coverage extension = separate non-(ee) question.)
+- [x] **`natality/scripts/06_convenience/write_residents_only.py`** — generator writing `output/convenience/natality_v{2,v3_linked}_residents_only.parquet` (gitignored/reproducible build-side, NOT git-tracked). The `natality_v3_linked_*` name is the **retained schema-family-tag** convention (the same as the canonical `natality_v3_linked_harmonized_derived.parquet` kept at v4.0.0 — C8.17/C8.18 precedent); deterministic generator, nothing git-tracked to "refresh".
+
+### DO scope (decided under standing authorization)
+Add ONE prominent dated **post-C8.13 staleness/scope note** at the head of `docs/PIPELINE_TIMING_BENCHMARK.md`: this is the C8.13 2026-05-13 point-in-time measurement against the then-current envelope; natality has since grown (C8.17 1968-1989: 1990-2024/138.8M → 1968-2024/201,161,456) and linked v3→v4 (C8.18: 2005-2023/74.9M/94/`9b828a4d…` → 1983-2023/149,386,620/97/`f630d8cf…`); the natality+linked **measured wall-clock + the H10 linked-SHA row are superseded point-in-time figures**; a v4 re-measure is a Phase-D post-final-rebuild item and the manuscript timing reconciliation is **already routed to Phase D step 4** (C8.13's own PROPOSE-EDIT); the fetal-death section + methodology + how-to-reproduce remain valid. **No fabricated v4 numbers (L6); no canonical pipeline rebuild (§7-#17 / C8.7b-deferred-class); doc-only.** Converts soft-flag (ee) from an undocumented latent staleness into a documented, scoped limitation.
+
+### Outputs
+- [x] EDIT `docs/PIPELINE_TIMING_BENCHMARK.md` (a doc; edited in place) + RECEIPT/STATUS/DECISION_LOG/this-log appends. No canonical/test/script mutation.
+
+### Date convention
+- [x] 2026-05-23T23:30:00Z (monotonic-after 23:00:00Z; repo append-only clock ahead of harness `currentDate` 2026-05-19).
+
+### Halt conditions tripped
+None. Doc-staleness fix-on-contact + honest scoping; not a §7 condition (no data/validation/new-mistake-class; the re-measure-is-Phase-D is consistent with C8.13's own D.4 routing; standing authorization covers it).
+
+### Result
+**PROCEED.**
+
+---
+
 ## PRE-FLIGHT for v3-linked-comparison-v4-verify — 2026-05-23T22:45:00Z — **`external_validation_v3_linked_comparison.{md,csv}` v4 refresh (= verify-already-v4-current + H10 reproducibility)** — **RESULT: PROCEED.**
 
 TaskList #4 of the user-authorized 2026-05-23 "Pre-D cleanup first" block (standing "do whatever you think is best"; halt only on a genuine §7 gate). Reconciles the carried "full-v4 regen" deferral wording against the **deliberate** FIX_LOG 2026-05-23T02:00:00Z v3-validator-owned-surface scoping.
