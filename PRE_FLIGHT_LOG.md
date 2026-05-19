@@ -8,6 +8,46 @@
 
 ---
 
+## PRE-FLIGHT for fetal-death-codebook-comparability-v240 — 2026-05-23T21:00:00Z — **fetal-death CODEBOOK + COMPARABILITY full-body v2.4.0 re-paragraph (Option A — envelope + cross-era narrative)** — **RESULT: PROCEED.**
+
+TaskList #2 of the user-authorized 2026-05-23 "Pre-D cleanup first" block. Depth confirmed via AskUserQuestion 2026-05-23 = **Option A** (envelope + cross-era narrative; keep still-correct within-era per-variable statements; add V3b/V3a/V2.1 behavior where a variable differs; **every number derived, none hand-invented — L6/§9-#2**; point to the C8.20 generated appendix for exhaustive per-variable per-era evidence; do NOT duplicate or hand-edit the appendix). The C8.20 generated-appendix architecture is honored (lowest H8/L6 risk); this is NOT append-only-supersede — CODEBOOK/COMPARABILITY are hand-authored product docs, edited in place.
+
+### Inputs
+- [x] `fetal_death/CODEBOOK.md` (2771 lines): hand-body = **lines 1-258**; the C8.20 generated appendix = **lines 259-2771** (`<!-- C8.20-GENERATED:BEGIN -->`@259 / `<!-- ...:END -->`@2771) — **byte-untouched invariant** (the key non-mutation gate). present ✓
+- [x] `fetal_death/COMPARABILITY.md` (319 lines): entirely hand-authored, no generated block. present ✓
+- [x] Authoritative L6-safe per-era facts: the C8.20 appendix `version_flag`/`tabulation_flag` (i)-panels (lines 279-285) — parquet-derived, deterministic, sha256[:12]=`185c071ec76a`, 2,427,233 rows. present ✓
+- [x] Upstream complete: C8.22 + plan-merge-owed-backlog COMPLETE; settled envelope unchanged. ✓
+- [x] No stale checkpoints: working tree clean except untracked `.claude/`, `AUDITS/`. ✓
+
+### Environment
+- [x] Working dir clean (tracked); branch `main`; HEAD `9753160` (plan-merge-owed-backlog COMPLETE). No build/runtime needed (doc-only DO).
+
+### Source documentation
+- [x] No external NVSR/NCHS PDFs in scope. All numerics sourced from the committed C8.20 parquet-derived appendix + STATUS/C8.2/V3a/V3b/V2.1 receipts (in-repo).
+
+### Outputs
+- [x] EDIT-in-place of two hand-authored product docs (NOT append-only state files). The C8.20 generated block (CODEBOOK 259-2771) is NOT an output — it is a preserved invariant (VERIFY asserts its sha unchanged).
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+- [x] Canonical v2.4.0 envelope (every figure parquet-derived from the C8.20 appendix; sum-checked):
+  - Version/coverage: **v2.4.0 · 1982-2024 · 43 contiguous years · 2,427,233 rows · 89 columns (73 harmonized + 16 derived)**.
+  - 7 layout eras + per-era row counts + version_flag mix (parquet-derived, appendix lines 279-285):
+    `1982-1988` V3b/1978-rev = **421,125** (S 100%); `1989-1991` V3a/early-1989-rev = **188,909** (S 100%); `1992-2002` V2/1989-rev uniform = **700,704** (S 100%); `2003-2004` V2.1/transition = **107,782** (S 97.26% / A 2.74%); `2005-2013` V1/2003-rev transition = **510,528** (S 59.73% / A 40.27%); `2014-2017` V1 = **204,923** (A 87.20% / S 12.80%); `2018-2024` V1 = **293,262** (A 100%). Σ = **2,427,233** ✓ byte-exact == canonical total.
+  - Validation framing: **90/90 NVSR byte-exact** across the 43-yr envelope (STATUS 2026-05-12T23:30:00Z C8.2 "90/90 = 88 existing validators + 2 direct cell checks"; `fetal_death/README.md` v2.4.0 row). The legacy CODEBOOK "29/29 counts + 26/26 rates (V2 era)" detail is V2-era-scoped; the re-paragraph uses the v2.4.0 framing + points to the validation artifacts (no hand-invented detail-cell breakdown).
+- [x] Stale strings to retarget (envelope-level only; within-era `1992-2002` statements that are CORRECT are PRESERVED): CODEBOOK title L1 "(V2.0, 1992-2022)"; L5/6 "1,634,195 rows"; L12 "1992-2002 … + 2005-2022 … 2003/2004 deferred to V2.1"; L14 the C8.20 scope note ("body still describes V2.0 … deferral" → "body re-paragraphed to v2.4.0 at this task"); L36/41 era table + 933,491/1,634,195 totals; assorted "1992-2022"/"29 years"/"V2.0" envelope claims. COMPARABILITY title L1 "(V2.0, 1992-2022)"; L3 "29-year dataset"; era table L13; envelope "1992-2022/29-year" claims (NOT the legitimate within-era `1992-2002 | DMEDUC`-type rows).
+- [x] Current values match plan's assumed state — no divergence (the C8.20 L14 note itself documents the body as the deferred re-paragraph; this task executes that deferral at the user-confirmed Option-A depth).
+
+### Date convention
+- [x] 2026-05-23T21:00:00Z (monotonic-after the 20:00:00Z plan-merge section; harness `currentDate`=2026-05-19 stale vs the repo's append-only clock; ordering is the invariant). Flagged; not a §7 gate.
+
+### Halt conditions tripped
+None. Not a §7 condition: inputs present; no smoke/VERIFY target unmet; no NVSR-cell disagreement; no new mistake class; depth user-confirmed (Option A) so no scope ambiguity; the only non-mutation invariant (C8.20 appendix byte-identical) is a VERIFY gate, not a blocker. Numbers are L6-derived from the committed parquet-derived appendix (no hand-invention).
+
+### Result
+**PROCEED.**
+
+---
+
 ## PRE-FLIGHT for plan-merge-owed-backlog — 2026-05-23T20:00:00Z — **`[plan-update]` clear the owed §11 human-merge backlog** — **RESULT: PROCEED.**
 
 User-authorized 2026-05-23 (KICKOFF handshake → AskUserQuestion "Pre-D cleanup first") to clear the owed §11 human-merge backlog + carried internal Phase-D prep under five-phase discipline. This task = the §11-process item ONLY (a single `[plan-update]` commit); the internal-prep items (fetal-death CODEBOOK/COMPARABILITY v2.4.0 re-paragraph; `file_inventory.csv` `imported`-flag; `external_validation_v3_linked_comparison.{md,csv}` v4 refresh; convenience/benchmark v4) are SEPARATE subsequent five-phase tasks (NOT compressed — §9-#8). §11 step 3: the user's explicit option-selection is the human-approve; every merged text is already drafted verbatim in append-only LESSONS/FIX_LOG/DECISION_LOG (these are *owed merges of already-recorded proposals*, not new proposals); plan/lessons-doc only ⇒ trivially `git revert`-able; this is the established C8.21/C8.22 "precedented + authorized + already-drafted ⇒ apply + log, not re-ask" disposition (not a §7 gate).
