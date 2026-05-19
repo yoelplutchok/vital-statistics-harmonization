@@ -16,17 +16,23 @@ A single stacked Parquet file covering all 57 years of U.S. natality data, with 
 | `natality_v2_harmonized_derived.parquet` | 201,161,456 | 84 | + derived indicators (LBW, preterm, singleton, diabetes/HTN booleans, etc.) |
 | `natality_v2_residents_only.parquet` | 138,582,904 | 82 | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped. *(Reflects the 1990–2024 v2.8 slice; the v3.0.0 1968–2024 convenience refresh via `scripts/06_convenience/` is a pending follow-up.)* |
 
-### V3 Linked birth-infant death (2005-2023): 74.9 million births
+### V3/v4 Linked birth-infant death (1983-2023): 149.4 million births
 
-The same birth records for 2005-2023, now linked to infant death certificates. Adds cause of death, age at death, neonatal/postneonatal classification, and record weights — everything needed for infant mortality research. V3 linked mirrors the V2 birth-side schema exactly, plus 7 death-side harmonized columns and 3 death-side derived columns.
+Birth records for **1983-2023** (linked **v4.0.0**; permanent **1992-1994** NCHS-linkage gap — NCHS suspended ALL birth-infant-death linkage for those three cohorts, no cohort and no period file published), linked to infant death certificates. Adds cause of death, age at death, neonatal/postneonatal classification, and record weights — everything needed for infant mortality research. The linked file mirrors the V2 birth-side schema, plus the death-side harmonized + derived columns; the v4 backward extension added 3 within-era cohort columns (`underlying_cause_icd9` + `cause_recode_61` — ICD-9 cause-of-death for the 1983-1998 cohort years; `link_segment` — the keyless 1983-1988 den/num tag). The canonical parquet filename keeps the `natality_v3_linked_*` schema-family tag (the v3→v4 logical bump is documented in `metadata/harmonized_schema.csv` + DECISION_LOG 2026-05-23T02:00:00Z, per the Anti-Pattern #6 schema-edit-paired-with-version-bump convention).
+
+Three pre-2005 cohort specifics carry into every downstream analysis (see `docs/COMPARABILITY.md` for the full treatment):
+
+- **Keyless 1983-1988 (within-era structural difference).** The 1983-1988 cohort linked files are a two-file denominator/numerator pair with no per-record link key. Infant mortality for those years is computed as `count(link_segment='num') / count(link_segment='den')` per stratum — **not** a per-birth `infant_death` filter (denominator rows have `infant_death` NULL; numerator rows True). The day-precise `age_at_death_days` is NULL for 1983-1988 (the keyless numerator carries only the AGER5 recode — use `age_at_death_recode5`).
+- **1983-1984 50%-non-VSCP weighted sample.** The 1983 and 1984 cohort denominators are a documented 50%-of-births-in-5-non-VSCP-areas weighted sample; the harmonizer populates `record_weight` (= the NCHS RECWT field) so weighted counts reproduce the published cohort figures byte-exact (1983 weighted resident births 3,639,113, IMR 10.90; 1984 3,669,268, IMR 10.44). 1985-2004 are full files (`record_weight` not sampling-driven there).
+- **Documented numerator-file residual (3 of 19 cohort years).** For 1989, 1998, and 2002 the cohort *numerator-file* record count differs from the denominator-linked infant-death subset by a small deterministic amount (Δ +1 / +40 / −8, ≤0.15%, bidirectional) — the SAME documented NCHS cohort-linked numerator-file-vs-denominator-linkage class as the 2005-2023 "2 cells differ by exactly 1 record from NCHS upstream null-record-weight survivors" residual. Pinned as a per-year `tolerance_abs` with sourced notes; the denominator, resident births, and published IMR remain byte-exact / within ±0.02 for all 19 cohort years.
 
 **Output files:**
 
 | File | Rows | Columns | Description |
 |------|------|---------|-------------|
-| `natality_v3_linked_harmonized.parquet` | 74,943,824 | 78 | Birth-side (71 V2 cols) + death-side (7 new cols) harmonized |
-| `natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | + derived indicators including neonatal/postneonatal death and cause_group |
-| `natality_v3_linked_residents_only.parquet` | 74,785,708 | 92 | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped |
+| `natality_v3_linked_harmonized.parquet` | 149,386,620 | 81 | Birth-side + death-side harmonized (78 v3 cols + 3 within-era cohort cols) |
+| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 | 97 | + derived indicators including neonatal/postneonatal death and cause_group (94 v3 cols + 3 within-era cohort cols) |
+| `natality_v3_linked_residents_only.parquet` | — | — | **Convenience** — residents only, `residence_status`/`is_foreign_resident` dropped. *(Reflects the v3 2005-2023 slice — 74,785,708 rows / 92 cols; the v4 1983-2023 convenience refresh via `scripts/06_convenience/` is a pending follow-up.)* |
 
 ## What the pipeline adds over raw NCHS files
 
@@ -61,8 +67,8 @@ Full details in `docs/COMPARABILITY.md`. Highlights:
 - **Father's age 2012–2013**: raw single-year age was moved from `UFAGECOMB` to `FAGECOMB` starting 2012; for the revised-cert rows in those years (77–79% of births) the harmonizer reads `FAGECOMB@182–183`. Unrevised-cert 2012 rows have no raw single-year source; the categorical fallback `father_age_cat_from_rec11` recovers 5-year-bucket father age from the FAGEREC11 recode.
 - **Prior cesarean 2005+ only**: `RF_CESAR` is a revised-certificate-only field; coverage tracks cert-revision adoption from 30.8% (2005) to ~96%+ (2014+). 1990–2004 have no Y/N/U prior-cesarean field in public-use (use `delivery_method_recode` codes 2/4 as a tracer for 1990–2004 only).
 - **2003 `maternal_age` < 15 phantom spike**: the 2003 public-use file suppresses single-year age below 15 and exposes only `MAGER41`; the harmonizer maps code 01 ("Under 15 years") to age 14. Aggregated `maternal_age_cat` buckets are correct; single-year-age analyses should use `maternal_age_cat` or restrict to age ≥ 15 when 2003 is in scope.
-- **Linked file death-side**: `infant_death` boolean normalizes different FLGND coding across eras (1/2 for 2005–2013, 1/blank for 2014–2023).
-- **Linked file join**: 2016–2023 period-cohort files merge on `(CO_SEQNUM, CO_YOD)` (the NCHS-documented composite key) to avoid any chance of same-year/next-year numerator collisions.
+- **Linked file death-side**: `infant_death` boolean normalizes different FLGND coding across eras (1/2 for 2005–2013, 1/blank for 2014–2023; 1989–2004 denominator-plus FLGND/MATCHS-derived). For the keyless 1983–1988 cohort era there is no per-record `infant_death` — use the `link_segment` den/num count ratio (see the pre-2005 cohort note above).
+- **Linked file join**: 2016–2023 period-cohort files merge on `(CO_SEQNUM, CO_YOD)` (the NCHS-documented composite key) to avoid any chance of same-year/next-year numerator collisions. 1983–1988 cohort files are a keyless two-file den/num pair (no merge key — joined structurally by `link_segment`); 1989–2004 use the NCHS denominator-plus format (death-side appended to the birth record).
 
 ## What this release does NOT claim
 
@@ -77,7 +83,8 @@ Full details in `docs/COMPARABILITY.md`. Highlights:
 |---------|-----------------|--------|
 | V2 Natality (1968-2024 product; 1990-2024 benchmarked) | 183 targets across 1990-2024 (births, LBW%, preterm%, plurality, singleton%, male%, cesarean%, smoking%, Medicaid%); pre-1990 (1968-1989) NVSR benchmarking is a planned incremental addition | 183/183 pass |
 | V2 Natality invariants | Deterministic consistency checks | 0 violations |
-| V3 Linked (2005-2023) | 35 active targets across 2005, 2010, 2015, 2020-2023 (births, infant deaths, IMR, neonatal/postneonatal deaths, neonatal/postneonatal IMR) | 35/35 active pass |
+| V3/v4 Linked — 2005-2023 | 35 active targets across 2005, 2010, 2015, 2020-2023 (births, infant deaths, IMR, neonatal/postneonatal deaths, neonatal/postneonatal IMR) | 35/35 active pass (33 byte-exact + 2 differ by 1 within documented tolerance) |
+| V3/v4 Linked — pre-2005 cohort (1983-2004) | Per-year vs the NCHS cohort linked-file user guides: cohort denominator + resident births (19 yrs); published IMR (19 yrs); weighted 1983-1984 | Denominator + resident-births byte-exact 19/19; IMR within ±0.02 19/19; weighted 1983-1984 byte-exact; documented numerator-file residual for 1989/1998/2002 (3 of 19, same NCHS class as the 2 differ-by-1 cells) — all within documented tolerance |
 
 Note: 4 additional 2021 neonatal/postneonatal split targets are intentionally excluded pending investigation of an unresolved 131-death discrepancy between our file and the user guide.
 
@@ -97,10 +104,15 @@ python scripts/05_validate/compare_external_targets_v1.py                 # 183 
 python scripts/05_validate/validate_v1_invariants.py --years 1990-2024
 python scripts/05_validate/harmonized_missingness.py
 
-# V3 Linked (2005-2015, denominator-plus format)
+# v4 Linked pre-2005 cohort (1983-1991 keyless two-file den/num; 1995-2004 denominator-plus)
+python scripts/01_import/parse_all_linked_years.py --years 1983-1991
+python scripts/01_import/parse_all_linked_years.py --years 1995-2004
+#   (1992-1994 is the permanent NCHS linkage gap — no source file exists)
+
+# v4 Linked 2005-2015 (denominator-plus format)
 python scripts/01_import/parse_all_linked_years.py --years 2005-2015
 
-# V3 Linked (2016-2023, period-cohort format)
+# v4 Linked (2016-2023, period-cohort format)
 python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2017PE2016CO.zip --year 2016 --out output/linked/linked_2016_denomplus.parquet
 python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2018PE2017CO.zip --year 2017 --out output/linked/linked_2017_denomplus.parquet
 python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2019PE2018CO.zip --year 2018 --out output/linked/linked_2018_denomplus.parquet
@@ -110,11 +122,13 @@ python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2022P
 python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2023PE2022CO.zip --year 2022 --out output/linked/linked_2022_denomplus.parquet
 python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2024PE2023CO.zip --year 2023 --out output/linked/linked_2023_denomplus.parquet
 
-# V3 harmonize + derive + validate
-python scripts/03_harmonize/harmonize_linked_v3.py --years 2005-2023
+# v4 harmonize + derive + validate (harmonizer default --years 1983-2023 auto-skips the 1992-1994 gap)
+python scripts/03_harmonize/harmonize_linked_v3.py --years 1983-2023
 python scripts/04_derive/derive_linked_v3.py
-python scripts/05_validate/validate_linked_parquets.py --years 2005-2023
-python scripts/05_validate/compare_external_targets_v3_linked.py
+python scripts/05_validate/validate_linked_parquets.py --years 2005-2023        # v3 validator (2005-2023 owned surface)
+python scripts/05_validate/compare_external_targets_v3_linked.py               # 2005-2023 NVSR/linked-guide targets
+# pre-2005 cohort years (1983-2004) are validated per-year against the NCHS cohort
+# linked-file user guides via metadata/external_validation_targets_v3_linked.csv
 
 # Convenience: residents-only subsets (optional)
 python scripts/06_convenience/write_residents_only.py

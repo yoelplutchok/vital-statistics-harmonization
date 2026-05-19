@@ -167,7 +167,11 @@ Every field position in `scripts/01_import/field_specs.py` was verified against 
 - **Linked 2005–2013 `BRTHWGT`**: bytes 467–470 (vs. natality `DBWT` at 463–466). The linked files use the imputed `BRTHWGT` instead of `DBWT`.
 - **Linked 2016–2023 merge key**: `(CO_SEQNUM@365-371, CO_YOD@372-375)` per the NCHS period-cohort user guide — composite, not CO_SEQNUM alone.
 
-## V3: Linked birth-infant death validation (2005–2023)
+## V3/v4: Linked birth-infant death validation (1983–2023; permanent 1992–1994 gap)
+
+> The 2005–2023 validation below is **unchanged** by the linked v4 backward extension (the 2005–2023 slice is byte-clean vs the preserved `.v3_baseline`). The pre-2005 cohort (1983–2004) validation is a separate subsection ("Pre-2005 cohort validation") further down.
+
+### 2005–2023 surface
 
 ### Row counts and parsing validation
 
@@ -222,6 +226,19 @@ Notes:
 - The 4 excluded 2021 split targets (`neonatal_deaths`, `postneonatal_deaths`, `neonatal_imr_per_1000`, `postneonatal_imr_per_1000`) remain unresolved: our data show 12,489 neonatal / 7,476 postneonatal deaths versus 12,620 / 7,345 in the user guide, while total deaths match exactly.
 - 2016-2023 use period-cohort format (separate numerator/denominator files merged by CO_SEQNUM); 2005-2015 use denominator-plus format.
 
+### Pre-2005 cohort validation (1983–2004; linked v4, C8.18)
+
+The pre-2005 cohort years were validated per-year against the NCHS **cohort linked-file user guides** (`LinkCO{83..04}Guide.pdf` "Machine/File/Data Characteristics" control totals), state-on-disk in `metadata/external_validation_targets_v3_linked.csv`:
+
+- **Cohort denominator + resident births**: byte-exact for all 19 cohort years (1983–1991, 1995–2004).
+- **Published cohort IMR**: within ±0.02 for all 19 cohort years.
+- **Weighted 1983–1984** (the documented 50%-of-births-in-5-non-VSCP-areas RECWT-weighted sample): Σ`record_weight` over the resident denominator reproduces the published figures byte-exact — 1983 weighted resident births 3,639,113 / IMR 10.90; 1984 3,669,268 / IMR 10.44.
+- **Documented numerator-file residual (1989, 1998, 2002)**: the cohort *numerator-file* record count differs from the denominator-linked infant-death subset by Δ +1 / +40 / −8 (≤0.15%; deterministic; bidirectional). This is the SAME documented NCHS cohort-linked numerator-file-vs-denominator-linkage class as the 2005–2023 "2 cells differ by exactly one record from NCHS upstream null-record-weight survivors" residual. Pinned as a per-year `tolerance_abs` with sourced notes; the cohort denominator, resident births, and published IMR remain byte-exact / within ±0.02. The harmonize is proven correct (the residual is an NCHS-source property, not a pipeline defect; the `infant_death`/`link_segment` derivation is the faithful value-driven signal and is byte-exact for 16 of 19 years).
+- **Keyless 1983–1988**: there is no per-record link key; the cohort IMR is `count(link_segment='num') / count(link_segment='den')` per stratum (not a per-birth `infant_death` filter). See `docs/COMPARABILITY.md` §"Pre-2005 cohort backward extension".
+- **1992–1994**: permanent NCHS-linkage gap — no source file, no validation cell.
+
+The full per-year machine-readable results are in `metadata/external_validation_targets_v3_linked.csv` (156 rows: the 2005–2023 active targets + the pre-2005 cohort cells). The `compare_external_targets_v3_linked.py` validator is scoped to its 2005–2023 owned surface (35/35); the pre-2005 cohort per-year reconciliation is a DO-step VERIFY artifact recorded in `RECEIPTS/C8.18_step6b_*.md` (re-runnable from the SHA-anchored cohort guide control totals).
+
 ### IMR trend (residents, 2005–2023)
 
 | Year | Births | Deaths | IMR | Neonatal IMR | Postneonatal IMR |
@@ -251,6 +268,10 @@ The 2021 neonatal and postneonatal rates above are computed from the linked file
 ### Reproduce linked harmonized + derived outputs
 
 ```bash
+# Pre-2005 cohort (1983-1991 keyless two-file den/num; 1995-2004 denominator-plus; 1992-1994 = permanent NCHS gap)
+python scripts/01_import/parse_all_linked_years.py --years 1983-1991
+python scripts/01_import/parse_all_linked_years.py --years 1995-2004
+
 # 2005-2015 (denominator-plus format)
 python scripts/01_import/parse_all_linked_years.py --years 2005-2015
 
@@ -263,8 +284,8 @@ for cohort_year in 2016 2017 2018 2019 2020 2021 2022 2023; do
     --out "output/linked/linked_${cohort_year}_denomplus.parquet"
 done
 
-# Harmonize and derive
-python scripts/03_harmonize/harmonize_linked_v3.py --years 2005-2023
+# Harmonize and derive (harmonizer default --years 1983-2023 auto-skips the 1992-1994 gap)
+python scripts/03_harmonize/harmonize_linked_v3.py --years 1983-2023
 python scripts/04_derive/derive_linked_v3.py
 
 # Validate

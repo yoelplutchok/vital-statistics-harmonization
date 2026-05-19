@@ -115,9 +115,9 @@ For full per-variable provenance, see `metadata/harmonized_schema.csv`.
 | `hypertension_chronic_bool` | Chronic hypertension (nullable boolean) | bool | `hypertension_chronic`: 1→true, 2→false, 9→null |
 | `hypertension_gestational_bool` | Gestational hypertension (nullable boolean) | bool | `hypertension_gestational`: 1→true, 2→false, 9→null |
 
-## V3: Linked birth-infant death variables (2005–2023)
+## V3/v4: Linked birth-infant death variables (1983–2023; permanent 1992–1994 gap)
 
-The V3 linked harmonized file (`output/harmonized/natality_v3_linked_harmonized.parquet`) contains all the natality harmonized columns above, plus death-side columns from the NCHS cohort linked birth-infant death files. One row per birth; death fields are populated for infant deaths and null for survivors.
+The linked harmonized file (`output/harmonized/natality_v3_linked_harmonized.parquet`; filename keeps the `v3` schema-family tag at linked **v4.0.0**) contains all the natality harmonized columns above, plus death-side columns from the NCHS cohort linked birth-infant death files. Coverage is **1983–2023** with a **permanent 1992–1994 NCHS-linkage gap** (NCHS suspended ALL birth-infant-death linkage for those three cohorts; `harmonized_schema.csv` `years_available` reads `"1983-2023 (linked; 1992-1994 gap)"`). For 1989+ there is one row per birth with death fields populated for infant deaths and null for survivors. **For the keyless 1983–1988 cohort era** the file is a two-file denominator/numerator pair tagged by `link_segment` (no per-record link key): compute infant mortality as `count(link_segment=='num') / count(link_segment=='den')` per stratum, NOT a per-birth `infant_death` filter. **For 1983–1984** apply `record_weight` (a documented 50%-non-VSCP weighted sample; weighted counts reproduce published cohort figures byte-exact). The pre-2005 cohort comparability detail (keyless 1983–1988, weighted 1983–1984, the 1989/1998/2002 numerator-file residual, the 1992–1994 gap) is in `docs/COMPARABILITY.md` §"Pre-2005 cohort backward extension"; per-variable historical-distribution panels for the pre-2005 cohort years are a tracked CODEBOOK extension (task C8.20).
 
 Implemented by:
 
@@ -129,6 +129,8 @@ Implemented by:
 
 | Era | Years | Record length | Format | Key differences |
 |-----|-------|--------------|--------|-----------------|
+| 1983–1988 | 1983–1988 | keyless two-file (den + num `.dat`) | Cohort, no per-record link key | `link_segment` ∈ {den, num}; `infant_death` NULL on den / True on num; IMR = count(num)/count(den); ICD-9 cause (`underlying_cause_icd9`/`cause_recode_61`); `age_at_death_days` NULL (AGER5-only → `age_at_death_recode5`); **1983–1984 = 50%-non-VSCP RECWT-weighted sample** |
+| 1989–2004 | 1989–2004 | denominator-plus | Cohort (death-side appended to the birth record) | `infant_death` FLGND/MATCHS-derived; ICD-9 cause 1989–1998, ICD-10 1999+; **1992–1994 = permanent NCHS-linkage gap (no file)**; documented numerator-file residual for 1989/1998/2002 (same NCHS class as the 2 differ-by-1 cells below) |
 | 2005–2013 | 2005–2013 | 900 bytes | Denominator-plus (birth + death appended) | Death fields at positions 868–900; FLGND=1/2 coding; birthweight at 467–470 |
 | 2014–2015 | 2014–2015 | 1384 bytes | Denominator-plus (birth + death appended) | Death fields at positions 1346–1384; FLGND=1/blank coding; birthweight at 512–515 |
 | 2016–2023 | 2016–2023 | 1346 (denom) + 1743 (numer) | Period-cohort (separate files, merged by CO_SEQNUM) | Death fields from numerator at positions 1346–1384; FLGND=1/blank coding |
@@ -141,13 +143,16 @@ Implemented by:
 
 | harmonized_name | label | type | values | notes |
 |---|---|---|---|---|
-| `infant_death` | Infant death indicator | bool | true/false | FLGND=1 → true; FLGND=2 or blank → false |
-| `age_at_death_days` | Age at death (days) | int16 | 0–365 or null | Null for survivors |
-| `age_at_death_recode5` | Age at death 5-category recode | int8 | 1–5 or null | 1=<1hr; 2=1–23hr; 3=1–6d; 4=7–27d; 5=28d+. Null for survivors |
-| `underlying_cause_icd10` | Underlying cause of death (ICD-10) | string | ICD-10 codes or null | Null for survivors |
-| `cause_recode_130` | 130 Infant Cause of Death recode | int16 | 1–158 or null | NCHS 130-cause recode; residual codes 131–158 (including SIDS=135) are valid. Do NOT filter `<= 130` — drops ~23% of deaths including all SIDS. Null for survivors |
-| `manner_of_death` | Manner of death | int8 | 1–7 or null | 1=accident; 3=homicide; 5=could not determine; 7=natural. Null for survivors |
-| `record_weight` | Record weight | float64 | 1.0+ or null | Adjusts for unlinked deaths; 1.0 for most survivors |
+| `infant_death` | Infant death indicator | bool | true/false | `years_available` 1983–2023 (1992–1994 gap). 1989–2004 FLGND/MATCHS-derived; 2005–2013 FLGND=1/2; 2014–2023 FLGND=1/blank. **1983–1988 keyless era: NULL on den rows / True on num rows** — use the `link_segment` count ratio there, not a per-birth filter |
+| `age_at_death_days` | Age at death (days) | int16 | 0–365 or null | `years_available` 1989–2023 (1992–1994 gap). Null for survivors. **NULL for ALL 1983–1988** (the keyless numerator carries the AGER5 recode only — use `age_at_death_recode5`) |
+| `age_at_death_recode5` | Age at death 5-category recode | int8 | 1–5 or null | 1=<1hr; 2=1–23hr; 3=1–6d; 4=7–27d; 5=28d+. Null for survivors. The day-precise-free age signal available for the keyless 1983–1988 era |
+| `underlying_cause_icd10` | Underlying cause of death (ICD-10) | string | ICD-10 codes or null | `years_available` 1999–2023 (1992–1994 gap). **NULL for 1983–1998 (the ICD-9 era — use `underlying_cause_icd9`)**. Null for survivors |
+| `underlying_cause_icd9` | Underlying cause of death (ICD-9) | string | ICD-9 codes or null | **NEW at v4 (C8.18).** The ICD-9-era cause representation; populated cohort years **1983–1998** (1992–1994 gap); NULL 1999+ (ICD-10 era) and for survivors. No published 9→10 crosswalk is applied (a deferred derivation task) |
+| `cause_recode_130` | 130 Infant Cause of Death recode | int16 | 1–158 or null | NCHS 130-cause recode; residual codes 131–158 (including SIDS=135) are valid. Do NOT filter `<= 130` — drops ~23% of deaths including all SIDS. Null for survivors. ICD-10 era (1999+) |
+| `cause_recode_61` | 61-cause ICD-9-era recode | int16 | 1–61 or null | **NEW at v4 (C8.18).** The ICD-9-era sibling of `cause_recode_130`; NCHS 61-cause recode, cohort years **1983–1998** (1992–1994 gap); NULL 1999+ and for survivors |
+| `manner_of_death` | Manner of death | int8 | 1–7 or null | 1=accident; 3=homicide; 5=could not determine; 7=natural. Null for survivors. `years_available` 2003–2023 |
+| `record_weight` | Record weight | float64 | 1.0+ or null | Weight to adjust for unlinked deaths / **the 1983–1984 50%-non-VSCP sampling**. `years_available` 1983–1984, 1995–2023 (1992–1994 gap). 1.0 for most survivors. **NULL for 1985–1994** (1985–1988 are full files — Record count == by-occurrence — so no sampling weight applies). **For 1983–1984 apply the weight** (Σ`record_weight` over the resident denominator) to reproduce published cohort figures |
+| `link_segment` | Keyless den/num segment tag | string | den / num / null | **NEW at v4 (C8.18).** Populated only for the keyless **1983–1988** cohort era: `den` = the births-only denominator aggregate (`infant_death` NULL); `num` = the infant-death numerator (`infant_death` True). NULL for 1989+ (those eras have a per-record `infant_death`). Use `count(num)/count(den)` per stratum for the 1983–1988 cohort IMR |
 
 ### Death-side derived columns (added by `derive_linked_v3.py`)
 

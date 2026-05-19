@@ -23,7 +23,7 @@ df_res = df[df["is_foreign_resident"] == False]
 # Or use the pre-filtered convenience file (recommended for most analyses):
 df_res = pd.read_parquet("output/convenience/natality_v2_residents_only.parquet")
 
-# V3 Linked: 74.9M births with infant death data, 2005-2023 (94 columns)
+# v4 Linked: 149.4M births with infant death data, 1983-2023 (97 columns; permanent 1992-1994 NCHS-linkage gap)
 linked = pd.read_parquet("output/harmonized/natality_v3_linked_harmonized_derived.parquet")
 linked_res = linked[linked["is_foreign_resident"] == False]
 
@@ -42,14 +42,14 @@ linked_res = pd.read_parquet("output/convenience/natality_v3_linked_residents_on
 | `output/harmonized/natality_v2_harmonized.parquet` | 201,161,456 | 71 | Harmonized only (no derived indicators) |
 | `output/yearly_clean/natality_{year}_core.parquet` | varies | varies | Raw NCHS substrings (audit/debug only) |
 
-### V3 Linked birth-infant death (2005-2023)
+### V3/v4 Linked birth-infant death (1983-2023; permanent 1992-1994 gap)
 
 | File | Rows | Columns | Use case |
 |------|------|---------|----------|
-| `output/convenience/natality_v3_linked_residents_only.parquet` | 74,785,708 | 92 | **Recommended** — residents only, derived indicators included |
-| `output/harmonized/natality_v3_linked_harmonized_derived.parquet` | 74,943,824 | 94 | Full file with foreign residents + residence_status columns |
-| `output/harmonized/natality_v3_linked_harmonized.parquet` | 74,943,824 | 78 | Harmonized only (no derived indicators) |
-| `output/linked/linked_{year}_denomplus.parquet` | varies | 55–87 (layout-dependent) | Raw parsed linked records (audit/debug only; 55 cols for 2005–2013, 87 cols for 2014–2023) |
+| `output/convenience/natality_v3_linked_residents_only.parquet` | (pending) | (pending) | **Recommended** — residents only, derived indicators included. *(Reflects the v3 2005–2023 slice: 74,785,708 / 92; the v4 1983–2023 convenience refresh is a pending follow-up.)* |
+| `output/harmonized/natality_v3_linked_harmonized_derived.parquet` | 149,386,620 | 97 | Full file with foreign residents + residence_status columns |
+| `output/harmonized/natality_v3_linked_harmonized.parquet` | 149,386,620 | 81 | Harmonized only (no derived indicators) |
+| `output/linked/linked_{year}_denomplus.parquet` | varies | layout-dependent | Raw parsed linked records (audit/debug only; pre-2005 cohort raw layouts differ — keyless 1983–1988 two-file den/num; 55 cols for 2005–2013, 87 cols for 2014–2023) |
 
 ## Example analyses
 
@@ -124,7 +124,7 @@ for cohort_year in 2016 2017 2018 2019 2020 2021 2022 2023; do
 done
 
 # Harmonize + derive
-python scripts/03_harmonize/harmonize_linked_v3.py --years 2005-2023
+python scripts/03_harmonize/harmonize_linked_v3.py --years 1983-2023        # default; auto-skips the permanent 1992-1994 gap
 python scripts/04_derive/derive_linked_v3.py
 ```
 

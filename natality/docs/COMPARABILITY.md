@@ -200,13 +200,22 @@ The harmonized `certificate_revision` column takes one of four values:
   - 2003–2013: `gestational_age_weeks_source == 'combined'`
   - 2014–2024: `gestational_age_weeks_source == 'obstetric_estimate'`
 
-## V3 Linked birth-infant death comparability (2005–2023)
+## V3/v4 Linked birth-infant death comparability (1983–2023; permanent 1992–1994 gap)
 
-The V3 linked file shares all birth-side comparability constraints from V2 above. Additional death-side considerations:
+The linked file shares all birth-side comparability constraints from V2 above. The v4 backward extension (C8.18) adds cohort years 1983–2004 (the 2005–2023 surface is byte-clean / unchanged). Additional death-side and pre-2005-cohort considerations:
+
+### Pre-2005 cohort backward extension (linked v4, C8.18)
+
+The 1983–2004 cohort years come from the NCHS cohort linked-file series. Four caveats apply only to the pre-2005 cohort (natality starts 1990 and fetal-death starts 1982, so the pre-2005 linked years have no cross-product joint partner — treat them as a single-product linked-cohort IMR series):
+
+- **Keyless 1983–1988 (within-era structural difference).** These years are a two-file denominator/numerator pair with no per-record link key. Compute infant mortality for 1983–1988 as `count(link_segment == 'num') / count(link_segment == 'den')` per stratum — **not** a per-birth `infant_death` filter. Denominator rows have `infant_death` NULL and `age_at_death_days` NULL (the keyless numerator carries only the AGER5 recode → use `age_at_death_recode5`); numerator rows have `infant_death` True. `underlying_cause_icd9` + `cause_recode_61` carry ICD-9 cause-of-death for 1983–1998 (NULL `underlying_cause_icd10` there — the 1999+ cohort is ICD-10; no published 9→10 crosswalk is applied — a deferred derivation task).
+- **1983–1984 50%-non-VSCP weighted sample.** The 1983/1984 cohort denominators are a documented 50%-of-births-in-5-non-VSCP-areas weighted sample. `record_weight` (= NCHS RECWT) is populated so weighted counts reproduce the published cohort figures byte-exact: 1983 weighted resident births 3,639,113 / IMR 10.90; 1984 3,669,268 / IMR 10.44. **For 1983–1984, apply `record_weight`** (Σ`record_weight` over the resident denominator, not a raw row count). 1985–2004 are full files (`record_weight` not sampling-driven there).
+- **1992–1994 permanent gap.** NCHS suspended ALL birth-infant-death linkage for the 1992, 1993, 1994 cohorts (no cohort and no period file published). Permanent; the harmonizer auto-skips these years; `harmonized_schema.csv` `years_available` reads `"1983-2023 (linked; 1992-1994 gap)"`.
+- **Documented numerator-file residual (1989, 1998, 2002).** For these 3 of 19 cohort years the cohort numerator-file record count differs from the denominator-linked infant-death subset by a small deterministic amount (Δ +1 / +40 / −8; ≤0.15%; bidirectional). This is the SAME documented NCHS cohort-linked numerator-file-vs-denominator-linkage class as the 2005–2023 "2 cells differ by exactly one record from NCHS upstream null-record-weight survivors" residual (see "Death-side variables" below). It is pinned as a per-year `tolerance_abs` with sourced notes in `metadata/external_validation_targets_v3_linked.csv`; the cohort denominator, resident births, and published IMR remain byte-exact / within ±0.02 for all 19 cohort years. The harmonize is proven correct (the residual is an NCHS-source property, not a pipeline defect).
 
 ### Death-side variables (full comparability within scope)
 
-- **`infant_death`**: stable across all 19 years. FLGND coding differs (1/2 for 2005-2013; 1/blank for 2014-2023) but is normalized to a consistent boolean.
+- **`infant_death`**: per-birth True/False and stable for 1989–2004 + 2005–2023 (FLGND coding differs — 1/2 for 2005-2013; 1/blank for 2014-2023; 1989–2004 denominator-plus FLGND/MATCHS-derived — but is normalized to a consistent boolean). **NULL for the keyless 1983–1988 denominator rows / True for the numerator rows** — for 1983–1988 use the `link_segment` den/num count ratio, not a per-birth `infant_death` filter (see "Pre-2005 cohort backward extension" above).
 - **`age_at_death_days`**: comparable 2005-2018. **Minor break at 2019**: NCHS switched to calculating age at death from birth certificate time-of-birth (not death certificate). This improves sub-24-hour accuracy but means the `<1 hour` and `1 day` categories are not perfectly comparable with earlier years. Total neonatal/postneonatal splits are minimally affected.
 - **`underlying_cause_icd10`**: ICD-10 throughout (2005-2023). Comparable, though coding rule updates occur periodically.
 - **`cause_recode_130`**: NCHS 130-cause infant death recode. Consistent across the period.

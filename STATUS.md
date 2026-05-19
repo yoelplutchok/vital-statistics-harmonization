@@ -1,6 +1,67 @@
-# STATUS — last updated 2026-05-23T02:00:00Z
+# STATUS — last updated 2026-05-23T05:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T05:00:00Z — **C8.18 DO step 7 close → C8.18 COMPLETE** — docs/metadata consumer-surface sync (linked **v3→v4.0.0**: 1983-2023; 149,386,620 rows; permanent 1992-1994 gap; +3 within-era cohort cols) + tag **`C8.18-complete`** (the FINAL C8.18 sub-step). **Docs-only** — 16 content docs + the PRE-FLIGHT entry; **zero parquet/`harmonized_schema.csv`/validation-CSV-row/test/script/metadata-CSV mutation** (VERIFY-A: `git diff` scope docs-only; 10/11 gate parquet SHAs byte-exact; the linked-derived gate = the v4 `f630d8cf…` UNCHANGED since 6b; `.v3_baseline`=`9b828a4d…` preserved). §15.D names 6 files + the C8.18-specific cross-product COMPARABILITY; the Convention-3 PRE-FLIGHT snapshot surfaced ~10 more consumer files with stale linked-v3 strings → resolved under the **C8.17 step 7 "Option A — Honest propagation" precedent** + the standing 2026-05-23 "decide yourself" authorization (DECISION_LOG; NOT a §7-#17 halt — precedented + standing-authorized). Three plan-mandated/precedented deferrals (recorded as Phase-D forward-HALTs): **manuscript Coverage re-paragraph → D.4** (KICKOFF "re-paragraphed ONCE at D.4 after all data lands" + C8.17 precedent + C8.19 still pending — zero `paper/` edit; the 4 framing notes ARE carried into COMPARABILITY/ABOUT/CODEBOOK now); **`file_inventory.csv` `imported`-flag refresh → Phase-D metadata-sync** (out of §15.D scope; 6b deliberately didn't flip; has its own invariant test); **the script-generated `external_validation_v3_linked_comparison.{md,csv}` full-v4-surface regen → validator/Phase-D**. **VERIFY-D caught 6 stale lines the first DO pass missed** (NCHS_SOURCE_MANIFEST ×4 incl. footer counts; FAQ ×1; VALIDATION reproduce ×1) → corrected in-DO-scope (the C8.17 step7 `quickstart.R` VERIFY-D-catch precedent; L7/no-rubber-stamp; re-swept clean). **VERIFY all PASS** (A docs-only + 11-gate; B 1992-1994 gap in schema+CODEBOOK+ABOUT [manuscript=D.4-deferred]; C pytest 347P+1S+1XF (0 FAILED, zero regression vs the 6b baseline) via the memory-safe split; D residual sweep clean after the 6 corrections; E v4 numerics internally consistent). **`C8.18-complete` tagged → C8.18 fully closed (DO steps 1–7); next = C8.19.**
+
+C8.18 DO step 7 SHIPPED in one session under the full five-phase discipline. Full narrative: `RECEIPTS/C8.18_step7_2026-05-23T05-00-00Z.md` + `PRE_FLIGHT_LOG.md` 2026-05-23T05:00:00Z + `DECISION_LOG.md` 2026-05-23T05:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16 + C8.17 + C8.18 COMPLETE (3 of 7); C8.19 NEXT.** The linked product is **v4.0.0: 1983-2023; 149,386,620 records; permanent 1992-1994 NCHS-linkage gap; canonical parquet filename `natality_v3_linked_*` retained**. The final pre-Zenodo data envelope is now settled (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples). Cumulative Phase C ≈ 39-40 of 51-71 (cap 86 intact).
+
+### What was done this session (C8.18 DO step 7 entry → close)
+
+1. Kickoff handshake (a)-(d); user "proceed and make all relevant decisions by yourself"; I stated I would still halt-and-ask on any NEW §7 gate (none arose — docs-only; the 6b §7 cohort_num finding is RESOLVED, not re-litigated).
+2. PRE-FLIGHT (2026-05-23T05:00:00Z, L10-safe): 8/8 6b forward-HALTs; the 11-gate SHA proof (10 byte-exact + linked-derived `9b828a4d…`→`f630d8cf…` v4 + `.v3_baseline`==`9b828a4d…`); Convention-3 Field-value snapshot; the 3 scope decisions documented.
+3. SMOKE: per-file exact old→new string enumeration (L1-clean) + the discriminating principle (SWAP coverage/version/count/framing; PRESERVE validation-scope + historically-correct + unrebuilt-artifact + the `natality_v3_linked_*` schema-family filename).
+4. DO: 16 content docs edited via surgical Edit (Tier-A §15.D-named + cross-product COMPARABILITY + the 4 framing notes; Tier-B Option-A consumer files).
+5. VERIFY A-E; VERIFY-D caught + corrected 6 missed stale lines in-DO-scope (re-swept clean); the memory-safe pytest split = the 6b baseline (COUNT is the gate).
+6. RECEIPT + DECISION_LOG + PRE_FLIGHT_LOG + this STATUS appended; commit + tag **`C8.18-complete`**.
+
+### Last completed step
+
+C8.18 DO step 7 (this session) — **C8.18 COMPLETE**. Single commit ships: 16 content docs (`natality/.zenodo.json`, `CITATION.cff`, `natality/docs/ABOUT_THIS_RELEASE.md`, `natality/README.md`, `PROJECT_STRUCTURE.md`, `README.md`, `docs/COMPARABILITY.md`, `CHANGELOG.md`, `VERSION_ROADMAP.md`, `docs/NCHS_SOURCE_MANIFEST.md`, `natality/docs/GETTING_STARTED.md`, `natality/docs/FAQ.md`, `natality/docs/VALIDATION.md`, `natality/REPRODUCING.md`, `natality/docs/CODEBOOK.md`, `natality/docs/COMPARABILITY.md`) + `PRE_FLIGHT_LOG`/`DECISION_LOG`/1 RECEIPT/this STATUS. **Zero parquet/schema/test/script/metadata-CSV mutation** (10/11 gate SHAs byte-exact; linked-derived = the v4 `f630d8cf…` set at 6b). **Tag `C8.18-complete`.**
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**C8.19 — Perinatal-record pre-joined parquet (C.8; methodology research)** per KICKOFF Tier 3+5 sequence + §15.D. PRE-FLIGHT computes the join-key entropy / expected match rate; if <5% the §15.D Tier-0 plan surfaces a §7 halt → defer to a v1.1 methodology-paper subproject. Consumes the now-settled final envelope (natality v3.0.0 + **linked v4.0.0** + fetal-death v2.4.0 + matched-multiples). Entry cheap-check: the 7 forward-looking HALTs in `RECEIPTS/C8.18_step7_2026-05-23T05-00-00Z.md`.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.19 entry. No §7 gate arose this session (docs-only; the 6b §7 cohort_num finding is RESOLVED — do NOT re-litigate). **Phase-D deferrals owed (NOT C8.19-blocking; on-disk logs authoritative meanwhile):** the manuscript Coverage re-paragraph = **D.4** (one pass after C8.19: natality 1968-2024 + linked v4 1983-2023 + the keyless-1983-1988 / weighted-1983-1984 / cohort_num-residual / 1992-1994-gap notes + fetal-death 1982-2024); `file_inventory.csv` `imported`-flag refresh false→true for the 19 pre-2005 cohort rows + re-run `test_inventory_invariants.py`; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; the convenience/benchmark refresh (residents_only / PIPELINE_TIMING / notebooks / C8.10a) — soft-flag (ee) extended to linked v4. **Owed §11 human-merge** (carried): soft-flag (ii) the §15.D model-clarification `[plan-update]` (now also folds the C8.18 DO-step-7 scope-breadth + the 3 deferrals + a §15.D-DO-step-7 "6 files"-vs-realized-~16 reconciliation); the LESSONS 2026-05-20 §8-row sharpening + the 2026-05-22 (A′) addendum + the L13-extension-shared-CSV + the L17 grep-scope-must-enumerate-test-infra-count-constants sharpenings (FIX_LOG 2026-05-23).
+
+**Open soft-flags (28; 0 NEW):** (ee) extended — the v4 convenience/benchmark/notebook refresh (residents_only / PIPELINE_TIMING / notebooks/README / C8.10a are v3-2005-2023 measured/unrebuilt artifacts; rebuild = C8.10/C8.13/convenience-class). (ll) the 1985-1988 per-year non-anchor layout (3a-class future; NOT IMR-blocking); (gg) composite-block leaf decomposition (post-C8.18); (ii) the §15.D model-clarification `[plan-update]` (now also folds DO-step-7 scope-breadth + the 3 deferrals); (kk) pytest memory/runtime advisory (the per-dir + tests/-per-file split; COUNT is the gate); (jj) README "56 passed" stale (baseline 347P+1S+1XF). (hh)/(cc)/(dd — VERSION_ROADMAP "Planned" wholesale-stale)/(bb)/(aa)/(w)/(x)/(z)/(u) carry.
+
+### Forward-looking HALTs for C8.19 PRE-FLIGHT (Convention 4)
+
+Full enumeration (7) in `RECEIPTS/C8.18_step7_2026-05-23T05-00-00Z.md`. Headlines: (1) `C8.18-pre-do`@`6632a15`; **`C8.18-complete` IS now present** — C8.18 fully closed (DO 1–7); next = C8.19. (2) linked-derived gate = the **v4 `f630d8cf…`** (NOT `9b828a4d…` — that is the preserved `.v3_baseline`, do NOT "restore"); the other 10 byte-exact; the final envelope is settled. (3) pytest baseline = 347P+1S+1XF (0 FAILED) via the memory-safe per-dir + `tests/`-per-file split (incl. the `tests/mutations/` subtree) (the 2 GB v4 OOM-SIGKILLs a single-process full-suite — soft-flag (kk); COUNT is the gate). (4) the 4 Phase-D deferrals (manuscript-D.4; `imported`-flag; generated-validation-MD regen; convenience/benchmark refresh) — NOT C8.19-blocking. (5) the scope-breadth Option-A precedent + a §15.D-DO-step-7 wording `[plan-update]` owed (§11 human-merge). (6) the owed §11 LESSONS sharpenings carried. (7) C8.5b/C8.7b DEFERRED; Tier 3+5 ≈ 3/7 done.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED).
+- **Linked v4.0.0 (1983-2023; 149,386,620 rows; permanent 1992-1994 gap)**: `natality_v3_linked_harmonized_derived.parquet` = the v4 gate SHA **`f630d8cf…`** (set at 6b; UNCHANGED by this docs-only step); `natality_v3_linked_harmonized.parquet` `ea89ab3c…` (81 cols); `…_derived.v3_baseline.parquet` `9b828a4d…` (the preserved pre-6b anchor, 74,943,824/94); `…_harmonized.v3_baseline.parquet` `e1795ac6…`. All at `~/Desktop/natality-harmonization/output/harmonized/` (gitignored; reproducible). NEW git-tracked this step: 16 docs + state files. **No build-side change (10/11 gate SHAs byte-exact; linked-derived = the v4 SHA from 6b).**
+
+### Notes for next session
+
+- **C8.18 is COMPLETE (DO steps 1–7).** Linked is **v4.0.0 (1983-2023; 149,386,620 rows; 1992-1994 permanent gap; filename `natality_v3_linked_*` retained)**. DO step 7 was docs-only; the consumer surface now consistently states the v4 envelope + the 4 framing notes; the manuscript-Coverage / `imported`-flag / generated-validation-MD / convenience-benchmark refreshes are the recorded Phase-D deferrals. State-on-disk authoritative.
+- Next: **C8.19 — perinatal-record pre-joined parquet** (the final data envelope is settled). Then C8.20 (CODEBOOK extensions) / C8.21 (Stata/SAS pointer) / C8.22 (cross-tab CSVs); then Phase D.
+- §2 cheap-before-expensive + §4.4 (no successful receipt/commit until VERIFY-C authoritatively confirmed — the 6b self-check #6 lesson) + the binding §7/§9-#3 governed this session. VERIFY-D's residual sweep doing its job (caught 6 misses → corrected in-DO-scope) is L7/no-rubber-stamp working as designed (the C8.17 step7 `quickstart.R` precedent). Carry it.
+- `/tmp/c8_18_s7/*` scratch (gate-SHA + pytest split logs) is OS-cleanable + reproducible.
+
+### Session summary
+
+C8.18 DO step 7 SHIPPED in one session (PRE-FLIGHT+SMOKE+DO+VERIFY+RECEIPT) → **C8.18 COMPLETE**: the linked v3→**v4.0.0** (1983-2023; 149,386,620 records; permanent 1992-1994 gap; +3 within-era cohort cols) consumer doc/metadata surface sync + tag `C8.18-complete`. **Docs-only** (16 content docs; zero parquet/schema/test/script/metadata-CSV mutation; 10/11 gate SHAs byte-exact; linked-derived = the v4 `f630d8cf…` set at 6b). Scope-breadth = the C8.17 step 7 "Option A — Honest propagation" precedent under standing authorization; the 4 framing notes carried into COMPARABILITY/ABOUT/CODEBOOK; manuscript Coverage re-paragraph + `file_inventory.csv` `imported`-flag + the generated validation MD regen + the convenience/benchmark refresh deferred to Phase D (precedented + plan-mandated; recorded as forward-HALTs). VERIFY-D caught + corrected 6 missed stale lines in-DO-scope (L7/no-rubber-stamp; the C8.17 `quickstart.R` precedent). VERIFY all PASS (A docs-only + 11-gate; B gap-doc; C pytest 347P+1S+1XF memory-safe split; D residual sweep clean; E v4 numerics consistent). **`C8.18-complete` tagged → C8.18 fully closed; C8.19 (perinatal-record) is next; the final pre-Zenodo data envelope is settled.**
 
 ---
 

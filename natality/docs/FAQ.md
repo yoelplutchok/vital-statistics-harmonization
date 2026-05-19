@@ -3,19 +3,19 @@
 ## What years are covered?
 
 - **V2 Natality**: 1968-2024 (57 years, 201.2 million birth records)
-- **V3 Linked birth-infant death**: 2005-2023 (19 years, 74.9 million birth records with linked infant death data)
+- **V3/v4 Linked birth-infant death**: 1983-2023 (38 years; permanent 1992-1994 NCHS-linkage gap; 149.4 million birth records with linked infant death data)
 
 ## What is the difference between V2 and V3?
 
 **V2 Natality** contains birth records only — maternal demographics, prenatal care, birth outcomes. It covers the longest time span (1968-2024).
 
-**V3 Linked** contains birth records linked to infant death certificates. It includes all the V2 birth-side columns plus death-side columns (cause of death, age at death, neonatal/postneonatal classification). Use V3 for infant mortality research. V3 starts at 2005 because that is when NCHS began releasing public-use cohort linked files in the current format.
+**V3/v4 Linked** contains birth records linked to infant death certificates. It includes all the V2 birth-side columns plus death-side columns (cause of death, age at death, neonatal/postneonatal classification). Use it for infant mortality research. The linked v4 backward extension (C8.18) covers cohort years **1983–2023** with a **permanent 1992–1994 NCHS-linkage gap** (NCHS suspended ALL birth-infant-death linkage for those three cohorts). The 1983–1988 era is a keyless two-file den/num pair (compute IMR as `count(link_segment='num')/count(link_segment='den')` per stratum, not a per-birth filter); 1983–1984 is a documented 50%-non-VSCP weighted sample (apply `record_weight`). The 2005–2023 surface is unchanged from the prior v3 release. (Linked starts at 1983 because that is the earliest cohort year NCHS released as a public-use linked file.)
 
 ## Which file should I use?
 
 - For **birth outcome research** (LBW, preterm, demographic trends): use `output/convenience/natality_v2_residents_only.parquet` (pre-filtered to residents, 82 columns)
-- For **infant mortality research** (IMR, cause-specific mortality, neonatal vs postneonatal): use `output/convenience/natality_v3_linked_residents_only.parquet` (pre-filtered to residents, 92 columns)
-- For analyses that need **foreign residents** or the `residence_status` column: use the full `natality_v2_harmonized_derived.parquet` (84 columns) or `natality_v3_linked_harmonized_derived.parquet` (94 columns)
+- For **infant mortality research** (IMR, cause-specific mortality, neonatal vs postneonatal): use `output/convenience/natality_v3_linked_residents_only.parquet` (pre-filtered to residents; reflects the v3 2005–2023 slice — 92 columns — pending the v4 1983–2023 convenience refresh; for the full 1983–2023 envelope use the harmonized-derived file below + the `residence_status != 4` filter)
+- For analyses that need **foreign residents** or the `residence_status` column: use the full `natality_v2_harmonized_derived.parquet` (84 columns) or `natality_v3_linked_harmonized_derived.parquet` (97 columns; linked v4 1983–2023)
 - For **auditing or debugging**: use the yearly `output/yearly_clean/` or `output/linked/` files
 
 ## Are these data nationally representative?

@@ -33,7 +33,7 @@ references:
       - family-names: Plutchok
         given-names: Yoel
     doi: 10.5281/zenodo.19363074
-    notes: "Concept DOI; resolves to latest deposited version. Latest Zenodo version v2.7.0. In-repo state v3.0.0 (1968-2024 backward extension: +22 years 1968-1989, 201,161,456 records, certificate_revision gains unrevised_1968; built on the v2.8.0 canonical column-name rename: data_year, residence_status, maternal_race_bridged, hispanic_origin) pending unified-HVS Zenodo deposit."
+    notes: "Concept DOI; resolves to latest deposited version. Latest Zenodo version v2.7.0. In-repo state: natality v3.0.0 (1968-2024 backward extension: +22 years 1968-1989, 201,161,456 records, certificate_revision gains unrevised_1968; built on the v2.8.0 canonical column-name rename: data_year, residence_status, maternal_race_bridged, hispanic_origin) + linked v4.0.0 (1983-2023 cohort backward extension: 149,386,620 records, permanent 1992-1994 NCHS-linkage gap; canonical parquet filename natality_v3_linked_* retained per the schema-family convention). Both pending the unified-HVS Zenodo deposit."
   - type: dataset
     title: "Harmonized U.S. Fetal Death Microdata, 1992–2022"
     authors:

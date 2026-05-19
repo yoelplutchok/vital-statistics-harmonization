@@ -6,7 +6,7 @@ This file is bundled with the Zenodo deposit so that someone with only the Zenod
 
 The Zenodo deposit contains:
 
-- **6 Parquet files** with the harmonized data (V2 natality 1968-2024 and V3 linked birth-infant death 2005-2023, in three variants each: full, derived, residents-only — the V2 residents-only variant reflects the 1990–2024 v2.8 slice pending the v3.0.0 convenience refresh).
+- **6 Parquet files** with the harmonized data (V2 natality 1968-2024 and linked v4.0.0 birth-infant death 1983-2023 — permanent 1992-1994 NCHS-linkage gap — in three variants each: full, derived, residents-only — the V2 residents-only variant reflects the 1990–2024 v2.8 slice pending the v3.0.0 convenience refresh; the linked residents-only variant reflects the v3 2005–2023 slice pending the v4 1983–2023 convenience refresh).
 - **6 documentation files** (`README.md`, `ABOUT_THIS_RELEASE.md`, `CODEBOOK.md`, `COMPARABILITY.md`, `FAQ.md`, `GETTING_STARTED.md`, `VALIDATION.md`) explaining the schema, how to load the data, comparability rules, and validation results.
 - **4 metadata CSVs** (`harmonized_schema.csv`, `external_validation_targets_v1.csv`, `external_validation_targets_v3_linked.csv`, `file_inventory.csv`).
 - **4 validation outputs** (`external_validation_v1_comparison.{csv,md}`, `external_validation_v3_linked_comparison.{csv,md}`, `harmonized_missingness_breaks.csv`, `harmonized_missingness_by_year.csv`) showing what was validated and the results.
@@ -50,7 +50,7 @@ The full pipeline (parsing fixed-width raw zips → harmonized Parquet) is open-
 That repository contains all the code (`scripts/01_import/` through `scripts/07_figures/`), field-position specifications (`scripts/01_import/field_specs.py`), and a step-by-step "Quick reproduce" section in its README.md. The raw NCHS source files (~120 GB, ~50 zips) are public-use products from the CDC FTP server:
 
 - Natality data: `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/`
-- Linked birth-infant death (2005–2015): `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/cohortlinkedus/`
+- Linked birth-infant death (1983–2015 cohort; 1983–1991 keyless two-file, 1995–2015 denominator-plus; permanent 1992–1994 gap): `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/cohortlinkedus/`
 - Linked birth-infant death (2016–2023): `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/period-cohort-linked/`
 
 `metadata/file_inventory.csv` (in this Zenodo bundle) lists every required raw file with its expected size and SHA-256.

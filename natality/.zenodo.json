@@ -2,7 +2,7 @@
   "doi": "10.5281/zenodo.19363074",
   "version": "v3.0.0",
   "title": "Harmonized U.S. Natality and Linked Infant Death Microdata, 1968-2024",
-  "description": "A harmonized dataset of 201.2 million U.S. birth records (1968-2024) and 74.9 million linked birth-infant death records (2005-2023), derived from NCHS public-use natality files. The pipeline resolves multiple record layouts spanning three birth certificate revisions (1968, 1989, 2003) and dozens of field-name and coding changes into a stable schema with explicit comparability documentation. Validated against 183 published NCHS benchmarks for 1990-2024 (all pass) and 35 linked-file targets (all pass); pre-1990 (1968-1989) benchmark validation is a planned incremental addition.",
+  "description": "A harmonized dataset of 201.2 million U.S. birth records (1968-2024) and 149.4 million linked birth-infant death records (1983-2023; permanent 1992-1994 NCHS-linkage gap), derived from NCHS public-use natality and cohort linked birth-infant death files. The pipeline resolves multiple record layouts spanning three birth certificate revisions (1968, 1989, 2003) and dozens of field-name and coding changes into a stable schema with explicit comparability documentation. Validated against 183 published NCHS benchmarks for 1990-2024 (all pass); pre-1990 (1968-1989) benchmark validation is a planned incremental addition. Linked validated against 35 NCHS linked-file targets for 2005-2023 (all pass within documented tolerance), plus per-year validation of the pre-2005 cohort years (1983-2004) against the NCHS cohort linked-file user guides (denominator and resident-births byte-exact; published IMR within +/-0.02; a documented numerator-file-vs-denominator-linkage residual for 3 of 19 cohort years).",
   "upload_type": "dataset",
   "creators": [
     {
@@ -41,5 +41,5 @@
     {"term": "Vital statistics"},
     {"term": "Epidemiology"}
   ],
-  "notes": "Source data: NCHS public-use period natality files (1968-2024) and cohort linked birth-infant death files (2005-2023). Code: MIT License. Data outputs: CC-BY 4.0."
+  "notes": "Source data: NCHS public-use period natality files (1968-2024) and cohort linked birth-infant death files (1983-2023; permanent 1992-1994 NCHS-linkage gap). Code: MIT License. Data outputs: CC-BY 4.0. Deposit version/title remain natality-anchored; the linked v4.0.0 1983-2023 backward extension is bundled in this same deposit (the Zenodo version patch is handled at the unified-HVS deposit step)."
 }
