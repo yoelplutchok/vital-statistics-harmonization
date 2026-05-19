@@ -173,7 +173,7 @@ The cross-product validation notebook reproduces:
 
 > **Perinatal *rate* vs perinatal *record*.** The computation above is the aggregate perinatal mortality **rate** (stratum-level counts; no record linkage). A record-*level* "perinatal record" — one infant row with its same-mother fetal-death sibling joined on — is **not constructible from public-use NCHS data** (no maternal/household identifier, no sub-national geography). See [`docs/PERINATAL_RECORD_FEASIBILITY.md`](PERINATAL_RECORD_FEASIBILITY.md) for the quantitative evidence and the two perinatal analyses HVS *does* support (this rate; and the stillborn↔liveborn co-multiple linkage shipped as `matched_multiples/`).
 
-## Cross-language access: R and DuckDB
+## Cross-language access: R, DuckDB, Stata, SAS
 
 Beyond the Python pattern shown above, HVS ships two additional access paths:
 
@@ -229,6 +229,10 @@ DBI::dbGetQuery(con, "SELECT * FROM fetal_mortality_rate_by_year")
 ```
 
 The DuckDB views' row counts are byte-exact-equivalent to applying the same filter via Python `pyarrow.compute`; verified in `RECEIPTS/C8.9_<UTC>.md`.
+
+### Stata / SAS
+
+Stata and SAS cannot read Apache Parquet in their base releases (native Stata `import parquet` is StataNow-only; SAS 9.4 has no Parquet engine — SAS Viya uses an ORC/Parquet `LIBNAME` engine). The version-proof path is to convert Parquet → CSV once (via the shipped [`views.sql`](../views.sql) + the DuckDB CLI, or `quickstart.py` + pandas) and then load the CSV with Stata `import delimited` or SAS `PROC IMPORT … DBMS=CSV`. The full step-by-step, with the exact verified commands and the build-dependent native options, is in [`STATA_SAS_QUICKSTART.md`](../STATA_SAS_QUICKSTART.md) at the monorepo root.
 
 ### Note on state-level geography
 

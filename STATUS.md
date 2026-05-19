@@ -1,6 +1,64 @@
-# STATUS — last updated 2026-05-23T15:00:00Z
+# STATUS — last updated 2026-05-23T16:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-23T16:00:00Z — **C8.21 COMPLETE** — Stata + SAS quickstart pointer (C.3): NEW root `STATA_SAS_QUICKSTART.md` (cross-product) + wired into JOINT_USE_GUIDE/PROJECT_STRUCTURE/WORKED_EXAMPLE_FAQ/README. Primary path = verified Parquet→CSV bridge (shipped `views.sql`/DuckDB `COPY` + `import delimited`/`PROC IMPORT DBMS=CSV`); native options cited with build caveats. **Zero canonical-state mutation** (3 gate SHAs byte-exact; pytest unchanged 355P+1S+1XF; docs-only). The §15.D "Stata 17+ supports import parquet" premise found false at L9 + corrected (not propagated). Tags **`C8.21-pre-do`@`e052dba`** + **`C8.21-complete`**.
+
+C8.21 shipped in one (~0.5) session under the full five-phase discipline. Full narrative: `RECEIPTS/C8.21_2026-05-23T16-00-00Z.md` + `PRE_FLIGHT_LOG.md`/`DECISION_LOG.md` 2026-05-23T16:00:00Z.
+
+### Current phase
+
+**Phase C — Tier 3+5 active; C8.16–C8.21 COMPLETE (incl. the C8.20 fresh-eyes audit closed); C8.22 NEXT (last Tier-3+5 task), then Phase D.** Settled pre-Zenodo envelope **unchanged** (natality v3.0.0 1968-2024 + linked v4.0.0 1983-2023 + fetal-death v2.4.0 1982-2024 + matched-multiples) — C8.21 added zero canonical state. Cumulative Phase C ≈ 42-43 of 51-71 (C8.21 ~0.5 session as estimated; cap 86 intact).
+
+### What was done this session
+
+This session ran two items end-to-end under full five-phase discipline (user authorized *"do whatever is necessary to make the output best quality (within reason)"* + delegated decisions):
+1. **C8.20-auditfix** (2026-05-23T15:00:00Z section below) — root-cause remediation of the user-run fresh-eyes audit finding. COMPLETE; tags `C8.20-auditfix-pre-do`@`cf2a59e` + `C8.20-auditfix-complete`@`be5be0d`.
+2. **C8.21** (this section) — PRE-FLIGHT (L9-verified DuckDB/Stata/SAS anchors; found+corrected the false §15.D "Stata 17+ import parquet" premise; Convention-3 snapshot) → SMOKE (docs render; verified-published syntax; cross-links resolve; markdown balanced) → DO (NEW `STATA_SAS_QUICKSTART.md` + 4 cross-link wirings) → VERIFY (scope clean; 3 gate SHAs byte-exact; the 2 doc-citing tests re-run 25P post-edit + fast sanity 27P; no test reads the changed docs) → RECEIPT + this STATUS; commit + tag `C8.21-complete`.
+
+### Last completed step
+
+C8.21 (this session) — **COMPLETE**. Single DO commit ships: `STATA_SAS_QUICKSTART.md` (NEW) + `docs/JOINT_USE_GUIDE.md` (section rename + `### Stata / SAS`) + `PROJECT_STRUCTURE.md` (matrix + L11 `§174`→section-name fix) + `docs/WORKED_EXAMPLE_FAQ.md` (new language-access Q) + `README.md` (loading pointer) + RECEIPT/STATUS. **Zero parquet/schema/test-target/metadata-CSV/test/script mutation.** Tag `C8.21-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**C8.22 — Pre-computed cross-tab CSVs (C.5; ~1 session)** per KICKOFF Tier 3+5 sequence + §15.D Task C8.22 — the **last Tier-3+5 task**, then **Phase D** (D.1 Task 9 redirect notices → D.2 Task 10 unified Zenodo deposit → D.3 public-repo v1.x sync → D.4 manuscript re-pass + submit). C8.22 generates `csv/published_tabulations/` (deterministic builder; must apply canonical filters F1/F2, conserve row counts H6, auto-derive every cell L6). Entry cheap-check: the 5 forward-looking HALTs in `RECEIPTS/C8.21_2026-05-23T16-00-00Z.md`.
+
+### Blocked
+
+**C8.5b (Dockerfile)** — DEFERRED. **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+None blocking C8.22 entry. The C8.20 fresh-eyes audit is fully dispositioned/closed (do NOT re-litigate). **Owed §11 human-merge (carried, unchanged):** the §15.D model-clarification `[plan-update]` (soft-flag (ii)); LESSONS 2026-05-20 §8-row + 2026-05-22 (A′) addendum + L13-extension-shared-CSV + L17 grep-scope sharpenings. **NEW (optional, non-blocking):** the §15.D Task C8.21 sentence "Stata 17+ supports `import parquet`" is factually wrong (native is StataNow-only; SAS 9.4 none) — corrected in the shipped deliverable + DECISION_LOG 16:00:00Z; an optional one-sentence §11 plan-update to that §15.D line is flagged for the next human plan-merge pass (deliverable/scope unchanged ⇒ not a §7 trip, not blocking). **No new LESSONS/§8 owed** (C8.20-auditfix = L6/H8 in-matrix; C8.21 = L6/L9 in-matrix). **Phase-D deferrals owed (carried, unchanged):** manuscript Coverage re-paragraph = D.4; fetal-death CODEBOOK/COMPARABILITY full-body v2.4.0 re-paragraph; `file_inventory.csv` `imported`-flag refresh; `external_validation_v3_linked_comparison.{md,csv}` full-v4 regen; convenience/benchmark v4 refresh.
+
+**Open soft-flags (28; 0 NEW):** all carried unchanged (C8.21 added zero canonical state). (jj) README "56 passed" stale — baseline is 355P+1S+1XF. (kk) pytest memory-safe per-file split unchanged.
+
+### Forward-looking HALTs for C8.22 PRE-FLIGHT (Convention 4)
+
+Full enumeration (5) in `RECEIPTS/C8.21_2026-05-23T16-00-00Z.md`. Headlines: (1) `C8.21-pre-do`@`e052dba` + `C8.21-complete` set → C8.21 CLOSED; next = C8.22 (last Tier-3+5), then Phase D. (2) 3 gate SHAs unchanged (`185c071ec76a`/`acb5c48a9abf`/`f630d8cf20db`; settled envelope; C8.21 docs-only). (3) pytest baseline unchanged **355P+1S+1XF** via the memory-safe per-file split. (4) C8.22 is the first Tier-3+5 artifact-generating task since C8.20-auditfix — apply canonical filters (F1/F2) + conserve row counts (H6) + auto-derive every cell (L6) per §15.D C8.22 Halt-flags. (5) owed §11 human-merge + the optional C8.21 §15.D-sentence plan-update + Phase-D deferrals carry; no LESSONS owed by design.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`(harm)/`acb5c48a…`(deriv); `.v28_baseline` `230efed2…`/`e16ad532…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`(deriv)/`ea89ab3c…`(harm)/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible.
+- NEW git-tracked this session (C8.21): `STATA_SAS_QUICKSTART.md`; MODIFIED: `docs/JOINT_USE_GUIDE.md`, `PROJECT_STRUCTURE.md`, `docs/WORKED_EXAMPLE_FAQ.md`, `README.md` (+ state files). C8.20-auditfix (earlier this session): `scripts/_build_codebook_extensions.py`, `tests/test_codebook_extensions_smoke.py`, `natality/docs/CODEBOOK.md`. **No build-side change (3 gate SHAs byte-exact); `fetal_death/CODEBOOK.md` + both `FAQ.md` byte-identical.**
+
+### Notes for next session
+
+- C8.21 CLOSED — Stata/SAS users have a verified, version-honest entry point; all four language access paths discoverable from README/PROJECT_STRUCTURE/JOINT_USE_GUIDE/WORKED_EXAMPLE_FAQ.
+- Next: **C8.22 (pre-computed cross-tab CSVs)** = last Tier-3+5; then **Phase D** (paper + Zenodo + public-repo sync). After C8.22, Tier 3+5 = 7/7 and the pre-Zenodo scope is complete pending Phase D.
+- §2/§9-#2/L6/L9 honored both items this session (cheap audit/L9 re-probes before expensive work; root-cause builder fix not a doc patch; verified syntax not invented; false plan premise corrected not propagated).
+- `/tmp/claude-*` scratch is OS-cleanable + reproducible.
+
+### Session summary
+
+Two items shipped end-to-end this session under full five-phase discipline. **C8.20-auditfix:** the user-run fresh-eyes adversarial audit's lone minor finding (6-sig-fig float64 `record_weight` key collision, L6/H8 in-matrix) remediated at root cause — floating-point CODEBOOK columns now render exact per-era summary statistics + a continuous (iii) line; pytest 355P+1S+1XF, determinism `--check ×2`=`(none)`, independent recompute byte-matched; tags `C8.20-auditfix-pre-do`@`cf2a59e`+`C8.20-auditfix-complete`@`be5be0d`. **C8.21:** NEW `STATA_SAS_QUICKSTART.md` cross-product pointer + 4 cross-link wirings; primary path = verified Parquet→CSV bridge; native options L9-cited with build caveats; the false §15.D "Stata 17+ import parquet" premise corrected; tags `C8.21-pre-do`@`e052dba`+`C8.21-complete`. **Both zero canonical-state mutation** (3 gate SHAs byte-exact; settled pre-Zenodo envelope unchanged). Tier 3+5 = **6/7 done + C8.20 audit closed**; **C8.22 (cross-tab CSVs) is the last Tier-3+5 task**, then Phase D.
 
 ---
 

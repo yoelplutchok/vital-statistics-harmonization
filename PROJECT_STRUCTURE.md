@@ -225,7 +225,8 @@ Given an analytic question, this matrix points at the right starting file.
 | Compute preterm-birth rate (any product, any era) | natality `_derived` (use `preterm_lt37`) | `residence_status != 4` + filter to relevant gestational-age era | `notebooks/preterm_outcomes_time_series.ipynb` |
 | Reproduce a specific *NVSR* cell | Per-product `external_validation_targets*.csv` + the corresponding `05_validate/*.py` script | per-product canonical filter | each subproject's `metadata/external_validation_targets*.csv` |
 | Understand era boundaries / which years are comparable | `docs/COMPARABILITY.md` (cross-product) + per-product `COMPARABILITY.md` | — | `docs/COMPARABILITY.md` |
-| Load the data in R / Stata / SAS | per-product `quickstart.R` / `quickstart.py` | (loader code includes the filter) | `docs/JOINT_USE_GUIDE.md` §174 |
+| Load the data in R / Python | per-product `quickstart.R` / `quickstart.py` | (loader code includes the filter) | `docs/JOINT_USE_GUIDE.md` "Cross-language access" |
+| Load the data in Stata / SAS | `STATA_SAS_QUICKSTART.md` at monorepo root | (Parquet→CSV via `views.sql`, then the canonical filter) | `docs/JOINT_USE_GUIDE.md` "Cross-language access" → Stata / SAS |
 | Query via SQL without Python | `views.sql` at monorepo root (DuckDB views over the parquets) | (views include the filter) | `docs/JOINT_USE_GUIDE.md` §194 |
 | Check per-year totals against published *NVSR* figures | per-product `validation_results.csv` + each subproject's `output/validation/*.md` | — | per-subproject `VALIDATION.md` |
 | Add a new harmonized column | Per-product `harmonized_schema.csv` (then propagate through 03_harmonize/04_derive scripts) | — | per-subproject `REPRODUCING.md` |

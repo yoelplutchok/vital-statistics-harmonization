@@ -63,6 +63,10 @@ vital-statistics-harmonization/
 
 See [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md) for the full map and where to find specific things.
 
+## Loading the data (Python, R, SQL, Stata, SAS)
+
+The harmonized data ship as Apache Parquet. Entry points: **Python** — per-product `quickstart.py`; **R** — per-product `quickstart.R` (`arrow`); **SQL** — [`views.sql`](views.sql) (DuckDB canonical-filter views); **Stata / SAS** — [`STATA_SAS_QUICKSTART.md`](STATA_SAS_QUICKSTART.md) (Parquet→CSV bridge for any release, plus the build-dependent native options). Cross-language mechanics: [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md) "Cross-language access".
+
 ## Validation
 
 All three products are validated against every per-year figure NCHS publishes in the relevant *National Vital Statistics Reports* series under each product's canonical analytic filter. Validation tables ship inside each subproject's `metadata/` and `output/validation/` directories, and the verification scripts under each `scripts/05_validate/` are runnable end-to-end.

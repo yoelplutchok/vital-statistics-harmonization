@@ -106,6 +106,18 @@ The per-column comparability classification (`within_era` vs `cross_era`) is in 
 
 ---
 
+## Loading the data in R, Stata, SAS, or SQL
+
+### Q: I don't use Python — how do I load the parquet in R, Stata, SAS, or plain SQL?
+
+- **R:** per-product `quickstart.R` (`fetal_death/quickstart.R`, `natality/quickstart.R`, `natality/quickstart_linked.R`) using `arrow`.
+- **SQL (no Python):** [`views.sql`](../views.sql) at the monorepo root defines DuckDB canonical-filter views over the parquets.
+- **Stata / SAS:** see [`STATA_SAS_QUICKSTART.md`](../STATA_SAS_QUICKSTART.md). Stata/SAS base releases cannot read Parquet (native Stata `import parquet` is StataNow-only; SAS 9.4 has none — SAS Viya uses an ORC/Parquet `LIBNAME` engine), so the version-proof path is Parquet → CSV once (via `views.sql` + DuckDB, or `quickstart.py` + pandas) then `import delimited` / `PROC IMPORT DBMS=CSV`.
+
+The full mechanics for all four languages are in [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md) "Cross-language access: R, DuckDB, Stata, SAS".
+
+---
+
 ## Citing this resource
 
 ### Q: How do I cite HVS?
