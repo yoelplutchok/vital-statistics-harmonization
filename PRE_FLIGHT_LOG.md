@@ -8,6 +8,53 @@
 
 ---
 
+## PRE-FLIGHT for C8.22 — 2026-05-23T18:00:00Z — **Pre-computed cross-tab CSVs (C.5)** — **RESULT: PROCEED.**
+
+> Timestamp convention: the append-only logs use a monotonic logical-UTC sequence marker (last entry C8.21 @ 2026-05-23T16:00:00Z); the build-machine wall-clock lags the logical project timeline, so — as every prior session did — this session advances the marker monotonically (16:00→18:00). One timestamp for the whole C8.22 session (the C8.21 single-timestamp-per-session precedent). L10-safe: this entry is written **before any DO mutation**; `C8.22-pre-do` is tagged at the PRE-FLIGHT commit.
+
+### Inputs
+- [x] All required input gate parquets exist; SHA-256 prefixes byte-exact vs the C8.21 receipt's 3 gate SHAs (settled pre-Zenodo envelope; Forward-looking HALT 2 verified):
+  - `~/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet` → `185c071ec76a` ✓ (2,427,233 rows; 1982-2024)
+  - `~/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` → `acb5c48a9abf` ✓ (201,161,456 rows; 1968-2024)
+  - `~/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet` → `f630d8cf20db` ✓ (149,386,620 rows; 1983-2023; permanent 1992-1994 gap confirmed in distinct-year probe)
+  - (matched-multiples `adbec1087370` ✓ present; NOT consumed by C8.22 — the top-N NVSR-cited tabulations are natality/fetal-death/linked; MM has its own validation surface and no §15.D C8.22 named role)
+- [x] Canonical parquet paths = the gate-SHA-matched `_build_codebook_extensions.py` constants (the documented monorepo-path-drift fix-on-contact class; the stale flat `~/Desktop/fetal-death-harmonization/` tree is NOT used).
+- [x] Reconciliation-anchor inputs present: `fetal_death/external_validation_targets.csv` + `fetal_death/validation_results.csv`; `natality/metadata/external_validation_targets_v1.csv`; `natality/metadata/external_validation_targets_v3_linked.csv`. Canonical validators read for exact metric definitions (mirror, not reinvent — §9-#5/L3/L7): `natality/scripts/05_validate/compare_external_targets_v1.py`, `natality/scripts/05_validate/compare_external_targets_v3_linked.py`, `fetal_death/scripts/05_validate/validate_external_v2.py`; canonical-filter spec `docs/JOINT_USE_GUIDE.md` §"Canonical analytic filters".
+- [x] Upstream tasks complete in STATUS.md: C8.16–C8.21 COMPLETE (tags present; `C8.21-pre-do`@`e052dba` + `C8.21-complete`). C8.22 dependency (C8.17+C8.18+C8.19 final envelope settled) satisfied.
+- [x] No stale checkpoints: `csv/published_tabulations/` does **not** exist (good); `scripts/_build_published_tabulations.py` does not exist (good — new file).
+
+### Environment
+- [x] Python 3.13 via `uv run`; pyarrow 18.1.0 (≥18.0 ✓); pandas 2.3.2 (≥2.3 ✓); duckdb 1.5.2; numpy 2.3.1.
+- [x] Working directory clean on `main` (only untracked `.claude/` + `AUDITS/` — intentionally non-committed, on the Phase-D D.3 exclude-list; not a §7-#17 trip).
+- [x] On expected branch `main`; last commit `8c304a2` C8.21 COMPLETE.
+
+### Source documentation
+- [x] No NEW external PDFs/NCHS guides referenced — C8.22 is pure derivation from the gate-verified parquets, reconciled against the **already-SHA-anchored, already-validated** NVSR target CSVs (no new `file_inventory.csv` SHA to verify; the validated targets' source PDFs were SHA-anchored at C8.2/C8.17/C8.18). No new Zenodo DOIs cited.
+
+### Outputs
+- [x] Intended outputs do not exist (all new; zero canonical-state mutation): `csv/published_tabulations/` (10 `*.csv` + `README.md`), `scripts/_build_published_tabulations.py`, `tests/test_published_tabulations_smoke.py`; pointer edits to `README.md` / `PROJECT_STRUCTURE.md` / `docs/WORKED_EXAMPLE_FAQ.md` (in-scope per §15.D DO-scope 5). No parquet / `harmonized_schema.csv` / validation-target-CSV / existing-test mutation.
+
+### Field-value snapshot for cells / rows / columns being touched (Convention 3)
+
+C8.22 mutates **no** canonical artifact (it READS the parquets, WRITES new derived CSVs). The Convention-3 snapshot here is the value-distribution probe of every canonical-filter + stratification column the builder consumes, verified against the task plan's assumed state and against known NVSR cells (the L13-extension discipline — verify field semantics, not just presence):
+
+- [x] **Canonical filters reproduce known NVSR cells byte-exact** (the de-risking gate):
+  - Fetal `tabulation_flag==2 AND residence_status!=4`: 2022 → **20,202** ✓ (=NVSR 73-09); 2017 → **22,827** ✓; 1995 + `version_flag=='S'` → **27,294** ✓ (=NVSR 57-08); 2022 by `fetal_sex` M=**10,519**/F=**9,683** ✓ (=NVSR 73-09 Table A). `version_flag` ∈ {A:680,486; S:1,746,747}.
+  - Natality `residence_status!=4`: verified **≡ `is_foreign_resident==False`** byte-exact 1990/2005/2022 (foreign_null=0) — the two equivalent canonical-resident definitions; 2005 → **4,138,349** ✓ (=v1 target), 2022 → **3,667,758** ✓. lbw% 2005 = 8.19 (tgt 8.2, tol 0.05) ✓; preterm% 2005 = 12.73 (tgt 12.7) ✓; twin/1000 2022 = 31.2 (tgt 31.2, tol 0.1) ✓ — all over **known/non-null** denominators (the v1-validator definition).
+  - Linked `residence_status!=4` ≡ `is_foreign_resident==False` byte-exact 2005/2015/2020; unweighted IMR = deaths/births×1000: 2015=**5.86** ✓, 2020=**5.35** ✓, 2023=**5.49** ✓ (=validated `imr_per_1000`, tol 0.01) — mirrors `compare_external_targets_v3_linked.py` exactly.
+- [x] **`maternal_race_bridged` discontinuity boundaries pinned per-product** (the user-flagged concern; codes {1:White,2:Black,3:AIAN,4:Asian/PI} per both schemas): natality bridged-race populated through **2019**, **100% NULL 2020+** (2018=0 null, 2019=0 null, 2020/2021=100% null); fetal bridged-race populated through **2017**, **100% NULL 2018+** (2016/2017=0 null canonical, 2018/2019=100% null). The two products' boundaries DIFFER (fetal 2018, natality 2020) — the race-stratified FMR tab (fetal∩natality) is bridged-race-meaningful 1990-2017; race-IMR (linked, natality-side) 2005-2019. 1990-2002 natality bridged-race is the documented APPROXIMATE crosswalk (schema note).
+- [x] **No geography column in ANY parquet** — explicit probe for state/geo/fips/county/region/div names returned NONE in all 3 (NCHS public-use suppression; the documented Known-data-caveat in NEXT_STEPS §16 + PROJECT_STRUCTURE which-file matrix "Get state-level data → not available"). ⇒ the §15.D C8.22 goal text's "per-year × per-**state** × per-race counts" is **structurally infeasible** (same §15.D-spec-vs-data-reality class as C8.19 perinatal-record + C8.21 "Stata 17+ import parquet"). Resolved at this cheap-check moment per the L9/L11/§7-#12 fix-on-contact precedent (DECISION_LOG 2026-05-23T18:00:00Z, D1) — NOT a §7 human-halt (a documented data caveat, not a new mistake class / validity-domain ambiguity / scope creep; deliverable/scope unchanged; substitute the per-state tabs with feasible high-value race/maternal-age stratifications + document the infeasibility prominently + flag an OPTIONAL §11 §15.D-wording book-keeping plan-update, exactly the C8.21 disposition).
+- [x] Era/availability: natality data rich back to **1968** (1968 resident births 1,750,782 with maternal_age/race/plurality/lbw populated — C8.17 backward extension complete); pre-1990 natality is NOT NVSR-benchmarked (README "pre-1990 benchmarking planned") → the births-by-year tab spans 1968-2024 with NVSR reconciliation only 1990-2024, pre-1990 flagged "derived; NVSR-benchmarking planned". Linked pre-2005 cohort IMR needs RECWT-weighted-den (1983-1984) + link_segment den/num ratio (1983-1988) + unweighted-per-birth (1989-2004) — the canonical validator deliberately refuses inline ("a naive unweighted den+num trend row would MISLEAD"; FIX_LOG 2026-05-23); C8.22 mirrors that documented scoping (DECISION_LOG D3): linked IMR cross-tabs = 2005-2023, pre-2005 documented + pointed to the validated targets/COMPARABILITY (pointer, not silent omission).
+- [x] Current values match the (amended) task plan ✓ — the only divergence (per-state infeasibility) is resolved at this cheap-check via DECISION_LOG D1, not silently proceeded under.
+
+### Halt conditions tripped
+None. The §15.D "per-state" infeasibility is the documented-data-caveat / §15.D-vs-reality fix-on-contact class (C8.19/C8.21 precedent; DECISION_LOG D1) — explicitly NOT a §7 trip per the standing-authorization + precedent. F1/F2/H6/L6 (the §15.D C8.22 named halt-flags) are design constraints actively satisfied by the mirror-validated-definition architecture (D2), not tripped conditions.
+
+### Result
+**PROCEED.** Curated 10-tabulation set + 5 design decisions (D1-D5) recorded in DECISION_LOG 2026-05-23T18:00:00Z. Builder mirrors the three canonical validators' exact definitions (all spot-checks byte-exact at this PRE-FLIGHT). Tag `C8.22-pre-do` at the PRE-FLIGHT commit.
+
+---
+
 ## PRE-FLIGHT for C8.21 — 2026-05-23T16:00:00Z — **Stata + SAS quickstart pointer files (C.3)** — **RESULT: PROCEED.**
 
 One **upfront** PRE-FLIGHT (L10-safe: single docs-only deliverable + cross-link wiring; no code ⇒ no §9-#9 fixture). KICKOFF Tier-3+5 next after C8.20 (+ its audit) closed (`C8.20-auditfix-complete`@`be5be0d`); STATUS 2026-05-23T15:00:00Z names C8.21 next; no STATUS↔KICKOFF divergence. Pure docs; **zero canonical-state mutation** (no parquet/schema/validation-target/metadata-CSV/test surface).
