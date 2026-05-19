@@ -8,6 +8,49 @@
 
 ---
 
+## PRE-FLIGHT for plan-merge-owed-backlog — 2026-05-23T20:00:00Z — **`[plan-update]` clear the owed §11 human-merge backlog** — **RESULT: PROCEED.**
+
+User-authorized 2026-05-23 (KICKOFF handshake → AskUserQuestion "Pre-D cleanup first") to clear the owed §11 human-merge backlog + carried internal Phase-D prep under five-phase discipline. This task = the §11-process item ONLY (a single `[plan-update]` commit); the internal-prep items (fetal-death CODEBOOK/COMPARABILITY v2.4.0 re-paragraph; `file_inventory.csv` `imported`-flag; `external_validation_v3_linked_comparison.{md,csv}` v4 refresh; convenience/benchmark v4) are SEPARATE subsequent five-phase tasks (NOT compressed — §9-#8). §11 step 3: the user's explicit option-selection is the human-approve; every merged text is already drafted verbatim in append-only LESSONS/FIX_LOG/DECISION_LOG (these are *owed merges of already-recorded proposals*, not new proposals); plan/lessons-doc only ⇒ trivially `git revert`-able; this is the established C8.21/C8.22 "precedented + authorized + already-drafted ⇒ apply + log, not re-ask" disposition (not a §7 gate).
+
+### Inputs
+- [x] All required input files exist (read-only this PRE-FLIGHT):
+  - `NEXT_STEPS.md` §8 matrix tail L13/L14/L17 (lines 321-323) + §15.D C8.18 (1395-1444, incl. the 2026-05-17 `[plan-update]` block @1397 + the inline soft-flag (ii) note @1420) + C8.21 (1528-1556) + C8.22 (1560-1592): present ✓
+  - `LESSONS.md` 2026-05-20T02:00:00Z entry (the verbatim "Proposed matrix-row sharpening (§11 — human-merge)": L13-extension year-axis + H6 heterogeneous-union): present ✓
+  - `FIX_LOG.md` 2026-05-23T02:00:00Z ×2 (L17 grep-scope sharpening text @ line 52; L13-extension shared-CSV sharpening text @ line 68): present ✓
+  - `DECISION_LOG.md` 2026-05-22T02:00:00Z (the (A′) FALSIFIED finding + the explicit "a §11 LESSONS addendum is owed" sentence) + 2026-05-17/2026-05-19→2026-05-23 C8.18 sub-step entries (the executed DO-step decomposition substrate for soft-flag (ii)) + 2026-05-23T16:00:00Z (C8.21 §15.D-premise) + 2026-05-23T18:00:00Z D1 (C8.22 per-state §15.D-wording): present ✓
+- [x] All required upstream tasks complete in STATUS.md: C8.22 COMPLETE (Tier 3+5 = 7/7; entire pre-Zenodo Phase-C scope done) ✓
+- [x] No stale checkpoints: `git status --porcelain` = only untracked `.claude/`, `AUDITS/` (both expected; on the Phase-D D.3 exclude-list); no partial run of this task ✓
+
+### Environment
+- [x] Working directory clean (tracked) ✓; on branch `main` ✓ (HEAD `d913b91` C8.22 COMPLETE; `C8.22-pre-do`/`C8.22-complete` tags present)
+- [x] No build/runtime env needed — this task mutates only plan/lessons markdown (no parquet/script/test execution in DO)
+
+### Source documentation
+- [x] No external NVSR/NCHS PDFs or DOIs in scope (plan/lessons-doc task). All merged text is internally sourced (verbatim from append-only LESSONS/FIX_LOG/DECISION_LOG already in-repo).
+
+### Outputs
+- [x] Intended outputs are EDITS to existing append-only docs (`NEXT_STEPS.md`, `LESSONS.md`) + new RECEIPT + STATUS/DECISION_LOG/this-log appends. Per §3 append-only-supersede: NEXT_STEPS.md §15.D edits are *prepended `[plan-update]` blocks* (the 2026-05-17 C8.18 + 2026-05-23 C8.19 precedent) — original task text preserved, not deleted; §8 gets *new appended rows* (L13/L14/L17 untouched); LESSONS gets a *new dated entry at top* (the 2026-05-20 entry preserved, partially-superseded by reference). No file overwrite.
+
+### Field-value snapshot for cells / rows / columns being mutated (Convention 3)
+- [x] Targets enumerated + current state verified against this task's plan:
+  - `NEXT_STEPS.md` §8 matrix: last data row = `L17` @ line 323; line 324 blank; line 325 = "If a new mistake class…" para. Plan: insert **4 new rows** (`L13-ext (year-axis)`, `H6-ext (heterogeneous-union)`, `L13-ext (shared CSV)`, `L17-ext (grep-scope)`) AFTER L17, BEFORE the blank+para. Matrix is a 5-col pipe table (`# | Class | Symptom | Caught at | Specific catch`) — new rows preserve that shape (SMOKE-checked). ✓ matches plan.
+  - `NEXT_STEPS.md` §15.D C8.18 head (line 1396-1397): one prior `> **[plan-update] 2026-05-17 …**` block present; inline soft-flag (ii) note present @1420 ("…is soft-flag (ii), proposed-not-applied, queued for §11 human-merge"). Plan: prepend a SECOND `> **[plan-update] 2026-05-23 (model-clarification; resolves soft-flag (ii))**` block recording the executed decomposition (DO 3→3a/3b; 5→5a/5b/5c; 5c→5c-i/5c-ii(-a/-b)/5c-iii; 6→6a/6a-RECWT/6b; the 1983-1988 keyless two-file vs 1989-1991 denominator-plus model; 1983-1984 RECWT-weighted vs 1985-2004 full-file). Original DO-step list preserved. ✓ matches plan.
+  - `NEXT_STEPS.md` §15.D C8.21 (line 1530): contains the false premise "Stata 17+ supports `import parquet`"; PRE-FLIGHT-inputs lines 1535-1536 cite "Published Stata 17+ import parquet documentation" / "PROC IMPORT … (or PROC PARQUET if available)". Plan: prepend a `> **[plan-update] 2026-05-23 (premise-correction; optional, non-blocking)**` block (StataNow-only; SAS 9.4 none / SAS Viya ORC-Parquet LIBNAME; deliverable already-correct per C8.21). Original text preserved. ✓ matches plan.
+  - `NEXT_STEPS.md` §15.D C8.22 (line 1562): Goal contains "per-year × per-state × per-race counts". Plan: prepend a `> **[plan-update] 2026-05-23 (scope-clarification; optional, non-blocking)**` block (per-state structurally infeasible — NCHS suppresses all public-use sub-national geography; substituted in-deliverable by race/age national stratifications per DECISION_LOG 2026-05-23T18:00:00Z D1; deliverable surface/scope unchanged). Original text preserved. ✓ matches plan.
+  - `LESSONS.md`: newest entry = 2026-05-20T02:00:00Z (the (A′) entry being partially superseded). Plan: prepend a NEW 2026-05-22 dated entry (the owed (A′)-falsification §11 addendum: head-sample-≠-per-year-byte-stability-proof; verify vs the file-level NCHS control total). 2026-05-20 entry preserved (referenced as partially-superseded). ✓ matches plan.
+- [x] Current values match the task plan's assumed state — no divergence. (Note: this is a §11-process meta-task; the "fields" are plan/lessons prose, all verified above.)
+
+### Date convention
+- [x] Harness `currentDate` = 2026-05-19, but the repo's append-only state files run on an internal clock AHEAD of it (latest STATUS/DECISION_LOG/PRE_FLIGHT sections = 2026-05-23T18:00:00Z). Append-only newest-first ordering REQUIRES a timestamp monotonically AFTER the last section. Chosen: **2026-05-23T20:00:00Z** (2h after C8.22, matching the prior cadence). Flagged transparently here + in the RECEIPT; not a §7 gate (ordering is the protocol invariant, not wall-clock accuracy).
+
+### Halt conditions tripped
+None. Not a §7 condition: no PRE-FLIGHT input missing/wrong; no smoke/VERIFY target; no NVSR cell; no new mistake class (these are *owed merges of already-recorded* classes); no scope creep (the §11-process item only — internal-prep is separate tasks); no canonical-state mutation (plan/lessons-doc only ⇒ reversible). §11 step-3 human-approve = the user's explicit option-selection (the C8.21/C8.22 precedent).
+
+### Result
+**PROCEED.**
+
+---
+
 ## PRE-FLIGHT for C8.22 — 2026-05-23T18:00:00Z — **Pre-computed cross-tab CSVs (C.5)** — **RESULT: PROCEED.**
 
 > Timestamp convention: the append-only logs use a monotonic logical-UTC sequence marker (last entry C8.21 @ 2026-05-23T16:00:00Z); the build-machine wall-clock lags the logical project timeline, so — as every prior session did — this session advances the marker monotonically (16:00→18:00). One timestamp for the whole C8.22 session (the C8.21 single-timestamp-per-session precedent). L10-safe: this entry is written **before any DO mutation**; `C8.22-pre-do` is tagged at the PRE-FLIGHT commit.
