@@ -1,6 +1,50 @@
-# STATUS — last updated 2026-05-20T02:55:00Z
+# STATUS — last updated 2026-05-20T03:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-20T03:30:00Z — **pre-zenodo-audit-pass (D-prep.4) COMPLETE — 5-agent round-3 audit; consolidated report; D-prep.5 triggered (Tier A doc bundle PZ-01–PZ-11).**
+
+### Current phase
+
+**Phase D-prep.** D-prep.1–4 **COMPLETE**. Next: **D-prep.5** (`pre-zenodo-audit-fix-bundle`, conditional — **authorized to proceed** under standing D-prep authorization unless human narrows scope). Phase D / E unchanged.
+
+### Last completed step
+
+`pre-zenodo-audit-pass` (D-prep.4). Tag `pre-zenodo-audit-pass-complete`. Consolidated: `AUDITS/CONSOLIDATED_PRE_ZENODO_2026-05-20T03-30-00Z.md`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**D-prep.5** — doc/CSV-only remediation bundle (~1 session): JOINT_USE + `quickstart.py` + README heritage + CODEBOOK L63/C8.20 notes + matched_multiples README + REPRODUCING fixes + inventory `imported` flags + natality `data_year` schema cells + COMPARABILITY/CHANGELOG/VERSION_ROADMAP touch-ups. **Optional add-on:** notebook path portability (PZ-NB) — ask if bundling.
+
+### Open questions for human
+
+- **D-prep.5 scope:** Tier A only, or include notebook path regeneration (PZ-NB)?
+- **Convenience CSVs:** extend to 2023–2024 vs document "rates through 2022" only?
+- **Build host:** confirm `shasum` on 4 gate parquets before D.2 (parquets absent in typical clone).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. D-prep.4 CLOSED — no full re-audit unless requested.
+2. D-prep.5 doc/CSV-only; halt on parquet-rebuild findings (none from audit).
+3. Manuscript envelope → Phase D.4 only.
+4. 4 gate SHAs: build-host verification before Zenodo.
+5. Phase D per-step human go-ahead.
+
+### Audit headline (round 3)
+
+| Surface | Verdict |
+|---|---|
+| Data integrity | PASS-WITH-NOTES |
+| User-facing docs | FAIL — `JOINT_USE_GUIDE.md`, `fetal_death/quickstart.py` critical |
+| Reproducibility | CONDITIONAL PASS |
+| Notebooks | FAIL — legacy absolute paths |
+| Manuscript | FAIL — D.4 scope |
 
 ---
 

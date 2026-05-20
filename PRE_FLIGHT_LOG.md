@@ -8,6 +8,19 @@
 
 ---
 
+## PRE-FLIGHT for pre-zenodo-audit-pass (D-prep.4) — 2026-05-20T03:25:00Z — **RESULT: PROCEED**
+
+### Inputs
+- D-prep.1 `3926e19`, D-prep.2 `46e2502`, D-prep.3 `eb11b41`: complete in STATUS
+- Working tree: clean
+- Gate parquets: absent locally (gitignored); PROVENANCE SHA prefixes match STATUS anchors (`38e2cecb`, `185c071e`, `acb5c48a`, `f630d8cf`)
+
+### Field-value snapshot
+N/A — read-only audit task
+
+### Halt conditions
+None tripped
+
 ## PRE-FLIGHT for schema-years-available-gap-notation (D-prep.3) — 2026-05-20T02:45:00Z — **RESULT: PROCEED**
 
 D-prep.2 complete. Fetal `years_available` `--check` OK (73 data columns). Linked `manner_of_death` missing explicit `1992-1994 gap` suffix (fix-on-contact). Gate SHAs byte-exact.

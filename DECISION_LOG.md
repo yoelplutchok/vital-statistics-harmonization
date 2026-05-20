@@ -23,6 +23,16 @@
 
 ---
 
+## 2026-05-20T03:30:00Z — pre-zenodo-audit-pass (D-prep.4) — 5-agent fresh-eyes round 3 complete; D-prep.5 Tier A bundle proposed (PZ-01–PZ-11); manuscript + notebooks Tier B/C deferred
+
+**Decision:** Accept audit verdicts; proceed to D-prep.5 with **Tier A doc/CSV-only** remediation (11 items, ~1 session) per `AUDITS/CONSOLIDATED_PRE_ZENODO_2026-05-20T03-30-00Z.md`. **Defer** full manuscript rewrite and notebook regeneration to explicit human scope (D.4 for manuscript; optional PZ-NB add-on for notebooks).
+
+**Rationale:** Cross-product entry points (`JOINT_USE`, `quickstart.py`) still advertise V2.0/29-year envelope despite D-prep.1 fetal sync — high-leverage, low-risk doc fixes before Zenodo. No audit finding requires canonical pipeline rebuild. Fetal H8 dtype xfail is disposition-at-deposit, not D-prep.5.
+
+**Status:** D-prep.5 **PENDING** execution (standing authorization); human may narrow/expand scope on notebook CSV extension questions in STATUS.
+
+---
+
 ## 2026-05-20T02:55:00Z — schema-years-available-gap-notation (D-prep.3) — envelope comment rows + linked gap suffix; empirical years_available already current
 
 **Choice:** Fix-on-contact fetal `allowed_values`/`notes` staleness on `delivery_year` + `data_year`; add `#ENVELOPE_NOTE` rows per §9-#6; add `1992-1994 gap` to `manner_of_death`; filter `#` rows in test fixtures + regenerate script. Did not re-run full `_regenerate_schema_years.py` write (empirical spans already matched).
