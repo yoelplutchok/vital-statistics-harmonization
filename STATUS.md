@@ -1,6 +1,78 @@
-# STATUS — last updated 2026-05-24T00:45:00Z
+# STATUS — last updated 2026-05-24T01:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T01:30:00Z — **`[plan-update]` Phase-D-sequencing + Phase E plan-update — KICKOFF + NEXT_STEPS §15.E + §19 amended; the full work-to-Zenodo + companion-paper path is now encoded so fresh chats land on the right next task.**
+
+User directive 2026-05-24 (verbatim): *"i wannw do all these things but in fresh cahts could you make it so that when i paste the kickoff md into subsequnt chats it will know what to do? ... i want to do all the Still owed before D.2 Zenodo upload: and i want to do more audits then generate apapers after sumbiting prompts etc. ... please put it in the documents so kickoff will know"*. Applied as a `[plan-update]` per §11 step 3 (user pre-approval = step-3 approval; the protocol-sync 2026-05-11 + audit-fix-r1r2-bundle 2026-05-24 precedents). **Zero canonical-state mutation** (4 gate parquet SHAs byte-exact `38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); plan/docs-only.
+
+### Current phase
+
+**Phase C COMPLETE + Pre-D cleanup COMPLETE + `audit-fix-r1r2-bundle` COMPLETE + this `[plan-update]` COMPLETE.** Next agent-executable work: **Phase D-prep** (§15.E; D-prep.1 → D-prep.2 + D-prep.3 paralleling → D-prep.4 audit → D-prep.5 conditional auditfix). Then externally-irreversible **Phase D** (D.1 → D.2 → D.3 → D.4; each step explicitly-authorization-gated). Then **Phase E** (companion empirical paper, fresh LLM chat OUTSIDE Claude Code per §19 prompts).
+
+### What was done this session (the audit-fix bundle + this plan-update)
+
+1. **`audit-fix-r1r2-bundle` COMPLETE** at commit `7179255` (preceding STATUS section).
+2. **This `[plan-update]`** ships **KICKOFF.md** (Phase D-prep + Phase E sections added; Phase D heading clarified as "after Phase D-prep completes; each step gated on explicit per-step human go-ahead"; source footer updated), **NEXT_STEPS.md §15.E** (5 new task definitions: D-prep.1 `fetal-death-other-docs-v240-sync` / D-prep.2 `provenance-refresh-current-envelope` / D-prep.3 `schema-years-available-gap-notation` / D-prep.4 `pre-zenodo-audit-pass` / D-prep.5 conditional `pre-zenodo-audit-fix-bundle`), **NEXT_STEPS.md §19** (LLM prompt templates: §19.1 Paper 1 Data Descriptor finalization for Phase D.4; §19.2 Paper 2 Companion empirical drafting for Phase E), this **STATUS section**, and **DECISION_LOG.md 2026-05-24T01:30:00Z**.
+
+### Last completed step
+
+This `[plan-update]` (this session). Tag (none — `[plan-update]` per Convention 5 ships as commit only, no `*-pre-do`/`*-complete` since there's no PRE-FLIGHT/DO mutation gate to anchor — the precedent is the 2026-05-11 protocol-sync + 2026-05-23 plan-merge-owed-backlog).
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**D-prep.1 — `fetal-death-other-docs-v240-sync`** (R2d + `data_year` L60 fix bundled). §15.E entry has the full PRE-FLIGHT/SMOKE/DO/VERIFY/RECEIPT framing. **Standing authorization** (no per-task explicit go required; agent halts only on §7 conditions). Estimated 1-2 sessions.
+
+After D-prep.1: D-prep.2 (`provenance-refresh-current-envelope`) + D-prep.3 (`schema-years-available-gap-notation`) may parallelize (different file surfaces; ~0.5 session each). Then D-prep.4 (`pre-zenodo-audit-pass`; **user-triggered `/ultrareview` recommended**; agent-launched 5-agent fresh-eyes round as fallback). Then D-prep.5 only if D-prep.4 surfaces findings.
+
+### Blocked
+
+**Phase D (D.1-D.4)** — each step requires explicit per-step human go-ahead (externally irreversible). **C8.5b (Dockerfile)** / **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+**Phase E** — by design, not agent-executable in this Claude Code project; user-driven via fresh LLM chats with §19 prompts.
+
+### Open questions for human
+
+**Standing authorization governs Phase D-prep** (D-prep.1 → D-prep.5; reversible doc/CSV; agent proceeds without per-task explicit go). **Phase D (D.1-D.4) is per-step explicitly-authorization-gated** (each session must surface (a)-(d) + halt for human go).
+
+Audit-recommended carry-forwards (now scheduled in §15.E, not pending):
+- ~~R2d (other `fetal_death/*.md` V2.0-envelope-staleness)~~ — **scheduled D-prep.1**
+- ~~`data_year` L60 stale `Years` column~~ — **bundled into D-prep.1**
+- ~~PROVENANCE refresh~~ — **scheduled D-prep.2**
+- ~~schema `years_available` gap notation~~ — **scheduled D-prep.3**
+- ~~pre-Zenodo broader audit~~ — **scheduled D-prep.4 (`/ultrareview` recommended)**
+
+**Open soft-flags (30; carried unchanged):** (jj) README "56 passed" baseline stale, (kk) pytest memory-safe per-file split, (ll-docs) §8 L12-row literal-pipe (non-blocking), convenience-CSV year-coverage-extension question (non-blocking).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **Standing authorization covers Phase D-prep ONLY** (D-prep.1 → D-prep.5; reversible doc/CSV; zero canonical mutation expected). Phase D (D.1-D.4) is externally irreversible and per-step explicitly-authorization-gated — surface this fact + halt at the (a)-(d) handshake when next session lands at D.1.
+2. **4 gate parquet SHAs byte-exact**: `38e2cecb03ff4947` / `185c071ec76ab8aa` / `acb5c48a9abf82ac` / `f630d8cf20db72ea`. Independently re-hashed at every next-session PRE-FLIGHT; any drift = §7-#18 reproducibility regression.
+3. **D-prep.4 audit MUST run AFTER D-prep.1** (auditing pre-D-prep.1 would re-flag the known R2d items as findings); D-prep.5 is **conditional** on D-prep.4 surfacing remediable findings (SKIP if D-prep.4 = PASS / no findings).
+4. **Phase E is OUTSIDE Claude Code's scope** — if a future session lands at Phase E with a "start drafting Paper 2" intent, the agent surfaces this fact + halts; the substantive drafting happens in a fresh LLM chat (claude.ai web or similar) with the §19.2 prompt.
+5. **§19 prompt templates are self-contained for fresh-chat use** — they deliberately do not embed numerics or quote internal narrative. If a future session edits the §19 prompts, preserve the "attach these files" + "do NOT invent numerics" + "output structured planning" pattern.
+6. **Repo append-only clock**: this STATUS section dated 2026-05-24T01:30:00Z runs ahead of harness `currentDate` (2026-05-19); keep timestamps monotonic-after the newest STATUS section.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…` / `185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…` / `acb5c48a…` (UNCHANGED). Linked v4.0.0 `f630d8cf…` / `ea89ab3c…` / `.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples (UNCHANGED). **4 gate SHAs byte-exact across this entire `[plan-update]` (zero canonical-state mutation by construction; only `KICKOFF.md` + `NEXT_STEPS.md` + `STATUS.md` + `DECISION_LOG.md` touched).**
+- MODIFIED git-tracked this session: `KICKOFF.md` (Phase D-prep + Phase E sections; title/source-footer update), `NEXT_STEPS.md` (+§15.E + §19; total ~270 new lines), `STATUS.md` (this section), `DECISION_LOG.md` (the 2026-05-24T01:30:00Z entry). **No build-side change.**
+
+### Notes for next session
+
+- **Next session's entry point**: paste the canonical kickoff prompt from `KICKOFF.md` (the block in triple-backticks starting at *"You are working on the U.S. Harmonized Vital Statistics (HVS) project as the executing LLM agent."*). Agent reads STATUS.md (this section) + KICKOFF "Current planned sequence" (which now points at Phase D-prep) + applies the (a)-(d) handshake. Under standing authorization for D-prep, agent proceeds without waiting for per-task explicit go.
+- **The §15.E task definitions are explicit + complete** — D-prep.1 has full PRE-FLIGHT inputs / SMOKE plan / DO scope / VERIFY criteria / RECEIPT requirement / Estimated effort / Dependencies / Halt-condition flags. No additional planning required at session start.
+- **The §19 paper-drafting prompts are stored for fresh-chat use** — agent's job during Phase E is narrow (data-structure Q&A, small analysis-script helpers, companion-paper tooling). Substantive drafting happens outside Claude Code.
+
+### Session summary
+
+This `[plan-update]` encodes the user's 2026-05-24 directive ("i wannw do all these things but in fresh chats ... please put it in the documents so kickoff will know") into the canonical state files. **KICKOFF.md** now has Phase D-prep + Phase E sections; **NEXT_STEPS.md §15.E** has 5 new task definitions (D-prep.1 through D-prep.5) under standing authorization; **NEXT_STEPS.md §19** has self-contained LLM prompt templates for Paper 1 (Data Descriptor finalization at Phase D.4) and Paper 2 (Companion empirical drafting at Phase E). Future fresh-chat sessions paste the kickoff prompt → read STATUS (this section) → read KICKOFF Phase-D-prep → proceed under standing authorization to D-prep.1, then D-prep.2/3, then D-prep.4, then (conditional) D-prep.5, then surface for explicit per-step human go-ahead at Phase D entry. Phase E remains outside Claude Code's scope.
 
 ---
 

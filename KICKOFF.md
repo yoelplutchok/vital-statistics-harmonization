@@ -38,7 +38,11 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-12, post-V3b-complete + scope-expansion mandate)
+## Current planned sequence (as of 2026-05-24, post-audit-fix-r1r2-bundle + Phase-D-sequencing plan-update)
+
+**Latest plan-update (2026-05-24).** The full pre-Zenodo Phase C, the internal Pre-D cleanup block (TaskList #1-#5), and the post-cleanup `audit-fix-r1r2-bundle` are **ALL COMPLETE**. The next agent-executable work is the reversible, doc/CSV-only **Phase D-prep** block (§15.E): ship the remaining `fetal_death/*.md` v2.4.0 envelope sync (R2d) + the `data_year` L60 stale `Years` column fix, refresh per-product `PROVENANCE.md` for the v3.0.0 / v4.0.0 / v2.4.0 envelope, retroactive `harmonized_schema.csv` `years_available` gap notation (V3a/V3b/V2.1 fetal-death + linked 1992-1994 permanent NCHS gap), and one focused **pre-Zenodo audit pass** (user-triggered `/ultrareview` recommended; agent-launched 5-agent fresh-eyes round as fallback; user may request additional rounds). Phase D itself (D.1 redirects → D.2 unified Zenodo deposit → D.3 public-repo v1.x sync → D.4 manuscript re-pass + IJE submit) **remains externally irreversible** and each step requires an **explicit per-step human go-ahead** surfaced via the (a)-(d) kickoff handshake at session start. After D.4 ships, **Phase E** = companion empirical paper drafting, executed via fresh LLM chats **outside Claude Code** using the self-contained prompt templates in `NEXT_STEPS.md` §19. User directive 2026-05-24: *"i want to do all the Still owed before D.2 Zenodo upload ... and i want to do more audits then generate apapers after sumbiting prompts etc. ... please put it in the documents so kickoff will know"* (logged at `DECISION_LOG.md` 2026-05-24T01:30:00Z).
+
+**Historical context (the 2026-05-12 directive that drove Phases B + C):**
 
 Phase A (data-first pre-submission scope) is **COMPLETE**. The user (chat 2026-05-12, post-commit `b0c8b4a` `task7_v3b-complete`) has issued a **§11 plan-update directive** expanding pre-submission scope further: *"i would like do do everything possible with this project in terms of extending the actual project and adding diferent things to the project to make it as robust and useful as possible before we do the paper or the zenodo."* Manuscript submission, Zenodo deposits, and the public-repo v1.1 sync are all paused until Phases B + C complete.
 
@@ -233,9 +237,25 @@ Authorized 2026-05-14 in response to user directive *"i want to do everything po
 - Effort-ceiling cap (Q33 self-resolution): if cumulative Phase C effort drifts beyond +20% of the 29-35 session estimate (i.e., >42 sessions), halt at the next clean checkpoint and re-ask the user.
 - Phase B-2 trigger (Q42 self-resolution): any new candidate >1 session triggers a `[plan-update]` per §11; silent in-Phase-C scope-creep forbidden.
 
-### Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (after Phase C completes)
+### Phase D-prep — pre-Zenodo prep + audit pass (agent-executable; reversible; no external action; standing authorization)
 
-Phase D was the original Tasks 9/10/sync/manuscript sequence. Sequence preserved; timing pushed to after Phases B + C ship.
+Authorized 2026-05-24 by user directive (above). Each task below uses the full `NEXT_STEPS.md` §4 five-phase discipline (PRE-FLIGHT, SMOKE, DO, VERIFY, RECEIPT) per the new `§15.E` entries D-prep.1 — D-prep.5. **All tasks doc/CSV-only; zero canonical-state mutation expected; 4 gate parquet SHAs must remain byte-exact** (`38e2cecb…`/`185c071e…`/`acb5c48a…`/`f630d8cf…` — the strongest invariant). Sessions proceed under **standing authorization** (no per-task explicit go required; agent halts only on §7 conditions). Halt-and-ask on any genuine §7 trip.
+
+- **D-prep.1** — `fetal-death-other-docs-v240-sync` (the R2d defer from the 2-round adversarial audit + `data_year` L60 stale `Years` column fix bundled) [~1-2 sessions]
+  - Files: `fetal_death/ABOUT_THIS_RELEASE.md`, `fetal_death/ABOUT_SOURCE_DATA.md`, `fetal_death/FAQ.md`, `fetal_death/GETTING_STARTED.md`, `fetal_death/REPRODUCING.md`, `fetal_death/REPORTING_THRESHOLDS.md`, `fetal_death/README.md`, plus `fetal_death/CODEBOOK.md` L60 `data_year` row's `Years` column (V2.0 / 29-yr / 1992-2022 → v2.4.0 / 43-yr / 1982-2024 / 7-era envelope; same Option-A depth as the 2026-05-23 `fetal-death-codebook-comparability-v240` task; every number parquet-derived from Appendix C8.20 — L6-safe).
+- **D-prep.2** — `provenance-refresh-current-envelope` (per-product `PROVENANCE.md` reflecting the v2.4.0 / v3.0.0 / v4.0.0 / matched-multiples envelope; SHA cross-reference with `docs/NCHS_SOURCE_MANIFEST.md`) [~0.5 session]
+- **D-prep.3** — `schema-years-available-gap-notation` (per-product `harmonized_schema.csv` retroactive `years_available` cells annotating V3a/V3b/V2.1 fetal-death + the linked 1992-1994 permanent NCHS gap) [~0.5 session]
+- **D-prep.4** — `pre-zenodo-audit-pass` (broad fresh-eyes adversarial audit of the substantive Phase C deliverables C8.16-C8.22 + the cross-product joint-use surface + user-facing docs + reproducibility surface + the existing `paper/draft_v2_hmd_styled.md` draft as D.4 input) [user-triggered for `/ultrareview` — billed; agent-launched 5-agent fresh-eyes round as fallback; ~1 session in either case]
+  - **Recommended**: user runs `/ultrareview` from this repo (KICKOFF's prescribed mechanism for pre-Zenodo broader-audit surfaces; covers canonical pipelines + cross-product surface + manuscript). User-triggered + billed.
+  - **Fallback**: agent launches a 5-agent fresh-eyes adversarial round paralleling the prior 2-round Pre-D cleanup audit pattern, covering: (1) data integrity (parquet schema + NVSR cells + 4 gate SHAs); (2) user-facing docs (post-D-prep.1); (3) reproducibility surface (`file_inventory.csv` + `NCHS_SOURCE_MANIFEST.md` + per-product `REPRODUCING.md`); (4) notebooks (`joint_use_demo.ipynb` + `paper_companion.ipynb` + `matched_multiples_demo.ipynb` run end-to-end against shipped parquets); (5) manuscript-readiness D.4 input (`paper/draft_v2_hmd_styled.md` numerics + word-count + references).
+  - User may request additional audit rounds (2nd round paralleling the R1/R2 cross-round pattern).
+- **D-prep.5** — `pre-zenodo-audit-fix-bundle` [**conditional** on D-prep.4 findings; same shape as the 2026-05-24 `audit-fix-r1r2-bundle` + C8.20-auditfix precedents; doc/CSV-only remediation; ONE single task under full five-phase discipline]
+
+**Sequencing within Phase D-prep:** D-prep.1 → (D-prep.2 + D-prep.3 may parallelize on different file surfaces) → D-prep.4 → D-prep.5 (conditional). D-prep.4 must run AFTER D-prep.1 (the audit should see the post-R2d v2.4.0-envelope docs, not the V2.0-stale residue — auditing pre-D-prep.1 would re-flag known items).
+
+### Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (after Phase D-prep completes; each step gated on explicit per-step human go-ahead)
+
+**Externally irreversible.** D.1 modifies the two old public GitHub repos; D.2 creates a permanent Zenodo DOI (§9-#15: never modify published deposits); D.3 pushes the public v1.x repo; D.4 submits the manuscript to IJE. **Each D.1-D.4 step requires explicit human go-ahead at session start, surfaced via the (a)-(d) kickoff handshake.** Standing authorization for Phase D-prep does NOT extend to Phase D. Sequence preserved from the original 2026-05-12 plan; timing pushed to after Phase D-prep ships.
 
 - **D.1. Task 9** — redirect notices on the two old GitHub repos (`yoelplutchok/natality-harmonization`, `yoelplutchok/fetal-death-harmonization`). Notice text proposed in STATUS 2026-05-12T18:45Z Q30. ~15-30 min, human-driven.
 - **D.2. Task 10** — Unified Zenodo deposit + version patches: (i) new unified HVS concept DOI; (ii) v2.3.0 (or whatever Phase B/C bumps it to) patch to fetal-death concept DOI 10.5281/zenodo.20031571; (iii) v2.8.0 (or later) patch to natality concept DOI 10.5281/zenodo.19363074; (iv) description-only redirect notes on both old deposits pointing to (i). Includes PROVENANCE.md refresh + schema-CSV `years_available` retroactive V3a/V2.1 gap fix. 1 session + Zenodo upload time.
@@ -255,7 +275,19 @@ Phase D was the original Tasks 9/10/sync/manuscript sequence. Sequence preserved
 - If Phase C reveals a cumulative effort exceeding what the user is willing to absorb: halt at the next clean checkpoint and re-ask.
 - If a Phase B/C/D task surfaces a new mistake class (per §11): log to LESSONS.md, propose §8 matrix row, halt for human approval before continuing.
 
-**Source for this sequence:** 2026-05-12 chat sessions — DECISION_LOG entries 2026-05-11T20:50Z, 2026-05-12T01:35Z, 2026-05-12T03:30Z, 2026-05-12T18:30:00Z (B3 1-digit recode + DATAYEAR Option A for V3b), and the 2026-05-12 post-V3b-complete chat directive *"i would like do do everything possible with this project … before we do the paper or the zenodo"* (logged in this `[plan-update]` commit's accompanying DECISION_LOG entry). STATUS.md's 2026-05-12T18:45:00Z section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
+### Phase E — companion empirical paper drafting (after Phase D.4 ships; executed via fresh LLM chats OUTSIDE Claude Code)
+
+**User-driven, not agent-executable in this Claude Code project.** Authorized 2026-05-24 by user directive (above): *"then generate apapers after sumbiting prompts etc."* After Paper 1 (the Data Descriptor at `paper/draft_v2_hmd_styled.md`, targeting IJE Data Resource Profile) is submitted to IJE at Phase D.4, the companion empirical paper is drafted via fresh LLM chats (claude.ai web or similar) using the self-contained prompt templates in `NEXT_STEPS.md` §19.
+
+Two paper drafting prompts are stored in `NEXT_STEPS.md` §19 (self-contained for fresh-chat use; the chat does NOT need this monorepo's context — the user attaches the relevant files):
+- **§19.1** — Paper 1 (Data Descriptor) **finalization** prompt — used at Phase D.4 to polish + IJE-prep the existing `paper/draft_v2_hmd_styled.md` draft (fresh chat: paste prompt + attach the draft + the four products' README + `docs/JOINT_USE_GUIDE.md` + `docs/COMPARABILITY.md`).
+- **§19.2** — Paper 2 (Companion empirical) **drafting** prompt — used at Phase E to draft the companion paper from scratch (fresh chat: paste prompt + attach descriptor draft + `fetal_death/COMPARABILITY.md` + `fetal_death/CODEBOOK.md` + `csv/published_tabulations/`).
+
+**If a Claude Code session is opened during Phase E:** the agent's (a)-(d) kickoff handshake should **surface this fact and halt** — Phase E substantive drafting is NOT in scope for the executing agent. The agent's allowed role during Phase E is narrowly: (a) answer questions about HVS data structures when the user pastes them in, (b) help generate small analysis scripts the companion paper needs (e.g., a stratified-trend computation script), (c) help with companion-paper-specific tooling. The substantive paper drafting happens in the fresh LLM chat outside Claude Code, per the §19 prompts.
+
+---
+
+**Source for this sequence:** 2026-05-12 chat sessions — DECISION_LOG entries 2026-05-11T20:50Z, 2026-05-12T01:35Z, 2026-05-12T03:30Z, 2026-05-12T18:30:00Z (B3 1-digit recode + DATAYEAR Option A for V3b), and the 2026-05-12 post-V3b-complete chat directive *"i would like do do everything possible with this project … before we do the paper or the zenodo"* (logged in DECISION_LOG 2026-05-12). 2026-05-23 "Pre-D cleanup first" + 2026-05-24 audit-fix-r1r2-bundle plan-updates (DECISION_LOG 2026-05-23T20:00:00Z + 2026-05-24T00:45:00Z). **2026-05-24 Phase-D-sequencing + Phase E plan-update** (DECISION_LOG 2026-05-24T01:30:00Z; this `[plan-update]` commit). STATUS.md's newest section is the canonical current-state file; this kickoff is the canonical sequencing pointer.
 
 ---
 

@@ -1603,6 +1603,132 @@ Each task uses the §4 five-phase discipline; halts on any §7 condition; tagged
 
 ---
 
+# §15.E Phase D-prep tasks (authorized 2026-05-24; agent-executable; reversible; standing authorization)
+
+Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION_LOG 2026-05-24T01:30:00Z), 5 reversible doc/CSV-only tasks ship before externally-irreversible Phase D entry. **All zero canonical-state mutation expected; 4 gate parquet SHAs must remain byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`). Sessions proceed under standing authorization; halt only on §7 conditions.
+
+### Task D-prep.1 — `fetal-death-other-docs-v240-sync` (R2d + `data_year` L60 fix)
+
+**Goal.** Sync the remaining `fetal_death/*.md` hand-docs from the V2.0 / 29-yr / 1992-2022 envelope to v2.4.0 / 43-yr / 1982-2024 / 7-era, matching the depth of the 2026-05-23 `fetal-death-codebook-comparability-v240` task (CODEBOOK + COMPARABILITY). Also fix the `data_year` L60 stale `Years` column (`1992-2022` → match v2.4.0 envelope) flagged as self-check residual in `RECEIPTS/audit-fix-r1r2-bundle_2026-05-24T00-45-00Z.md`.
+
+**Why this matters.** Audit R2d explicit defer; these docs land in Phase D.3 public-repo sync and the unified Zenodo deposit — V2.0-stale envelope text would mislead permanent-DOI users.
+
+**PRE-FLIGHT inputs.** All 7 target files + `fetal_death/CODEBOOK.md` L60. Field-value snapshot per file: quote the V2.0/1992-2022 anchor phrases; enumerate every parquet-derived number that needs v2.4.0 replacement (envelope total 2,427,233 + per-era counts from CODEBOOK Appendix C8.20).
+
+**SMOKE plan.** Tier-0/1 doc-only: per-edit anchor-string uniqueness via `grep -c`; baseline 4 gate parquet SHAs; baseline `fetal_death/CODEBOOK.md` Appendix C8.20 marker block (must be byte-identical post-DO — same C8.20 generated-block invariant the 2026-05-23 task preserved).
+
+**DO scope.** Per-file: Option-A envelope + cross-era narrative depth (per-variable V2/V1 within-era statements preserved; V3b/V3a/V2.1 added; every number parquet-derived from Appendix C8.20, none hand-invented — L6-safe). Files: `ABOUT_THIS_RELEASE.md`, `ABOUT_SOURCE_DATA.md`, `FAQ.md`, `GETTING_STARTED.md`, `REPRODUCING.md`, `REPORTING_THRESHOLDS.md`, `README.md` + `CODEBOOK.md` L60. Bundle as ONE single task under full five-phase discipline (the C8.20-auditfix + audit-fix-r1r2-bundle precedent for multi-file doc bundles sharing the zero-canonical-mutation invariant).
+
+**VERIFY criteria.** Per-edit grep evidence; 4 gate parquet SHAs byte-exact pre/post; Appendix C8.20 marker block byte-identical pre/post (use marker-extraction, not line-range — per FIX_LOG 2026-05-23 lesson); no V2.0/1992-2022 envelope phrasing residue in the 7 target docs (post-DO grep).
+
+**RECEIPT requirement.** Standard + Forward-looking HALTs (Convention 4) flagging: (a) Phase D-prep.1 closed; (b) gate SHAs unchanged; (c) D-prep.4 audit will now see post-R2d state; (d) Phase D entry remains explicitly-authorization-gated.
+
+**Estimated effort.** 1-2 sessions.
+
+**Dependencies.** None internal. `audit-fix-r1r2-bundle` (2026-05-24) deferred R2d to this task explicitly.
+
+**Halt-condition flags.** L6 (no invented numbers — all parquet-derived from Appendix C8.20), L11 (stale roadmap claims — fix-on-contact within scope), H8 (doc-data drift — the target class), §7-#17 (scope creep — keep the 7 target docs scope; do not touch CODEBOOK.md or COMPARABILITY.md hand-body content, which the 2026-05-23 task already shipped at v2.4.0).
+
+---
+
+### Task D-prep.2 — `provenance-refresh-current-envelope`
+
+**Goal.** Refresh each subproject's `PROVENANCE.md` so the documented shipped-artifact SHA-256s match the current on-disk parquets: fetal-death v2.4.0 (`38e2cecb…` / `185c071e…`), natality v3.0.0 (`c8a740eb…` / `acb5c48a…`; legacy `natality_v2_*` filename retained per C8.17 schema-family-tag convention), linked v4.0.0 (`ea89ab3c…` / `f630d8cf…`), matched-multiples (C8.16 SHAs). Cross-reference with `docs/NCHS_SOURCE_MANIFEST.md` (the unified source-zip SHA manifest).
+
+**Why this matters.** Phase D.2 Zenodo deposit deposit integrity depends on documented SHAs matching uploaded artifacts. §9-#15 forbids modifying published deposits, so the PROVENANCE files must be correct BEFORE deposit creation.
+
+**PRE-FLIGHT inputs.** Each subproject's current `PROVENANCE.md`; independently re-hash all shipped parquets; verify against the STATUS-anchor SHAs.
+
+**SMOKE plan.** Tier-0 doc-only: `shasum -a 256` on each shipped parquet; verify each matches the canonical STATUS anchor + the `docs/NCHS_SOURCE_MANIFEST.md` SHIPPED reference if applicable.
+
+**DO scope.** Per-subproject `PROVENANCE.md` update; every SHA explicitly typed (no copy-paste from stale doc); cross-product manifest in `docs/NCHS_SOURCE_MANIFEST.md` regenerated if shipped-artifact references are present.
+
+**VERIFY criteria.** Every documented SHA in every PROVENANCE.md matches the on-disk re-hash; `git diff` confined to PROVENANCE files (+ docs manifest if touched); 4 gate parquet SHAs unchanged.
+
+**RECEIPT requirement.** Standard.
+
+**Estimated effort.** 0.5 session.
+
+**Dependencies.** Can run in parallel with D-prep.1 (different file surface). Must precede D-prep.4 (audit will check PROVENANCE integrity).
+
+**Halt-condition flags.** L6 (no invented SHAs — re-hash empirically), H10 (provenance/reproducibility drift — the target class).
+
+---
+
+### Task D-prep.3 — `schema-years-available-gap-notation`
+
+**Goal.** Retroactively annotate per-product `harmonized_schema.csv` `years_available` cells to reflect the current envelope's era boundaries + permanent gaps: fetal-death V3b (1982-1988, 1978-rev) + V3a (1989-1991, early-1989-rev) + V2.1 (2003-2004, transition); linked 1992-1994 permanent NCHS gap. Per the 2026-05-12T18:45Z Q30 plan + the Phase-D deposit integrity requirement.
+
+**Why this matters.** `years_available` is a per-column declarative field that downstream consumers read to know "which years of data is this column populated for". Stale cells (e.g., a column with V3b coverage that says `1992-2022` instead of `1982-1988, 1992-2022`) misroute analyses.
+
+**PRE-FLIGHT inputs.** Each subproject's current `harmonized_schema.csv`; per-product per-year null-rate report (cheap: groupby data_year + count non-nulls per column) to ground-truth which columns DO have V3b/V3a/V2.1 coverage and which don't.
+
+**SMOKE plan.** Tier-0 doc/CSV-only: cheap empirical null-rate ground-truth via DuckDB or pandas; SHAPE-not-VALUE schema row count preserved.
+
+**DO scope.** Per-product `harmonized_schema.csv` update only; per-column `years_available` cell annotation; +1 column comment row referencing this DECISION_LOG entry per §9-#6.
+
+**VERIFY criteria.** Every annotated `years_available` cell matches the empirical null-rate ground-truth; schema row count unchanged; 4 gate parquet SHAs unchanged; existing tests pass (`test_schema_dtype_parity.py`).
+
+**RECEIPT requirement.** Standard.
+
+**Estimated effort.** 0.5 session.
+
+**Dependencies.** Can run in parallel with D-prep.1 + D-prep.2.
+
+**Halt-condition flags.** L6 (annotations must be empirically grounded), H7 (sibling-pipeline drift — both products' schemas must agree on shared concepts).
+
+---
+
+### Task D-prep.4 — `pre-zenodo-audit-pass`
+
+**Goal.** One focused fresh-eyes adversarial audit pass covering the substantive Phase C deliverables C8.16-C8.22 + the cross-product joint-use surface + user-facing docs (post-D-prep.1/2/3) + reproducibility surface + the existing `paper/draft_v2_hmd_styled.md` draft as D.4 input. Surface findings BEFORE externally-irreversible Phase D entry.
+
+**Why this matters.** §9-#15: Zenodo deposits are immutable once published. The prior 2-round adversarial audit covered only the 5-task Pre-D cleanup block; the substantive Phase C deliverables (C8.16-C8.22) have RECEIPTS paper trails but no adversarial audit. Cheap to run; high-leverage at this point.
+
+**PRE-FLIGHT inputs.** Confirm Phase D-prep 1+2+3 complete (otherwise audit will re-flag known stale items as findings); confirm working tree clean; confirm 4 gate parquet SHAs match anchors.
+
+**SMOKE plan.** N/A — audit is a read-only investigation, not a mutation.
+
+**DO scope.** **Two execution modes:**
+- **Recommended (user-triggered): `/ultrareview`** from this repo. The KICKOFF audit-session framing's prescribed mechanism for pre-Zenodo broader-audit surfaces (canonical pipelines + cross-product surface + Phase D itself surfaces explicitly out of scope of 2-round-fresh-eyes pattern, per KICKOFF). User-triggered + billed; agent cannot launch.
+- **Fallback (agent-launched): 5-agent fresh-eyes adversarial round** paralleling the prior R1/R2 Pre-D cleanup pattern. 5 parallel sub-agents, each scoped to one surface, each refused prior RECEIPTS/FIX_LOG/LESSONS/DECISION_LOG access:
+  - **Audit #1 — Data integrity**: 4 shipped parquet SHAs re-hash; per-product schema parity with pyarrow dtypes; NVSR validation cells reproducible
+  - **Audit #2 — User-facing docs (post-D-prep.1)**: per-product CODEBOOK + COMPARABILITY + FAQ + GETTING_STARTED + REPRODUCING + READMEs; cross-product `docs/JOINT_USE_GUIDE.md` + `docs/COMPARABILITY.md`; numerics derivable; no V2.0-envelope residue
+  - **Audit #3 — Reproducibility surface**: `file_inventory.csv` SHAs match on-disk NCHS source files; `NCHS_SOURCE_MANIFEST.md` cross-references intact; per-product `REPRODUCING.md` instructions accurate
+  - **Audit #4 — Notebooks**: `joint_use_demo.ipynb` + `paper_companion.ipynb` + `matched_multiples_demo.ipynb` runnable end-to-end against shipped parquets; documented values reproduce
+  - **Audit #5 — Manuscript-readiness (D.4 input)**: `paper/draft_v2_hmd_styled.md` numerics match current envelope; word count under IJE Data Resource Profile limit (2,500 main excl. abstract/refs/tables); references resolve; admin sections drafted
+- User may request additional rounds (2nd round mirroring R1/R2 pattern).
+
+**VERIFY criteria.** Audit reports written to `AUDITS/round3/*.md` (mode: fallback) or wherever `/ultrareview` deposits findings (mode: recommended). Findings categorized PASS / FINDING / HALT. Consolidated report at `AUDITS/CONSOLIDATED_PRE_ZENODO_<UTC>.md`.
+
+**RECEIPT requirement.** Standard + per-audit verdict summary + remediation-bundle proposal if findings.
+
+**Estimated effort.** ~1 session (parallel audits).
+
+**Dependencies.** D-prep.1 + D-prep.2 + D-prep.3 ALL complete (otherwise re-flags known items).
+
+**Halt-condition flags.** Any audit-surfaced §7 condition → halt before Phase D entry. Any §6 schema validation failure → halt.
+
+---
+
+### Task D-prep.5 — `pre-zenodo-audit-fix-bundle` [CONDITIONAL on D-prep.4 findings]
+
+**Goal.** Ship a doc/CSV-only remediation bundle if D-prep.4 surfaces non-blocking findings. Mirrors the 2026-05-24 `audit-fix-r1r2-bundle` + 2026-05-23 `C8.20-auditfix` precedents: ONE single task under full five-phase discipline, doc/CSV-only, zero canonical-state mutation.
+
+**Trigger condition.** D-prep.4 surfaces ≥1 remediable finding (L7/L11/H8/L6-family class) that doesn't require canonical pipeline rebuild. If D-prep.4 returns PASS / no findings: this task is SKIPPED.
+
+**Why this matters.** §9-#15: Zenodo immutability. Land all known-good remediations before D.2.
+
+**PRE-FLIGHT/SMOKE/DO/VERIFY/RECEIPT shape.** Inherited from the `audit-fix-r1r2-bundle` precedent. Field-value snapshot for every site to be mutated; SHAPE-not-VALUE smoke on the doc/CSV diff dry-runs; DO in one commit; VERIFY via per-edit grep + 4 gate SHA invariant + scope check; RECEIPT with §10 self-check + Convention 4 forward-looking HALTs.
+
+**Estimated effort.** 0.5-1 session (proportional to finding count).
+
+**Dependencies.** D-prep.4 surfaces findings.
+
+**Halt-condition flags.** If audit surfaces a finding that REQUIRES canonical pipeline rebuild (e.g., a parquet schema defect, NVSR cell regression): **§7 halt**; halt-and-ask the human; do not silently absorb into a doc-only bundle (that's L6 / §9-#7).
+
+---
+
 # §16. Cross-cutting concerns
 
 ### What NOT to change without consulting the user
@@ -1669,6 +1795,150 @@ Task 7 (V3 1982 extension) is post-submission. Do not block submission on V3.
 2. Pick what to work on or hand a task to an agent. Be explicit about which task ID from §15.
 3. Update §15 task statuses as tasks complete; promote completed tasks to ✅ in §17.
 4. When the manuscript is submitted, archive this document or move it to `docs/post-submission-followups.md` for V3 and later work.
+
+---
+
+---
+
+# §19. LLM prompt templates for paper drafting (fresh-chat use, OUTSIDE Claude Code)
+
+Per the 2026-05-24 plan-update (KICKOFF "Phase E" section + DECISION_LOG 2026-05-24T01:30:00Z), the two paper drafting prompts below are **self-contained for use in a fresh LLM chat that does NOT have access to this monorepo**. Paste the prompt into claude.ai web (or similar), attach the listed files as inputs, and engage the chat. **These prompts are NOT for Claude Code in this monorepo**; the Claude Code agent's role is narrow (data-structure Q&A, small analysis-script helpers, companion-paper tooling) and the substantive paper drafting happens in the fresh chat.
+
+The prompts deliberately do not embed numerics or quote internal narrative — those go in the attached files. The fresh chat will read the attachments, not infer from prompt text. This keeps the prompts stable as the project evolves (Zenodo DOI lands, public GitHub URL lands, etc. — the fresh chat reads the latest CITATION.cff / README.md from the attached repo snapshot).
+
+### §19.1 — Paper 1 (Data Descriptor) finalization prompt — Phase D.4 use
+
+**When to use.** At Phase D.4, after Phase D-prep + Phase D.1-D.3 complete. The Zenodo DOI + the public GitHub URL exist by D.4 (D.2 + D.3 ship them). The descriptor draft at `paper/draft_v2_hmd_styled.md` is the substrate.
+
+**What to attach (fresh chat input files):**
+- `paper/draft_v2_hmd_styled.md` (the current preferred draft, modeled on HMD IJE 2015)
+- Top-level `README.md` (4-products-at-a-glance summary)
+- Per-product `README.md` for `natality/`, `fetal_death/`, `matched_multiples/`
+- `docs/JOINT_USE_GUIDE.md`
+- `docs/COMPARABILITY.md`
+- `docs/PRIOR_ART.md`
+- Each subproject's `harmonized_schema.csv` + `external_validation_targets*.csv` + `validation_results.csv`
+- `CITATION.cff` (post-D.2 — has the unified Zenodo concept DOI)
+
+**Prompt (paste verbatim into fresh chat):**
+
+```
+I'm finalizing a Data Resource Profile manuscript for the International Journal
+of Epidemiology (IJE) describing a Harmonized U.S. Vital Statistics (HVS)
+microdata resource covering four products: natality 1968-2024, linked
+birth-infant death 1983-2023 (permanent 1992-1994 NCHS-linkage gap), fetal
+death 1982-2024, and matched-multiples 1995-2020 (three publication windows).
+The resource is validated against every per-year aggregate NCHS publishes in
+the National Vital Statistics Reports (NVSR) series, with byte-exact
+reproduction documented in the per-product output/validation/ tables. I'm
+attaching: the current preferred draft (modeled on the Human Mortality
+Database IJE 2015 paper), the top-level + per-product READMEs, the
+cross-product JOINT_USE_GUIDE and COMPARABILITY docs, the harmonized schemas,
+the validation target + result CSVs, and the CITATION metadata.
+
+Please help me with:
+(a) Structural improvements vs the HMD IJE 2015 template — what does HMD do
+    in its Data Resource Profile that my draft is currently missing or
+    under-developing? Be specific (section by section).
+(b) The "Strengths and Weaknesses" section — currently ~1,000 words; IJE
+    Data Resource Profile word limit is 2,500 main text excluding abstract,
+    references, tables, and supplementary. Propose a trim to ~600 words
+    that preserves the load-bearing claims; flag what gets moved to
+    supplementary.
+(c) Word-count audit across the full draft — propose section-by-section
+    targets summing to 2,500.
+(d) Numeric audit — every claim in the draft must reconcile with the
+    attached validation results. Flag any claim that's not directly
+    supported by the attached evidence (these are L6 risks per the HVS
+    operating protocol: "no invented numbers").
+(e) The admin sections IJE requires: Ethics approval, Author contributions,
+    AI-tool disclosure (mandatory at IJE), Conflict of interest, Funding.
+    Draft minimal-acceptable language for each.
+(f) Reference style — IJE uses Vancouver-style; verify citation formatting
+    in the draft conforms.
+(g) Cover letter to the editor — 1-page max; lead with the literature gap
+    (cross-revision harmonization), the validation evidence (byte-exact
+    NVSR reproduction), and the public availability (Zenodo DOI + GitHub).
+
+Output: specific edit proposals with line numbers + a final 5-bullet list
+of "ship-blocking" issues I should resolve before submission. Use IJE's
+Vancouver style for any new citations you add. Do NOT invent numerics; if
+a claim's evidence isn't in the attached files, flag it and stop.
+```
+
+### §19.2 — Paper 2 (Companion empirical) drafting prompt — Phase E use
+
+**When to use.** After Paper 1 submits to IJE at Phase D.4. The HVS resource is publicly available (Zenodo + GitHub). Paper 2 is the substantive empirical companion paper that demonstrates what HVS uniquely enables.
+
+**Default substance.** The "U.S. fetal mortality 1982-2024 by maternal race, age, and certificate revision" paper — the most HVS-uniquely-enabled (V3a/V3b backward extension is HVS's biggest novel data contribution; nobody else has 1982-2024 harmonized fetal death). Alternative substances (infant mortality 1983-2023; perinatal mortality across revisions; matched-multiples twin/triplet IMR) noted in KICKOFF "Phase E" section; user picks at Phase E entry.
+
+**What to attach (fresh chat input files):**
+- `paper/draft_v2_hmd_styled.md` (the descriptor; describes the resource the companion paper uses)
+- `paper/published_manuscript.pdf` (the IJE-published Paper 1, if available; otherwise the submitted preprint)
+- `fetal_death/COMPARABILITY.md` (era boundaries; certificate-revision details; state reporting quirks)
+- `fetal_death/CODEBOOK.md` (per-variable definitions + per-era distributions in Appendix C8.20)
+- `csv/published_tabulations/` (pre-computed cross-tabs, esp. `fetal_mortality_rate_by_year{,_x_maternal_race}.csv`)
+- `docs/JOINT_USE_GUIDE.md` (canonical filter + joint-use rate computation)
+- `docs/PRIOR_ART.md` (literature gap framing)
+
+**Prompt (paste verbatim into fresh chat):**
+
+```
+I'm planning an empirical companion paper to my Harmonized U.S. Vital
+Statistics (HVS) Microdata Resource, which is published at [INSERT Zenodo
+DOI from CITATION.cff] and code on GitHub at [INSERT public-repo URL].
+The descriptor paper is published in IJE as a Data Resource Profile
+[INSERT citation once accepted].
+
+The companion paper I want to draft analyzes U.S. fetal mortality rate
+trends 1982-2024 by maternal race, maternal age, and certificate revision
+(1978-revision 1982-1988 → 1989-revision 1989-2002 → 2003-revision
+transition 2003-2004 → 2003-revision 2005+), using the HVS resource's
+unique V3b (1982-1988, 1978-rev) + V3a (1989-1991, early-1989-rev)
+backward extension. Prior single-revision analyses (e.g., MacDorman 2015,
+NVSR vols cited in PRIOR_ART) were limited to within-revision windows
+(1990-2024 natality, 2005+ fetal death). HVS uniquely enables a 43-year
+harmonized analysis across all three certificate revisions. Bridged-race
+coding ends 2018+ (a documented NCHS discontinuity); this caveat must
+be surfaced in any race-stratified analysis.
+
+I'm attaching: the descriptor paper, the fetal-death COMPARABILITY and
+CODEBOOK (which describe the era boundaries + the bridged-race
+discontinuity + state reporting quirks like Louisiana 1992-1994 plurality
+non-reporting and Oklahoma all-years 100% unknown Hispanic), the
+pre-computed published_tabulations CSVs (FMR by year + by maternal race),
+the JOINT_USE_GUIDE (canonical filter + joint-use rate computation), and
+the PRIOR_ART literature gap framing.
+
+Please help me with:
+(a) The most scientifically novel framing — what's the literature gap
+    this paper closes that prior single-revision analyses couldn't?
+    Articulate 3-4 candidate framings; pick the strongest with rationale.
+(b) The right journal — American Journal of Epidemiology, Paediatric and
+    Perinatal Epidemiology, JAMA Network Open, Epidemiology, or
+    something else? Weigh trade-offs (audience reach, impact factor,
+    review timeline, fee structure, suitability for methodological +
+    substantive papers).
+(c) Analytic approach — should I use joinpoint regression for trend
+    changepoints? Age-period-cohort decomposition? Race-by-era
+    interaction tests? How do I handle the NCHS suppression of
+    sub-national geography? How do I handle the bridged-race 2018+
+    discontinuity in a 43-year trend analysis?
+(d) The headline finding I should lead with — is this a substantive
+    race-disparity narrative, a methodological "harmonization-enables"
+    story, or both? What 1-sentence finding would the abstract lead with?
+(e) Draft section outline — Introduction, Methods, Results, Discussion;
+    propose section-by-section content + a 5-cell substantive results
+    table mockup with placeholder numbers (I'll fill in the real
+    numbers from HVS).
+(f) The ethics/Data-availability/AI-disclosure sections appropriate
+    for the chosen journal.
+
+Output: a structured planning document with: framing → journal choice
+→ analytic plan → outline → results-table mockup → 3-step next-actions
+for me to take. Do NOT invent substantive numbers; placeholder rows
+are fine ("X.XX deaths per 1,000") but the structure must be concrete.
+```
 
 ---
 
