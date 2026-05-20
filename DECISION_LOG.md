@@ -23,6 +23,14 @@
 
 ---
 
+## 2026-05-20T12:00:00Z — pre-zenodo-audit-fix-bundle (D-prep.5) — Tier A audit remediation shipped; Phase D-prep block closed; notebooks + manuscript still deferred
+
+**Decision:** Ship all PZ-01–PZ-11 doc/CSV fixes in one bundle. Do not extend convenience CSVs to 2023–2024 in this commit (document 2022 cap in JOINT_USE/COMPARABILITY instead). Do not regenerate full C8.20 appendix (requires build-host parquet); patch stale `_Schema note_` lines for `delivery_year`/`data_year` only.
+
+**Status:** Phase D-prep **complete**. User may run `/ultrareview` on post-fix tree before Phase D, or proceed to D.1 with per-step authorization.
+
+---
+
 ## 2026-05-20T03:30:00Z — pre-zenodo-audit-pass (D-prep.4) — 5-agent fresh-eyes round 3 complete; D-prep.5 Tier A bundle proposed (PZ-01–PZ-11); manuscript + notebooks Tier B/C deferred
 
 **Decision:** Accept audit verdicts; proceed to D-prep.5 with **Tier A doc/CSV-only** remediation (11 items, ~1 session) per `AUDITS/CONSOLIDATED_PRE_ZENODO_2026-05-20T03-30-00Z.md`. **Defer** full manuscript rewrite and notebook regeneration to explicit human scope (D.4 for manuscript; optional PZ-NB add-on for notebooks).

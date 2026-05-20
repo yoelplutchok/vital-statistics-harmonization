@@ -71,7 +71,7 @@ def harmonized_year_invariants(harmonized_path: Path) -> pd.DataFrame:
 
 @pytest.fixture(scope="session")
 def harmonized_full(harmonized_path: Path) -> pd.DataFrame:
-    """Full harmonized parquet (1.6M x 73). Used by the years_available lock
+    """Full harmonized parquet (2.4M x 73, v2.4.0). Used by the years_available lock
     and other tests that need every column."""
     return pd.read_parquet(harmonized_path)
 

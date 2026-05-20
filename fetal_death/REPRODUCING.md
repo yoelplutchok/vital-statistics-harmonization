@@ -66,13 +66,13 @@ Filename patterns:
 - 2014–2022: `Fetal{YYYY}US_COD.zip` + user guide
 - 1982–1991 / 2023–2024: see `file_inventory.csv` (43 zips total at v2.4.0)
 
-`file_inventory.csv` lists every required source zip and user-guide PDF with SHA-256s.
+`file_inventory.csv` lists every required source zip and user-guide PDF. SHA-256 anchors for raw zips: [`docs/NCHS_SOURCE_MANIFEST.md`](../docs/NCHS_SOURCE_MANIFEST.md) Section 1 (mirrored by filename in `file_inventory.csv`).
 
 End-to-end reproduction from a fresh clone:
 
 ```bash
 # Place 43 NCHS source zips in raw_data/fetal_death/ then:
-python fetal_death/scripts/run_pipeline.py   # monorepo layout; path may vary — see fetal_death/REPRODUCING.md in monorepo
+python fetal_death/scripts/run_pipeline.py   # from monorepo root; outputs under fetal_death/output/
 ```
 
 Approximate run time: ~6–10 minutes on a standard laptop for 43 years.

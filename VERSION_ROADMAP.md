@@ -12,31 +12,18 @@ The unified U.S. Harmonized Vital Statistics (HVS) resource versions each subpro
 
 The natality v3.0.0 and fetal-death v2.4.0 in-repo states are pending Zenodo deposit. A new unified Zenodo deposit covering all three products under the HVS umbrella is planned; the per-subproject deposits will be updated alongside.
 
+## Shipped in-repo (pending Zenodo deposit)
+
+- **Fetal death V2.1** (2003–2004) + **V3a** (1989–1991) + **V3b** (1982–1988) + **v2.4.0** latest-year refresh (2023–2024) → **1982–2024**, 2,427,233 records. See [`fetal_death/ABOUT_THIS_RELEASE.md`](fetal_death/ABOUT_THIS_RELEASE.md).
+- **Joint-use convenience layer** (2026-05-11): [`fetal_death/stratified_denominators.csv`](fetal_death/stratified_denominators.csv) (4,906 strata × **29 years: 1992–2002 + 2005–2022**; CSV not yet extended to 2023–2024), [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md), [`shared/helpers/canonical_join_keys.py`](shared/helpers/canonical_join_keys.py).
+- **Cross-product demos**: [`notebooks/joint_use_demo.ipynb`](notebooks/joint_use_demo.ipynb), [`notebooks/paper_companion.ipynb`](notebooks/paper_companion.ipynb), Tier-2 worked examples under [`notebooks/`](notebooks/).
+- **Matched multiples** (C8.16): fourth HVS product — [`matched_multiples/`](matched_multiples/).
+
 ## Planned
 
-### Fetal death V2.1 — add 2003 and 2004 transition years
+### Convenience CSV year extension
 
-Both years use distinct, non-uniform transition layouts (1351-byte and 1501-byte records respectively, with mixed 1989/2003-revision content). NCHS publishes a separate `fetaldeath0304problems.pdf` documenting their idiosyncrasies. Brings fetal-death coverage to 1992–2022 (31 consecutive years).
-
-**Status:** scoped. Layout reconstruction needed; cross-era harmonization rules already in place from V2.0 should apply.
-
-### Joint-use convenience layer
-
-Ship demographically-stratified live-birth denominators inside the fetal-death deposit so users can compute fetal mortality rates without loading the full 138.8M-row natality file. Stratifications: maternal race × age × Hispanic origin × year. Source: aggregated from the natality-harmonization output.
-
-**Status: ✅ shipped 2026-05-11.** Output: [`fetal_death/stratified_denominators.csv`](fetal_death/stratified_denominators.csv) (4,906 strata × 29 years; per-year sums match natality validation target byte-exact 29/29). Build: [`shared/helpers/build_stratified_denominators.py`](shared/helpers/build_stratified_denominators.py). Cross-product column-name reconciliation: [`shared/helpers/canonical_join_keys.py`](shared/helpers/canonical_join_keys.py). User docs: [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md). Known gap: 4-category bridged race is null 2018–2022 (NCHS source); joint stratified-by-race rates available for 24 of 29 joint-coverage years.
-
-### Cross-product validation notebook
-
-A single notebook that computes fetal mortality, perinatal mortality, and infant mortality rates by demographic stratum using all three products jointly, and matches each cell against the corresponding *NVSR Fetal & Perinatal Mortality* table. Demonstrates the manuscript's "designed for joint use" claim from outside the manuscript.
-
-**Status:** stub at [`notebooks/joint_use_demo.ipynb`](notebooks/joint_use_demo.ipynb).
-
-### Fetal death V3 — extend backward to 1982
-
-Parse 1982–1991 fetal-death files. Spans the 1978-revision (1982–1988) and the early 1989-revision (1989–1991) layouts. Larger, multi-era undertaking; would bring fetal-death coverage to 1982–2022 (41 years).
-
-**Status:** scoped. No layout reconstruction yet attempted.
+Extend `live_births_by_year.csv` and `stratified_denominators.csv` through 2023–2024 (optional; users can recompute from natality parquets today).
 
 ### Natality forward extension
 

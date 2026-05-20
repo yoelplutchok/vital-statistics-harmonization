@@ -151,7 +151,7 @@ Before computing any cross-product rate or stratified statistic, verify:
 5. **Bridged-race null window awareness**: fetal-death bridged ends 2017; natality + linked bridged end 2019. If your race stratum requires bridged-race AND your year-window crosses these ends, your sample size in the post-end years uses reconstructed columns + drops multi-race records (~3% of natality 2018+).
 6. **2017+ California marital-status caveat**: if your stratifier or covariate includes `marital_status` AND your year-window crosses 2017, use `marital_reporting_flag` to scope to reporting states OR restrict to 2003-2016 window.
 7. **V3a/V3b cannot be denominator-joined**: 1982-1991 fetal-death years have no natality denominator in this resource. Use the single-product fetal-death count series for those years.
-8. **Compute denominators with the convenience helper or stratified file**. [`fetal_death/stratified_denominators.csv`](../fetal_death/stratified_denominators.csv) covers maternal_age_band × race_bridged × hispanic_origin × year for 1992-2002 + 2005-2024 (29 joint-coverage years; updated through v2.4.0). See [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md) for worked examples.
+8. **Compute denominators with the convenience helper or stratified file**. [`fetal_death/stratified_denominators.csv`](../fetal_death/stratified_denominators.csv) and [`fetal_death/live_births_by_year.csv`](../fetal_death/live_births_by_year.csv) cover **1992-2002 + 2005-2022 (29 years)** — not extended to 2023-2024; for those years use natality parquet denominators (Option B in [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md)). Fetal-death numerators are available through **2024**.
 
 ---
 

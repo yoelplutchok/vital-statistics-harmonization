@@ -4,64 +4,75 @@ This file is bundled with the Zenodo deposit so that someone with only the Zenod
 
 ## What you have downloaded
 
-The Zenodo deposit contains:
+The current **in-repo** build (natality **v3.0.0**, linked **v4.0.0**) ships from the unified monorepo:
 
-- **6 Parquet files** with the harmonized data (V2 natality 1968-2024 and linked v4.0.0 birth-infant death 1983-2023 — permanent 1992-1994 NCHS-linkage gap — in three variants each: full, derived, residents-only — the V2 residents-only variant reflects the 1990–2024 v2.8 slice pending the v3.0.0 convenience refresh; the linked residents-only variant reflects the v3 2005–2023 slice pending the v4 1983–2023 convenience refresh).
-- **6 documentation files** (`README.md`, `ABOUT_THIS_RELEASE.md`, `CODEBOOK.md`, `COMPARABILITY.md`, `FAQ.md`, `GETTING_STARTED.md`, `VALIDATION.md`) explaining the schema, how to load the data, comparability rules, and validation results.
-- **4 metadata CSVs** (`harmonized_schema.csv`, `external_validation_targets_v1.csv`, `external_validation_targets_v3_linked.csv`, `file_inventory.csv`).
-- **4 validation outputs** (`external_validation_v1_comparison.{csv,md}`, `external_validation_v3_linked_comparison.{csv,md}`, `harmonized_missingness_breaks.csv`, `harmonized_missingness_by_year.csv`) showing what was validated and the results.
-- **`PROVENANCE.md`** with SHA-256 checksums and the pipeline git hash that produced these files.
-- **`quickstart.ipynb`** — a Jupyter notebook with worked examples.
-- **`requirements.txt`** — pinned Python dependencies.
-- **`LICENSE`** — MIT (code) + CC-BY-4.0 (data).
+**https://github.com/yoelplutchok/vital-statistics-harmonization**
+
+Gate parquets (SHA-256 in [`natality/PROVENANCE.md`](PROVENANCE.md)):
+
+| File | Shape | SHA-256 (prefix) |
+|---|---|---|
+| `natality_v2_harmonized_derived.parquet` | 201,161,456 × 84 | `acb5c48a…` |
+| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 97 | `f630d8cf…` |
+
+The legacy standalone repo [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) mirrors earlier Zenodo deposits (v2.7.0 = 1990–2024 natality slice only).
+
+Documentation: `README.md`, `docs/ABOUT_THIS_RELEASE.md`, `docs/CODEBOOK.md`, `docs/COMPARABILITY.md`, `docs/FAQ.md`, `docs/GETTING_STARTED.md`, `docs/VALIDATION.md`.
+
+Metadata: `metadata/harmonized_schema.csv`, `metadata/external_validation_targets_v1.csv`, `metadata/external_validation_targets_v3_linked.csv`, `metadata/file_inventory.csv` (95 rows: 57 natality + 38 linked-cohort years).
+
+Validation outputs under `output/validation/` (1990–2024 natality NVSR surface; 2005–2023 linked owned surface).
 
 ## To load and explore the data (no reproduction needed)
 
+From the monorepo root with `uv sync`:
+
 ```bash
-pip install -r requirements.txt
-jupyter notebook quickstart.ipynb
-```
-
-Or in Python:
-
-```python
+uv run python -c "
 import pyarrow.parquet as pq
-df = pq.read_table('natality_v2_residents_only.parquet').to_pandas()
-print(df.shape)        # (138_582_904, 82)
-print(df.columns.tolist()[:10])
+t = pq.read_table('natality/output/harmonized/natality_v2_harmonized_derived.parquet')
+print(t.num_rows, len(t.column_names))
+"
 ```
 
-For column definitions, read `CODEBOOK.md` first, then `COMPARABILITY.md` for trend-safe analysis subsets.
+Or `natality/notebooks/quickstart.ipynb` (paths relative to `natality/`).
+
+Column definitions: `docs/CODEBOOK.md`; cross-era rules: `docs/COMPARABILITY.md`.
 
 ## To verify integrity
 
 ```bash
-shasum -a 256 *.parquet
+shasum -a 256 natality/output/harmonized/natality_v2_harmonized_derived.parquet
+shasum -a 256 natality/output/harmonized/natality_v3_linked_harmonized_derived.parquet
 ```
 
-Compare against the SHA-256s in `PROVENANCE.md`. If they match, your copy is byte-identical to the deposit.
+Compare against [`PROVENANCE.md`](PROVENANCE.md) and [`docs/NCHS_SOURCE_MANIFEST.md`](../docs/NCHS_SOURCE_MANIFEST.md) Section 5.
 
 ## To reproduce from raw NCHS source files
 
-The full pipeline (parsing fixed-width raw zips → harmonized Parquet) is open-source on GitHub:
+Scripts: `natality/scripts/01_import/` through `natality/scripts/05_validate/`.
 
-**https://github.com/yoelplutchok/natality-harmonization**
+Raw files (~120 GB total):
 
-That repository contains all the code (`scripts/01_import/` through `scripts/07_figures/`), field-position specifications (`scripts/01_import/field_specs.py`), and a step-by-step "Quick reproduce" section in its README.md. The raw NCHS source files (~120 GB, ~50 zips) are public-use products from the CDC FTP server:
+- Natality: `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/` — **57** zips (1968–2024)
+- Linked cohort: `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/cohortlinkedus/` — **38** zips (1983–2023; permanent **1992–1994** gap)
+- Linked period (2005–2023 slice also in period-cohort tree): see `metadata/file_inventory.csv`
 
-- Natality data: `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/`
-- Linked birth-infant death (1983–2015 cohort; 1983–1991 keyless two-file, 1995–2015 denominator-plus; permanent 1992–1994 gap): `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/cohortlinkedus/`
-- Linked birth-infant death (2016–2023): `https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/period-cohort-linked/`
+SHA-256 for every raw zip: [`docs/NCHS_SOURCE_MANIFEST.md`](../docs/NCHS_SOURCE_MANIFEST.md) Sections 2–3 (not duplicated in `file_inventory.csv` columns).
 
-`metadata/file_inventory.csv` (in this Zenodo bundle) lists every required raw file with its expected size and SHA-256.
+Quick reproduce (see also `natality/README.md`):
+
+```bash
+# Place zips per file_inventory.csv, then from monorepo root:
+python natality/scripts/01_import/parse_all_pre1990_years.py   # if rebuilding 1968-1989
+# ... per-era import + harmonize + derive + validate scripts
+```
 
 ## Citation
 
-When using this dataset, please cite:
-
-- **NCHS** as the source of the underlying public-use natality and linked birth-infant death microdata (the relevant NVSR "Births: Final Data" reports for the year(s) you analyze; see `value_source` column in `external_validation_targets_v1.csv`).
-- **This harmonization**: concept DOI [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074) (resolves to latest version). For pinned-version citation, use the version-specific DOI shown on the Zenodo page (e.g., v2.7.0 = [10.5281/zenodo.19868835](https://doi.org/10.5281/zenodo.19868835)).
+- **NCHS** — underlying public-use microdata (*Births: Final Data* / linked user guides for your years).
+- **This harmonization** — concept DOI [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074) (resolves to latest deposited version; in-repo v3.0.0 / v4.0.0 pending unified HVS deposit).
 
 ## Questions or issues
 
-Open an issue on GitHub: https://github.com/yoelplutchok/natality-harmonization/issues
+https://github.com/yoelplutchok/vital-statistics-harmonization/issues

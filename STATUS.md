@@ -1,6 +1,38 @@
-# STATUS — last updated 2026-05-20T03:30:00Z
+# STATUS — last updated 2026-05-20T12:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-20T12:00:00Z — **pre-zenodo-audit-fix-bundle (D-prep.5) COMPLETE — Tier A PZ-01–PZ-11 doc/CSV remediation; Phase D-prep CLOSED.**
+
+### Current phase
+
+**Phase D-prep COMPLETE** (D-prep.1–5). Next: optional **`/ultrareview`** validation pass on post-fix state, then **Phase D** (D.1–D.4; each step requires explicit human go-ahead). Phase E unchanged.
+
+### Last completed step
+
+`pre-zenodo-audit-fix-bundle` (D-prep.5). Tag `pre-zenodo-audit-fix-bundle-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**Phase D.1** (redirect notices) — awaits your explicit go-ahead. Before D.2: re-hash 4 gate parquets on build host.
+
+### Open questions for human
+
+- Run **`/ultrareview`** now (post-fix validation) or proceed to Phase D?
+- **PZ-NB** (notebook portable paths) — separate session or defer until public-repo sync?
+
+### Forward-looking HALTs
+
+1. Phase D-prep CLOSED.
+2. Build-host gate SHA `shasum` before Zenodo upload.
+3. Manuscript envelope → D.4 only.
+4. Notebooks still use legacy absolute paths (PZ-NB deferred).
 
 ---
 

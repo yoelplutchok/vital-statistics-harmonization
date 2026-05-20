@@ -45,7 +45,7 @@ COPY (SELECT * FROM read_parquet('fetal_death_derived.parquet'))
 ```
 
 **Option B — Python (uses the shipped quickstart).** Any environment with
-`pandas` + `pyarrow` (see [`fetal_death/quickstart.py`](fetal_death/quickstart.py)):
+`pandas` + `pyarrow` (see [`fetal_death/quickstart.py`](fetal_death/quickstart.py) — v2.4.0, 1982-2024):
 
 ```python
 import pandas as pd

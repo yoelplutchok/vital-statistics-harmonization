@@ -5,7 +5,7 @@ A single repository containing harmonized U.S. natality, linked birth–infant d
 This repository unifies two previously separate projects:
 
 - [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) — natality 1968–2024 + linked birth–infant death 1983–2023
-- [yoelplutchok/fetal-death-harmonization](https://github.com/yoelplutchok/fetal-death-harmonization) — fetal death 1992–2022
+- [yoelplutchok/fetal-death-harmonization](https://github.com/yoelplutchok/fetal-death-harmonization) — fetal death (legacy deposit 1992–2022; in-repo **1982–2024** v2.4.0)
 
 Future development happens here; the original repos are mirrors.
 
@@ -103,7 +103,7 @@ A Data Resource Profile manuscript covering all three products as a unified reso
 See [`CITATION.cff`](CITATION.cff) for citation metadata. Until the unified Zenodo deposit is published, cite the two existing deposits:
 
 - Plutchok Y. *Harmonized U.S. Natality and Linked Birth–Infant Death Microdata*. Zenodo. https://doi.org/10.5281/zenodo.19363074 (concept DOI)
-- Plutchok Y. *Harmonized U.S. Fetal Death Microdata, 1992–2022*. Zenodo. https://doi.org/10.5281/zenodo.20031571 (v2.0.0)
+- Plutchok Y. *Harmonized U.S. Fetal Death Microdata, 1992–2022* (Zenodo v2.0.0 deposit). https://doi.org/10.5281/zenodo.20031571 — in-repo release is **v2.4.0 (1982–2024)** pending unified HVS deposit (Phase D.2).
 
 ## License
 

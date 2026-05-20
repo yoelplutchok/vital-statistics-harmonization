@@ -13,11 +13,11 @@ This guide describes the canonical join keys, aligned strata, analytic filters, 
 
 ## Canonical join-key column names (read carefully)
 
-The two shipped product schemas use **different column names** for the same five join concepts. natality v2.7.0 and fetal-death v2.0.0 are independently versioned releases that adopted different naming conventions at the time of their respective deposits. Joint-use code reconciles the names at read-time via [`shared/helpers/canonical_join_keys.py`](../shared/helpers/canonical_join_keys.py); a future natality v2.8 rename to adopt the fetal-death names natively is a planned plan-update.
+The two shipped product schemas use **different column names** for the same five join concepts on older Zenodo deposits (natality v2.7.0 used `year` / `restatus` / `maternal_race_bridged4`; fetal-death v2.0.0 used the names below). **In-repo natality v3.0.0+** and **fetal-death v2.4.0** adopt the canonical names natively. Joint-use code still calls [`shared/helpers/canonical_join_keys.py`](../shared/helpers/canonical_join_keys.py) after read so the same scripts work against either the legacy v2.7.0 Zenodo parquets or the current monorepo build.
 
-| Concept | natality v2.7.0 column | fetal-death v2.0.0 column | Canonical (joint-use) name |
+| Concept | natality v3.0.0 column | fetal-death v2.4.0 column | Canonical (joint-use) name |
 |---|---|---|---|
-| Event year | `year` (int16, 1990–2024) | `data_year` (int32, 1992–2002 + 2005–2022) | **`data_year`** |
+| Event year | `data_year` (int16, 1968–2024) | `data_year` (int32, 1982–2024) | **`data_year`** |
 | Maternal age (single year) | `maternal_age` (10–54) | `maternal_age` (10–54; 99 = Unknown sentinel) | **`maternal_age`** |
 | 4-category bridged race | `maternal_race_bridged4` (int8, 1–4; **null 2020–2024** — NCHS dropped MBRACE) | `maternal_race_bridged` (int, 1–4; **null 2018–2022**) | **`maternal_race_bridged`** |
 | Hispanic origin recode | `maternal_hispanic_origin` (int8, 0\|1\|2\|3\|4\|5\|9) | `hispanic_origin` (int, 0–9) | **`hispanic_origin`** |
@@ -36,9 +36,9 @@ joint_view = to_canonical_natality(natality_df)
 
 ## Joint-coverage years and the bridged-race gap
 
-Natality covers 1990–2024 (35 years); fetal-death covers 1992–2022 with 2003 and 2004 deferred (29 years). Joint coverage is the intersection: **1992–2002 + 2005–2022 = 29 years**.
+Natality covers **1968–2024** (57 years); fetal-death covers **1982–2024** (43 years, including 2003–2004 transition years and V3a/V3b backward extensions). **Joint natality+fetal rate work** (both numerator and denominator from the convenience layer or natality parquet) is supported for **1992–2024 (33 years)** — the intersection where both products share harmonized demographic fields under comparable certificate eras. Fetal-death-only analyses can use **1982–1991** (V3b/V3a) without a natality denominator in this resource (see [`docs/COMPARABILITY.md`](COMPARABILITY.md)).
 
-For the 4-category bridged race, joint coverage shrinks further because both products have null years from NCHS source changes (natality 2020+; fetal-death 2018+). **Bridged race is jointly available for 1992–2002 + 2005–2017 (24 years).** For 2018–2022, joint stratified-by-race rate computation is not currently supported via `maternal_race_bridged`. Closing this gap (via `maternal_race_ethnicity_5` in natality joined to `race_hispanic_revised` in fetal-death, with comparability verification) is future work.
+For the 4-category bridged race, joint coverage shrinks further because both products have null years from NCHS source changes (natality 2020+; fetal-death 2018+). **Bridged race is jointly available for 1992–2002 + 2005–2017 (24 years).** For 2018–2024, joint stratified-by-race rate computation via `maternal_race_bridged` is not supported; use single-race + Hispanic origin fields (see Section B of `notebooks/joint_use_demo.ipynb`).
 
 ## Canonical analytic filters
 
@@ -56,15 +56,15 @@ Applying the filter is the difference between reproducing NCHS's published per-y
 
 ## Convenience denominators: pick the right file
 
-For unstratified rates → [`fetal_death/live_births_by_year.csv`](../fetal_death/live_births_by_year.csv). Lightweight, NVSR-as-published, 26 years (1995–2002 + 2005–2022). Use when you do not need demographic strata.
+For unstratified rates → [`fetal_death/live_births_by_year.csv`](../fetal_death/live_births_by_year.csv). Lightweight, NVSR-as-published, **26 years (1995–2002 + 2005–2022)** — the file has not been extended to 2023–2024; for those years recompute denominators from the natality parquet (Option B below) or wait for a convenience-CSV refresh. Use when you do not need demographic strata.
 
-For stratified rates → [`fetal_death/stratified_denominators.csv`](../fetal_death/stratified_denominators.csv) (shipped in v2.1 of the joint-use layer, built by [`shared/helpers/build_stratified_denominators.py`](../shared/helpers/build_stratified_denominators.py)). Long format, one row per (`data_year`, `maternal_age_band`, `maternal_race_bridged`, `hispanic_origin`) cell with a `live_births` column. 4,906 cells across 29 joint-coverage years.
+For stratified rates → [`fetal_death/stratified_denominators.csv`](../fetal_death/stratified_denominators.csv) (built by [`shared/helpers/build_stratified_denominators.py`](../shared/helpers/build_stratified_denominators.py)). Long format, one row per (`data_year`, `maternal_age_band`, `maternal_race_bridged`, `hispanic_origin`) cell with a `live_births` column. **4,906 cells across 29 years (1992–2002 + 2005–2022)** — same 2022 cap as `live_births_by_year.csv`; fetal-death numerators through 2024 require Option B denominators for 2023–2024.
 
 Schema:
 
 | Column | Type | Domain |
 |---|---|---|
-| `data_year` | int | 1992–2002, 2005–2022 (29 years) |
+| `data_year` | int | 1992–2002, 2005–2022 (29 years in the shipped CSV) |
 | `maternal_age_band` | str | `<20`, `20-24`, `25-29`, `30-34`, `35-39`, `40+`; null when single-year age is the NCHS sentinel 99 |
 | `maternal_race_bridged` | int (nullable) | 1=White, 2=Black, 3=AIAN, 4=Asian/PI; **null for 2018–2022** (NCHS source) |
 | `hispanic_origin` | int | 0=non-Hispanic, 1=Mexican, 2=PR, 3=Cuban, 4=Central/South American, 5=Other Hispanic, 9=Unknown |
@@ -72,7 +72,7 @@ Schema:
 
 ### NCHS-series note (microdata vs NVSR-as-published)
 
-The stratified denominator is derived from the natality v2.7.0 microdata under `residence_status != 4`. Per-year totals match the CDC residence series (`e6fc-ccez`) that natality validates against byte-exact (29/29 years). For 2000–2002 and 2005–2006, those microdata totals differ from `live_births_by_year.csv`'s NVSR 57-08 / 73-09 figures by 38–224 records per year (<0.006%), because NCHS post-release re-tabulations adjust some published totals slightly. The stratified file is internally consistent (sum across strata = year total), which is the property that matters for unbiased rate computation; the two NCHS series differ by less than rounding noise at the rate level.
+The stratified denominator is derived from natality microdata (built from the v3.0.0 / 1990–2024 slice used at joint-layer authoring time) under `residence_status != 4`. Per-year totals match the CDC residence series (`e6fc-ccez`) that natality validates against byte-exact for the **29 years present in the CSV**. For 2000–2002 and 2005–2006, those microdata totals differ from `live_births_by_year.csv`'s NVSR 57-08 / 73-09 figures by 38–224 records per year (<0.006%), because NCHS post-release re-tabulations adjust some published totals slightly. The stratified file is internally consistent (sum across strata = year total), which is the property that matters for unbiased rate computation; the two NCHS series differ by less than rounding noise at the rate level.
 
 | Year | Stratified total (microdata) | `live_births_by_year.csv` (NVSR) | Diff |
 |---|---|---|---|
@@ -111,7 +111,7 @@ births_by_race = (
     .sum()
 )
 
-# Denominator option B — recompute from the natality parquet (~138.8M rows):
+# Denominator option B — recompute from the natality parquet (~201.2M rows, 1968-2024):
 # (natality v2.7.0 stores residence_status/restatus as int8; int literals)
 # nat = pd.read_parquet("natality_v2_harmonized_derived.parquet")
 # nat = to_canonical_natality(nat)
@@ -182,8 +182,8 @@ Beyond the Python pattern shown above, HVS ships two additional access paths:
 Three R scripts mirror the Python `quickstart.py` for each product. Requires R packages `arrow` + `dplyr`.
 
 - [`fetal_death/quickstart.R`](../fetal_death/quickstart.R) — uses `arrow::read_parquet()` (the 2.4M-row fetal-death parquet fits comfortably in memory).
-- [`natality/quickstart.R`](../natality/quickstart.R) — uses `arrow::open_dataset()` because the 138.8M-row natality parquet exceeds R's default 16 GB memory limit; dplyr verbs are pushed down to Arrow and only the aggregated result is materialized.
-- [`natality/quickstart_linked.R`](../natality/quickstart_linked.R) — same `open_dataset()` pattern for the 74.9M-row linked file; demonstrates per-year IMR computation and cause-of-death distribution.
+- [`natality/quickstart.R`](../natality/quickstart.R) — uses `arrow::open_dataset()` because the **201.2M-row** natality parquet (1968–2024) exceeds R's default 16 GB memory limit; dplyr verbs are pushed down to Arrow and only the aggregated result is materialized.
+- [`natality/quickstart_linked.R`](../natality/quickstart_linked.R) — same `open_dataset()` pattern for the **149.4M-row** linked file (1983–2023); demonstrates per-year IMR computation and cause-of-death distribution.
 
 Usage:
 
@@ -202,7 +202,7 @@ Rscript natality/quickstart_linked.R path/to/natality_v3_linked_harmonized_deriv
 | `fetal_death_canonical` | `fetal_death_derived.parquet` | `tabulation_flag = 2 AND residence_status != 4` |
 | `natality_canonical` | `natality_v2_harmonized_derived.parquet` | `residence_status != 4` |
 | `linked_canonical` | `natality_v3_linked_harmonized_derived.parquet` | `residence_status != 4` |
-| `fetal_mortality_rate_by_year` | join of the first two | aggregated; 35 rows; FMR per 1,000 |
+| `fetal_mortality_rate_by_year` | join of the first two | aggregated; one row per joint-coverage year; FMR per 1,000 |
 
 Usage (from a directory containing the three parquets at the unpacked Zenodo deposit layout):
 

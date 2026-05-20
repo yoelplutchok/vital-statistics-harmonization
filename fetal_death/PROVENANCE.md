@@ -49,7 +49,7 @@ The monorepo build emits **43** files: `output/yearly_clean/fetal_death_{YEAR}_r
 
 ## Raw NCHS source zips
 
-**43** fetal-death public-use zips (1982–2024). Full SHA-256 table: [`docs/NCHS_SOURCE_MANIFEST.md`](../docs/NCHS_SOURCE_MANIFEST.md) Section 1, mirrored row-for-row in [`file_inventory.csv`](file_inventory.csv).
+**43** fetal-death public-use zips (1982–2024). Full SHA-256 table: [`docs/NCHS_SOURCE_MANIFEST.md`](../docs/NCHS_SOURCE_MANIFEST.md) Section 1; [`file_inventory.csv`](file_inventory.csv) lists the same filenames/years (`imported=yes` for all rows at v2.4.0).
 
 ## Legacy `PROVENANCE.sha256`
 

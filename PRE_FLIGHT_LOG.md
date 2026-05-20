@@ -8,6 +8,10 @@
 
 ---
 
+## PRE-FLIGHT for pre-zenodo-audit-fix-bundle (D-prep.5) — 2026-05-20T12:00:00Z — **RESULT: PROCEED**
+
+D-prep.4 complete (`6fefeb6`). Tier A PZ-01–PZ-11 scope; doc/CSV-only; no parquet mutation. Field-value snapshot: JOINT_USE L39 `1992-2022 deferred` → v2.4.0 joint text; quickstart docstring V2.0 → v2.4.0; CODEBOOK L63 `1992-2022` → `1982-2024`; fetal/MM inventory `imported=no` → `yes`.
+
 ## PRE-FLIGHT for pre-zenodo-audit-pass (D-prep.4) — 2026-05-20T03:25:00Z — **RESULT: PROCEED**
 
 ### Inputs

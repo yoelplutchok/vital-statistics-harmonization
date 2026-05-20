@@ -80,7 +80,7 @@ Coverage envelope: V3b (1982-1988, 1978-revision uniform) + V3a (1989-1991, 1989
 
 ## Section 2 — Natality raw zips (57; year 1968-2024)
 
-Coverage envelope: 57 years contiguous. Filename convention: `Nat<YYYY>.zip` (1968-1993) → `Nat<YYYY>us.zip` (1994+). All produce one parquet per year via `natality/scripts/01_import/`. Pre-1990 pipeline scaffolding lands at C8.17 DO step 5 (`parse_all_pre1990_years.py`); the 22 pre-1990 zips are SHA-anchored here at C8.17 DO step 1 but are not yet parser-consumed (each `file_inventory.csv` row has `imported=false` until DO step 5).
+Coverage envelope: 57 years contiguous. Filename convention: `Nat<YYYY>.zip` (1968-1993) → `Nat<YYYY>us.zip` (1994+). All produce one parquet per year via `natality/scripts/01_import/`. Pre-1990 years were added at C8.17 (`parse_all_pre1990_years.py`); every natality inventory row is `imported=true` as of C8.17 DO step 6 (see boundary note below).
 
 | Year | raw_filename | SHA-256 |
 |---|---|---|

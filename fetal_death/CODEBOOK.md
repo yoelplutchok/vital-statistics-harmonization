@@ -60,7 +60,7 @@ The "Years" column in the variable tables below uses the V2/V1 era labels.
 | `data_year` | Data year (added by pipeline) | 1982-2024 | full | All | int32 sibling of `delivery_year`, computed as `int(delivery_year)` during harmonization. Always equal to `int(delivery_year)` for every row. Recommended filter/join key for cross-year analyses (verified 2,427,233/2,427,233 in v2.4.0; see Appendix C8.20). |
 | `version_flag` | Revision flag | A, S | full | All | A=2003 revision; S=1989 revision. **Synthesized to `S` for 1992-2002** (no native VERSION field in 1989-rev files) |
 | `tabulation_flag` | NCHS tabulated subset flag | 1, 2 | partial | All | 1=exclude from NVSR tabulations; 2=include. NCHS's compound criterion (typically "GA >= 20 weeks OR BW >= 350g when GA unknown") — not a pure GA cutoff. a small share of flag-2 rows (almost all in 2014+) have `gestational_age_combined < 20`, and a non-trivial share of flag-1 rows have GA >= 20 (in the V2.0 1992-2022 slice this was ~5,400 and ~63,700 rows respectively; for the full v2.4.0 per-era `tabulation_flag` distribution see Appendix C8.20). Use `gestational_age_combined` directly when you need a pure GA filter. Field name and position changed across eras (V2:TABFLAG; V1 2006:TABFLG; V1 2014+:OE_TABFLG) |
-| `delivery_year` | Year of delivery | 1992-2022 | partial | All | Same concept; field positions differ by era. V2 sources from DELYR (190-193) |
+| `delivery_year` | Year of delivery | 1982-2024 | partial | All | Same concept; field positions differ by era. V2 (1992-2002) sources from DELYR (190-193); V3b/V3a/V1 eras use their era-specific positions (see Appendix C8.20). |
 | `residence_status` | Residence status | 1-4 | full | All | 1=Resident; 2=Intrastate NR; 3=Interstate NR; 4=Foreign |
 
 ### Maternal Demographics
@@ -327,7 +327,7 @@ _No documented sentinel candidate or null/blank observed in any era._
 
 ### `delivery_year` <a id="c820-fetal_death-delivery_year"></a>
 
-_Schema note:_ 1992-2022 — Same concept (4-digit year); positions and field names differ across eras. V2 (1992-2002) sources from DELYR.
+_Schema note:_ 1982-2024 — Same concept (4-digit year); positions and field names differ across eras. V2 (1992-2002) sources from DELYR.
 
 **(i) Historical-value distribution (per era)**
 
@@ -356,7 +356,7 @@ _No documented sentinel candidate or null/blank observed in any era._
 
 ### `data_year` <a id="c820-fetal_death-data_year"></a>
 
-_Schema note:_ 1992-2022 — Convenience int32 sibling of `delivery_year`. Always equal to `int(delivery_year)` for every row (verified 1,634,195/1,634,195 in V2.0). This is the recommended filter/join key for cross-year analyses (e.g., `df[df['data_year…
+_Schema note:_ 1982-2024 — Convenience int32 sibling of `delivery_year`. Always equal to `int(delivery_year)` for every row (verified 2,427,233/2,427,233 in v2.4.0). This is the recommended filter/join key for cross-year analyses (e.g., `df[df['data_year…
 
 **(i) Historical-value distribution (per era)**
 

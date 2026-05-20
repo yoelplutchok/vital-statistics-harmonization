@@ -108,13 +108,9 @@ def _read_schema_years_available_union(path: Path) -> set[int]:
 def test_fetal_death_inventory_years_match_schema_years_available():
     """fetal_death/file_inventory.csv year-set must equal harmonized_schema.csv years_available union.
 
-    Note: fetal_death's `imported` column ships uniformly "no" across all 43
-    rows (vestigial; never updated even though every year is shipped in the
-    v2.4.0 harmonized parquet). The parity invariant on fetal_death therefore
-    uses the full year-set (no `imported_only` filter). The natality sibling
-    test uses `imported_only=True` because natality's `imported` column is
-    accurately maintained (1990-2024 + linked = true; 1968-1989 = false as
-    of C8.17 DO step 1 SHA-anchor).
+    Fetal_death `imported=yes` for all 43 rows (D-prep.5 2026-05-20). Parity uses
+    the full year-set (no `imported_only` filter). Natality uses `imported_only=True`
+    (all 95 rows `imported=true` since C8.17 DO step 6).
     """
     inv = _REPO / "fetal_death" / "file_inventory.csv"
     sch = _REPO / "fetal_death" / "harmonized_schema.csv"
