@@ -232,6 +232,28 @@ Companion PDFs (also SHA-anchored in `matched_multiples/file_inventory.csv`):
 
 ---
 
+## Section 5 — Shipped harmonized parquets (cross-product gate artifacts)
+
+> **Scope.** SHA-256 for the **primary derived (or harmonized) parquets** that downstream users load for analysis. These are outputs of the harmonization pipelines, not NCHS source zips. Full per-product tables (including regression baselines and convenience variants) live in each subproject's `PROVENANCE.md`.
+>
+> **Refreshed:** 2026-05-24 (D-prep.2 `provenance-refresh-current-envelope`); monorepo commit `3926e19`.
+
+| Product | Version | File (canonical name) | Rows | SHA-256 |
+|---|---|---|---|---|
+| Fetal death | v2.4.0 | `fetal_death_derived.parquet` | 2,427,233 | `185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09` |
+| Fetal death | v2.4.0 | `fetal_death_harmonized.parquet` | 2,427,233 | `38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` |
+| Natality | v3.0.0 | `natality_v2_harmonized_derived.parquet` | 201,161,456 | `acb5c48a9abf82ac78e6bf210d6be5d62cba6afae271b978b0e53ed528856974` |
+| Natality | v3.0.0 | `natality_v2_harmonized.parquet` | 201,161,456 | `c8a740eb48d4f3de66759da27eef94143c315846885bf905a88cbc0fa6237153` |
+| Linked | v4.0.0 | `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 | `f630d8cf20db72eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` |
+| Linked | v4.0.0 | `natality_v3_linked_harmonized.parquet` | 149,386,620 | `ea89ab3c009de00cddb88aad84aa50fde376a47f96b6865113a600fb5a0907c7` |
+| Matched multiples | C8.16 | `matched_multiples_harmonized.parquet` | 1,665,568 | `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549` |
+
+**Four gate SHAs** (STATUS / D-prep invariant): `38e2cecb…` (fetal harmonized), `185c071e…` (fetal derived), `acb5c48a…` (natality derived), `f630d8cf…` (linked derived).
+
+Per-product detail: [`fetal_death/PROVENANCE.md`](../fetal_death/PROVENANCE.md), [`natality/PROVENANCE.md`](../natality/PROVENANCE.md), [`matched_multiples/PROVENANCE.md`](../matched_multiples/PROVENANCE.md).
+
+---
+
 ## Cross-product invariants
 
 The manifest's three sections combine to span the full 1982-2024 fetal-death + 1968-2024 natality + 1983-2023 linked-cohort (38 cohort years; permanent 1992-1994 gap) coverage that this monorepo harmonizes. Cross-product analyses joining numerator + denominator across products (per [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md)) typically require each input zip's byte-identity to reproduce a published validation cell — this manifest is the verification anchor for that reproducibility.
