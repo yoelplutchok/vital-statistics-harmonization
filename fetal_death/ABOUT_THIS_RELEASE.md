@@ -61,9 +61,9 @@ In the Zenodo deposit these are all at the deposit root; in the GitHub source re
 
 | File (Zenodo flat) | GitHub path | Description |
 |---|---|---|
-| `fetal_death_harmonized.parquet` | `output/harmonized/` | 1,634,195 rows × 73 columns — base harmonized file (1992-2002 + 2005-2022) |
-| `fetal_death_derived.parquet` | `output/harmonized/` | 1,634,195 rows × 89 columns — base + 16 derived variables |
-| `fetal_death_yearly_raw_1992-2022.zip` (29 files inside) | `output/yearly_clean/` | 29 raw per-year Parquet files preserving every documented field (including the 6-category DELMETH6, 12-category FAGE11, broader "Breech/Malpresentation" BREECH, etc., for users who need the full 1989-revision detail) |
+| `fetal_death_harmonized.parquet` | `output/harmonized/` | **2,427,233** rows × 73 columns — base harmonized file (1982-2024) |
+| `fetal_death_derived.parquet` | `output/harmonized/` | **2,427,233** rows × 89 columns — base + 16 derived variables |
+| Per-year raw archive (43 files; deposit bundle name in `PROVENANCE.md`) | `output/yearly_clean/` | `fetal_death_{year}_raw.parquet` for **1982-2024**, preserving every documented source field |
 | `harmonized_schema.csv` | `metadata/` | Variable definitions with allowed_values, comparability_class, source columns by era — refreshed 2026-04-22 to reflect V2 ranges and B-fix derivations |
 | `variable_crosswalk_working.csv` | `metadata/` | Raw-to-harmonized mapping across all 4 eras (1992, 2006, 2014, 2022) |
 | `record_layout_1992.csv` | `metadata/` | Full 1989-revision 360-byte layout (197 data fields + 15 FILLER ranges) |
@@ -71,20 +71,18 @@ In the Zenodo deposit these are all at the deposit root; in the GitHub source re
 
 ## Validation Summary
 
-The shipped parquet was validated against every per-year fetal death figure NCHS has published, plus a 55-cell detail-cell sample from NVSR 73-09. All checks use the standard `tabulation_flag=='2' & residence_status!='4'` filter.
+The shipped parquet was validated against every per-year fetal death control-count target in `external_validation_targets.csv` under the standard `tabulation_flag==2 & residence_status!=4'` filter, plus NVSR 73-09 detail-cell samples where applicable.
 
-- **Per-year fetal death counts (1992-2022):** 29 of 29 reproduce the published source figures exactly. 1995-2002 against NVSR 57-08 Tables A and B; 2005-2020 against NVSR 73-09; 1992-1994 against the NCHS user-guide control-count blocks (which are the authoritative source for those three years, since the NVSR Fetal & Perinatal Mortality series begins at 1995). The three known stale-guide V2 years (1996, 2001, 2002) — where the user-guide control counts were copy-pasted from adjacent years — are resolved against NVSR 57-08, and the parsed counts match NVSR exactly.
-- **Per-year fetal mortality rates (1995-2022):** 26 of 26 match the published source figures exactly.
-- **NVSR 73-09 detail-cell tabulations (Tables A, 4, 8 and early/late GA from Table 1; 2014 and 2022):** 13 of 19 cells match exactly; the remaining 6 differ for documented methodological or framing reasons (4 early/late gestational-age cells where NVSR proportionally redistributes records with unknown gestational age between strata; 2 cause-of-death cells where NVSR Table 8 restricts to a 43-state reporting area while the harmonization includes all states). None are byte-level mismatches in the harmonized data.
-- **V1 byte-clean regression:** the 2005-2022 slice of the harmonized parquet remained cell-identical to its V1.x baseline through the V2 backward-extension to 1992 (0 of 73 harmonized + 0 of 89 derived columns drifted), so V2 did not perturb any existing V1-era analysis.
-- **Byte-level parse verification (1992-2002):** 98,500 raw-byte-to-parquet field comparisons across 10 years × 50 records × 197 fields, with 0 mismatches.
+- **Per-year control counts (1982-2024):** **90/90** byte-exact at v2.4.0 (incl. V3b user-guide controls 1982-1988, V3a 1989-1991, V2/V2.1 1992-2004, V1 2005-2024 incl. 2023+2024 latest-year refresh). Stale-guide years 1996/2001/2002 resolved against NVSR 57-08.
+- **Per-year fetal mortality rates (where published):** byte-exact for all targeted rate rows in the validation CSV.
+- **NVSR 73-09 detail-cell tabulations (2014, 2022):** 13/19 exact + 6 documented methodological differences (GA redistribution; 43-state Table 8 framing) — unchanged from V1-era validation policy.
+- **Backward-extension regression:** V1 2005-2022 slice byte-identical to V1.x baseline through V2/V2.1/V3a/V3b/C8.2 increments (0 column drift on held-out slice).
+- **Byte-level parse verification (1992-2002 benchmark era):** 98,500 raw-byte-to-parquet field comparisons, 0 mismatches (V2 layout reconstruction audit).
 
-Per-target source citations are in `external_validation_targets.csv`; the per-target pass/fail table is in `validation_results.csv`. Independent verification scripts are shipped in `scripts/05_validate/`; see `README.md` §Validation for the three-level verification ladder users can run themselves.
+Per-target citations: `external_validation_targets.csv`; pass/fail: `validation_results.csv`. Scripts: `scripts/05_validate/`; see `README.md` §Validation.
 
-## What Is Not in Version 2
+## Structural limitations (unchanged by extensions)
 
-- **2003 and 2004 transition years.** Both years have distinct, non-uniform transition layouts (1351-byte and 1501-byte records respectively, with mixed 1989/2003-revision content) that require dedicated handling. NCHS publishes a separate `fetaldeath0304problems.pdf` (downloadable from the CDC FTP server alongside the year zips) documenting their idiosyncrasies. These are deferred to V2.1.
-- **Years before 1992.** 1982-1991 use earlier layouts and will be added in V3.
-- **ICD-9 cause-of-death coding (1992-2013).** Cause of death is not present in the public-use fetal death files for any year before 2014. Pre-2014 ICD codes are only available through the NCHS Research Data Center (restricted-use, multi-month application). The 2006 user guide states this directly on p. 54: *"Cause-of-fetal-death data are also not currently available."* This is a structural limitation of the source data, not a pipeline gap.
-- **State-level geographic identifiers.** State of occurrence and state of residence are suppressed in the V1-era public-use files (2005+) and therefore cannot be included for those years. The V2 era (1992-2002) **does** carry state codes in the raw yearly parquets (STATEFET, STATERES, STOCCFIP, etc., per the 1989-revision layout) which is how the OK/MD/MA Hispanic-non-reporting and Louisiana plurality-non-reporting quirks are documentable; users who need state-level analysis for V2 can work directly with the per-year raw parquets bundled in `fetal_death_yearly_raw_1992-2022.zip`.
-- **Cross-era education bridge.** V2 populates `maternal_education_unrevised` (years-of-school 00-17) while V1 populates `maternal_education` (revised 1-8 categorical). No 1989→2003 binning bridge is currently provided, so the derived `education_cat4` is blank for V2. Building the bridge is a deliberate non-goal for V2 — the year-of-schooling and degree-level concepts are not 1:1 mappable, and any bridge would impose modeling choices best left to the analyst.
+- **ICD-9 / pre-2014 cause of death** — not in public-use files before 2014 (RDC restricted-use). Structural NCHS limitation.
+- **State-level identifiers (harmonized, 2005+)** — suppressed in V1-era public-use releases. Pre-2003-revision raw yearly parquets (1982-2004) retain state fields for documented quirks (OK/MD/MA Hispanic, LA plurality).
+- **Cross-era education bridge** — not shipped; `education_cat4` blank for pre-2003-revision eras by design.

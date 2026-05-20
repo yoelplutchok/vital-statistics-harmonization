@@ -23,6 +23,22 @@
 
 ---
 
+## 2026-05-24T12:00:00Z — fetal-death-other-docs-v240-sync (D-prep.1) — R2d doc-sync + CODEBOOK L60 bundled; historical v2.0.0 mentions preserved where changelog-accurate
+
+**Choice:** Update seven `fetal_death/*.md` user-facing docs + `CODEBOOK.md` L60 `data_year` Years column to the v2.4.0 envelope. Preserve historical references to the immutable v2.0.0 Zenodo deposit and the `ABOUT_THIS_RELEASE.md` V2.0/V2.1/V3a/V3b changelog sections (they describe increments, not the current headline envelope).
+
+**Alternatives considered:** (1) Also rewrite `quickstart.py` in this task — rejected (not in §15.E file list; defer to D-prep.4 audit or micro-follow-up). (2) Rename yearly zip to `1982-2024` in prose without PROVENANCE SHA — rejected (L6; D-prep.2 owns bundle naming/SHA).
+
+**Reason:** Audit R2d explicit defer; D-prep.4 must not re-flag known stale docs. Option-A depth matches prior CODEBOOK/COMPARABILITY task.
+
+**Source:** `RECEIPTS/fetal-death-other-docs-v240-sync_2026-05-24T12-00-00Z.md`; parquet probe; CODEBOOK Appendix C8.20 era table.
+
+**Verifiable by:** Residual grep on seven docs shows no headline `1,634,195` / `29 years` current-envelope claims; L60 reads `1982-2024`; gate SHAs unchanged.
+
+**Reversible:** yes — `git revert` / tag `fetal-death-other-docs-v240-sync-pre-do`.
+
+---
+
 ## 2026-05-24T01:30:00Z — `[plan-update]` Phase-D-sequencing + Phase E plan-update — encode the full work-to-Zenodo + companion-paper path in KICKOFF + NEXT_STEPS so fresh chats land on the right next task
 
 **Choice:** Applied a `[plan-update]` per §11 step 3 (user pre-approval via 2026-05-24 directive *"please put it in the documents so kickoff will know"* = step-3 approval; the 2026-05-11 protocol-sync + 2026-05-23 plan-merge-owed-backlog + 2026-05-24 audit-fix-r1r2-bundle precedents). Four files updated atomically: **KICKOFF.md** (new Phase D-prep + Phase E sections; updated Phase D heading to "after Phase D-prep completes; each step gated on explicit per-step human go-ahead"; title/source-footer dated 2026-05-24); **NEXT_STEPS.md §15.E** (5 new task definitions under standing authorization — D-prep.1 `fetal-death-other-docs-v240-sync` for R2d + the `data_year` L60 fix, D-prep.2 `provenance-refresh-current-envelope`, D-prep.3 `schema-years-available-gap-notation`, D-prep.4 `pre-zenodo-audit-pass` with `/ultrareview` recommended + 5-agent fresh-eyes fallback, D-prep.5 conditional `pre-zenodo-audit-fix-bundle`); **NEXT_STEPS.md §19** (self-contained LLM prompt templates: §19.1 Paper 1 Data Descriptor finalization for Phase D.4 use; §19.2 Paper 2 Companion empirical drafting for Phase E use — both fresh-chat prompts deliberately not embedding numerics so they stay stable as Zenodo DOI + public GitHub URL land); the corresponding STATUS section; this DECISION_LOG entry. **Zero canonical-state mutation** (4 gate parquet SHAs byte-exact `38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…` — the strongest invariant; plan/docs-only).

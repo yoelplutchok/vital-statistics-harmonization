@@ -30,7 +30,7 @@ These threshold differences have direct consequences for research:
 
 3. **Cross-state rate comparisons are invalid without adjustment.** Raw fetal death rates cannot be compared across states with different thresholds. A state with a lower threshold will appear to have a higher rate even if the underlying risk is identical.
 
-4. **NCHS standard tabulations partially address this.** NCHS uses a tabulation flag (`tabulation_flag == '2'`) to define the published-tabulation subset. The compound criterion is typically "GA >= 20 weeks OR birthweight >= 350g when GA is unknown", with state-specific reporting rules overlaid. About 5,400 V1 flag-2 rows (almost all in 2014+) have GA < 20 (retained via the BW criterion or state rules); about 63,700 flag-1 rows across all 29 years (~42,200 in V1 alone) have GA >= 20 (excluded by NCHS's source flag for other reasons). This removes most but not all threshold-driven heterogeneity.
+4. **NCHS standard tabulations partially address this.** NCHS uses a tabulation flag (`tabulation_flag == 2`) to define the published-tabulation subset. The compound criterion is typically "GA >= 20 weeks OR birthweight >= 350g when GA is unknown", with state-specific reporting rules overlaid. A small share of flag-2 rows (almost all in 2014+) have GA < 20; a non-trivial share of flag-1 rows have GA >= 20. For the full **v2.4.0 (1982-2024)** per-era `tabulation_flag` and GA cross-tabs, see `CODEBOOK.md` Appendix C8.20 (parquet-derived). This removes most but not all threshold-driven heterogeneity.
 
 ## States That Changed Thresholds (1997-2023)
 

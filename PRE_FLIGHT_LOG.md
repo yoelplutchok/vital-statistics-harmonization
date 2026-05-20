@@ -8,6 +8,37 @@
 
 ---
 
+## PRE-FLIGHT for fetal-death-other-docs-v240-sync (D-prep.1) — 2026-05-24T11:45:00Z — **RESULT: PROCEED**
+
+Standing authorization Phase D-prep. R2d defer + `data_year` L60 stale Years column (audit-fix-r1r2-bundle self-check #1).
+
+### Field-value snapshot (anchor phrases → v2.4.0 targets)
+
+| File | Stale anchor (pre-DO) | v2.4.0 target |
+|---|---|---|
+| README.md | "Release Summary (V2.0)"; 1992-2022 (29 years); 1,634,195; 727,155 | v2.4.0; 1982-2024 (43); 2,427,233; 1,121,986 NVSR |
+| ABOUT_SOURCE_DATA.md | "V2.0 release … 29 annual files … 1992-2022"; 1,634,195 / 727,155 | 43 files 1982-2024; 2,427,233 / 1,121,986 |
+| ABOUT_THIS_RELEASE.md | Key Output table 1,634,195; zip "29 files"; Validation "29 of 29"; "What Is Not" defers V2.1/V3 | 2,427,233; 43 raw files; 90/90; limitations only |
+| FAQ.md | Q1 "1992-2022 … 29 … 1,634,195"; future V2.1/V3 planned | 1982-2024 / 43 / 2,427,233 |
+| GETTING_STARTED.md | "V2.0, 1992-2022, 1,634,195" | v2.4.0 envelope |
+| REPRODUCING.md | 1,634,195 × 73/89; 29-file zip | 2,427,233; 43 files |
+| REPORTING_THRESHOLDS.md | "all 29 years" tab_flag footnote | 43 years + C8.20 pointer |
+| CODEBOOK.md L60 | Years `1992-2022` | `1982-2024` |
+
+### Gate SHAs (pre-DO)
+
+- `fetal_death_harmonized.parquet`: `38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48`
+- `fetal_death_derived.parquet`: `185c071ec76ab8aae24c9d7524b2495900f78afbf43cd6a32537124fa7968a09`
+- C8.20 appendix (BEGIN→EOF): `b27640eeb6eda142`
+
+Parquet-derived aggregates (2026-05-24 session probe): total 2,427,233; NVSR 1,121,986; tab_flag==2 total 1,123,940.
+
+### Halt check
+
+No §7 trip. CODEBOOK/COMPARABILITY hand-bodies out of scope except L60. PROVENANCE deferred to D-prep.2.
+
+---
+
 ## PRE-FLIGHT for audit-fix-r1r2-bundle — 2026-05-24T00:30:00Z — **the 8-item R1+R2 cross-round remediation bundle from AUDITS/CONSOLIDATED_R1_vs_R2_§6 → ship as ONE doc/CSV-only task, mirror the C8.20-auditfix precedent** — **RESULT: PROCEED.**
 
 User-authorized pre-Phase-D one-task remediation per the 2 independent fresh-eyes audit rounds (12 audits total, 0 blockers, 0 §7, 0 gate-SHA drift). Canonical task spec: `AUDITS/CONSOLIDATED_R1_vs_R2_2026-05-19T20-30-00Z.md` §6. **C2 approach (2) — apply `tabulation_flag`-style scoping to the 3 affected per-variable Notes — confirmed at PRE-FLIGHT (no §7 reason to prefer approach (1) drop-the-gloss; the L12 gloss is load-bearing for the 7-era envelope narrative).** Manuscript NOT touched (D.4 by KICKOFF mandate).

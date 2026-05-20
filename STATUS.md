@@ -1,6 +1,48 @@
-# STATUS — last updated 2026-05-24T01:30:00Z
+# STATUS — last updated 2026-05-24T12:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T12:00:00Z — **fetal-death-other-docs-v240-sync (D-prep.1) COMPLETE — R2d discharged: seven `fetal_death/*.md` docs synced to v2.4.0 / 1982-2024 / 2,427,233 / 7-era; `CODEBOOK.md` L60 `data_year` Years fixed; 4 gate fetal SHAs byte-exact; C8.20 appendix byte-identical.**
+
+### Current phase
+
+**Phase D-prep in progress.** D-prep.1 **COMPLETE**. Next: **D-prep.2** (`provenance-refresh-current-envelope`) + **D-prep.3** (`schema-years-available-gap-notation`) may parallelize → **D-prep.4** (pre-Zenodo audit; `/ultrareview` recommended) → conditional **D-prep.5**. Phase D / Phase E unchanged (gated / out-of-scope).
+
+### Last completed step
+
+`fetal-death-other-docs-v240-sync` (D-prep.1). Tags `fetal-death-other-docs-v240-sync-pre-do` + `fetal-death-other-docs-v240-sync-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**D-prep.2** — `provenance-refresh-current-envelope` (~0.5 session). May run in parallel with **D-prep.3** — `schema-years-available-gap-notation` (~0.5 session).
+
+### Blocked
+
+**Phase D (D.1-D.4)** — per-step explicit human go-ahead. **Phase E** — fresh-chat §19 prompts only.
+
+### Open questions for human
+
+- **D-prep.4:** trigger `/ultrareview` when ready, or authorize agent 5-agent fallback?
+- **Soft carry-forward:** `fetal_death/quickstart.py` still V2.0-stale (out of D-prep.1 scope) — align before audit or accept as audit finding.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. D-prep.1 CLOSED — do not re-flag R2d or L60 in audits.
+2. 4 gate parquet SHAs: `38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…` — re-hash at D-prep.2 PRE-FLIGHT.
+3. D-prep.4 only after D-prep.1-3 complete.
+4. Phase D remains explicitly-authorization-gated.
+5. C8.20 verify by marker extraction only.
+
+### Build artifacts current
+
+- Fetal v2.4.0 `38e2cecb…` / `185c071e…` **UNCHANGED** (doc-only task).
+- MODIFIED: 7 `fetal_death/*.md` + `CODEBOOK.md` L60 + state files. Receipt: `RECEIPTS/fetal-death-other-docs-v240-sync_2026-05-24T12-00-00Z.md`.
 
 ---
 
