@@ -10,7 +10,7 @@ The dataset spans **seven** file-format eras, each based on a different NCHS rec
 
 | Era | Years | Layout Source | Record Length | Records | Revision / version_flag |
 |-----|-------|---------------|---------------|--------:|---------|
-| **V3b** | 1982-1988 | `record_layout_1982_1988.csv` | ~200 bytes (1978-rev) | 421,125 | 1978-revision; predates the 2003-rev split → synthesized `S` |
+| **V3b** | 1982-1988 | `record_layout_1982_1988.csv` | 200 bytes (202 with CRLF) | 421,125 | 1978-revision; predates the 2003-rev split → synthesized `S` |
 | **V3a** | 1989-1991 | 1989-rev `record_layout` family | (see `record_layout_*.csv`) | 188,909 | early 1989-revision; synthesized `S` |
 | **V2 (1992 era)** | 1992-2002 | `FETAL_1992_2002_FIELDS` | 360 bytes (362 with CRLF) | 700,704 | 1989-revision uniform; synthesized `S` |
 | **V2.1** | 2003-2004 | `record_layout_2003.csv` / `record_layout_2004.csv` | 1,351 / 1,501 bytes | 107,782 | 1989→2003 transition; `S` 97.26% / `A` 2.74% |

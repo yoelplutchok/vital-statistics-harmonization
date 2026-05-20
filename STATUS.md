@@ -1,6 +1,66 @@
-# STATUS — last updated 2026-05-23T23:45:00Z
+# STATUS — last updated 2026-05-24T00:45:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T00:45:00Z — **audit-fix-r1r2-bundle COMPLETE — the 8-item R1+R2 cross-round adversarial-audit remediation shipped as ONE doc/CSV-only task (mirroring the C8.20-auditfix precedent); 0 blockers, 4 gate parquet SHAs byte-exact, zero canonical-state mutation.** C2 approach (2) — apply `tabulation_flag`-style scoping to the 3 affected per-variable CODEBOOK Notes — chosen over approach (1) drop-the-gloss (the L12 gloss is load-bearing for the 7-era envelope narrative). Two Convention-3 PRE-FLIGHT cheap-check spec-vs-actual divergences resolved (Item 4 audit-spec "×2 docs"→1 doc; Item 5 "L77"→L60), L6-safe — no text fabricated where columns don't exist; the actually-existing/uniquely-located sites edited. R2d (other `fetal_death/*.md` V2.0-envelope-staleness) explicitly OUT of scope per the audit's recommendation + the user's task framing — soft-flagged for a separate Phase-D-adjacent doc-sync task. **Manuscript untouched (D.4 by KICKOFF mandate).** Tags **`audit-fix-r1r2-bundle-pre-do`@`17814d2`** + **`audit-fix-r1r2-bundle-complete`**.
+
+Full narrative: `RECEIPTS/audit-fix-r1r2-bundle_2026-05-24T00-45-00Z.md` + `PRE_FLIGHT_LOG.md` 2026-05-24T00:30:00Z + `FIX_LOG.md` 2026-05-24T00:45:00Z + `DECISION_LOG.md` 2026-05-24T00:45:00Z. Canonical audit task-spec: `AUDITS/CONSOLIDATED_R1_vs_R2_2026-05-19T20-30-00Z.md` §6.
+
+### Current phase
+
+**Phase C — pre-Zenodo scope COMPLETE (C8.16–C8.22 = 7/7) AND the internal Pre-D cleanup block COMPLETE (TaskList #1-#5 = 5/5) AND the post-cleanup audit-fix bundle COMPLETE (this task).** The 2 independent fresh-eyes audit rounds (12 audits total) returned PASS / 0 blockers / 0 §7 / 0 gate-SHA drift in BOTH rounds + recommended this bundle pre-Phase-D; now shipped. The ONLY remaining work is the externally-irreversible, human-authorization-gated **Phase D** (D.1 GitHub redirects → D.2 unified Zenodo deposit → D.3 public-repo v1.x sync → D.4 manuscript re-pass + submit). Settled pre-Zenodo envelope **unchanged** (zero canonical-state mutation across the entire Pre-D cleanup block + the audit-fix bundle). **Do NOT begin Phase D autonomously.**
+
+### What was done this session
+
+User task message → "1 remediation pass" → "Ship the 8-item bundle as ONE single task under full five-phase discipline" → "halt and surface for my explicit Phase D authorization decision after the bundle ships". Single task `audit-fix-r1r2-bundle` under full five-phase discipline, doc/CSV-only, all `*-pre-do`/`*-complete` tagged:
+1. **PRE-FLIGHT** — Field-value snapshot for all 8 sites; 4 gate parquet SHAs baseline-recorded; 2 Convention-3 spec-vs-actual divergences logged (Item 4 ×2→1 doc, Item 5 L77→L60); PROCEED.
+2. **SMOKE** — Tier-0/1 equivalent: per-edit anchor-string uniqueness/findability via `grep -c`; all 10 anchors verified unique-or-replace_all-safe.
+3. **DO** — 10 Edit operations across 6 git-tracked files in one commit (1 replace_all + 9 single-shot edits): `natality/metadata/file_inventory.csv` (Item 1: typo ×19); `fetal_death/CODEBOOK.md` (Items 2a/2b/2c V2-1992-2002-slice scopings + Item 5 data_year v2.4.0 verification clause); `NEXT_STEPS.md` (Item 3: §15.D `DO step 4 → 4a/4b/4c` clause prepend); `fetal_death/COMPARABILITY.md` (Item 4: V3b sibling-parity); `docs/NCHS_SOURCE_MANIFEST.md` (Item 6: L153+L205 imported-flag shipped-language); `docs/PIPELINE_TIMING_BENCHMARK.md` (Items 7+8: attribution rework + H10 callout extension).
+4. **VERIFY** — All 8 items per-edit grep-verified PASS; 4 gate parquet SHAs byte-exact unchanged; `git diff --name-only` ⊆ 6 target files + PRE_FLIGHT_LOG (no scope creep); 89 ins / 29 del / 7 files (proportionate); PRE_FLIGHT_LOG append-only (0 deletion lines); cited numerics (2,427,233 / 1,713 / 397,397) all parquet-derivable from CODEBOOK Appendix C8.20 (L6-safe).
+5. **RECEIPT** — `RECEIPTS/audit-fix-r1r2-bundle_2026-05-24T00-45-00Z.md` with all required sections incl. §10 self-check (7 residual risks) + Convention 4 forward-looking HALTs (6).
+
+### Last completed step
+
+`audit-fix-r1r2-bundle` (this session) — **COMPLETE**. Single DO commit ships 6 doc/CSV file mutations + RECEIPT/PRE_FLIGHT_LOG/FIX_LOG/DECISION_LOG/STATUS. **Zero parquet/schema/test-target/test/script mutation.** Tag `audit-fix-r1r2-bundle-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (externally irreversible; requires EXPLICIT human authorization — do NOT begin autonomously).** Per KICKOFF Phase D: D.1 Task 9 (redirect notices on the two old GitHub repos) → D.2 Task 10 (unified Zenodo deposit + version patches + PROVENANCE refresh) → D.3 public-repo v1.x sync (exclude-list incl. `.claude/`, `AUDITS/`, state files; the v2.4.0 CODEBOOK/COMPARABILITY + the new pre-computed tabulations + this audit-fix bundle SHIP; **R2d "other fetal_death/*.md V2.0-envelope-staleness" should fold into the D.3-adjacent doc-sync pass per the audit's recommendation**) → D.4 manuscript re-pass + submit (the once-after-all-data Coverage re-paragraph + the C8.13/C8.18 timing reconciliation + admin-section markers). All internal prerequisites are now clear: §11 backlog empty; fetal-death docs at v2.4.0 + audit-fix-applied; inventory `imported` accurate; v3-linked comparison verified-current; timing-benchmark staleness documented + scoped + H10-callout extended; the 8-item audit-fix remediation discharged.
+
+### Blocked
+
+**Phase D** — explicit human authorization (externally irreversible). **C8.5b (Dockerfile)** / **C8.7b (Orchestrator + Tier-1/2 re-derive)** — DEFERRED.
+
+### Open questions for human
+
+**Phase-D authorization is the SOLE gating question.** Pre-Zenodo Phase-C scope complete AND the internal Pre-D cleanup complete AND the post-cleanup audit-fix bundle complete. **Owed §11 human-merge: (none)** (cleared at plan-merge-owed-backlog). **Audit-recommended deferrals carried (for Phase D, by design):** R2d (other `fetal_death/*.md` V2.0-envelope-staleness — GETTING_STARTED, FAQ, etc.) — fold into D.3-adjacent doc-sync; manuscript Coverage re-paragraph = D.4; the C8.13/C8.18 natality+linked timing re-measure = D.4-post-rebuild (the manuscript fetal-death timing PROPOSE-EDIT is already D.4); the GitHub-redirects/Zenodo-deposit/public-repo-sync are D.1-D.3 (externally irreversible).
+
+**Open soft-flags (30; +1 NEW — `audit-fix-r2d` = the R2d defer):** carried + the new R2d defer. (jj) README "56 passed" baseline stale. (kk) pytest memory-safe per-file split. (ll-docs) §8 L12-row literal-pipe (non-blocking). The convenience-CSV year-coverage-extension question (non-(ee), non-blocking). **NEW (audit-fix-r2d):** other `fetal_death/*.md` (GETTING_STARTED, FAQ, etc.) describe the V2.0 envelope; project-wide doc-sync surface; fold into D.3-adjacent doc-sync per the audit recommendation. Plus the **`data_year` L60 stale `Years` column "1992-2022"** (self-check #1 residual risk — fold into the same D.3 doc-sync pass).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+Full enumeration (6) in `RECEIPTS/audit-fix-r1r2-bundle_2026-05-24T00-45-00Z.md`. Headlines: (1) **internal Pre-D cleanup + post-cleanup audit-fix bundle COMPLETE; only the externally-irreversible, human-authorization-gated Phase D remains — do NOT begin autonomously** (the user's explicit "halt and surface for my explicit Phase D authorization decision" is the binding scope). (2) 4 gate parquet SHAs unchanged across the entire Pre-D cleanup + audit-fix work (`38e2cecb…`/`185c071e…`/`acb5c48a…`/`f630d8cf…`); independently re-hash at next PRE-FLIGHT to confirm. (3) R2d is a documented carry-forward; if Phase D D.3 is authorized, fold the R2d doc-sync there (NOT silently). (4) The `data_year` L60 stale `Years` column is out-of-bundle-scope known residue — fold into the same D.3 pass. (5) The 2 Convention-3 cheap-check resolutions (Item 4 ×2→1 doc; Item 5 L77→L60) are preserved for next-session awareness. (6) Repo append-only clock (2026-05-24) runs ahead of harness `currentDate` (2026-05-19) — keep timestamps monotonic-after.
+
+### Build artifacts current
+
+- 43-yr fetal-death (v2.4.0) `38e2cecb…`/`185c071e…` (UNCHANGED). Natality v3.0.0 `c8a740eb…`/`acb5c48a…` (UNCHANGED). Linked v4.0.0 `f630d8cf…`/`ea89ab3c…`/`.v3_baseline` `9b828a4d…` (UNCHANGED). Matched-multiples `adbec108…`/`5c22308b…`/`7c682668…`/`d98b4296…` (UNCHANGED). All gitignored/reproducible. **4 gate SHAs byte-exact across the entire Pre-D cleanup + this audit-fix bundle.**
+- MODIFIED git-tracked this session: `natality/metadata/file_inventory.csv` (Item 1 ×19 typo), `fetal_death/CODEBOOK.md` (Items 2a/2b/2c/5), `fetal_death/COMPARABILITY.md` (Item 4), `NEXT_STEPS.md` (Item 3 §15.D), `docs/NCHS_SOURCE_MANIFEST.md` (Item 6 ×2 sites), `docs/PIPELINE_TIMING_BENCHMARK.md` (Items 7+8) + state files. **No build-side change.**
+
+### Notes for next session
+
+- **Internal Pre-D cleanup (5/5) + post-cleanup audit-fix bundle COMPLETE.** D.3 (public-repo v1.x sync) will fold in R2d (other fetal_death V2.0 envelope) + the `data_year` L60 `Years` column staleness as a single doc-sync pass per the audit recommendation. D.4 (manuscript re-pass) gets the once-after-all-data Coverage re-paragraph + the C8.13/C8.18 timing reconciliation.
+- **Phase D is externally irreversible and human-authorization-gated.** Surface the (a)-(d) handshake / await explicit authorization before any D.1-D.4 action. The user's task-message explicit phrasing — "After the audit-fix bundle ships and you append the STATUS section, halt and surface for my explicit Phase D authorization decision" — is binding.
+- §2/§4.4/§9-#2/#7/#8/§10/L6/L11/H10 honored throughout: cheap PRE-FLIGHT caught the 2 spec divergences before any DO; numerics derived not invented; the L12 gloss preserved (load-bearing); R2d + data_year column staleness deferred not compressed; each Convention-3 cheap-check resolution preserves both audit intent + table integrity.
+
+### Session summary
+
+The user-authorized post-Pre-D-cleanup 8-item adversarial-audit remediation bundle SHIPPED this session — **doc/CSV-only, ONE task under full five-phase discipline, zero canonical-state mutation, mirroring the C8.20-auditfix precedent**. 6 git-tracked files mutated (1 metadata-CSV + 5 docs); 89 insertions / 29 deletions; 4 gate parquet SHAs byte-exact; manuscript untouched; PRE_FLIGHT_LOG append-only; R2d deferred per audit recommendation. C2 approach (2) chosen + 2 Convention-3 cheap-check divergences resolved L6-safely. **The entire pre-Zenodo Phase-C scope + the internal Pre-D cleanup + the post-cleanup audit-fix bundle are now COMPLETE; the ONLY remaining work is the externally-irreversible, human-authorization-gated Phase D — which must NOT be begun autonomously.** Halt-and-surface for explicit Phase D authorization is the entry-point for next session.
 
 ---
 

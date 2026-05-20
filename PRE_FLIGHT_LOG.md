@@ -8,6 +8,66 @@
 
 ---
 
+## PRE-FLIGHT for audit-fix-r1r2-bundle — 2026-05-24T00:30:00Z — **the 8-item R1+R2 cross-round remediation bundle from AUDITS/CONSOLIDATED_R1_vs_R2_§6 → ship as ONE doc/CSV-only task, mirror the C8.20-auditfix precedent** — **RESULT: PROCEED.**
+
+User-authorized pre-Phase-D one-task remediation per the 2 independent fresh-eyes audit rounds (12 audits total, 0 blockers, 0 §7, 0 gate-SHA drift). Canonical task spec: `AUDITS/CONSOLIDATED_R1_vs_R2_2026-05-19T20-30-00Z.md` §6. **C2 approach (2) — apply `tabulation_flag`-style scoping to the 3 affected per-variable Notes — confirmed at PRE-FLIGHT (no §7 reason to prefer approach (1) drop-the-gloss; the L12 gloss is load-bearing for the 7-era envelope narrative).** Manuscript NOT touched (D.4 by KICKOFF mandate).
+
+### Inputs
+- [x] Spec: `AUDITS/CONSOLIDATED_R1_vs_R2_2026-05-19T20-30-00Z.md` §6 (`8e1ef9b…`-tier doc, untracked). Present ✓
+- [x] Target files: `natality/metadata/file_inventory.csv` (96 lines), `fetal_death/CODEBOOK.md` (2779), `fetal_death/COMPARABILITY.md` (325), `NEXT_STEPS.md` (1677), `docs/NCHS_SOURCE_MANIFEST.md` (257), `docs/PIPELINE_TIMING_BENCHMARK.md` (215). All present ✓
+- [x] No stale checkpoints. Tree clean except untracked `AUDITS/` (consistent w/ KICKOFF audit-session workflow).
+
+### Environment
+- [x] Python 3.13.9; uv 0.11.10; HEAD `17814d2` (`convenience-benchmark-v4-scope-complete`); branch `main`; doc-only DO (no build/runtime).
+- [x] No git changes to revert; `git status --porcelain` = `?? AUDITS/` only (untracked, per audit workflow).
+
+### Gate-parquet baseline (Convention 3 invariant — the strongest zero-canonical-mutation signal)
+Independently re-hashed pre-DO; these MUST stay byte-exact at VERIFY:
+| Parquet | SHA-256[:16] | Status |
+|---|---|---|
+| `fetal_death_harmonized.parquet` | `38e2cecb03ff4947` | ✓ matches STATUS anchor |
+| `fetal_death_derived.parquet` | `185c071ec76ab8aa` | ✓ matches STATUS anchor |
+| `natality_v2_harmonized_derived.parquet` (= natality v3.0.0 derived; legacy filename) | `acb5c48a9abf82ac` | ✓ matches STATUS anchor |
+| `natality_v3_linked_harmonized_derived.parquet` (= linked v4.0.0) | `f630d8cf20db72ea` | ✓ matches STATUS anchor |
+
+### Field-value snapshot (Convention 3) — per-edit current text vs spec-assumed state
+
+**Item 1 (C1) — `natality/metadata/file_inventory.csv` 19 rows.** Verified: 19 instances of `(perLinkCO` (col5 of the 1983-1991 + 1995-2004 cohort-linked rows, exactly lines 55-73); ZERO existing `(per LinkCO` (replace_all is bijective + safe). Current sample (L55): `…layout reconstructed at C8.18 (perLinkCO83Guide.pdf),LinkCO83Guide.pdf,true,…`. Spec-assumed state: matches ✓.
+
+**Item 2 (C2 approach 2) — `fetal_death/CODEBOOK.md` L12 gloss + 3 affected per-variable Notes.** Verified:
+- L12 V2-rebroadening gloss: *"In the per-variable notes below, the legacy **\"V2\"** label refers to the pre-2003-revision S-synthesized eras (1982-2002 = V3b+V3a+V2; 1989-revision behaviour for 1989-2002, 1978-revision for 1982-1988) and **\"V1\"** to the 2003-revision-transition era (2005+); **2003-2004 (V2.1)** is the dual-certificate boundary."* (Audit referenced "L35"; actual location L12; logical defect identical.)
+- L97 `plurality` Note: *"1,686 of the 1,713 V2 plurality=9 rows are LA-occurrence 1992-1994"* — the 1,713 count is the **1992-2002 slice**, parquet-derived (Appendix C8.20 L998 `1992-2002 | 700,704 | … 9: 1,713`).
+- L116 `birthweight` Note: *"397,397 V2 rows have BW=9999"* — the 397,397 count is the **1992-2002 slice**, parquet-derived (Appendix C8.20 L1579 `1992-2002 | 700,704 | 9999: 397,397`).
+- L217 `singleton` Note: *"V2: 1,713 blanks total, of which 1,686 are Louisiana 1992-1994"* — same 1,713 1992-2002-slice count.
+- Mirror-pattern locator: L62 `tabulation_flag` Note already uses the canonical scoping convention: *"in the V2.0 1992-2022 slice this was ~5,400 and ~63,700 rows respectively; for the full v2.4.0 per-era `tabulation_flag` distribution see Appendix C8.20"* — this is the exact phrasing to mirror for the 3 affected Notes.
+- Spec-assumed state: matches ✓; **approach (2) confirmed** (drop-the-gloss approach (1) would remove the load-bearing 7-era envelope narrative — no §7 reason to prefer it).
+
+**Item 3 (R1a) — `NEXT_STEPS.md` §15.D C8.18 2026-05-23 model-clar block L1403.** Verified: the block enumerates `DO step 3 → 3a/3b`, `DO step 5 → 5a/5b/5c` (+`5c-i/5c-ii(→5c-ii-a+5c-ii-b)/5c-iii`), `DO step 6 → 6a/6a-RECWT/6b`, `DO step 7`. **DO step 4 → 4a/4b/4c is omitted**, but DECISION_LOG has the 4a/4b/4c entries (`AUDITS/...` reference; verified my own DECISION_LOG grep: 2026-05-18T05:00:00Z DO step 4 PRE-FLIGHT; 14:30:00Z DO step 4a 1995-2002; 20:30:00Z DO step 4b 2003 DEFLATE64; 2026-05-18T23:00:00Z DO step 4c 2004). Spec-assumed state: matches ✓.
+
+**Item 4 (R1b) — `fetal_death/COMPARABILITY.md` L13 (V3b row).** Verified: *`| **V3b** | 1982-1988 | record_layout_1982_1988.csv | ~200 bytes (1978-rev) | 421,125 | …`*. Sibling V2 row L15: *`| **V2 (1992 era)** | 1992-2002 | FETAL_1992_2002_FIELDS | 360 bytes (362 with CRLF) | …`* — established parity pattern. **Divergence from spec**: spec said "×2 docs (COMPARABILITY + CODEBOOK)" but `~200 bytes` does NOT appear in CODEBOOK.md (CODEBOOK's V3b row L38 has `1978-revision (record_layout_1982_1988.csv)` with NO byte length at all). Resolution per Convention 3 cheap-check: **edit only the 1 doc where the text exists** (do not fabricate inserted text in CODEBOOK — that would be L6 / scope creep). Not §7.
+
+**Item 5 (R1c) — `fetal_death/CODEBOOK.md` `data_year` Notes.** Verified: L60 `data_year` row in the "Harmonized Variables" table currently reads *`| data_year | Data year (added by pipeline) | 1992-2022 | full | All | int32 sibling of delivery_year, computed as int(delivery_year) during harmonization. Always equal to int(delivery_year) for every row. Recommended filter/join key for cross-year analyses. |`* — **NO v2.4.0 verification clause**. The auto-generated C8.20 appendix at L359 still has *"(verified 1,634,195/1,634,195 in V2.0)"* — that's the C3 out-of-scope generator-side residue (audit explicitly C3-classed). **Divergence from spec**: audit-spec said "CODEBOOK L77" but the data_year row is at L60. Resolution: edit L60 (the actual data_year row). Not §7.
+
+**Item 6 (R2a) — `docs/NCHS_SOURCE_MANIFEST.md` L153 + L205.** Verified at both lines:
+- L153: *"The file_inventory.csv `imported` flag refresh false→true for these 19 pre-2005 cohort rows is a tracked Phase-D metadata-sync follow-up — deliberately NOT flipped at C8.18 DO step 7 (which is docs-only…)"*.
+- L205: *"The file_inventory.csv `imported` flag refresh false→true for these 19 pre-2005 rows is a tracked Phase-D metadata-sync follow-up (deliberately not flipped at the docs-only C8.18 DO step 7)."*
+- Task 3 (`file-inventory-imported-flag-v4` @ `84a9af3`, 2026-05-23) flipped all 19 rows; both clauses are now stale (per audit R2a). Spec-assumed state: matches ✓.
+
+**Item 7 (R2b) — `docs/PIPELINE_TIMING_BENCHMARK.md` L8 attribution clause.** Verified: *"The **manuscript timing-claim reconciliation is already routed to Phase D step 4** (the C8.13 fetal-death PROPOSE-EDIT, §below); the v4 natality+linked re-measure belongs to that same Phase-D post-final-rebuild pass."* The C8.13 PROPOSE-EDIT body at L92-106 covers fetal-death ONLY (`approximately six minutes` → `approximately five minutes`); the natality clause at L146 is "No edit recommended for the natality clause" — so the v4 natality+linked re-measure routing is NOT in the PROPOSE-EDIT body itself, it's a separate scope-note-introduced item. Spec-assumed state: matches ✓.
+
+**Item 8 (R2c) — `docs/PIPELINE_TIMING_BENCHMARK.md` L5 H10 callout.** Verified: the bullet flags the linked H10 row SHA (`9b828a4de4e59b17…` → `f630d8cf…`) as superseded but does NOT mention the natality H10 row (`e16ad5323d68e28d…` is the pre-v3.0.0 baseline = the documented anchor in §H10 L158; post-C8.17 v3.0.0 natality is `acb5c48a9abf82ac…`). Spec-assumed state: matches ✓.
+
+### Outputs
+- [x] No new file paths; 6 existing files mutated. State-files (this PRE_FLIGHT_LOG, DECISION_LOG, FIX_LOG, STATUS) + RECEIPTS/ + git tags written per protocol.
+
+### Halt conditions tripped
+- **None.** Two Convention-3 cheap-check resolutions (Item 4 "×2 docs"→1 doc; Item 5 L77→L60 line-number) are spec-vs-actual divergences resolved at PRE-FLIGHT (which is the cheap-check moment) by editing the actually-existing site, not §7 halts. The L6 alternative (fabricate the missing CODEBOOK text to make "×2 docs" come true) is explicitly refused per §9-#2.
+
+### Result
+**PROCEED.** Tag `audit-fix-r1r2-bundle-pre-do` at HEAD `17814d2`.
+
+---
+
 ## PRE-FLIGHT for convenience-benchmark-v4-scope — 2026-05-23T23:30:00Z — **convenience/benchmark v4 refresh (soft-flag (ee)) → document the scoped staleness; no fabricated times; no canonical rebuild** — **RESULT: PROCEED.**
 
 TaskList #5 (final) of the user-authorized 2026-05-23 "Pre-D cleanup first" block (standing "do whatever you think is best"; halt only on a genuine §7 gate).

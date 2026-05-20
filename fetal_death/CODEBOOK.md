@@ -57,7 +57,7 @@ The "Years" column in the variable tables below uses the V2/V1 era labels.
 
 | Variable | Label | Values | Comparability | Years | Notes |
 |----------|-------|--------|---------------|-------|-------|
-| `data_year` | Data year (added by pipeline) | 1992-2022 | full | All | int32 sibling of `delivery_year`, computed as `int(delivery_year)` during harmonization. Always equal to `int(delivery_year)` for every row. Recommended filter/join key for cross-year analyses. |
+| `data_year` | Data year (added by pipeline) | 1992-2022 | full | All | int32 sibling of `delivery_year`, computed as `int(delivery_year)` during harmonization. Always equal to `int(delivery_year)` for every row. Recommended filter/join key for cross-year analyses (verified 2,427,233/2,427,233 in v2.4.0; see Appendix C8.20). |
 | `version_flag` | Revision flag | A, S | full | All | A=2003 revision; S=1989 revision. **Synthesized to `S` for 1992-2002** (no native VERSION field in 1989-rev files) |
 | `tabulation_flag` | NCHS tabulated subset flag | 1, 2 | partial | All | 1=exclude from NVSR tabulations; 2=include. NCHS's compound criterion (typically "GA >= 20 weeks OR BW >= 350g when GA unknown") — not a pure GA cutoff. a small share of flag-2 rows (almost all in 2014+) have `gestational_age_combined < 20`, and a non-trivial share of flag-1 rows have GA >= 20 (in the V2.0 1992-2022 slice this was ~5,400 and ~63,700 rows respectively; for the full v2.4.0 per-era `tabulation_flag` distribution see Appendix C8.20). Use `gestational_age_combined` directly when you need a pure GA filter. Field name and position changed across eras (V2:TABFLAG; V1 2006:TABFLG; V1 2014+:OE_TABFLG) |
 | `delivery_year` | Year of delivery | 1992-2022 | partial | All | Same concept; field positions differ by era. V2 sources from DELYR (190-193) |
@@ -94,7 +94,7 @@ The "Years" column in the variable tables below uses the V2/V1 era labels.
 | Variable | Label | Values | Comparability | Years | Notes |
 |----------|-------|--------|---------------|-------|-------|
 | `live_birth_order` | Live birth order recode | 0-9 | full | All | 9=Unknown |
-| `plurality` | Plurality recode | 1-9 | partial | All | 1=Single through 5=Quintuplet+. 2022 era max is 4. 9=Unknown. **Louisiana 1992-1994 reports 9 for essentially all in-state records** (state non-reporting). 1,686 of the 1,713 V2 plurality=9 rows are LA-occurrence 1992-1994 (the remainder are scattered across other state-years). See [Comparability §11](COMPARABILITY.md) |
+| `plurality` | Plurality recode | 1-9 | partial | All | 1=Single through 5=Quintuplet+. 2022 era max is 4. 9=Unknown. **Louisiana 1992-1994 reports 9 for essentially all in-state records** (state non-reporting). In the V2 1992-2002 slice, 1,686 of the 1,713 plurality=9 rows are LA-occurrence 1992-1994 (the remainder are scattered across other 1992-2002 state-years); for the full v2.4.0 per-era `plurality` distribution see Appendix C8.20. See [Comparability §11](COMPARABILITY.md) |
 | `prenatal_care_month` | Month prenatal care began (revised) | 0-99 | full | 2006/2014/2022 eras | 00=No care; 01-10=Month; 99=Unknown. Version A only. Blank for V2 (revised PRECARE is 2003+) |
 | `prenatal_care_month_unrevised` | Month prenatal care began (unrevised) | 0-99 | within_era | 1992-2002, 2005-2006 | V2 sources from MONPRE (113-114); V1 2005-2006 from MPCB (S-version only). **Blank for 2007-2013** (NCHS did not include MPCB in those V1 public-use years). Not in 2014+ |
 | `prenatal_care_recode` | Prenatal care recode | 1-5 | full | 2006/2014/2022 eras | 5-category revised recode. Version A only. Blank for V2 |
@@ -113,7 +113,7 @@ The "Years" column in the variable tables below uses the V2/V1 era labels.
 | `gestational_age_recode5` | Gestation recode 5 | 1-5 | full | All | 5-category recode. Same coding all eras |
 | `oe_gest_recode12` | OE gestation recode 12 | 1-12 | within_era | 2014+ | NCHS standard recode. Blank for V2 |
 | `oe_gest_recode5` | OE gestation recode 5 | 1-5 | within_era | 2014+ | NCHS standard recode. Blank for V2 |
-| `birthweight` | Birth weight (grams) | 1-9999 | full | All | 9999=Not stated. **Primary BW variable.** V2 sources from DBIRWT (207-210); 397,397 V2 rows have BW=9999, driven by TABFLAG=1 (<20wk) records where BW is typically not captured |
+| `birthweight` | Birth weight (grams) | 1-9999 | full | All | 9999=Not stated. **Primary BW variable.** V2 sources from DBIRWT (207-210); 397,397 V2 1992-2002-slice rows have BW=9999, driven by TABFLAG=1 (<20wk) records where BW is typically not captured; for the full v2.4.0 per-era `birthweight` distribution see Appendix C8.20 |
 | `birthweight_recode14` | Birth weight recode 14 | 1-14 | full | All | 14-category gram-range recode |
 | `birthweight_recode4` | Birth weight recode 4 | 1-4 | full | All | 4-category recode. 4=Not stated |
 | `fetal_presentation` | Fetal presentation | 1-3, 9 | full | 2006/2014/2022 eras | 1=Cephalic; 2=Breech; 3=Other; 9=Unknown. Version A only. Blank for V2 (ME_PRES is 2003+; 1992 has BREECH (273) but as a labor complication, not a presentation item) |
@@ -214,7 +214,7 @@ These variables are computed from harmonized fields and added in the derived fil
 |----------|-------|-------|-------|
 | `maternal_age_cat` | Maternal age category | <20, 20-24, 25-29, 30-34, 35-39, 40+ | "" if age unknown. V2 ages 50-54 (108 rows) correctly fall in 40+ bucket |
 | `education_cat4` | Education 4-level | < HS, HS grad, Some college, BA+ | "" if education unknown or blank. **Blank for all V2 records** (V2 populates `maternal_education_unrevised` years-of-school instead of the revised 1-9 categorical scale that the derivation maps from). Cross-era education trends require building a 1989→2003 binning bridge — not provided by this resource |
-| `singleton` | Singleton indicator | "1" if plurality=1; "0" if plurality>1; "" if unknown (plurality=9 or blank) | V2: 1,713 blanks total, of which 1,686 are Louisiana 1992-1994 non-reporters (DPLURAL=9, LA-occurrence); the remaining 27 are scattered V2 plurality=9 records across other state-years |
+| `singleton` | Singleton indicator | "1" if plurality=1; "0" if plurality>1; "" if unknown (plurality=9 or blank) | V2 1992-2002 slice: 1,713 blanks total, of which 1,686 are Louisiana 1992-1994 non-reporters (DPLURAL=9, LA-occurrence); the remaining 27 are scattered V2 1992-2002 plurality=9 records across other state-years; for the full v2.4.0 per-era `plurality` distribution underlying this derived flag see Appendix C8.20 |
 
 ### Cause-of-Death Grouping
 
