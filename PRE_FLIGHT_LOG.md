@@ -8,6 +8,14 @@
 
 ---
 
+## PRE-FLIGHT for schema-years-available-gap-notation (D-prep.3) — 2026-05-20T02:45:00Z — **RESULT: PROCEED**
+
+D-prep.2 complete. Fetal `years_available` `--check` OK (73 data columns). Linked `manner_of_death` missing explicit `1992-1994 gap` suffix (fix-on-contact). Gate SHAs byte-exact.
+
+## PRE-FLIGHT for provenance-refresh-current-envelope (D-prep.2) — 2026-05-20T02:40:00Z — **RESULT: PROCEED**
+
+D-prep.1 complete. `fetal_death/PROVENANCE.md` stale v2.0.0 SHAs (`f09beb4a…`/`90af89b9…`). `natality/PROVENANCE.md` + `matched_multiples/PROVENANCE.md` missing. Gate SHAs re-hashed: all 4 match STATUS anchors.
+
 ## PRE-FLIGHT for fetal-death-other-docs-v240-sync (D-prep.1) — 2026-05-24T11:45:00Z — **RESULT: PROCEED**
 
 Standing authorization Phase D-prep. R2d defer + `data_year` L60 stale Years column (audit-fix-r1r2-bundle self-check #1).

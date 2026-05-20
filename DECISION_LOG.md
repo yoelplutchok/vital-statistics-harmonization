@@ -23,6 +23,26 @@
 
 ---
 
+## 2026-05-20T02:55:00Z — schema-years-available-gap-notation (D-prep.3) — envelope comment rows + linked gap suffix; empirical years_available already current
+
+**Choice:** Fix-on-contact fetal `allowed_values`/`notes` staleness on `delivery_year` + `data_year`; add `#ENVELOPE_NOTE` rows per §9-#6; add `1992-1994 gap` to `manner_of_death`; filter `#` rows in test fixtures + regenerate script. Did not re-run full `_regenerate_schema_years.py` write (empirical spans already matched).
+
+**Verifiable by:** `--check` OK; pytest spot-checks; gate SHAs unchanged.
+
+**Reversible:** yes — `git revert`.
+
+---
+
+## 2026-05-20T02:50:00Z — provenance-refresh-current-envelope (D-prep.2) — three per-product PROVENANCE files + NCHS manifest §5 shipped-parquet table
+
+**Choice:** Rewrite/create PROVENANCE.md for fetal-death v2.4.0, natality v3.0.0 + linked v4.0.0, matched-multiples; cross-reference in `docs/NCHS_SOURCE_MANIFEST.md` Section 5. Leave legacy `PROVENANCE.sha256` documented as v2.0.0-only.
+
+**Verifiable by:** Independent `shasum` on all listed paths; 4 gate SHAs unchanged.
+
+**Reversible:** yes — `git revert`.
+
+---
+
 ## 2026-05-24T12:00:00Z — fetal-death-other-docs-v240-sync (D-prep.1) — R2d doc-sync + CODEBOOK L60 bundled; historical v2.0.0 mentions preserved where changelog-accurate
 
 **Choice:** Update seven `fetal_death/*.md` user-facing docs + `CODEBOOK.md` L60 `data_year` Years column to the v2.4.0 envelope. Preserve historical references to the immutable v2.0.0 Zenodo deposit and the `ABOUT_THIS_RELEASE.md` V2.0/V2.1/V3a/V3b changelog sections (they describe increments, not the current headline envelope).

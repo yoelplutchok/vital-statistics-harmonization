@@ -52,7 +52,8 @@ def derived_path() -> Path:
 
 @pytest.fixture(scope="session")
 def schema_df() -> pd.DataFrame:
-    return pd.read_csv(SCHEMA_CSV)
+    df = pd.read_csv(SCHEMA_CSV)
+    return df[~df["harmonized_name"].astype(str).str.startswith("#")]
 
 
 @pytest.fixture(scope="session")

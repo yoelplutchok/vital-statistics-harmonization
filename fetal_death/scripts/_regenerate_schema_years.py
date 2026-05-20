@@ -99,6 +99,9 @@ def main() -> None:
     new_values: list[str] = []
     for _, row in schema.iterrows():
         name = row["harmonized_name"]
+        if str(name).startswith("#"):
+            new_values.append(row["years_available"] if pd.notna(row["years_available"]) else "")
+            continue
         target = canonical.get(name, "")
         current = "" if pd.isna(row["years_available"]) else str(row["years_available"])
         if current != target:

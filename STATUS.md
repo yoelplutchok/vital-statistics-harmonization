@@ -1,6 +1,43 @@
-# STATUS — last updated 2026-05-24T12:00:00Z
+# STATUS — last updated 2026-05-20T02:55:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-20T02:55:00Z — **D-prep.2 + D-prep.3 COMPLETE — PROVENANCE refreshed (3 products + NCHS manifest §5); schema envelope + linked 1992-1994 gap notation; 4 gate SHAs byte-exact.**
+
+### Current phase
+
+**Phase D-prep in progress.** D-prep.1–3 **COMPLETE**. Next: **D-prep.4** (`pre-zenodo-audit-pass`; `/ultrareview` recommended) → conditional **D-prep.5**. Phase D / E unchanged.
+
+### Last completed step
+
+`schema-years-available-gap-notation` (D-prep.3) + `provenance-refresh-current-envelope` (D-prep.2). Tags `provenance-refresh-current-envelope-complete` + `schema-years-available-gap-notation-complete`.
+
+### In-progress
+
+(none)
+
+### Next planned task
+
+**D-prep.4** — pre-Zenodo audit pass.
+
+### Open questions for human
+
+- **D-prep.4:** `/ultrareview` or agent 5-agent fallback?
+- **Soft carry-forward:** `fetal_death/quickstart.py` still V2.0-stale — align before audit or accept as finding.
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. D-prep.1–3 CLOSED — audit only after this point.
+2. 4 gate SHAs: `38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`.
+3. Phase D per-step human go-ahead.
+4. D-prep.5 conditional on D-prep.4 findings.
+
+### Build artifacts current
+
+- All gate parquets **UNCHANGED** (doc/CSV-only session).
+- NEW: `natality/PROVENANCE.md`, `matched_multiples/PROVENANCE.md`. UPDATED: `fetal_death/PROVENANCE.md`, `docs/NCHS_SOURCE_MANIFEST.md` §5, both `harmonized_schema.csv` (+ `#ENVELOPE_NOTE` rows).
 
 ---
 
