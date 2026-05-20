@@ -23,7 +23,15 @@
 
 ---
 
-## 2026-05-20T12:00:00Z — pre-zenodo-audit-fix-bundle (D-prep.5) — Tier A audit remediation shipped; Phase D-prep block closed; notebooks + manuscript still deferred
+## 2026-05-20T14:00:00Z — `[plan-update]` D-prep.6–9 follow-ups before Phase D — encode notebook paths + convenience CSV 2023–2024 + C8.20 full regen + build-host gate SHA verify in KICKOFF/STATUS
+
+**Decision:** User wants the three deferred PZ items done in upcoming chats before Zenodo. Sequence: **D-prep.6** gate `shasum` verify (build host) → **D-prep.7** C8.20 regen → **D-prep.8** convenience CSVs → **D-prep.9** notebooks. Standing authorization extends to 6–9. Phase D remains gated.
+
+**Rationale:** Notebooks + CSVs improve user-facing quality before deposit; C8.20 regen is cheap on build host and stronger than manual schema-note patches; gate SHA verify is mandatory cheap-check before irreversible Zenodo.
+
+---
+
+## 2026-05-20T12:00:00Z — pre-zenodo-audit-fix-bundle (D-prep.5) — Tier A audit remediation shipped; Phase D-prep core closed; notebooks + manuscript still deferred
 
 **Decision:** Ship all PZ-01–PZ-11 doc/CSV fixes in one bundle. Do not extend convenience CSVs to 2023–2024 in this commit (document 2022 cap in JOINT_USE/COMPARABILITY instead). Do not regenerate full C8.20 appendix (requires build-host parquet); patch stale `_Schema note_` lines for `delivery_year`/`data_year` only.
 

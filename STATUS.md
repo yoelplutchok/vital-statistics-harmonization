@@ -1,38 +1,60 @@
-# STATUS — last updated 2026-05-20T12:00:00Z
+# STATUS — last updated 2026-05-20T14:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
 
 ---
 
-## 2026-05-20T12:00:00Z — **pre-zenodo-audit-fix-bundle (D-prep.5) COMPLETE — Tier A PZ-01–PZ-11 doc/CSV remediation; Phase D-prep CLOSED.**
+## 2026-05-20T14:00:00Z — **`[plan-update]` D-prep.6–9 follow-ups encoded — user wants notebooks + convenience CSVs + C8.20 regen before Phase D.**
+
+User directive (this chat): complete **PZ-NB notebooks**, **convenience CSV 2023–2024 extension**, and **full C8.20 appendix regen** in upcoming sessions; encode in `KICKOFF.md` so paste-kickoff lands on **D-prep.6** first. Core D-prep.1–5 remains **COMPLETE** at `0a5d122`.
 
 ### Current phase
 
-**Phase D-prep COMPLETE** (D-prep.1–5). Next: optional **`/ultrareview`** validation pass on post-fix state, then **Phase D** (D.1–D.4; each step requires explicit human go-ahead). Phase E unchanged.
+**Phase D-prep follow-ups (D-prep.6–9)** — standing authorization (same as D-prep.1–5). **Phase D** still per-step human-gated after 6–9.
+
+### Last completed step
+
+`pre-zenodo-audit-fix-bundle` (D-prep.5) @ `0a5d122`.
+
+### Next planned task (kickoff sequence wins over older STATUS lines)
+
+1. **D-prep.6** — `build-host-gate-sha-verify` (do first on machine with parquets)
+2. **D-prep.7** — `codebook-c820-appendix-regen` (needs parquets)
+3. **D-prep.8** — `convenience-csv-extend-2023-2024` (needs parquets; user wants this)
+4. **D-prep.9** — `notebook-portable-paths` (PZ-NB; path fixes in Cursor OK; re-run VERIFY on build host)
+
+Then optional post-fix audit → **Phase D.1** (explicit go-ahead).
+
+### Build-host note
+
+This Cursor workspace may have **no gate parquets** (gitignored). D-prep.6–8 require the Mac/build tree where parquets live (`~/Desktop/fetal-death-harmonization-build/…`, `~/Desktop/natality-harmonization/…`, or monorepo `*/output/harmonized/` after a pipeline run).
+
+### Open questions for human
+
+- Confirm parquet paths on your build machine for D-prep.6–8.
+- Extend convenience CSVs through **2024** only, or also refresh 2003–2004 in `live_births_by_year` if NVSR tables differ?
+
+### Forward-looking HALTs
+
+1. D-prep.6 mismatch → §7 halt; never edit PROVENANCE to match wrong bytes.
+2. D-prep.7 must not change gate parquet SHAs (read-only script).
+3. Phase D only after user says go for D.1+.
+
+---
+
+## 2026-05-20T12:00:00Z — **pre-zenodo-audit-fix-bundle (D-prep.5) COMPLETE — Tier A PZ-01–PZ-11 doc/CSV remediation; Phase D-prep core CLOSED.**
+
+### Current phase
+
+**Phase D-prep core COMPLETE** (D-prep.1–5). Follow-ups D-prep.6–9 added by plan-update 2026-05-20T14:00Z.
 
 ### Last completed step
 
 `pre-zenodo-audit-fix-bundle` (D-prep.5). Tag `pre-zenodo-audit-fix-bundle-complete`.
 
-### In-progress
-
-(none)
-
 ### Next planned task
 
-**Phase D.1** (redirect notices) — awaits your explicit go-ahead. Before D.2: re-hash 4 gate parquets on build host.
-
-### Open questions for human
-
-- Run **`/ultrareview`** now (post-fix validation) or proceed to Phase D?
-- **PZ-NB** (notebook portable paths) — separate session or defer until public-repo sync?
-
-### Forward-looking HALTs
-
-1. Phase D-prep CLOSED.
-2. Build-host gate SHA `shasum` before Zenodo upload.
-3. Manuscript envelope → D.4 only.
-4. Notebooks still use legacy absolute paths (PZ-NB deferred).
+See STATUS section **2026-05-20T14:00:00Z** (D-prep.6 first).
 
 ---
 
