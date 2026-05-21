@@ -100,10 +100,13 @@ A Data Resource Profile manuscript covering all three products as a unified reso
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff) for citation metadata. Until the unified Zenodo deposit is published, cite the two existing deposits:
+See [`CITATION.cff`](CITATION.cff) for citation metadata. Cite the unified HVS Zenodo deposit:
 
-- Plutchok Y. *Harmonized U.S. Natality and Linked Birth–Infant Death Microdata*. Zenodo. https://doi.org/10.5281/zenodo.19363074 (concept DOI)
-- Plutchok Y. *Harmonized U.S. Fetal Death Microdata, 1992–2022* (Zenodo v2.0.0 deposit). https://doi.org/10.5281/zenodo.20031571 — in-repo release is **v2.4.0 (1982–2024)** pending unified HVS deposit (Phase D.2).
+- Plutchok Y. *U.S. Harmonized Vital Statistics (HVS) Microdata: Natality, Linked Birth–Infant Death, Fetal Death, and Matched Multiples* (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.20319640
+
+(The Zenodo record also displays a version-agnostic **concept DOI** under "Cite all versions" — use that to always resolve to the latest version.)
+
+Superseded single-product deposits (immutable): natality + linked https://doi.org/10.5281/zenodo.19363074; fetal death 1992–2022 https://doi.org/10.5281/zenodo.20031571.
 
 ## License
 

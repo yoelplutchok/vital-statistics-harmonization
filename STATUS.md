@@ -1,6 +1,34 @@
-# STATUS — last updated 2026-05-21T14:30:00Z
+# STATUS — last updated 2026-05-21T15:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T15:00:00Z — **D.2 gate re-hash PASS (build host, all 17 parquets) + reserved DOI 10.5281/zenodo.20319640 baked into README/CITATION/.zenodo.json + upload bundle assembled.**
+
+### Current phase
+
+Phase D.2 — pre-upload prep COMPLETE on the build host. **The Zenodo publish itself is still the human's step** (DOI reserved, not yet published).
+
+### What was done this session
+
+1. **Gate re-hash PASS.** Build trees found locally (`~/Desktop/fetal-death-harmonization-build/output/harmonized/`, `~/Desktop/natality-harmonization/output/harmonized/`). Re-hashed all 17 harmonized/derived/baseline parquets → `~/Desktop/HVS-zenodo-upload/SHA256SUMS.txt`. **4 gate SHAs byte-exact** (`38e2cecb` / `185c071e` / `acb5c48a` / `f630d8cf`); the 2 other primaries (`c8a740eb`, `ea89ab3c`), matched-multiples (`adbec108`), and all 8 PROVENANCE-documented baselines also match. (2 V3a baseline parquets exist but are undocumented in PROVENANCE — recorded, not gating.)
+2. **Reserved DOI `10.5281/zenodo.20319640`** (Zenodo version DOI, user-reserved) baked into `README.md` Citation block, `CITATION.cff` (`doi:` + `version: 1.0.0`; message updated), and `.zenodo.json` (`doi`). The deposited snapshot now cites its own version DOI; concept DOI ("Cite all versions") to be captured from the published record.
+3. **Upload bundle assembled** in `~/Desktop/HVS-zenodo-upload/` (docs/metadata zip + SHA256SUMS) — see that session's commit + the r2 manifest.
+
+### Next planned task
+
+Human uploads to zenodo.org (bundle = parquets-by-path + docs zip + SHA256SUMS; metadata per `.zenodo.json`), publishes, returns the **concept DOI**. Then I optionally swap the concept DOI into the GitHub-facing README, and proceed to **D.3** → **D.4**.
+
+### Forward-looking HALTs
+
+1. Gate re-hash PASS recorded this session; if any pipeline re-runs before upload, re-hash again.
+2. Files are immutable once published; metadata is editable. The deposited README cites the **version** DOI by design (precise for an immutable snapshot); the concept DOI is the all-versions citation for the GitHub README/paper.
+3. Phase D.3/D.4 remain human-gated.
+
+### Build artifacts current
+
+- **Zero parquet mutation** (re-hash is read-only; 4 gate SHAs unchanged). Doc edits only: `README.md`, `CITATION.cff`, `.zenodo.json` (DOI), `STATUS.md`. Staging artifacts under `~/Desktop/HVS-zenodo-upload/` are outside the repo (not committed).
 
 ---
 

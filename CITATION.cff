@@ -1,6 +1,8 @@
 cff-version: 1.2.0
-message: "If you use the U.S. Harmonized Vital Statistics resource, please cite the relevant subproject deposit(s) below."
+message: "If you use the U.S. Harmonized Vital Statistics resource, please cite the unified Zenodo deposit (DOI below)."
 title: "U.S. Harmonized Vital Statistics Microdata"
+version: "1.0.0"
+doi: 10.5281/zenodo.20319640
 abstract: >
   A unified resource integrating harmonized U.S. natality, linked birth–infant death, fetal death, and matched-multiples
   (twins/triplets/quadruplets) public-use microdata released by the National Center for Health Statistics (NCHS) into

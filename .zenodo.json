@@ -2,6 +2,7 @@
   "upload_type": "dataset",
   "title": "U.S. Harmonized Vital Statistics (HVS) Microdata: Natality, Linked Birth–Infant Death, Fetal Death, and Matched Multiples",
   "version": "1.0.0",
+  "doi": "10.5281/zenodo.20319640",
   "language": "eng",
   "access_right": "open",
   "license": "cc-by-4.0",
