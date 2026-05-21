@@ -57,17 +57,10 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = REPO_ROOT / "notebooks" / "education_gradient.ipynb"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, paths_setup_source  # noqa: E402
 
-NATALITY_PARQUET = (
-    "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/"
-    "natality_v2_harmonized_derived.parquet"
-)
-LINKED_PARQUET = (
-    "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/"
-    "natality_v3_linked_harmonized_derived.parquet"
-)
+OUTPUT = REPO_ROOT / "notebooks" / "education_gradient.ipynb"
 
 
 def md(text: str) -> nbformat.NotebookNode:
@@ -144,10 +137,8 @@ def build() -> nbformat.NotebookNode:
             "import pandas as pd\n"
             "import numpy as np\n"
             "import matplotlib.pyplot as plt\n"
-            "\n"
-            "NAT = '/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet'\n"
-            "LINKED = '/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet'\n"
-            "\n"
+            + paths_setup_source(marker="README.md", nat=True, linked=True, nat_linked_aliases=True)
+            + "\n"
             "nat = pd.read_parquet(NAT, columns=[\n"
             "    'data_year', 'residence_status', 'certificate_revision',\n"
             "    'maternal_education_cat4', 'preterm_recode3'\n"

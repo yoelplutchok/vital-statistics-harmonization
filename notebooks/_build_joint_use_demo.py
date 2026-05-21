@@ -43,13 +43,10 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = REPO_ROOT / "notebooks" / "joint_use_demo.ipynb"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, parquet_basename_status, paths_setup_source  # noqa: E402
 
-NAT_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet"
-LINKED_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet"
-FD_PARQUET = "/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet"  # v2.4.0 (post-C8.2)
-STRAT_CSV = REPO_ROOT / "fetal_death" / "stratified_denominators.csv"
+OUTPUT = REPO_ROOT / "notebooks" / "joint_use_demo.ipynb"
 
 
 def md(text: str) -> nbformat.NotebookNode:
@@ -108,19 +105,17 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "import pandas as pd\n"
-            "import sys\n"
-            "from pathlib import Path\n"
+            + paths_setup_source(
+                marker="shared/helpers/canonical_join_keys.py",
+                sys_path=True,
+                nat=True,
+                linked=True,
+                fd=True,
+                strat=True,
+            )
+            + "from shared.helpers.canonical_join_keys import to_canonical_natality, NATALITY_TO_CANONICAL\n"
             "\n"
-            "# Add repo root to sys.path so we can import the cross-product helper\n"
-            "REPO_ROOT = Path.cwd()\n"
-            "while not (REPO_ROOT / 'shared' / 'helpers' / 'canonical_join_keys.py').exists():\n"
-            "    if REPO_ROOT == REPO_ROOT.parent:\n"
-            "        raise RuntimeError('Run this notebook from the vital-statistics-harmonization repo root.')\n"
-            "    REPO_ROOT = REPO_ROOT.parent\n"
-            "sys.path.insert(0, str(REPO_ROOT))\n"
-            "from shared.helpers.canonical_join_keys import to_canonical_natality, NATALITY_TO_CANONICAL\n"
-            "\n"
-            "print(f'Repo root: {REPO_ROOT}')"
+            f"print({parquet_basename_status(nat=True, linked=True, fd=True)!r})"
         ),
         md(
             "## Section 0 — Load all three parquets, apply each canonical filter\n"
@@ -132,7 +127,6 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "# --- Natality (v2.8.0 harmonized + derived) ---\n"
-            f"NAT_PARQUET = '{NAT_PARQUET}'\n"
             "nat = pd.read_parquet(NAT_PARQUET, columns=['data_year', 'residence_status', 'maternal_age', 'maternal_race_bridged'])\n"
             "nat = to_canonical_natality(nat)\n"
             "nat_resident = nat[nat['residence_status'] != 4]\n"
@@ -141,7 +135,6 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "# --- Linked birth–infant death (v3, cohort-linked) ---\n"
-            f"LINKED_PARQUET = '{LINKED_PARQUET}'\n"
             "linked = pd.read_parquet(LINKED_PARQUET, columns=['data_year', 'residence_status'])\n"
             "linked_resident = linked[linked['residence_status'] != 4]\n"
             "print(f'Linked total: {len(linked):,}; resident: {len(linked_resident):,}')\n"
@@ -149,7 +142,6 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "# --- Fetal death (v2.4.0 derived, 43 yrs 1982-2024, H8 reconciled to nullable Int) ---\n"
-            f"FD_PARQUET = '{FD_PARQUET}'\n"
             "fd = pd.read_parquet(\n"
             "    FD_PARQUET,\n"
             "    columns=['data_year', 'tabulation_flag', 'residence_status', 'maternal_age',\n"
@@ -388,7 +380,6 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "# --- Denominator path (a): from the pre-built stratified denominators CSV ---\n"
-            f"STRAT_CSV = '{STRAT_CSV}'\n"
             "denom = pd.read_csv(STRAT_CSV)\n"
             "lb_by_race_csv = (\n"
             "    denom[denom['data_year'] == 2017]\n"

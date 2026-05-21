@@ -15,8 +15,8 @@ NOTE: The residents-only convenience parquet drops `restatus` after
 filtering. To keep the residence filter audit-explicit in this script,
 the full harmonized parquet is the canonical input.
 
-Year scope: 1992-2002 + 2005-2022 (29 joint-coverage years between
-natality 1990-2024 and fetal-death 1992-2022 excl. 2003-2004).
+Year scope: 1992-2002 + 2005-2024 (31 joint-coverage years between
+natality 1968-2024 and fetal-death 1982-2024 excl. 2003-2004).
 
 Bridged-race coverage gap: rows for 2018-2022 have
 `maternal_race_bridged = NaN` because NCHS dropped MBRACE from the public-
@@ -48,14 +48,22 @@ from shared.helpers.canonical_join_keys import (
     to_canonical_natality,
 )
 
-JOINT_COVERAGE_YEARS: list[int] = list(range(1992, 2003)) + list(range(2005, 2023))
+JOINT_COVERAGE_YEARS: list[int] = list(range(1992, 2003)) + list(range(2005, 2025))
 
-NATALITY_READ_COLUMNS: list[str] = [
+# v2.8.0+ natality parquets ship canonical names; v2.7.0 Zenodo used legacy names.
+NATALITY_READ_COLUMNS_LEGACY: list[str] = [
     "year",
     "restatus",
     "maternal_age",
     "maternal_race_bridged4",
     "maternal_hispanic_origin",
+]
+NATALITY_READ_COLUMNS_CANONICAL: list[str] = [
+    "data_year",
+    "residence_status",
+    "maternal_age",
+    "maternal_race_bridged",
+    "hispanic_origin",
 ]
 
 GROUPBY_COLUMNS: list[str] = [
@@ -90,6 +98,8 @@ def build(df_natality: pd.DataFrame) -> pd.DataFrame:
         .size()
         .reset_index(name="live_births")
     )
+    grouped["maternal_race_bridged"] = grouped["maternal_race_bridged"].astype("Int8")
+    grouped["hispanic_origin"] = grouped["hispanic_origin"].astype("Int8")
     return grouped.sort_values(GROUPBY_COLUMNS, na_position="last").reset_index(drop=True)
 
 
@@ -129,19 +139,35 @@ def main() -> None:
                 f"--natality-parquet required for tier {args.tier} and must exist; "
                 f"got {args.natality_parquet}"
             )
-        df = pd.read_parquet(args.natality_parquet, columns=NATALITY_READ_COLUMNS)
+        import pyarrow.parquet as pq
+
+        schema_names = set(pq.read_schema(args.natality_parquet).names)
+        cols = (
+            NATALITY_READ_COLUMNS_CANONICAL
+            if "data_year" in schema_names
+            else NATALITY_READ_COLUMNS_LEGACY
+        )
+        df = pd.read_parquet(args.natality_parquet, columns=cols)
+        if args.tier == "full":
+            year_col = "data_year" if "data_year" in df.columns else "year"
+            df = df[df[year_col].isin(JOINT_COVERAGE_YEARS)]
+        year_col = "data_year" if "data_year" in df.columns else "year"
         if args.tier == "1":
-            df = df[df["year"] == 2022].head(100)
+            df = df[df[year_col] == 2022].head(100)
         elif args.tier == "2":
-            df = df[df["year"] == 2022]
-        else:
-            df = df[df["year"].isin(JOINT_COVERAGE_YEARS)]
+            df = df[df[year_col] == 2022]
 
     result = build(df)
     sha = write_csv_deterministic(result, args.output)
 
     print(f"tier={args.tier}")
-    print(f"input_rows_after_filter={len(df[df['restatus'] != 4]) if 'restatus' in df.columns else 'n/a'}")
+    res_col = (
+        "residence_status"
+        if "residence_status" in df.columns
+        else ("restatus" if "restatus" in df.columns else None)
+    )
+    n_res = len(df[df[res_col] != 4]) if res_col else "n/a"
+    print(f"input_rows_after_filter={n_res}")
     print(f"output_rows={len(result)}")
     print(f"output_path={args.output}")
     print(f"output_sha256={sha}")

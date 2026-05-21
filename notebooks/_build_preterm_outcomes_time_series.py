@@ -58,21 +58,10 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = REPO_ROOT / "notebooks" / "preterm_outcomes_time_series.ipynb"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, paths_setup_source  # noqa: E402
 
-NAT_PARQUET = (
-    "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/"
-    "natality_v2_harmonized_derived.parquet"
-)
-LINKED_PARQUET = (
-    "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/"
-    "natality_v3_linked_harmonized_derived.parquet"
-)
-FD_PARQUET = (
-    "/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/"
-    "fetal_death_derived.parquet"
-)
+OUTPUT = REPO_ROOT / "notebooks" / "preterm_outcomes_time_series.ipynb"
 NAT_VALIDATION_CSV = REPO_ROOT / "natality" / "metadata" / "external_validation_targets_v1.csv"
 FD_VALIDATION_CSV = REPO_ROOT / "fetal_death" / "external_validation_targets.csv"
 
@@ -133,25 +122,14 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "import pandas as pd\n"
-            "import sys\n"
-            "from pathlib import Path\n"
-            "\n"
-            "# Locate repo root for the validation CSVs\n"
-            "REPO_ROOT = Path.cwd()\n"
-            "while not (REPO_ROOT / 'natality' / 'metadata' / 'external_validation_targets_v1.csv').exists():\n"
-            "    if REPO_ROOT == REPO_ROOT.parent:\n"
-            "        raise RuntimeError('Run this notebook from the vital-statistics-harmonization repo root.')\n"
-            "    REPO_ROOT = REPO_ROOT.parent\n"
-            "\n"
-            f"NAT_PARQUET = '{NAT_PARQUET}'\n"
-            f"LINKED_PARQUET = '{LINKED_PARQUET}'\n"
-            f"FD_PARQUET = '{FD_PARQUET}'\n"
-            "NAT_VALIDATION_CSV = REPO_ROOT / 'natality' / 'metadata' / 'external_validation_targets_v1.csv'\n"
-            "FD_VALIDATION_CSV = REPO_ROOT / 'fetal_death' / 'external_validation_targets.csv'\n"
-            "print(f'Repo root: {REPO_ROOT}')\n"
-            "print(f'Natality parquet:  {NAT_PARQUET}')\n"
-            "print(f'Linked parquet:    {LINKED_PARQUET}')\n"
-            "print(f'Fetal-death parquet: {FD_PARQUET}')"
+            + paths_setup_source(
+                marker="natality/metadata/external_validation_targets_v1.csv",
+                nat=True,
+                linked=True,
+                fd=True,
+            )
+            + "NAT_VALIDATION_CSV = REPO_ROOT / 'natality' / 'metadata' / 'external_validation_targets_v1.csv'\n"
+            + "FD_VALIDATION_CSV = REPO_ROOT / 'fetal_death' / 'external_validation_targets.csv'\n"
         ),
         code(
             "# Load only the columns each section needs (small projection of each parquet)\n"

@@ -38,10 +38,10 @@ HARMONIZED_DIR = MONOREPO_ROOT / "output/harmonized"
 V2_YEARS = list(range(1992, 2003))         # 1989-revision uniform
 V1_PRE_COD_YEARS = list(range(2005, 2014)) # mixed A/S, no COD
 V1_COD_YEARS = list(range(2014, 2023))     # COD variant
-ALL_YEARS = V2_YEARS + V1_PRE_COD_YEARS + V1_COD_YEARS  # 29 years; 2003-2004 deferred
-# NOTE: ALL_YEARS=29 is stale vs the current v2.4.0 envelope (43 years incl.
-# V3a 1989-1991 + V3b 1982-1988 shipped 2026-05-12). C8.7a (path-drift audit)
-# defers ALL_YEARS extension to C8.7b (monorepo-root orchestrator authoring).
+ALL_YEARS = V2_YEARS + V1_PRE_COD_YEARS + V1_COD_YEARS  # 29 years (1992-2022 excl. 2003-2004)
+# NOTE: This orchestrator does NOT drive the shipped v2.4.0 envelope (43 years:
+# V3b 1982-1988 + V3a 1989-1991 + V2.1 2003-2004 + 2023-2024). Extend via C8.7b
+# monorepo-root orchestrator or per-era scripts under scripts/01_import–05_validate.
 
 
 def _zip_path(year: int) -> Path:

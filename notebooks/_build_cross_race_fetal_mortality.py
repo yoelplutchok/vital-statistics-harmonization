@@ -88,17 +88,10 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = REPO_ROOT / "notebooks" / "cross_race_fetal_mortality.ipynb"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, paths_setup_source  # noqa: E402
 
-FD_PARQUET = (
-    "/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/"
-    "fetal_death_derived.parquet"
-)
-NAT_PARQUET = (
-    "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/"
-    "natality_v2_harmonized_derived.parquet"
-)
+OUTPUT = REPO_ROOT / "notebooks" / "cross_race_fetal_mortality.ipynb"
 
 
 def md(text: str) -> nbformat.NotebookNode:
@@ -178,13 +171,7 @@ def build() -> nbformat.NotebookNode:
         code(
             "import pandas as pd\n"
             "import numpy as np\n"
-            "from pathlib import Path\n"
-            "\n"
-            f"FD_PARQUET = '{FD_PARQUET}'\n"
-            f"NAT_PARQUET = '{NAT_PARQUET}'\n"
-            "\n"
-            "print(f'FD parquet:  {FD_PARQUET}')\n"
-            "print(f'NAT parquet: {NAT_PARQUET}')"
+            + paths_setup_source(marker="README.md", nat=True, fd=True)
         ),
         code(
             "# Load FD (small projection from the 89-column parquet)\n"

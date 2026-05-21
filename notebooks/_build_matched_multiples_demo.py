@@ -24,12 +24,12 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, paths_setup_source  # noqa: E402
+
 OUTPUT = REPO_ROOT / "notebooks" / "matched_multiples_demo.ipynb"
-HARMONIZED_PARQUET = (
-    REPO_ROOT / "matched_multiples" / "output" / "harmonized" /
-    "matched_multiples_harmonized.parquet"
-)
 
 
 def md(text: str) -> nbformat.NotebookNode:
@@ -78,10 +78,8 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "import pandas as pd\n"
-            "from pathlib import Path\n"
-            "\n"
-            f"PARQUET = Path('{HARMONIZED_PARQUET}')\n"
-            "df = pd.read_parquet(PARQUET)\n"
+            + paths_setup_source(marker="README.md", mm=True)
+            + "df = pd.read_parquet(PARQUET)\n"
             "print(f'rows: {len(df):,}')\n"
             "print(f'cols: {df.shape[1]}')\n"
             "print()\n"

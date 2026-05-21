@@ -356,7 +356,7 @@ _No documented sentinel candidate or null/blank observed in any era._
 
 ### `data_year` <a id="c820-fetal_death-data_year"></a>
 
-_Schema note:_ 1982-2024 — Convenience int32 sibling of `delivery_year`. Always equal to `int(delivery_year)` for every row (verified 2,427,233/2,427,233 in v2.4.0). This is the recommended filter/join key for cross-year analyses (e.g., `df[df['data_year…
+_Schema note:_ 1982-2024 — Convenience int32 sibling of `delivery_year`. Always equal to `int(delivery_year)` for every row (verified 2,427,233/2,427,233 in v2.4.0). Recommended filter/join key for cross-year analyses. Includes V2.1 transition years 20…
 
 **(i) Historical-value distribution (per era)**
 

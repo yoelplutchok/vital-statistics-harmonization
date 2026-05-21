@@ -38,9 +38,28 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-24, post-audit-fix-r1r2-bundle + Phase-D-sequencing plan-update)
+## Current planned sequence (as of 2026-05-21, post D-prep.6–9 + audit-fix-r4 + user Phase-D scope trim)
 
-**Latest plan-update (2026-05-20).** Phase D-prep **core block D-prep.1–5 is COMPLETE** (v2.4.0 doc sync, PROVENANCE, schema gaps, round-3 audit, Tier A audit-fix at `0a5d122`). **Next agent-executable work** is the **Phase D-prep follow-up block D-prep.6–9** (user-authorized 2026-05-20): build-host gate-SHA verify, full C8.20 CODEBOOK appendix regen, convenience CSV extension through 2024, notebook portable paths — then **Phase D** (D.1–D.4; each step explicitly human-gated). `/ultrareview` in Cursor chat is **not** a magic command; use explicit audit-session wording in KICKOFF or a post–D-prep.9 fresh-eyes round if desired. After D.4, **Phase E** = companion paper via fresh chats + `NEXT_STEPS.md` §19.
+**Latest plan-update (2026-05-21).** **Phase D-prep is CLOSED** (D-prep.1–9 + `pre-zenodo-audit-fix-bundle-r4`). Gate parquets on the build host verified **4/4 PASS** (2026-05-21; see `STATUS.md` newest section).
+
+**When you paste this kickoff in a fresh chat, the default work queue is:**
+
+| Order | Step | What it is | Who does it |
+|---|---|---|---|
+| **1** | **D.2** | **Unified Zenodo deposit** — new concept DOI for the full HVS resource (four products). Package gate parquets from build host; upload at zenodo.org. Update `CITATION.cff` + `README.md` with the new DOI after publish. | Agent prepares metadata/zip checklist; **human uploads** in Zenodo UI |
+| **2** | **D.3** | **Refresh public GitHub** (same repo, not a new repo): https://github.com/yoelplutchok/vital-statistics-harmonization — re-rsync dev monorepo → `~/Desktop/vital-statistics-harmonization-public/`, scrub internal files, push to overwrite stale **v1.0** (2026-05-12). | Agent prepares rsync/scrub; **human pushes** if needed |
+| **3** | **D.4 / Paper 1** | **Data Resource Profile** — `paper/draft_v2_hmd_styled.md`: numeric pass vs current envelope, IJE word limit, admin sections, inject Zenodo DOI + GitHub URL from steps 1–2. Use `NEXT_STEPS.md` **§19.1** for a fresh-chat polish prompt. Submit when ready. | Agent + human; fresh chat OK for §19.1 |
+
+**Explicitly DEFERRED (user 2026-05-21 — handle later, no agent work unless re-authorized):**
+
+- **D.1** — redirect notices / archive / delete on the two **old** GitHub repos (`natality-harmonization`, `fetal-death-harmonization`)
+- **D.2 legacy patches** — description-only updates on old Zenodo concept DOIs `10.5281/zenodo.19363074` and `10.5281/zenodo.20031571`
+
+**After D.4 submits:** **Phase E** = companion empirical paper via fresh chats + `NEXT_STEPS.md` §19.2 (not in this monorepo’s default agent scope).
+
+**Build-host note:** Gate parquets are **not** in a typical git clone (gitignored). Paths: `~/Desktop/fetal-death-harmonization-build/output/harmonized/` and `~/Desktop/natality-harmonization/output/harmonized/`. See per-product `PROVENANCE.md`.
+
+**Gate SHA re-hash:** Run **once immediately before** you zip files for Zenodo upload (~1 min). A prior PASS (D-prep.6 or 2026-05-21) proves the build was correct **at that time**; the pre-upload re-hash proves **these are the bytes you publish** (Zenodo is immutable per §9-#15). If you never re-ran pipelines between checks, the hash will match and the step is trivial.
 
 **Historical context (the 2026-05-12 directive that drove Phases B + C):**
 
@@ -263,18 +282,21 @@ Authorized 2026-05-24 by user directive (above). Each task below uses the full `
 
 - **D-prep.9** — `notebook-portable-paths` (PZ-NB) [~0.5–1 session] Regenerate or patch `notebooks/joint_use_demo.ipynb`, `notebooks/paper_companion.ipynb`, `notebooks/matched_multiples_demo.ipynb`, and `notebooks/_build_*.py` to use `REPO_ROOT`-relative paths (`natality/output/harmonized/`, `fetal_death/output/harmonized/`, `matched_multiples/output/harmonized/`). Fix `natality/notebooks/quickstart.ipynb` `data_year` + 201M copy. Re-execute notebooks on build host for VERIFY if parquets present. **Does not require parquet mutation.**
 
-**Sequencing:** D-prep.1–5 (done) → **D-prep.6** → **D-prep.7** → **D-prep.8** → **D-prep.9** (7 and 8 need build host; 9 can start path-only in Cursor) → optional post-fix audit session → **Phase D** (per-step human go-ahead).
+**Sequencing:** D-prep.1–9 + post-fix audits + `pre-zenodo-audit-fix-bundle-r4` (**done**) → **Phase D: D.2 → D.3 → D.4** (D.1 + old-Zenodo patches **deferred**). Paper 1 work may start in parallel with D.2 prep but should cite the **new** Zenodo DOI only after D.2 publishes.
 
 **Sequencing within Phase D-prep (historical):** D-prep.1 → (D-prep.2 + D-prep.3 may parallelize) → D-prep.4 → D-prep.5 (conditional). D-prep.4 must run AFTER D-prep.1.
 
-### Phase D — PRE-PAPER POLISH + ZENODO + SUBMIT (after Phase D-prep **and D-prep.6–9** complete; each step gated on explicit per-step human go-ahead)
+### Phase D — ZENODO + PUBLIC GITHUB + PAPER 1 (after Phase D-prep complete; user-trimmed scope 2026-05-21)
 
-**Externally irreversible.** D.1 modifies the two old public GitHub repos; D.2 creates a permanent Zenodo DOI (§9-#15: never modify published deposits); D.3 pushes the public v1.x repo; D.4 submits the manuscript to IJE. **Each D.1-D.4 step requires explicit human go-ahead at session start, surfaced via the (a)-(d) kickoff handshake.** Standing authorization for Phase D-prep does NOT extend to Phase D. Sequence preserved from the original 2026-05-12 plan; timing pushed to after Phase D-prep ships.
+**Externally irreversible:** D.2 (Zenodo publish) and D.3 (public GitHub push). **Default sequence: D.2 → D.3 → D.4 (Paper 1).** Each step still needs explicit human go-ahead at session start (§7); standing D-prep authorization does **not** auto-run Phase D.
 
-- **D.1. Task 9** — redirect notices on the two old GitHub repos (`yoelplutchok/natality-harmonization`, `yoelplutchok/fetal-death-harmonization`). Notice text proposed in STATUS 2026-05-12T18:45Z Q30. ~15-30 min, human-driven.
-- **D.2. Task 10** — Unified Zenodo deposit + version patches: (i) new unified HVS concept DOI; (ii) v2.3.0 (or whatever Phase B/C bumps it to) patch to fetal-death concept DOI 10.5281/zenodo.20031571; (iii) v2.8.0 (or later) patch to natality concept DOI 10.5281/zenodo.19363074; (iv) description-only redirect notes on both old deposits pointing to (i). Includes PROVENANCE.md refresh + schema-CSV `years_available` retroactive V3a/V2.1 gap fix. 1 session + Zenodo upload time.
-- **D.3. KICKOFF step 5** — Sync monorepo to public staging dir + push v1.x to GitHub. Re-rsync `~/Desktop/vital-statistics-harmonization-public/`, re-scrub (same exclude list + LLM-mention scrub edits as 2026-05-12 v1.0 push). Excludes: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `RECEIPTS/`, `.claude/`, `paper/`, `notebooks/_build_*.py`, `EXPLORATION_REPORT.md`. Commit + push to overwrite v1.0.
-- **D.4. KICKOFF step 6 — Manuscript re-pass + submit** (~½ session). Update all numerics affected by Phase B/C work (record counts, coverage windows, validation counts). Inject unified HVS concept DOI + public GitHub URL. Resolve the three `<!-- YP: review -->` admin-section markers (Author contributions, AI-tool disclosure, Funding) — these stay in the published manuscript per journal AI-disclosure requirements but were excluded from the public repo at v1.0 push. Reformat references to IJE style. Submit.
+- **D.1. Task 9 — DEFERRED** (user 2026-05-21). Redirect/archive/delete on old repos `yoelplutchok/natality-harmonization` and `yoelplutchok/fetal-death-harmonization`. Optional later; not blocking Zenodo or Paper 1.
+
+- **D.2. Task 10 — Unified Zenodo deposit (NEXT).** Publish a **new** unified HVS concept DOI covering all four in-repo products (natality v3.0.0, linked v4.0.0, fetal death v2.4.0, matched multiples). Agent: `.zenodo.json`, upload bundle list from `PROVENANCE.md`, post-publish `CITATION.cff` / `README.md` DOI lines. **Human:** zenodo.org upload. **Legacy patches (ii–iv)** to old concept DOIs — **DEFERRED** per user 2026-05-21. PRE-FLIGHT: re-hash 4 gate parquets on the **exact files** going into the zip (see “Gate SHA re-hash” in Current planned sequence).
+
+- **D.3. KICKOFF step 5 — Refresh existing public GitHub (not “create repo”).** Repo already exists: https://github.com/yoelplutchok/vital-statistics-harmonization (v1.0 snapshot 2026-05-12 is stale). Re-rsync `~/Desktop/vital-statistics-harmonization-public/`, re-scrub, push v1.x to **overwrite** v1.0. Excludes: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `RECEIPTS/`, `.claude/`, `paper/`, `notebooks/_build_*.py`, `EXPLORATION_REPORT.md`, `AUDITS/`. Data files: point README to Zenodo (parquets too large for git).
+
+- **D.4. Paper 1 — Data Resource Profile** (`paper/draft_v2_hmd_styled.md`). Numeric + envelope sync; IJE trim; admin markers; cite new Zenodo + GitHub from D.2–D.3. Fresh-chat helper: `NEXT_STEPS.md` §19.1. Submit to IJE when human says go.
 
 **Always-on guardrails for Phase C / D execution**:
 
@@ -331,12 +353,33 @@ BEFORE doing ANY work, read these files in this exact order:
 
 5. LESSONS.md end-to-end (if it has entries).
 
-Also consult the "Current planned sequence" block in KICKOFF.md
-(outside this pasted prompt) — it overrides STATUS.md's "Next planned
-task" field with the human's chosen task ordering for the current
-pre-submission window. If the kickoff sequence and STATUS.md disagree,
-the kickoff sequence wins for task selection; STATUS.md remains
-authoritative for current-state facts.
+CURRENT WORK QUEUE (2026-05-21 — overrides STATUS.md "Next planned task"
+for task selection; STATUS.md remains authoritative for facts):
+
+  Phase D-prep is CLOSED. Default sequence unless I direct otherwise:
+
+  (1) D.2 — NEW unified Zenodo deposit (four products; agent prepares
+      .zenodo.json + upload bundle; I upload at zenodo.org; then update
+      CITATION.cff + README with new DOI).
+
+  (2) D.3 — REFRESH public GitHub (same repo — NOT a new repo):
+      github.com/yoelplutchok/vital-statistics-harmonization
+      (overwrite stale v1.0 from 2026-05-12). Rsync to
+      ~/Desktop/vital-statistics-harmonization-public/, scrub internals,
+      push. Parquets stay on Zenodo, not git.
+
+  (3) D.4 / Paper 1 — paper/draft_v2_hmd_styled.md (numeric + IJE prep;
+      cite Zenodo DOI from (1) and GitHub from (2); NEXT_STEPS.md §19.1
+      for polish prompt).
+
+  DEFERRED unless I re-authorize: D.1 old-repo redirects; legacy Zenodo
+  description patches on 10.5281/zenodo.19363074 and 10.5281/zenodo.20031571.
+
+  Gate parquets: NOT in git clone (gitignored). Build-host paths in
+  fetal_death/PROVENANCE.md and natality/PROVENANCE.md. Before D.2 zip:
+  re-hash the 4 gate files you are publishing (~1 min) — prior PASS only
+  proves correctness at that earlier time; pre-upload hash anchors the
+  immutable Zenodo bytes (§9-#15).
 
 After reading, tell me in 4-6 sentences:
   (a) the current task per STATUS.md AND the next task per KICKOFF.md's

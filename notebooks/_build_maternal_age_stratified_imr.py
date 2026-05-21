@@ -57,13 +57,10 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = REPO_ROOT / "notebooks" / "maternal_age_stratified_imr.ipynb"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, paths_setup_source  # noqa: E402
 
-LINKED_PARQUET = (
-    "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/"
-    "natality_v3_linked_harmonized_derived.parquet"
-)
+OUTPUT = REPO_ROOT / "notebooks" / "maternal_age_stratified_imr.ipynb"
 VALIDATION_CSV = REPO_ROOT / "natality" / "metadata" / "external_validation_targets_v3_linked.csv"
 
 
@@ -122,20 +119,11 @@ def build() -> nbformat.NotebookNode:
         ),
         code(
             "import pandas as pd\n"
-            "import sys\n"
-            "from pathlib import Path\n"
-            "\n"
-            "# Locate repo root for the validation CSV path\n"
-            "REPO_ROOT = Path.cwd()\n"
-            "while not (REPO_ROOT / 'natality' / 'metadata' / 'external_validation_targets_v3_linked.csv').exists():\n"
-            "    if REPO_ROOT == REPO_ROOT.parent:\n"
-            "        raise RuntimeError('Run this notebook from the vital-statistics-harmonization repo root.')\n"
-            "    REPO_ROOT = REPO_ROOT.parent\n"
-            "\n"
-            f"LINKED_PARQUET = '{LINKED_PARQUET}'\n"
-            "VALIDATION_CSV = REPO_ROOT / 'natality' / 'metadata' / 'external_validation_targets_v3_linked.csv'\n"
-            "print(f'Repo root: {REPO_ROOT}')\n"
-            "print(f'Linked parquet: {LINKED_PARQUET}')"
+            + paths_setup_source(
+                marker="natality/metadata/external_validation_targets_v3_linked.csv",
+                linked=True,
+            )
+            + "VALIDATION_CSV = REPO_ROOT / 'natality' / 'metadata' / 'external_validation_targets_v3_linked.csv'\n"
         ),
         code(
             "# Load only the columns this notebook needs (small projection of the 94-column parquet)\n"

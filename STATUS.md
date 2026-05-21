@@ -1,6 +1,118 @@
-# STATUS — last updated 2026-05-20T14:00:00Z
+# STATUS — last updated 2026-05-21T12:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T12:00:00Z — **`[plan-update]` Phase-D scope trim — KICKOFF default queue: D.2 Zenodo → D.3 GitHub refresh → D.4 Paper 1; D.1 + old Zenodo patches deferred.**
+
+User directive: ignore old GitHub/Zenodo cleanup for now; prioritize **new unified Zenodo**, **refresh** (not create) public monorepo GitHub, then **Paper 1**. `KICKOFF.md` “Current planned sequence” updated so paste-kickoff fresh chats land on this queue.
+
+### Next planned task (kickoff sequence wins)
+
+1. **D.2** — unified Zenodo deposit (agent prep; human upload)
+2. **D.3** — push refreshed tree to `yoelplutchok/vital-statistics-harmonization` (overwrite v1.0)
+3. **D.4** — Paper 1 (`paper/draft_v2_hmd_styled.md`; §19.1 fresh-chat prompt OK)
+
+**Deferred:** D.1 old-repo notices; legacy Zenodo description patches.
+
+### Gate SHAs (verified 2026-05-21 on build host)
+
+`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…` — re-hash again **only** on the exact files zipped for Zenodo upload.
+
+### Open questions for human
+
+- Uncommitted `pre-zenodo-audit-fix-bundle-r4` + KICKOFF/STATUS edits — commit when ready.
+
+---
+
+## 2026-05-21T00:45:00Z — **pre-zenodo-audit-fix-bundle-r4 COMPLETE — round-4 Tier A doc propagation (A1-001–A1-009); PZ-01/02/09/10/11 closed.**
+
+### What shipped
+
+Closed **7 Tier A + 2 extra** findings from `AUDITS/CONSOLIDATED_POST_DPREP9_2026-05-21T00-21-08Z.md`: VERSION_ROADMAP, COMPARABILITY, JOINT_USE L22, `quickstart.py`, PROJECT_STRUCTURE fetal §, `paper_companion` C37 (regenerated), join-parity test docstrings, PAPER2 prompt, `run_pipeline.py` comment.
+
+**A1-006 refinement:** C42 “26 years” left unchanged (NVSR rate-target row count); C37 LBY window updated to 2005–2024.
+
+### Verify
+
+- `pytest tests/test_cross_product_join_parity.py` → 13 passed
+- `notebooks/_build_paper_companion.py` → notebook regenerated + executed
+- Receipt: `RECEIPTS/pre-zenodo-audit-fix-bundle-r4_2026-05-21T00-45-00Z.md`
+- Task spec: `AUDITS/pre-zenodo-audit-fix-bundle-r4_TASK_SPEC.md`
+
+### Next planned task
+
+**Phase D.1** (repo redirect notices) on explicit human go-ahead. Re-hash 4 gate SHAs before D.2 Zenodo.
+
+### Open questions for human
+
+- Commit/tag this bundle?
+- Refresh 2003–2004 in `live_births_by_year` for NVSR parity (still deferred)?
+
+---
+
+## 2026-05-20T21:30:00Z — **ultrareview-fix-bundle — D-prep.8/9 audit findings remediated (bugs 001, 004, 011, 012, 016).**
+
+### What shipped
+
+| Bug | Fix |
+|---|---|
+| **001** | `notebooks/_paths.py` added (was untracked); all 7 `_build_*.py` import it |
+| **012** | Notebooks emit `_gate_parquet()` setup cells (env → repo-relative → `~/Desktop/…` fallback), not literal paths |
+| **004** | `hispanic_origin` / `maternal_race_bridged` cast to Int8 before CSV write; no more float64 `0.0` |
+| **016** | `JOINT_USE_GUIDE.md` bridged-race null window corrected to **2020–2024** for stratified CSV (2018–2019 populated) |
+| **011** | `natality/notebooks/quickstart.ipynb` titles → 1968–2024; “35-year” → “multi-decade” |
+
+### Verify
+
+- No `NAT_PARQUET = '/Users/...'` literals in any `notebooks/*.ipynb` source cells.
+- `joint_use_demo`, `paper_companion`, `matched_multiples_demo` re-executed successfully.
+- `preterm`, `cross_race`, `education`, `maternal_age` notebooks: **source regenerated** (execute still fails on pre-existing assertion drift in preterm/cross_race — not introduced this pass).
+- `test_stratified_denominators_per_year_matches_natality`: PASS.
+
+### Next planned task
+
+Unchanged: optional audit → Phase D.1 on human go-ahead.
+
+---
+
+## 2026-05-20T20:00:00Z — **D-prep.6–9 COMPLETE — gate SHAs verified; C8.20 appendix regen; convenience CSVs through 2024; notebook path portability.**
+
+### Current phase
+
+**Phase D-prep follow-ups CLOSED.** Ready for optional post-fix audit, then **Phase D** (D.1–D.4; each step needs explicit human go-ahead).
+
+### Last completed step
+
+`notebook-portable-paths` (D-prep.9). Receipts under `RECEIPTS/build-host-gate-sha-verify_*`, `codebook-c820-appendix-regen_*`, `convenience-csv-extend-2023-2024_*`, `notebook-portable-paths_*`.
+
+### Completed this session
+
+| Task | Result |
+|---|---|
+| **D-prep.6** | 4/4 gate parquet SHAs byte-exact vs PROVENANCE |
+| **D-prep.7** | C8.20 appendix regen; gate SHAs unchanged |
+| **D-prep.8** | `live_births_by_year.csv` + `stratified_denominators.csv` through **2024**; JOINT_USE_GUIDE updated |
+| **D-prep.9** | `notebooks/_paths.py` + `_build_*.py`; 3 kickoff notebooks re-executed; `quickstart.ipynb` 201M/`data_year` fix |
+
+### Gate SHAs (unchanged throughout)
+
+`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`
+
+### Next planned task
+
+Optional fresh-eyes audit (user `/ultrareview` or agent round) → **Phase D.1** redirect notices when you say go.
+
+### Open questions for human
+
+- Replace 2024 `live_births_by_year` source with NVSR final when published (currently natality-canonical).
+- Refresh 2003–2004 in `live_births_by_year` if you want NVSR parity for those gap years (deferred this session).
+
+### Forward-looking HALTs
+
+1. Any gate SHA mismatch before Zenodo → §7 halt.
+2. Phase D external steps require per-step authorization.
 
 ---
 

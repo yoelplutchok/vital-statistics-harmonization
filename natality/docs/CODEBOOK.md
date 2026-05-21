@@ -182,7 +182,7 @@ Plus birth-side derived columns: `gestational_age_weeks_clean`, `birthweight_gra
 
 ### `data_year` <a id="c820-natality-data_year"></a>
 
-_Schema note:_ 1990-2024
+_Schema note:_ 1968-2024
 
 **(i) Historical-value distribution (per era)**
 
