@@ -19,7 +19,7 @@ The two shipped product schemas use **different column names** for the same five
 |---|---|---|---|
 | Event year | `data_year` (int16, 1968–2024) | `data_year` (int32, 1982–2024) | **`data_year`** |
 | Maternal age (single year) | `maternal_age` (10–54) | `maternal_age` (10–54; 99 = Unknown sentinel) | **`maternal_age`** |
-| 4-category bridged race | `maternal_race_bridged4` (int8, 1–4; **null 2020–2024** — NCHS dropped MBRACE) | `maternal_race_bridged` (int, 1–4; **null 2018–2022**) | **`maternal_race_bridged`** |
+| 4-category bridged race | `maternal_race_bridged4` (int8, 1–4; **null 2020–2024** — NCHS dropped MBRACE) | `maternal_race_bridged` (int, 1–4; **null 2018–2024** in harmonized parquet) | **`maternal_race_bridged`** |
 | Hispanic origin recode | `maternal_hispanic_origin` (int8, 0\|1\|2\|3\|4\|5\|9) | `hispanic_origin` (int, 0–9) | **`hispanic_origin`** |
 | Residence status | `restatus` (int8, 1\|2\|3\|4) | `residence_status` (int, 1–4) | **`residence_status`** |
 
@@ -56,23 +56,23 @@ Applying the filter is the difference between reproducing NCHS's published per-y
 
 ## Convenience denominators: pick the right file
 
-For unstratified rates → [`fetal_death/live_births_by_year.csv`](../fetal_death/live_births_by_year.csv). Lightweight, NVSR-as-published, **26 years (1995–2002 + 2005–2022)** — the file has not been extended to 2023–2024; for those years recompute denominators from the natality parquet (Option B below) or wait for a convenience-CSV refresh. Use when you do not need demographic strata.
+For unstratified rates → [`fetal_death/live_births_by_year.csv`](../fetal_death/live_births_by_year.csv). Lightweight, NVSR-as-published for 1995–2023; **2024** is the HVS natality canonical resident count (NVSR final not yet published). **28 years (1995–2002 + 2005–2024)**. Use when you do not need demographic strata.
 
-For stratified rates → [`fetal_death/stratified_denominators.csv`](../fetal_death/stratified_denominators.csv) (built by [`shared/helpers/build_stratified_denominators.py`](../shared/helpers/build_stratified_denominators.py)). Long format, one row per (`data_year`, `maternal_age_band`, `maternal_race_bridged`, `hispanic_origin`) cell with a `live_births` column. **4,906 cells across 29 years (1992–2002 + 2005–2022)** — same 2022 cap as `live_births_by_year.csv`; fetal-death numerators through 2024 require Option B denominators for 2023–2024.
+For stratified rates → [`fetal_death/stratified_denominators.csv`](../fetal_death/stratified_denominators.csv) (built by [`shared/helpers/build_stratified_denominators.py`](../shared/helpers/build_stratified_denominators.py)). Long format, one row per (`data_year`, `maternal_age_band`, `maternal_race_bridged`, `hispanic_origin`) cell with a `live_births` column. **4,990 cells across 31 years (1992–2002 + 2005–2024)**; **2020–2024** rows have `maternal_race_bridged = NaN` (natality dropped MBRACE from public-use files in 2020+). 2018–2019 retain bridged race in this CSV.
 
 Schema:
 
 | Column | Type | Domain |
 |---|---|---|
-| `data_year` | int | 1992–2002, 2005–2022 (29 years in the shipped CSV) |
+| `data_year` | int | 1992–2002, 2005–2024 (31 years in the shipped CSV) |
 | `maternal_age_band` | str | `<20`, `20-24`, `25-29`, `30-34`, `35-39`, `40+`; null when single-year age is the NCHS sentinel 99 |
-| `maternal_race_bridged` | int (nullable) | 1=White, 2=Black, 3=AIAN, 4=Asian/PI; **null for 2018–2022** (NCHS source) |
-| `hispanic_origin` | int | 0=non-Hispanic, 1=Mexican, 2=PR, 3=Cuban, 4=Central/South American, 5=Other Hispanic, 9=Unknown |
+| `maternal_race_bridged` | int (nullable) | 1=White, 2=Black, 3=AIAN, 4=Asian/PI; **null for 2020–2024** (natality MBRACE dropped 2020+) |
+| `hispanic_origin` | int8 | 0=non-Hispanic, 1=Mexican, 2=PR, 3=Cuban, 4=Central/South American, 5=Other Hispanic, 9=Unknown |
 | `live_births` | int | Resident live births (`residence_status != 4`) in that stratum-year |
 
 ### NCHS-series note (microdata vs NVSR-as-published)
 
-The stratified denominator is derived from natality microdata (built from the v3.0.0 / 1990–2024 slice used at joint-layer authoring time) under `residence_status != 4`. Per-year totals match the CDC residence series (`e6fc-ccez`) that natality validates against byte-exact for the **29 years present in the CSV**. For 2000–2002 and 2005–2006, those microdata totals differ from `live_births_by_year.csv`'s NVSR 57-08 / 73-09 figures by 38–224 records per year (<0.006%), because NCHS post-release re-tabulations adjust some published totals slightly. The stratified file is internally consistent (sum across strata = year total), which is the property that matters for unbiased rate computation; the two NCHS series differ by less than rounding noise at the rate level.
+The stratified denominator is derived from natality microdata (built from the v3.0.0 / 1990–2024 slice used at joint-layer authoring time) under `residence_status != 4`. Per-year totals match the CDC residence series (`e6fc-ccez`) that natality validates against byte-exact for **1990–2023**; 2024 uses the HVS natality canonical count (NVSR final not yet published). For 2000–2002 and 2005–2006, those microdata totals differ from `live_births_by_year.csv`'s NVSR 57-08 / 73-09 figures by 38–224 records per year (<0.006%), because NCHS post-release re-tabulations adjust some published totals slightly. The stratified file is internally consistent (sum across strata = year total), which is the property that matters for unbiased rate computation; the two NCHS series differ by less than rounding noise at the rate level.
 
 | Year | Stratified total (microdata) | `live_births_by_year.csv` (NVSR) | Diff |
 |---|---|---|---|

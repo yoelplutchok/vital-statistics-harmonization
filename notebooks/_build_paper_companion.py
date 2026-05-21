@@ -30,12 +30,10 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = REPO_ROOT / "notebooks" / "paper_companion.ipynb"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _paths import REPO_ROOT, paths_setup_source  # noqa: E402
 
-NAT_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet"
-LINKED_PARQUET = "/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v3_linked_harmonized_derived.parquet"
-FD_PARQUET = "/Users/yoelplutchok/Desktop/fetal-death-harmonization-build/output/harmonized/fetal_death_derived.parquet"  # v2.1.0
+OUTPUT = REPO_ROOT / "notebooks" / "paper_companion.ipynb"
 
 
 def md(text: str) -> nbformat.NotebookNode:
@@ -76,19 +74,13 @@ def build() -> nbformat.NotebookNode:
         code(
             "import pandas as pd\n"
             "import pyarrow.parquet as pq\n"
-            "from pathlib import Path\n"
-            "\n"
-            "# Resolve repo root\n"
-            "REPO_ROOT = Path.cwd()\n"
-            "while not (REPO_ROOT / 'paper' / 'draft_v2_hmd_styled.md').exists():\n"
-            "    if REPO_ROOT == REPO_ROOT.parent:\n"
-            "        raise RuntimeError('Run from the vital-statistics-harmonization repo root.')\n"
-            "    REPO_ROOT = REPO_ROOT.parent\n"
-            "\n"
-            f"NAT_PARQUET = '{NAT_PARQUET}'\n"
-            f"LINKED_PARQUET = '{LINKED_PARQUET}'\n"
-            f"FD_PARQUET = '{FD_PARQUET}'\n"
-            "\n"
+            + paths_setup_source(
+                marker="paper/draft_v2_hmd_styled.md",
+                nat=True,
+                linked=True,
+                fd=True,
+            )
+            + "\n"
             "# Running pass/fail ledger; appended to throughout\n"
             "RESULTS = []\n"
             "def record(tag, line, claim, expected, actual, status, note=''):\n"
@@ -96,8 +88,7 @@ def build() -> nbformat.NotebookNode:
             "        'tag': tag, 'line': line, 'claim': claim,\n"
             "        'manuscript': expected, 'computed': actual,\n"
             "        'status': status, 'note': note,\n"
-            "    })\n"
-            "print(f'Repo root: {REPO_ROOT}')"
+            "    })"
         ),
         md(
             "## §1. Top-line record counts (manuscript lines 3, 19, 125; claims C01–C03, C16, C18, C21, C53–C55)\n"
@@ -391,7 +382,7 @@ def build() -> nbformat.NotebookNode:
             "fd_rate_rows = fd_targets[fd_targets['metric'] == 'fetal_mortality_rate']\n"
             "rate_years = sorted(fd_rate_rows['year'].tolist())\n"
             "print(f'fetal_mortality_rate targets in external_validation_targets.csv: {len(fd_rate_rows)} rows covering years {rate_years[0]}-{rate_years[-1]}')\n"
-            "print(f'  Coverage: 1995-2002 + 2005-2022 = 8 + 18 = 26 years')\n"
+            "print(f'  Coverage: 1995-2002 + 2005-2022 = 8 + 18 = 26 years (NVSR fetal_mortality_rate targets; not live_births_by_year span)')\n"
             "record('C42', '94', '26/26 per-year fetal mortality rates', '26/26', f'{len(fd_rate_rows)} target rows', 'PASS' if len(fd_rate_rows) == 26 else 'DIFF')"
         ),
         code(
@@ -516,13 +507,13 @@ def build() -> nbformat.NotebookNode:
             "# C37: live_births_by_year.csv source attribution\n"
             "lb = pd.read_csv(REPO_ROOT / 'fetal_death' / 'live_births_by_year.csv')\n"
             "lb_57 = lb[lb['year'].between(1995, 2002)]\n"
-            "lb_73 = lb[lb['year'].between(2005, 2022)]\n"
+            "lb_73 = lb[lb['year'].between(2005, 2024)]\n"
             "src_col = [c for c in lb.columns if 'source' in c.lower() or 'note' in c.lower()]\n"
             "print(f'live_births_by_year.csv columns: {list(lb.columns)}')\n"
             "if src_col:\n"
             "    print(f'\\nSource col content for 1995 (NVSR 57-08): {lb_57.iloc[0][src_col[0]] if len(lb_57) else \"(no rows)\"}')\n"
-            "    print(f'Source col content for 2022 (NVSR 73-09): {lb_73.iloc[-1][src_col[0]] if len(lb_73) else \"(no rows)\"}')\n"
-            "    record('C37', '83', 'live_births_by_year sources NVSR 57-08 + 73-09', 'NVSR 57-08 (1995-2002) + NVSR 73-09 (2005-2022)', f'col {src_col[0]} populated', 'PASS')\n"
+            "    print(f'Source col content for 2024 (NVSR 73-09 / HVS natality): {lb_73.iloc[-1][src_col[0]] if len(lb_73) else \"(no rows)\"}')\n"
+            "    record('C37', '83', 'live_births_by_year sources NVSR 57-08 + 73-09', 'NVSR 57-08 (1995-2002) + NVSR 73-09 (2005-2022) + 2023-2024 per JOINT_USE', f'col {src_col[0]} populated', 'PASS')\n"
             "else:\n"
             "    print('No source/note column found in live_births_by_year.csv')\n"
             "    # Override the CITE-ONLY status — file exists but lacks source column\n"
@@ -591,7 +582,7 @@ def build() -> nbformat.NotebookNode:
             "# Also write the synthesis table to a CSV for downstream inspection\n"
             "out_csv = REPO_ROOT / 'notebooks' / 'paper_companion_results.csv'\n"
             "results_df[['tag', 'line', 'claim', 'manuscript', 'computed', 'status', 'note']].to_csv(out_csv, index=False)\n"
-            "print(f'Wrote {out_csv}')\n"
+            "print('Wrote notebooks/paper_companion_results.csv')\n"
             "print(f'\\nFinal counts:')\n"
             "print(results_df['status'].value_counts().to_string())"
         ),

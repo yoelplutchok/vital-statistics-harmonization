@@ -15,15 +15,11 @@ The natality v3.0.0 and fetal-death v2.4.0 in-repo states are pending Zenodo dep
 ## Shipped in-repo (pending Zenodo deposit)
 
 - **Fetal death V2.1** (2003–2004) + **V3a** (1989–1991) + **V3b** (1982–1988) + **v2.4.0** latest-year refresh (2023–2024) → **1982–2024**, 2,427,233 records. See [`fetal_death/ABOUT_THIS_RELEASE.md`](fetal_death/ABOUT_THIS_RELEASE.md).
-- **Joint-use convenience layer** (2026-05-11): [`fetal_death/stratified_denominators.csv`](fetal_death/stratified_denominators.csv) (4,906 strata × **29 years: 1992–2002 + 2005–2022**; CSV not yet extended to 2023–2024), [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md), [`shared/helpers/canonical_join_keys.py`](shared/helpers/canonical_join_keys.py).
+- **Joint-use convenience layer** (2026-05-11; CSV years extended 2026-05-20 D-prep.8): [`fetal_death/stratified_denominators.csv`](fetal_death/stratified_denominators.csv) (4,990 strata × **31 years: 1992–2002 + 2005–2024**), [`fetal_death/live_births_by_year.csv`](fetal_death/live_births_by_year.csv) (28 years: 1995–2002 + 2005–2024), [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md), [`shared/helpers/canonical_join_keys.py`](shared/helpers/canonical_join_keys.py).
 - **Cross-product demos**: [`notebooks/joint_use_demo.ipynb`](notebooks/joint_use_demo.ipynb), [`notebooks/paper_companion.ipynb`](notebooks/paper_companion.ipynb), Tier-2 worked examples under [`notebooks/`](notebooks/).
 - **Matched multiples** (C8.16): fourth HVS product — [`matched_multiples/`](matched_multiples/).
 
 ## Planned
-
-### Convenience CSV year extension
-
-Extend `live_births_by_year.csv` and `stratified_denominators.csv` through 2023–2024 (optional; users can recompute from natality parquets today).
 
 ### Natality forward extension
 

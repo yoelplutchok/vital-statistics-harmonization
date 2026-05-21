@@ -65,26 +65,29 @@ Natality 1968–2024 plus linked birth–infant death 1983–2023 (linked **v4.0
 
 ## fetal_death/
 
-Fetal death 1992–2022 (with 2003–2004 deferred to V2.1), mirrored from the [yoelplutchok/fetal-death-harmonization](https://github.com/yoelplutchok/fetal-death-harmonization) repo (v2.0.1 import). Top-level docs live at the subproject root rather than under `docs/` because the existing deposit shipped them flat.
+Fetal death **1982–2024** (in-repo **v2.4.0**; seven NCHS layout eras), mirrored from the [yoelplutchok/fetal-death-harmonization](https://github.com/yoelplutchok/fetal-death-harmonization) repo. The legacy Zenodo v2.0.0 deposit covered 1992–2022; in-repo state adds V2.1 (2003–2004), V3a (1989–1991), V3b (1982–1988), and 2023–2024. Top-level docs live at the subproject root (flat layout from the original deposit).
 
 | Path | Purpose |
 |---|---|
-| `fetal_death/README.md` | Subproject overview, version roadmap |
-| `fetal_death/ABOUT_THIS_RELEASE.md` | V2.0 release notes, B1–B6 cross-era fixes |
+| `fetal_death/README.md` | Subproject overview, v2.4.0 envelope |
+| `fetal_death/ABOUT_THIS_RELEASE.md` | Release notes (V2.0 baseline + V2.1/V3a/V3b/C8.2 increments) |
 | `fetal_death/ABOUT_SOURCE_DATA.md` | Description of NCHS source files |
-| `fetal_death/CODEBOOK.md` | Variable-by-variable definitions |
+| `fetal_death/CODEBOOK.md` | Variable-by-variable definitions + C8.20 generated appendix |
 | `fetal_death/COMPARABILITY.md` | Cross-era comparability classification |
 | `fetal_death/FAQ.md` | Common questions |
 | `fetal_death/GETTING_STARTED.md` | First-load tutorial |
 | `fetal_death/REPRODUCING.md` | End-to-end pipeline rerun |
 | `fetal_death/REPORTING_THRESHOLDS.md` | State-by-year reporting threshold notes |
 | `fetal_death/V2_1992_LAYOUT_DECISIONS.md` | 1989-revision layout reconstruction notes |
+| `fetal_death/V2_1_2003_2004_LAYOUT_DECISIONS.md` | 2003–2004 transition-year layout |
+| `fetal_death/V3a_1989_1991_LAYOUT_DECISIONS.md` | V3a backward-extension layout |
+| `fetal_death/V3b_1982_1988_LAYOUT_DECISIONS.md` | V3b backward-extension (1978-revision) layout |
 | `fetal_death/PROVENANCE.md` | SHA-256 checksums for shipped artifacts |
-| `fetal_death/scripts/01_import/` | Parsing 1992–2022 fixed-width zips |
-| `fetal_death/scripts/03_harmonize/` | Cross-era harmonization (B1–B6 normalizations) |
+| `fetal_death/scripts/01_import/` | Parsing 1982–2024 fixed-width zips |
+| `fetal_death/scripts/03_harmonize/` | Cross-era harmonization (B1–B6 + V3a/V3b) |
 | `fetal_death/scripts/04_derive/` | Derived analytic indicators |
-| `fetal_death/scripts/05_validate/` | NVSR validation scripts (v2.0 covers V2 era) |
-| `fetal_death/scripts/run_pipeline.py` | End-to-end orchestrator |
+| `fetal_death/scripts/05_validate/` | NVSR validation (V2-era rates + envelope control counts) |
+| `fetal_death/scripts/run_pipeline.py` | Legacy 29-year orchestrator (full 43-year re-derive: C8.7b) |
 | `fetal_death/tests/` | Smoke tests for shipped parquets |
 | `fetal_death/harmonized_schema.csv` | Authoritative column schema |
 | `fetal_death/external_validation_targets.csv` | NVSR validation targets |

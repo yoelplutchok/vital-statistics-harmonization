@@ -35,7 +35,7 @@ Invariants tested:
    COMPARABILITY plan.
 
 4. **Stratified-denominators per-year sum matches natality direct groupby.**
-   For the 29 joint-coverage years (1992-2002 + 2005-2022) in
+   For the 31 joint-coverage years (1992-2002 + 2005-2024) in
    `fetal_death/stratified_denominators.csv`, the per-year sum of `live_births`
    matches the natality resident-filtered per-year count byte-exact.
 
@@ -296,7 +296,7 @@ def test_stratified_denominators_year_coverage_within_joint(
     stratified_denominators, fd_derived_join_cols, natality_derived_join_cols
 ):
     """The stratified denominator's year set is a subset of the
-    natality∩fetal-death joint coverage (1992-2002 + 2005-2022 = 29 years).
+    natality∩fetal-death joint coverage (1992-2002 + 2005-2024 = 31 years).
     Catches a future regression where the builder accidentally extends past
     the joint set or contracts inside it."""
     csv_years = set(int(y) for y in stratified_denominators["data_year"].unique())

@@ -47,8 +47,8 @@ print()
 # ============================================================
 # 4. Fetal mortality rate trend (published live-birth denominators)
 # ============================================================
-# live_births_by_year.csv covers 1995-2002 + 2005-2022 (NVSR series).
-# For 2023-2024 or 1992-1994, recompute denominators from natality (JOINT_USE_GUIDE).
+# live_births_by_year.csv covers 1995-2002 + 2005-2024 (NVSR through 2022; 2023-2024 per JOINT_USE_GUIDE).
+# For 1992-1994, recompute denominators from natality (JOINT_USE_GUIDE).
 LIVE_BIRTHS_PATH = "live_births_by_year.csv"
 try:
     LIVE_BIRTHS = (
