@@ -4,6 +4,47 @@
 
 ---
 
+## 2026-05-21T20:00:00Z — **D.4 (Paper 1) HMD-STRUCTURE ALIGNMENT COMPLETE — draft now follows the HMD IJE-2015 profile structure tightly (abstract dropped, Related resources section added, Figure 1 regenerated + added, refs 8→12); body 2,499 words.**
+
+### What shipped
+
+User wanted the paper to follow a *specific* published descriptor closely (not "the genre"). Anchored on **HMD (IJE 2015)** — fetched its section skeleton, confirmed the draft was already ~1:1, and closed the four remaining structural gaps (HMD's *organization*, original prose; no HMD wording reproduced):
+
+1. **Dropped the abstract** — HMD opens at "Data resource basics"; the summary stays in the nutshell box.
+2. **Added "Related resources"** before the nutshell (mirrors HMD's "Related Databases"): superseded single-product deposits + adjacent resources (IPUMS / HMD / NBER / ICPSR).
+3. **Added Figure 1 = cross-product coverage timeline** (HMD Fig 1 analog). The shipped `figures/fig1_coverage_timeline` was **stale** (3 products / pre-extension ranges); regenerated it via an updated `shared/helpers/build_timeline_figure.py` (gap-aware band check; natality 1968–1989; linked 1983–2004 with the **visible 1992–94 gap**; matched multiples as a 4th row of two blocks) → now shows all four products at the current envelope (visually verified). Added the callout + caption.
+4. **Expanded references 8 → 12** (gregory2024, nichd2024, nber, icpsr; all cited).
+
+Offset-trimmed ~110 words to hold the IJE limit: body **2,499 ≤ 2,500**.
+
+### Verify
+
+- Body 2,499 (Word-like). Abstract removed; `## Related resources` before nutshell; all headline numbers/DOI intact; Figure 1 callout+caption; 12 footnote defs (4 new cited+defined); regenerated figure shows 4 products + linked gap.
+- **Zero canonical-state mutation** — touched only `paper/draft_v2_hmd_styled.md` + `shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`; 4 gate SHAs byte-exact.
+- Receipt: `RECEIPTS/D.4-paper1-hmd-structure-align_2026-05-21T20-00-00Z.md`. PRE-FLIGHT: `PRE_FLIGHT_LOG.md` 2026-05-21T19:30:00Z. Tags `D.4-paper1-hmd-structure-align-{pre-do,complete}`.
+
+### Next planned task — D.4 submission readiness (human + build host)
+
+Unchanged from prior section, plus one new note: if targeting the **current** IJE template (not the 2015 HMD layout), convert "HVS in a nutshell" → a top-of-paper ≤200-word **Key Features** box (the HMD-faithful no-abstract opening is otherwise incompatible with current author instructions). Still owed: author `<!-- YP -->` markers + cover-letter header; **companion-notebook regen** on the build host; confirm Word count in-system (margin is 1). D.1 + legacy Zenodo patches remain deferred.
+
+### Open questions for human
+
+1. Keep the HMD-faithful no-abstract layout (this experiment), or convert to the current IJE Key-Features template for an actual submission?
+2. Run companion-notebook regen + (optional) pipeline re-measure on the build host before any submission?
+
+### Forward-looking HALTs
+
+1. Key Features conversion needed for a *current-template* IJE submission (see above).
+2. Carried: companion-notebook regen owed; confirm Word count in-system (thin margin); author markers + cover-letter header.
+3. Figure generator now models documented gaps; edit band specs + re-run (deterministic) if coverage changes.
+
+### Build artifacts current
+
+- `paper/draft_v2_hmd_styled.md`: HMD-structure-aligned; body 2,499 w. `paper/cover_letter.md`: from prior step. `shared/helpers/build_timeline_figure.py` + `figures/fig1_coverage_timeline.{pdf,png}`: regenerated to the 4-product envelope.
+- Zero parquet mutation across all D.4 work (4 gate SHAs byte-exact). Zenodo v1.0.1 (`20326150`) + public GitHub (`08a2287`) unchanged.
+
+---
+
 ## 2026-05-21T19:00:00Z — **D.4 (Paper 1) IJE FINALIZATION COMPLETE (in-session §19.1) — body trimmed to ≤2,500 words, references Vancouver-confirmed, cover letter drafted; manuscript is draft-submission-ready pending author markers + companion-notebook regen.**
 
 ### What shipped

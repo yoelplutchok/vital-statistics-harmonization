@@ -42,6 +42,7 @@ FETAL_BANDS = [
 ]
 
 NAT_BANDS = [
+    (1968, 1989, "1968-rev era (natality)", "#f6e2b3"),
     (1990, 2002, "1989-rev uniform", "#fcbad3"),
     (2003, 2013, "2003-rev transition (state phase-in)", "#ffaaa5"),
     (2014, 2019, "2014-reformat, revised-only", "#a8e6cf"),
@@ -49,9 +50,21 @@ NAT_BANDS = [
 ]
 
 LINKED_BANDS = [
-    (2005, 2015, "Denominator-plus cohort format (linked)", "#c8b6e2"),
+    (1983, 1988, "Keyless two-file cohort (linked)", "#7fb3d5"),
+    (1989, 1991, "Denominator-plus cohort (linked)", "#c8b6e2"),
+    # 1992–1994: permanent NCHS-linkage gap (no band)
+    (1995, 2004, "Denominator-plus cohort (linked)", "#c8b6e2"),
+    (2005, 2015, "Denominator-plus cohort (linked)", "#c8b6e2"),
     (2016, 2019, "Period-cohort merged format (linked)", "#b5d8eb"),
     (2020, 2023, "Period-cohort, MBRACE dropped (linked)", "#dcedc1"),
+]
+
+# Three discrete NCHS publication windows; 1995–1997 is a subset of 1995–2000,
+# so coverage collapses to two non-overlapping blocks (the 1995–1997 sub-window
+# is a file-generation detail noted in the manuscript text + Table 1).
+MATCHED_MULTIPLES_BANDS = [
+    (1995, 2000, "1995–2000 windows (matched multiples)", "#f6c1c1"),
+    (2016, 2020, "2016–2020 window (matched multiples)", "#cde6d0"),
 ]
 
 REVISION_BOUNDARIES = [
@@ -63,21 +76,24 @@ REVISION_BOUNDARIES = [
 ]
 
 PRODUCTS = [
+    ("Natality", NAT_BANDS, 1968, 2024),
+    ("Linked birth–infant death", LINKED_BANDS, 1983, 2023),
     ("Fetal death", FETAL_BANDS, 1982, 2024),
-    ("Natality", NAT_BANDS, 1990, 2024),
-    ("Linked birth–infant death", LINKED_BANDS, 2005, 2023),
+    ("Matched multiples", MATCHED_MULTIPLES_BANDS, 1995, 2020),
 ]
 
 
 def verify_band_coverage() -> None:
-    """Assert each product's bands tile its full coverage without gaps/overlaps."""
+    """Assert each product's bands span [lo, hi] with no overlaps. Documented
+    internal gaps are permitted (the linked 1992-1994 NCHS-linkage gap; the
+    matched-multiples inter-window gap 2001-2015)."""
     for name, bands, lo, hi in PRODUCTS:
         bands_sorted = sorted(bands, key=lambda b: b[0])
         assert bands_sorted[0][0] == lo, f"{name}: first band starts {bands_sorted[0][0]} != {lo}"
         assert bands_sorted[-1][1] == hi, f"{name}: last band ends {bands_sorted[-1][1]} != {hi}"
         for prev, curr in zip(bands_sorted, bands_sorted[1:]):
-            assert curr[0] == prev[1] + 1, (
-                f"{name}: band gap/overlap between {prev[:2]} and {curr[:2]}"
+            assert curr[0] > prev[1], (
+                f"{name}: band overlap between {prev[:2]} and {curr[:2]}"
             )
 
 
@@ -86,8 +102,8 @@ def build() -> None:
 
     fig, ax = plt.subplots(figsize=(11, 4.5), dpi=150)
 
-    y_positions = [2, 1, 0]
-    bar_height = 0.7
+    y_positions = [3, 2, 1, 0]
+    bar_height = 0.62
     label_color = "#222222"
 
     # Render era bands per product
@@ -123,11 +139,11 @@ def build() -> None:
         fontsize=10,
         color=label_color,
     )
-    ax.set_ylim(-0.6, 2.6)
+    ax.set_ylim(-0.6, 3.6)
 
     # X-axis: years
-    ax.set_xlim(1980.5, 2025.5)
-    ax.set_xticks(list(range(1982, 2026, 4)))
+    ax.set_xlim(1966.5, 2025.5)
+    ax.set_xticks(list(range(1968, 2026, 4)))
     ax.tick_params(axis="x", labelsize=9, colors=label_color)
     ax.set_xlabel("Data year", fontsize=10, color=label_color)
 
@@ -156,8 +172,8 @@ def build() -> None:
                 seen_colors.add(color)
     ax.legend(
         handles=legend_handles,
-        loc="lower center",
-        bbox_to_anchor=(0.5, -0.55),
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.16),
         ncol=3,
         fontsize=7.5,
         frameon=False,
