@@ -1,6 +1,32 @@
-# STATUS — last updated 2026-05-21T15:00:00Z
+# STATUS — last updated 2026-05-21T15:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T15:30:00Z — **D.2 deposit composition FINAL: clean product deposit (7 parquets + docs zip + SHA256SUMS); baselines + raw excluded. Single DOI `10.5281/zenodo.20319640` (no concept DOI). Bundle staged; ready for human upload.**
+
+### Final deposit composition (user: "whatever makes sense")
+
+**Upload set (~8.3 GB):** 7 harmonized/derived parquets (`fetal_death_harmonized`+`_derived`, `natality_v2_harmonized`+`_derived`, `natality_v3_linked_harmonized`+`_derived`, `matched_multiples_harmonized`) + `HVS-docs-and-metadata-1.0.0.zip` (134 files, self-describing) + `SHA256SUMS.txt` (8 lines, matches the upload exactly). Staged in `~/Desktop/HVS-zenodo-upload/` (zip + checksums) + the 7 parquet paths.
+
+**Excluded, with rationale:**
+- **Regression baselines** (`*_baseline.parquet`, ~6 GB) — PROVENANCE marks them "not gate; do not use for production"; internal dev scaffolding; would confuse downloaders.
+- **Raw per-year intermediates** (~3.5 GB; fetal `_raw`, natality `_raw`/`_core`, linked `_denomplus`) — fully reproducible from the SHA-pinned public NCHS source (`file_inventory.csv` + `NCHS_SOURCE_MANIFEST.md`, both inside the docs zip) via the GitHub pipelines; inconsistent mid-pipeline naming would not present cleanly. Mirrors IPUMS/HMD (deposit the harmonized product + provenance, not intermediates). Can be added as a later version under the same DOI if a user needs it.
+
+This refines the r2 manifest's "include raw, to match prior" default — the user delegated the call; the clean product deposit is the sensible choice.
+
+### DOI
+
+`10.5281/zenodo.20319640` is THE DOI (user-confirmed; no separate concept DOI). Baked into README/CITATION.cff/.zenodo.json; the README's concept-DOI parenthetical was removed so the immutable deposit makes no unverified claim.
+
+### Next planned task
+
+Human uploads the staged set to the reserved Zenodo draft, fills form from `.zenodo.json`, publishes. Then **D.3** (public GitHub refresh, locked scrub spec) → **D.4** (Paper 1).
+
+### Build artifacts current
+
+- Zero parquet mutation. Repo doc edits this session: README/CITATION/.zenodo.json (DOI) + STATUS. Upload bundle lives in `~/Desktop/HVS-zenodo-upload/` (outside the repo). 4 gate SHAs byte-exact.
 
 ---
 
