@@ -17,7 +17,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from scripts._time_pipeline import run_stages  # noqa: E402
 
-NAT_ROOT = Path("/Users/yoelplutchok/Desktop/natality-harmonization")
+NAT_ROOT = Path("~/Desktop/natality-harmonization").expanduser()
 NAT_SCRIPTS = NAT_ROOT / "scripts"
 
 # 35-year V1 envelope + 19-year linked envelope (cf. STATUS 2026-05-13T22:30:00Z)
