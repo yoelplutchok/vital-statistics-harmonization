@@ -7,7 +7,8 @@
   "license": "cc-by-4.0",
   "creators": [
     {
-      "name": "Plutchok, Yoel"
+      "name": "Plutchok, Yoel",
+      "affiliation": ""
     }
   ],
   "description": "<p>The U.S. Harmonized Vital Statistics (HVS) resource integrates four National Center for Health Statistics (NCHS) public-use vital-statistics microdata products into stable Apache Parquet column schemas that span multiple Standard Certificate revisions (1989 and 2003) and NCHS layout reformats. Each product carries one harmonized schema across every year it covers, removing the per-year fixed-width layout, field-name, and code-value drift that has historically forced researchers to restrict analyses to single-revision windows.</p><p><strong>Four products (in-repo envelope):</strong></p><ul><li><strong>Natality</strong> &mdash; 1968&ndash;2024 (57 years), 201,161,456 records, 84 columns (71 harmonized + 13 derived). Validated 183/183 <em>Births: Final Data</em> NVSR targets byte-exact for 1990&ndash;2024; pre-1990 NVSR benchmarking is planned.</li><li><strong>Linked birth&ndash;infant death</strong> &mdash; 1983&ndash;2023 (38 cohort years; permanent 1992&ndash;1994 NCHS-linkage gap), 149,386,620 records, 97 columns.</li><li><strong>Fetal death</strong> &mdash; 1982&ndash;2024 (43 years), 2,427,233 records, 89 columns. The 1982&ndash;1988 (1978-revision) and 1989&ndash;1991 backward extensions are the resource's largest novel contribution versus prior public harmonizations.</li><li><strong>Matched multiples</strong> &mdash; twins/triplets/quadruplets with linked infant and fetal deaths across three NCHS publication windows (1995&ndash;1997, 1995&ndash;2000, 2016&ndash;2020), 1,665,568 records, 24 columns.</li></ul><p><strong>Validation:</strong> every shipped per-year figure is reconciled against the corresponding National Vital Statistics Reports (NVSR) cell under each product's documented canonical analytic filter; per-target PASS/FAIL tables ship with the resource.</p><p><strong>Reproducibility:</strong> the open-source pipelines (MIT-licensed; see the GitHub repository) re-derive every parquet bit-for-bit from the public NCHS source zips. SHA-256 checksums for every shipped artifact are documented in each product's PROVENANCE.md.</p><p><strong>Licensing:</strong> harmonized data are released under CC BY 4.0; source code is MIT. The underlying NCHS source data are U.S. Government works and are not subject to U.S. copyright (17 U.S.C. &sect; 105). No NCHS Research Data Center access is required for the public-use envelope described here.</p><p><strong>Geography note:</strong> NCHS suppresses sub-national geography in these public-use files; the resource supports national and demographic-stratum analyses, not state-level analyses.</p>",
@@ -27,6 +28,12 @@
     "public use microdata",
     "United States"
   ],
+  "subjects": [
+    {"term": "Public health"},
+    {"term": "Vital statistics"},
+    {"term": "Epidemiology"},
+    {"term": "Perinatal epidemiology"}
+  ],
   "related_identifiers": [
     {
       "relation": "continues",
@@ -45,7 +52,12 @@
       "identifier": "https://github.com/yoelplutchok/vital-statistics-harmonization",
       "scheme": "url",
       "resource_type": "software"
+    },
+    {
+      "relation": "isDerivedFrom",
+      "identifier": "https://www.cdc.gov/nchs/data_access/Vitalstatsonline.htm",
+      "scheme": "url"
     }
   ],
-  "notes": "Harmonized data: CC BY 4.0. Source code: MIT. Underlying NCHS source data are U.S. Government works, not subject to U.S. copyright (17 U.S.C. § 105). This unified deposit supersedes the two prior single-product concept DOIs (10.5281/zenodo.19363074 natality + linked; 10.5281/zenodo.20031571 fetal death 1992–2022), which remain immutable. Re-derive every parquet from public NCHS zips via the pipelines in the GitHub repository."
+  "notes": "Harmonized data: CC BY 4.0. Source code: MIT. Underlying NCHS source data are U.S. Government works, not subject to U.S. copyright (17 U.S.C. § 105). This unified deposit supersedes the two prior single-product concept DOIs (10.5281/zenodo.19363074 natality + linked; 10.5281/zenodo.20031571 fetal death 1992–2022), which remain immutable. The deposit is self-describing (parquets + user docs + schema/validation/layout CSVs + quickstarts, modeled on the prior per-product deposits); pipeline source code lives in the GitHub repository. Re-derive every parquet from public NCHS zips via those pipelines."
 }

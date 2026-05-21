@@ -1,6 +1,36 @@
-# STATUS — last updated 2026-05-21T14:00:00Z
+# STATUS — last updated 2026-05-21T14:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T14:30:00Z — **D.2 deposit bundle REVISED to model prior deposits (self-describing, not parquets-only); `.zenodo.json` aligned to prior conventions.**
+
+User directive (this chat): *"all I should deposit are the parquets? how about the rest of the useful things — model it after the previous Zenodo uploads."* Confirmed against `fetal_death/PROVENANCE.sha256` (the actual v2.0.0 deposit file list) + the two prior `.zenodo.json` files: the prior deposits were **self-describing data packages** (parquets + user docs + schema/validation/layout CSVs + quickstart + LICENSE/CITATION/PROVENANCE/.zenodo.json), and did **not** ship pipeline `scripts/` (code on GitHub).
+
+### What changed (supersedes the earlier "7 primary parquets + manifest" bundle answer)
+
+- **`.zenodo.json`** aligned to the prior deposits' conventions: added `affiliation`, `subjects` (Public health / Vital statistics / Epidemiology / Perinatal epidemiology), and a fourth related identifier `isDerivedFrom` the NCHS vitalstats URL. Version stays `1.0.0`. Validated JSON.
+- **`RECEIPTS/D.2-zenodo-deposit-bundle-r2_2026-05-21T14-30-00Z.md`** — the revised bundle manifest: per-product self-describing bundles (parquets incl. baselines + raw zips, all user docs, schema/validation/layout CSVs, quickstarts) + cross-product top-level layer (root docs, `docs/`, `migrations/`, `csv/published_tabulations/`, worked-example `.ipynb`). Grounded in `git ls-files` (real files, not guessed). Supersedes §2/§6.2 of the r1 receipt; r1's gate re-hash / upload runbook / post-publish edits still apply.
+- **Excluded** (matches prior model + D.3 principle): `scripts/`, `tests/`, process docs, `paper/`, `notebooks/_build_*.py` + `ananth2022_*.py`, `PIPELINE_TIMING_BENCHMARK*`, figures, raw source zips, the copyrighted PDF.
+
+### Open decision for human (in r2 receipt)
+
+- **Raw per-year bundles** in the deposit (full preservation, matches prior fetal deposit; natality 1968–2024 raw is the size driver — total could be ~15–30+ GB, vs Zenodo's 50 GB default) **vs.** harmonized+derived+baselines only. Default: include raw, to match the prior model.
+- Worked-example notebooks with known execution drift (preterm/cross_race) must be re-executed clean or omitted before deposit.
+
+### Next planned task
+
+Unchanged: human-side **D.2** (gate re-hash → assemble the r2 bundle → upload → return concept DOI) → I apply r1-§5 post-publish edits → **D.3** (locked scrub spec) → **D.4**.
+
+### Forward-looking HALTs
+
+1. **r2 is the authoritative deposit bundle**; r1 governs metadata-process (re-hash/runbook/post-publish edits).
+2. Carried: gate re-hash mandatory before Zenodo; 4 gate parquets absent in clone (only `matched_multiples adbec108…` verifiable here); Phase D human-gated; do not publish autonomously.
+
+### Build artifacts current
+
+- Zero canonical-state mutation. `.zenodo.json` (metadata) + r2 receipt + this STATUS section only. 4 gate SHAs unchanged.
 
 ---
 
