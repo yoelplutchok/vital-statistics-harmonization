@@ -1,6 +1,46 @@
-# STATUS — last updated 2026-05-21T12:00:00Z
+# STATUS — last updated 2026-05-21T13:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T13:30:00Z — **Uncommitted-tree cleanup (2 commits) + D.2 unified-Zenodo prep (agent portion); D.2 OPEN pending human upload.**
+
+### Current phase
+
+**Phase D-prep CLOSED.** This session: (1) cleared the uncommitted working tree, (2) prepared the D.2 agent deliverables. **D.2 remains OPEN** — the Zenodo publish (externally irreversible) + post-publish DOI injection are human-gated and not done.
+
+### What was done this session
+
+1. **Uncommitted-tree cleanup** (user: "handle … in the way you think is best"). Split the dirty tree into two clean commits on `main`:
+   - `3405693` — **D-prep.6–9 + r4 finalization**: the working-tree outputs STATUS already documented as complete but that were never committed (convenience CSVs through 2024, `notebooks/_paths.py` + portable-path builders/notebooks, fetal/natality CODEBOOK touch-ups, `paper_companion_results` regen, AUDITS/ + non-ananth RECEIPTS/, the 2026-05-21 KICKOFF/STATUS scope-trim). 31 files.
+   - `b89113f` — **Paper 2 (Phase E) exploration**: Ananth-2022 replication/closeout scripts (`notebooks/ananth2022_*.py`), their `.md` receipts, `paper/PAPER2_{ANALYSIS_DISCOVERY_PROMPT,FINDINGS}.md`, + `.gitignore`. 14 files.
+   - **Gitignored** (preserved on disk, never committed): the copyrighted Ananth source PDF at repo root (`/*.pdf`; the 11 tracked figure PDFs in `**/figures/` are unaffected) and the ~3.3 MB regenerable `RECEIPTS/ananth2022_*outputs*/` scratch dirs.
+   - Working tree is now **clean**.
+2. **D.2 prep (agent portion)**: created **`.zenodo.json`** (unified HVS concept-DOI metadata: dataset/open/cc-by-4.0/v1.0.0, four-product description, 14 keywords, 3 related identifiers; validated as JSON) + **`RECEIPTS/D.2-zenodo-deposit-prep_2026-05-21T13-30-00Z.md`** (bundle manifest with documented SHAs/sizes, the mandatory build-host pre-upload gate re-hash command, the human upload runbook, and the ready-to-apply post-publish `CITATION.cff` + `README.md` DOI edits). Verified `matched_multiples_harmonized.parquet` SHA locally = `adbec108…` byte-exact (the only gate-class parquet present in this clone).
+
+### Next planned task
+
+**Human-side D.2 execution:** on the build host, run the §3 gate re-hash in the receipt (confirm `38e2cecb…`/`185c071e…`/`acb5c48a…`/`f630d8cf…`), assemble the bundle, upload to zenodo.org, publish, and bring back the concept DOI. Then I apply the §5 post-publish edits (`CITATION.cff` + `README.md`). Then **D.3** (refresh public GitHub) → **D.4** (Paper 1).
+
+### Open questions for human (from receipt §6)
+
+1. Deposit **version string** — `1.0.0` (used) vs `1.1.0` to avoid colliding with the stale public-repo "v1.0" label.
+2. **Raw per-year bundles** in the deposit, or primary 7 parquets + manifest only (default)?
+3. **Related-identifier relations** — `continues`/`isSupplementedBy` (used) vs `isNewVersionOf`/`obsoletes`.
+4. **Creator metadata** — no ORCID/affiliation included (none on file; not invented).
+
+### Forward-looking HALTs for next session (Convention 4)
+
+1. **Gate re-hash is mandatory and gating** before any Zenodo upload (§9-#15). Any mismatch vs the 4 anchors → §7-#18 halt; do NOT publish, do NOT patch docs to match wrong bytes.
+2. **4 gate parquets are absent in a typical clone** (gitignored; build-host paths in the receipt §2 + per-product PROVENANCE.md). Only `matched_multiples` (`adbec108…`) is verifiable in-repo.
+3. **Do NOT publish to Zenodo autonomously** — Phase D is per-step explicitly human-authorized. Agent prep ≠ publish authorization.
+4. **`.zenodo.json` content is authoritative for deposit metadata, not for Zenodo UI labels** — a manual web upload maps fields by meaning (receipt §4); the GitHub-Zenodo integration consumes `.zenodo.json` directly.
+
+### Build artifacts current
+
+- **Zero canonical-state mutation this session.** 4 gate parquet SHAs unchanged (`38e2cecb…`/`185c071e…`/`acb5c48a…`/`f630d8cf…`); `matched_multiples` `adbec108…` re-verified locally.
+- NEW (committed/uncommitted): `.zenodo.json` (root), `RECEIPTS/D.2-zenodo-deposit-prep_2026-05-21T13-30-00Z.md`, `.gitignore` additions. Two prior commits `3405693` + `b89113f` landed the previously-uncommitted tree.
 
 ---
 
