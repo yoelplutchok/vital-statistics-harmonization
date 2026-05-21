@@ -1,6 +1,27 @@
-# STATUS — last updated 2026-05-21T16:00:00Z
+# STATUS — last updated 2026-05-21T16:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T16:30:00Z — **D.2 v1.0.1 deposit bundle FINALIZED — 65-file docs zip (methodology/validation docs pruned per user); staged, ready to upload.**
+
+### Final deposit composition (v1.0.1, DOI 10.5281/zenodo.20326150)
+
+Per two user pruning passes on the 82-file curated set:
+- **Cut (17):** 10 methodology/validation/prior-art **.md** (PRIOR_ART; fetal REPORTING_THRESHOLDS + 4× LAYOUT_DECISIONS; natality docs/VALIDATION; natality output/validation 2× `*_comparison.md`; MM validation_results.md) + the "recommend" data twins (natality 2× `*_comparison.csv`, MM validation_results.csv, fetal validation_results.csv + validation_tracking.csv + variable_crosswalk_working.csv + reporting_thresholds.csv).
+- **Kept (user's call):** `external_validation_targets*.csv` ×3, `docs/PERINATAL_RECORD_FEASIBILITY.md`, `REPRODUCING.md` ×2.
+- **Result: 65-file `HVS-docs-and-metadata-1.0.1.zip`** (sha256 `62e38d7af48305ec…`) = core user docs (README/CODEBOOK/COMPARABILITY/FAQ/GETTING_STARTED/ABOUT_*) + schema + file_inventory + record layouts + denominator CSVs + published_tabulations + quickstarts + JOINT_USE_GUIDE/WORKED_EXAMPLE_FAQ/NCHS_SOURCE_MANIFEST/PROVENANCE + LICENSE/CITATION/.zenodo.json.
+
+Deposit = the 7 parquets (carry over in the v1.0.1 version; unchanged) + that zip + `SHA256SUMS.txt`. Staged in `~/Desktop/HVS-zenodo-clean/`.
+
+### Next planned task
+
+Human: v1.0.1 draft → set version 1.0.1, remove the carried-over `…-1.0.0.zip` + old SHA256SUMS, keep the 7 parquets, add the 65-file zip + new SHA256SUMS, **verify the file list**, publish. Then **D.3** → **D.4**.
+
+### Build artifacts current
+
+- Zero parquet mutation (4 gate SHAs byte-exact). Deposit pruning is a packaging/allowlist choice — no repo file removed (the pruned docs still live in-repo + will ship to GitHub at D.3). Only STATUS touched this step.
 
 ---
 
