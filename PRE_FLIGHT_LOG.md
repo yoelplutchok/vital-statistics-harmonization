@@ -8,6 +8,20 @@
 
 ---
 
+## PRE-FLIGHT for D.4-paper1-ije-finalize — 2026-05-21T18:30:00Z — **RESULT: PROCEED**
+
+**Task.** D.4 / Paper 1 IJE finalization (`NEXT_STEPS.md` §19.1, in-session per user "continue in the session"): trim the main-text body from ~3,145 to ≤2,500 words (the IJE Data Resource Profile limit; abstract / Key-Features box / References / Table 1 / admin sections excluded), confirm Vancouver/Index-Medicus reference conformance, and draft a cover letter. Builds on `D.4-paper1-envelope-sync-complete` (`1db47d3`). Doc-only; **zero canonical-state mutation** (4 gate SHAs byte-exact); git-reversible.
+
+**Input state (verified):** post-sync `paper/draft_v2_hmd_styled.md`. Per-section body word counts measured this PRE-FLIGHT: Basics 532 / Coverage 362 / Measures 454 / Methods 418 / Use 450 / S&W 573 / Future 158 / Access 198 = **3,145** (cut ~645). Abstract 238, nutshell 189, refs 255 (all excluded from the 2,500).
+
+**Cut plan (redundancy/verbosity only — NOT numbers, guards, or the reframe):** Methods normalization illustration (DELMETH6 aside); Measures domain laundry-list + the within-era-columns detail (duplicated verbatim in S&W → keep once, point to schema); Basics boundary paragraph tightening; Use joint-use/3-level-verification/analyses prose; the long S&W validation sentence condensed (detail already in `output/validation/`). Target post-trim distribution sums to 2,500.
+
+**Invariants the trim must preserve (VERIFY against these — = the envelope-sync accuracy guards):** every product headline number (201,161,456 / 149,386,620 / 2,427,233 / 1,665,568; 84/97/89/24 col; year ranges); the unified DOI `10.5281/zenodo.20326150` + GitHub URL; the reframe ("first openly published/reproducible/validated"; IPUMS+HMD refs); the per-product-honest validation framing (no 1968–1989 NVSR claim; backward-ext via User-Guide controls; MM vs PDF Table 1; 33/35+2; 183/183); no stale token reintroduced; footnotes still cited+defined.
+
+**§7 checked:** none tripped. **§9-#8 note:** word-trim + Vancouver + cover-letter are bundled as ONE finalization task (they share the same invariant — manuscript-only, zero-number-change — mirroring the audit-fix-bundle precedent), not compression of substantively-distinct tasks.
+
+**Plan:** tag `D.4-paper1-ije-finalize-pre-do` → trim section-by-section + tidy references + add `paper/cover_letter.md` → VERIFY (body ≤2,500; all invariant numbers/tokens still present; stale-token grep still 0) → RECEIPT + DECISION_LOG + STATUS + commit `…-complete`.
+
 ## PRE-FLIGHT for D.4-paper1-envelope-sync — 2026-05-21T17:30:00Z — **RESULT: PROCEED**
 
 **Task.** D.4 / Paper 1 — full envelope sync of `paper/draft_v2_hmd_styled.md` to the current shipped resource (4 products, 1968–2024), inject the unified Zenodo DOI + GitHub URL, rebuild Table 1, rewrite Future Developments, reconcile validation framing, and apply the [[paper1_framing_correction]] reframe ("first openly published / reproducible / validated artifact", not "first to harmonize"; Ananth et al. used the same NCHS microdata). User-authorized this session (scope = "Full envelope sync"; framing = "Reframe per memory"). Doc-only; **zero canonical-state mutation expected** (no parquet/schema/validation-CSV/script touched; 4 gate SHAs stay byte-exact). Manuscript edits are git-reversible (not externally irreversible).
