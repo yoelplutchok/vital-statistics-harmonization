@@ -4,6 +4,47 @@
 
 ---
 
+## 2026-05-21T18:00:00Z — **D.4 (Paper 1) IN-REPO ENVELOPE SYNC COMPLETE — `draft_v2_hmd_styled.md` re-quantified to the 4-product 1968–2024 envelope + unified DOI/GitHub + "first reproducible artifact" reframe; §19.1 polish + submission remain.**
+
+### What shipped
+
+`paper/draft_v2_hmd_styled.md`: 23 doc-only edits under full five-phase discipline. The draft predated Phase C/D (3-product / 1990–2024); now synced to the shipped envelope:
+
+- **Natality** 201,161,456 · 1968–2024 · 84 col; **Linked** 149,386,620 · 1983–2023 (perm. 1992–94 gap) · 97 col (94 v3 + 3 within-era cohort: `link_segment`/`underlying_cause_icd9`/`cause_recode_61`); **Fetal** 2,427,233 · 1982–2024 · 89 col; **+ Matched multiples** 1,665,568 · 1995–2020 (3 windows) · 24 col (new 4th product, integrated throughout).
+- Title 1990→**1968–2024**; abstract, coverage, Measures, Methods ("four products"), Use, S&W, nutshell all re-quantified; **Table 1 rebuilt** (added natality 1968–1989, linked 1983–1988 + 1989–2004, fetal 1982–1988/1989–2002/2003–2004, MM 3 windows; `varies†` + footnote where byte-lengths aren't in a committed artifact).
+- **Future Developments** rewritten (V2.1/V3 shipped → 4 new pending items: forward extension, pre-1990 natality NVSR benchmarking, MM cell-level validation, cohort ICD-9→ICD-10 crosswalk).
+- **Citation:** unified Zenodo DOI `10.5281/zenodo.20326150` (v1.0.1) + GitHub URL injected; old single-product DOIs reframed as "superseded".
+- **Reframe** ([[paper1_framing_correction]]): "first openly published, reproducible, validated artifact" + IPUMS/HMD analog (refs added), NOT "first to harmonize". Validation framing made per-product-honest (natality 183/183 1990–2024 + pre-1990 planned; linked 33/35 + 2 + pre-2005 cohort surface; fetal 29 counts + 26 rates + User-Guide controls + 13/19 detail; MM 13/13 vs PDF Table 1).
+
+### Verify
+
+- Stale-token grep: 12 stale strings (old counts/years/DOIs/"three products"/"ninety minutes") → **0 hits**; new tokens all present; footnotes cited + defined.
+- **Zero canonical-state mutation** — only `paper/draft_v2_hmd_styled.md` touched; 4 gate parquet SHAs (`38e2cecb…`/`185c071e…`/`acb5c48a…`/`f630d8cf…`) inherently byte-exact.
+- Receipt: `RECEIPTS/D.4-paper1-envelope-sync_2026-05-21T18-00-00Z.md`. PRE-FLIGHT: `PRE_FLIGHT_LOG.md` 2026-05-21T17:30:00Z. Tags `D.4-paper1-envelope-sync-{pre-do,complete}`.
+
+### Next planned task
+
+**Remaining D.4 (human + §19.1 fresh chat):** run the `NEXT_STEPS.md` §19.1 finalization prompt — IJE word-trim (body ≈ **3,145 words vs the 2,500 limit**, ~645 over; S&W is the longest section), Vancouver/Index-Medicus reference reformatting, cover letter — then submit to IJE. **Build-host owed before submission:** re-run `notebooks/_build_paper_companion.py` against the v3.0.0/v4.0.0/v2.4.0 + MM parquets to refresh the per-claim numeric synthesis (the AI-disclosure section); optionally re-measure the natality+linked v4 pipeline wall-clock.
+
+### Open questions for human
+
+1. **Word trim** — proceed to §19.1 fresh chat for the 2,500-word trim + Vancouver reformatting + cover letter? (Recommended; the envelope-accurate detail is in place to trim from.)
+2. **Companion-notebook + timing re-measure** — run these on the build host before submission, or accept the committed-validation-table sourcing for now?
+3. **Doc soft-flags** (out of D.4 scope; future doc-sync): the `fetal ABOUT` "90/90" vs `validation_results.csv` 29-rows framing; the natality-ABOUT keyless-era "1983–1991" vs COMPARABILITY "1983–1988" wording.
+
+### Forward-looking HALTs for next session
+
+1. `paper_companion.ipynb` is **stale** vs the new envelope and needs a build-host regen before submission (manuscript numbers are traceable to committed validation tables but not yet to a fresh notebook run).
+2. Pipeline timing: fetal = re-measured 5 min; natality+linked = qualitative ("a couple of hours") because the v4 envelope was not re-benchmarked — replace with the measured figure post-rebuild.
+3. Word-count trim is the §19.1 step; do not re-trim numerics in a way that drops the accuracy guards (no 1968–1989 NVSR claim; backward-ext via User-Guide controls; MM vs PDF Table 1; no invented byte-lengths).
+
+### Build artifacts current
+
+- `paper/draft_v2_hmd_styled.md`: synced (4 products, 1968–2024, unified DOI + GitHub, reframe, +2 refs). Body ≈ 3,145 words.
+- Zero parquet mutation across D.4 in-repo work (4 gate SHAs byte-exact). Zenodo v1.0.1 (`20326150`) + public GitHub (`08a2287`) unchanged from D.2/D.3.
+
+---
+
 ## 2026-05-21T17:00:00Z — **D.3 COMPLETE — public GitHub refreshed to v1.0.1 (commit 08a2287); curated tree pushed, internal files + path leak scrubbed.**
 
 ### What shipped
