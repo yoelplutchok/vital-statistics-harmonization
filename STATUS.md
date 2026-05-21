@@ -1,6 +1,32 @@
-# STATUS — last updated 2026-05-21T16:30:00Z
+# STATUS — last updated 2026-05-21T17:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T17:00:00Z — **D.3 COMPLETE — public GitHub refreshed to v1.0.1 (commit 08a2287); curated tree pushed, internal files + path leak scrubbed.**
+
+### What shipped
+
+Pushed `yoelplutchok/vital-statistics-harmonization` `main`: **`a18ca3a` (v1.0) → `08a2287` (v1.0.1)**, 182 files changed, **231 files tracked**. Method: `git archive HEAD` from the dev monorepo → apply the user's exclude denylist → scrub → rsync into `~/Desktop/vital-statistics-harmonization-public/` (preserving `.git`, `--delete`) → commit → push.
+
+### Content (user-specified scope)
+
+- **Included:** `scripts/` + `tests/` (pipeline code), worked-example `notebooks/*.ipynb`, all per-product user docs + schema + metadata + layouts + quickstarts, `docs/` (JOINT_USE_GUIDE/COMPARABILITY/NCHS_SOURCE_MANIFEST/WORKED_EXAMPLE_FAQ), `csv/published_tabulations/`, `shared/`, `migrations/`, `figures/` (kept per user), `.github/` CI, root env/config. Data → Zenodo DOI `10.5281/zenodo.20326150` (parquets not in git).
+- **Excluded (user denylist):** STATUS/DECISION_LOG/FIX_LOG/LESSONS/NEXT_STEPS/KICKOFF/PRE_FLIGHT_LOG/EXPLORATION_REPORT/VERSION_ROADMAP, `RECEIPTS/`, `AUDITS/`, `.claude/`, `paper/`, `notebooks/_build_*.py` + `ananth2022_*`, `docs/PIPELINE_TIMING_BENCHMARK*`, fetal 4× `*_LAYOUT_DECISIONS.md`, natality `docs/VALIDATION.md`, `docs/PRIOR_ART.md`, `docs/PERINATAL_RECORD_FEASIBILITY.md`.
+- **Gitignored, so not published:** `natality/output/` (validation-comparison tables; validators included to regenerate) — offered to force-add if user wants.
+
+### Fixes folded in
+
+- `scripts/_drive_natality_benchmark.py` `NAT_ROOT` hardcoded `/Users/yoelplutchok/...` → `~/Desktop/...expanduser()` (committed `5d88ac8`); `natality/output/validation/*.md` provenance paths scrubbed in the pushed tree. Final tree leak-checked clean.
+
+### Next planned task
+
+**D.4 — Paper 1** (`paper/draft_v2_hmd_styled.md`): numeric/envelope sync, IJE prep, cite the Zenodo DOI `20326150` + the GitHub URL. Fresh-chat helper: `NEXT_STEPS.md` §19.1. (D.1 old-repo redirects remain deferred.)
+
+### Build artifacts current
+
+- Zero parquet mutation across D.2/D.3 (4 gate SHAs byte-exact). Zenodo v1.0.1 published (DOI `20326150`). Public GitHub at `08a2287`.
 
 ---
 
