@@ -4,6 +4,49 @@
 
 ---
 
+## 2026-05-21T19:00:00Z — **D.4 (Paper 1) IJE FINALIZATION COMPLETE (in-session §19.1) — body trimmed to ≤2,500 words, references Vancouver-confirmed, cover letter drafted; manuscript is draft-submission-ready pending author markers + companion-notebook regen.**
+
+### What shipped
+
+Ran `NEXT_STEPS.md` §19.1 in-session (user: "continue in the session"):
+
+- **Word trim:** `paper/draft_v2_hmd_styled.md` main-text body **3,145 → 2,469 words** (whitespace/Word-like, footnote refs excluded) ≤ the IJE 2,500-word limit. ~30 prose-condensation edits across all body sections; **no number, DOI, citation, or accuracy guard changed** (grep-verified: all headline + secondary numbers present, stale-token set still 0, 8 footnotes intact).
+- **Reference style:** confirmed Vancouver/Index-Medicus-conformant (abbreviated journal names, `authors. title. journal year;vol(issue):pages`); no reformat needed.
+- **Cover letter:** new `paper/cover_letter.md` (≤1 page; gap → resource → byte-exact validation → Zenodo DOI + GitHub).
+- **Fix:** natality canonical-filter field `restatus`→`residence_status` (harmonized column name post-v2.8.0 rename; pre-existing raw-vs-harmonized slip).
+
+### Verify
+
+- Body = **2,469 words** (≤2,500). All numbers/DOI/URL/reframe/footnotes preserved; stale-token grep = 0 (incl. `restatus`). Cover-letter numbers match the manuscript.
+- **Zero canonical-state mutation** — only `paper/draft_v2_hmd_styled.md` + new `paper/cover_letter.md`; 4 gate SHAs byte-exact.
+- Receipt: `RECEIPTS/D.4-paper1-ije-finalize_2026-05-21T19-00-00Z.md`. PRE-FLIGHT: `PRE_FLIGHT_LOG.md` 2026-05-21T18:30:00Z. Tags `D.4-paper1-ije-finalize-{pre-do,complete}`.
+
+### Next planned task — **D.4 submission readiness (human + build host)**
+
+Paper 1 is draft-submission-ready. Remaining before IJE submission:
+1. **Author markers** — fill the `<!-- YP -->` placeholders (affiliation, contact, funding, AI-policy wording) + the cover-letter header (date, editor).
+2. **Companion-notebook regen (build host)** — re-run `notebooks/_build_paper_companion.py` against the v3.0.0/v4.0.0/v2.4.0 + MM parquets to refresh the per-claim numeric synthesis the AI-disclosure section relies on.
+3. **Confirm Word count in the submission system** (proxy 2,469; margin ~30 — trim S&W further if it reads >2,500).
+4. *(Optional)* re-measure the natality+linked v4 pipeline wall-clock; *(deferred)* D.1 old-repo redirects + legacy Zenodo description patches.
+
+### Open questions for human
+
+1. Submit Paper 1 to IJE once author markers + companion-notebook regen are done, or hold for another review pass?
+2. Run the companion-notebook regen + pipeline re-measure on the build host now, or accept committed-validation-table sourcing for submission?
+
+### Forward-looking HALTs for next session
+
+1. Confirm the Word count in the journal system before submitting (proxy 2,469; thin ~30-word margin — S&W is the most condensable if over).
+2. Companion-notebook regen still owed on the build host (manuscript numbers are traceable to committed validation tables but not yet to a fresh notebook run).
+3. Author `<!-- YP -->` markers + cover-letter header must be completed before submission.
+
+### Build artifacts current
+
+- `paper/draft_v2_hmd_styled.md`: envelope-synced (4 products, 1968–2024, unified DOI + GitHub, reframe) + trimmed to ≤2,500-word body. `paper/cover_letter.md`: new.
+- Zero parquet mutation across all D.4 work (4 gate SHAs byte-exact). Zenodo v1.0.1 (`20326150`) + public GitHub (`08a2287`) unchanged.
+
+---
+
 ## 2026-05-21T18:00:00Z — **D.4 (Paper 1) IN-REPO ENVELOPE SYNC COMPLETE — `draft_v2_hmd_styled.md` re-quantified to the 4-product 1968–2024 envelope + unified DOI/GitHub + "first reproducible artifact" reframe; §19.1 polish + submission remain.**
 
 ### What shipped
