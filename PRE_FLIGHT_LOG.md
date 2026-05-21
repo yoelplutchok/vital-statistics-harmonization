@@ -8,6 +8,22 @@
 
 ---
 
+## PRE-FLIGHT for D.4-paper1-hmd-structure-align — 2026-05-21T19:30:00Z — **RESULT: PROCEED**
+
+**Task.** Tighten `paper/draft_v2_hmd_styled.md` to follow the **HMD IJE-2015 Data Resource Profile structure** more closely (user-directed, after a section-by-section HMD-vs-draft map showed ~1:1 already). Four moves: (1) **drop the abstract paragraph** (HMD opens directly at "Data resource basics"; the summary lives in the nutshell box); (2) **add a "Related resources" section** (mirrors HMD's "Related Databases"; content = superseded single-product deposits + adjacent harmonized resources, from `docs/PRIOR_ART.md`; original prose); (3) **add Figure 1 = cross-product coverage timeline** (mirrors HMD's Figure 1) — regenerate the **stale** `figures/fig1_coverage_timeline` (built 2026-05-12: shows natality 1990–, linked 2005–, no matched multiples) to the current envelope, then add an in-text callout + caption; (4) **expand references toward ~16** (add gregory2024, nichd2024, nber, icpsr from PRIOR_ART; cited in Basics + Related resources). Following HMD's *structure/organization*, NOT its wording (original prose throughout).
+
+**Inputs verified:** HMD skeleton fetched (PMC4707194) — sections, the "Related Databases" + "in a nutshell" placement, Fig 1 = availability-by-population-and-year, ~16 refs. Draft anchors confirmed (abstract = line 3; sections L5–L142). `figures/fig1_coverage_timeline.{pdf,png}` exist but **stale**; generator `shared/helpers/build_timeline_figure.py` is COMPARABILITY-sourced + deterministic, no parquets needed. New-ref citations all in `docs/PRIOR_ART.md`.
+
+**Scope of mutation:** `paper/` (manuscript) + `shared/helpers/build_timeline_figure.py` (presentation helper) + `figures/fig1_coverage_timeline.{pdf,png}` (regenerated asset). **No gate parquet / schema / validation-CSV / pipeline script touched → 4 gate SHAs byte-exact.** Reversible.
+
+**Figure-regen plan (L6/L7 — must depict the CURRENT envelope):** relax `verify_band_coverage` from "tile without gaps" to "no overlaps; internal gaps allowed; first==lo,last==hi"; NAT_BANDS prepend (1968–1989); LINKED_BANDS prepend pre-2005 cohort bands with the **1992–1994 gap** visible; add MATCHED_MULTIPLES as a 4th row collapsed to two non-overlapping blocks (1995–2000, 2016–2020) — the 1995–1997 sub-window is a file-generation detail, noted in caption/Table 1, not a coverage difference; extend x-axis to ~1966; add a 4th y-row. VERIFY the regenerated figure shows 4 products + correct ranges + the linked gap, and that `verify_band_coverage` passes.
+
+**Word budget:** body currently 2,469 (Word-like) ≤2,500. Adding "Related resources" (~95 w) + a citation clause (~8 w) ⇒ ~2,572; will **offset-trim ~75 w** from the most condensable spots (S&W / Use) to stay ≤2,500. Abstract drop is word-count-neutral (abstract excluded from the 2,500). Figure caption excluded from the count.
+
+**Accuracy guards (carry from prior D.4 tasks):** no number/DOI/URL changed by this pass (grep-verify after); the figure must not claim coverage the data lacks (hence regen); MM stays documentation-table-validated framing; no HMD prose reproduced.
+
+**§7 checked:** none tripped. **Plan:** tag `…-pre-do` → edits + figure regen → VERIFY (body ≤2,500; figure 4-product/current; numbers intact; refs cited+defined) → RECEIPT + DECISION_LOG + STATUS + commit `…-complete`.
+
 ## PRE-FLIGHT for D.4-paper1-ije-finalize — 2026-05-21T18:30:00Z — **RESULT: PROCEED**
 
 **Task.** D.4 / Paper 1 IJE finalization (`NEXT_STEPS.md` §19.1, in-session per user "continue in the session"): trim the main-text body from ~3,145 to ≤2,500 words (the IJE Data Resource Profile limit; abstract / Key-Features box / References / Table 1 / admin sections excluded), confirm Vancouver/Index-Medicus reference conformance, and draft a cover letter. Builds on `D.4-paper1-envelope-sync-complete` (`1db47d3`). Doc-only; **zero canonical-state mutation** (4 gate SHAs byte-exact); git-reversible.
