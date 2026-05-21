@@ -1,6 +1,29 @@
-# STATUS — last updated 2026-05-21T15:30:00Z
+# STATUS — last updated 2026-05-21T16:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T16:00:00Z — **D.2 deposit CORRECTED via Zenodo new version v1.0.1 (DOI 10.5281/zenodo.20326150); lean 82-file curated docs zip replaces the over-included v1.0.0.**
+
+### What happened
+
+v1.0.0 (DOI `10.5281/zenodo.20319640`) was published, then found to **over-include** files: the docs zip was built via *tree-minus-blocklist* (`git archive HEAD` minus excludes), which dragged in `notebooks/`, `shared/` helper code, build cruft (`__init__.py`/`.gitignore`/`.gitkeep`/empty dirs), and a `/Users/yoelplutchok` path leak in two `natality/output/validation/*.md` files — against the user's explicit "lean / only-necessary / model-after-prior-deposits" directive. Lesson recorded in memory ([[lean-public-artifact-packaging]]).
+
+### Correction (chosen: Zenodo "New version", not delete+new)
+
+Content is **non-sensitive** (notebooks/code go to public GitHub anyway; rest is cruft + a cosmetic path string), so the old v1.0.0 lingering in version history is harmless. New version is self-service/instant, keeps the concept DOI resolving to the clean latest, and swaps only the 621 KB docs zip (the 7 parquets — 8.3 GB — carry over untouched, already md5-verified on Zenodo).
+
+- New version DOI **`10.5281/zenodo.20326150`** baked into `README.md` / `CITATION.cff` / `.zenodo.json`; version **1.0.0 → 1.0.1**.
+- Clean docs zip = explicit **82-file allowlist** (cross-product docs + per-product docs + schema/validation/layout CSVs + quickstarts + published_tabulations + README/LICENSE/CITATION/.zenodo.json). EXCLUDES notebooks, `shared/` code, all cruft, redundant per-product LICENSE/CITATION; the 2 path-leak `.md` files scrubbed to relative paths.
+
+### Next planned task
+
+Human: in the v1.0.1 draft, set version 1.0.1, remove the old docs zip + old SHA256SUMS, keep the 7 parquets, upload the clean docs zip + new SHA256SUMS, **verify the file list**, publish. Then **D.3** (public GitHub refresh, locked scrub spec) → **D.4**.
+
+### Build artifacts current
+
+- Zero parquet mutation; 4 gate SHAs byte-exact. Repo edits: README/CITATION/.zenodo.json (DOI→20326150, v1.0.1) + STATUS. Clean upload bundle staged in `~/Desktop/HVS-zenodo-clean/`.
 
 ---
 
