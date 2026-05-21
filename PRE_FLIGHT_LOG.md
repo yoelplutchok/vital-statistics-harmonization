@@ -8,6 +8,39 @@
 
 ---
 
+## PRE-FLIGHT for D.4-paper1-envelope-sync — 2026-05-21T17:30:00Z — **RESULT: PROCEED**
+
+**Task.** D.4 / Paper 1 — full envelope sync of `paper/draft_v2_hmd_styled.md` to the current shipped resource (4 products, 1968–2024), inject the unified Zenodo DOI + GitHub URL, rebuild Table 1, rewrite Future Developments, reconcile validation framing, and apply the [[paper1_framing_correction]] reframe ("first openly published / reproducible / validated artifact", not "first to harmonize"; Ananth et al. used the same NCHS microdata). User-authorized this session (scope = "Full envelope sync"; framing = "Reframe per memory"). Doc-only; **zero canonical-state mutation expected** (no parquet/schema/validation-CSV/script touched; 4 gate SHAs stay byte-exact). Manuscript edits are git-reversible (not externally irreversible).
+
+**Inputs verified to exist (L1):** `paper/draft_v2_hmd_styled.md` (143 lines, last edited 2026-05-11 — predates Phase C/D). Authoritative number sources read this PRE-FLIGHT: `README.md`, `VERSION_ROADMAP.md`, `CITATION.cff`, `fetal_death/ABOUT_THIS_RELEASE.md`, `natality/PROVENANCE.md`, `natality/docs/ABOUT_THIS_RELEASE.md`, `matched_multiples/README.md` + `validation_results.md`, `docs/COMPARABILITY.md`, `docs/PRIOR_ART.md`, `docs/PIPELINE_TIMING_BENCHMARK.md`; column counts from the three `harmonized_schema.csv`; validation tallies from `fetal_death/validation_results.csv` (29 rows ✓), `natality/output/validation/external_validation_v1_comparison.csv` (183 pass), `…_v3_linked_comparison.csv` (35 pass), `matched_multiples/validation_results.md` (13/13).
+
+**Field-value snapshot (Convention 3) — manuscript current text vs. authoritative current state:**
+
+| Manuscript claim (stale) | Authoritative current state | Source |
+|---|---|---|
+| Title "1990–2024"; "three companion parquet files" | 1968–2024; **four** products (adds matched multiples) | README four-products table; CITATION.cff |
+| Natality 138,819,655 · 1990–2024 · 84 col | **201,161,456 · 1968–2024 · 84 col** | natality/PROVENANCE.md; VERSION_ROADMAP |
+| Linked 74,943,824 · 2005–2023 · 94 col | **149,386,620 · 1983–2023 (perm. 1992–94 gap) · 97 col** (94 + 3 within-era cohort: link_segment/underlying_cause_icd9/cause_recode_61) | natality/PROVENANCE.md; natality ABOUT |
+| Fetal 1,634,195 · 1992–2022 · 89 col | **2,427,233 · 1982–2024 · 89 col** | fetal ABOUT_THIS_RELEASE; VERSION_ROADMAP |
+| Matched multiples: absent | **1,665,568 · 1995–2020 (3 windows) · 24 col** | matched_multiples/README + validation_results.md |
+| Fetal 2003-04 + 1982-91 "deferred to V2.1/V3" | **shipped** (V2.1+V3a+V3b+2023-24) | fetal ABOUT |
+| Future Developments lists V2.1 + V3 as planned | both **done**; section needs rewrite | VERSION_ROADMAP |
+| DOI: natality 19363074 + fetal v2.0.0 20031571 | **unified 10.5281/zenodo.20326150 (v1.0.1)** + GitHub URL; old DOIs now "superseded single-product" | CITATION.cff; STATUS 2026-05-21 |
+| Fetal validation "74 targets; 29 counts + 26 rates" | 29/29 per-year counts (validated yrs) + 26 rates + 13/19 NVSR-73-09 detail + 6 docs; backward-ext/latest-yr via User Guide controls | fetal validation_results.csv + targets.csv + ABOUT |
+| Pipeline "fetal ~6 min; natality ~90 min" | fetal re-measured **5.22 min**; natality+linked ~90 min was the **old 1990–2024/v3** envelope — v4 (201M+149M) re-measure DEFERRED | PIPELINE_TIMING_BENCHMARK |
+
+**Accuracy guards (do NOT overclaim — L6/L7/L9):**
+1. Natality **pre-1990 (1968–1989) is NOT NVSR-benchmarked** (planned); only 1990–2024 is 183/183. Do not claim 1968–1989 NVSR-validation.
+2. Fetal **1982–1991 + 2023–2024** validated against NCHS **User Guide control counts**, not NVSR per-year published figures.
+3. Matched multiples validated against **publication-PDF Table 1 cells + structural invariants**, NOT NVSR per-year — the headline "every per-year NVSR figure byte-exact" must be qualified per product.
+4. **Do not invent byte-lengths** for the new natality 1968–1989 / linked 1983–2004 eras (not in a committed artifact); use documented format labels + "varies" + a footnote to the record_layout CSVs.
+5. The "90/90" fetal headline in `ABOUT_THIS_RELEASE.md` does not cleanly reconcile to a committed result file (validation_results.csv = 29 rows; targets.csv = 86 rows) — use the **traceable** framing; soft-flag the doc discrepancy in the receipt (out of D.4 scope to fix the docs).
+6. `paper_companion.ipynb` currently asserts it recomputes every numeric; it is **stale** vs the new envelope and needs a build-host regen to re-discharge per-claim verification — soft-flag in forward-looking HALTs; do not claim it has been re-run.
+
+**§7 halt conditions checked:** none tripped. Drift is expected work, not a halt. README/VERSION_ROADMAP/CITATION/PROVENANCE are 3-to-4-way consistent on the headline numbers. The README-vs-ABOUT fetal-validation framing difference (guard #5) is handled by using the traceable framing (not a §7-#12 work-around — the manuscript states only what a committed result file supports).
+
+**Plan:** tag `D.4-paper1-envelope-sync-pre-do` → edit the manuscript (abstract, basics, coverage, Table 1, measures, methods, use, S&W, future, access, nutshell, admin AI-disclosure softening, add IPUMS+HMD refs for the reframe) → VERIFY (grep stale numbers/years/DOIs; word-count; references resolve) → RECEIPT + DECISION_LOG + STATUS + commit.
+
 ## PRE-FLIGHT for pre-zenodo-audit-fix-bundle (D-prep.5) — 2026-05-20T12:00:00Z — **RESULT: PROCEED**
 
 D-prep.4 complete (`6fefeb6`). Tier A PZ-01–PZ-11 scope; doc/CSV-only; no parquet mutation. Field-value snapshot: JOINT_USE L39 `1992-2022 deferred` → v2.4.0 joint text; quickstart docstring V2.0 → v2.4.0; CODEBOOK L63 `1992-2022` → `1982-2024`; fetal/MM inventory `imported=no` → `yes`.
