@@ -1,6 +1,38 @@
-# STATUS — last updated 2026-05-21T13:30:00Z
+# STATUS — last updated 2026-05-21T14:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-21T14:00:00Z — **`[plan-update]` D.3 public-repo scrub scope — "publish only understand-and-use files; exclude all process docs + manuscripts".**
+
+User directive (this chat): the public GitHub repo (D.3) should contain **only what is absolutely necessary to understand and use the project** — no execution-process documents (audits, plans, pre-flights, receipts, logs) and **not the papers**. Encoded into `KICKOFF.md` Phase D.3 so a fresh D.3 session scrubs correctly.
+
+### What changed
+
+`KICKOFF.md` D.3 block expanded from a flat exclude list into an explicit **Exclude / Include / Borderline** spec:
+- **Exclude:** all state/process files (STATUS, DECISION_LOG, FIX_LOG, LESSONS, NEXT_STEPS, KICKOFF, PRE_FLIGHT_LOG, EXPLORATION_REPORT, **VERSION_ROADMAP**), process dirs (`RECEIPTS/`, `AUDITS/`, `.claude/`), `paper/` (incl. `PAPER2_*`), internal/Phase-E code (`notebooks/_build_*.py`, **`notebooks/ananth2022_*.py`**), `docs/PIPELINE_TIMING_BENCHMARK.md`, and the already-gitignored Ananth PDF + `ananth2022_*outputs*/`.
+- **Include:** the understand-and-use surface only (root README/PROJECT_STRUCTURE/LICENSE/CITATION/views.sql/STATA_SAS_QUICKSTART/pyproject/uv.lock/requirements/migrations; user-facing `docs/`; per-product README + user docs + scripts + metadata + output/validation; `notebooks/*.ipynb` executed worked examples only; `csv/published_tabulations/`; `tests/`).
+- **Borderline (confirm at D.3 run):** VERSION_ROADMAP.md, docs/PIPELINE_TIMING_BENCHMARK.md (excluded), tests/ (included).
+
+Additions vs. the prior list: `VERSION_ROADMAP.md`, `notebooks/ananth2022_*.py`, `docs/PIPELINE_TIMING_BENCHMARK.md`, and the explicit scrub principle + Include surface.
+
+### Gate re-hash question (answered this chat)
+
+**Yes** — re-hash the 4 gate parquets once on the build host immediately before zipping (KICKOFF "Gate SHA re-hash"; receipt §3). Not physically required, but it's the only proof the published (immutable) bytes == the validated bytes; trivial if nothing re-ran since the 2026-05-21 4/4 PASS.
+
+### Next planned task
+
+Unchanged: human-side **D.2** (gate re-hash → upload → return concept DOI) → I apply §5 post-publish edits → **D.3** (now with the locked scrub spec) → **D.4**.
+
+### Forward-looking HALTs
+
+1. D.3 scrub follows the KICKOFF D.3 Exclude/Include spec; confirm the 3 borderline items at run time.
+2. Carried: gate re-hash mandatory before Zenodo; 4 gate parquets absent in clone; Phase D human-gated; do not publish autonomously.
+
+### Build artifacts current
+
+- Zero canonical-state mutation. Doc-only (`KICKOFF.md` + this STATUS section). 4 gate SHAs unchanged.
 
 ---
 

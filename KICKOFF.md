@@ -294,7 +294,21 @@ Authorized 2026-05-24 by user directive (above). Each task below uses the full `
 
 - **D.2. Task 10 — Unified Zenodo deposit (NEXT).** Publish a **new** unified HVS concept DOI covering all four in-repo products (natality v3.0.0, linked v4.0.0, fetal death v2.4.0, matched multiples). Agent: `.zenodo.json`, upload bundle list from `PROVENANCE.md`, post-publish `CITATION.cff` / `README.md` DOI lines. **Human:** zenodo.org upload. **Legacy patches (ii–iv)** to old concept DOIs — **DEFERRED** per user 2026-05-21. PRE-FLIGHT: re-hash 4 gate parquets on the **exact files** going into the zip (see “Gate SHA re-hash” in Current planned sequence).
 
-- **D.3. KICKOFF step 5 — Refresh existing public GitHub (not “create repo”).** Repo already exists: https://github.com/yoelplutchok/vital-statistics-harmonization (v1.0 snapshot 2026-05-12 is stale). Re-rsync `~/Desktop/vital-statistics-harmonization-public/`, re-scrub, push v1.x to **overwrite** v1.0. Excludes: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `RECEIPTS/`, `.claude/`, `paper/`, `notebooks/_build_*.py`, `EXPLORATION_REPORT.md`, `AUDITS/`. Data files: point README to Zenodo (parquets too large for git).
+- **D.3. KICKOFF step 5 — Refresh existing public GitHub (not “create repo”).** Repo already exists: https://github.com/yoelplutchok/vital-statistics-harmonization (v1.0 snapshot 2026-05-12 is stale). Re-rsync `~/Desktop/vital-statistics-harmonization-public/`, re-scrub, push v1.x to **overwrite** v1.0.
+
+  **Scrub principle (user directive 2026-05-21):** publish ONLY what an external user needs to *understand and use* the resource. Exclude every execution-process artifact (audits, plans, pre-flights, receipts, decision/fix/lessons logs) AND the manuscripts. Parquets are NOT in git — README points to the Zenodo DOI from D.2.
+
+  **Exclude (do NOT publish):**
+  - Process/state files: `STATUS.md`, `DECISION_LOG.md`, `FIX_LOG.md`, `LESSONS.md`, `NEXT_STEPS.md`, `KICKOFF.md`, `PRE_FLIGHT_LOG.md`, `EXPLORATION_REPORT.md`, `VERSION_ROADMAP.md`
+  - Process dirs: `RECEIPTS/`, `AUDITS/`, `.claude/`
+  - Manuscripts: `paper/` (all drafts incl. `PAPER2_*`)
+  - Internal / Phase-E code: `notebooks/_build_*.py`, `notebooks/ananth2022_*.py`
+  - Internal benchmark: `docs/PIPELINE_TIMING_BENCHMARK.md`
+  - Local-only (already gitignored, never in tree): the copyrighted Ananth PDF + `RECEIPTS/ananth2022_*outputs*/`
+
+  **Include (the understand-and-use surface):** root `README.md`, `PROJECT_STRUCTURE.md`, `LICENSE`, `CITATION.cff`, `views.sql`, `STATA_SAS_QUICKSTART.md`, `pyproject.toml`, `uv.lock`, `requirements.txt`, `migrations/`; user-facing `docs/` (`JOINT_USE_GUIDE`, `COMPARABILITY`, `PRIOR_ART`, `NCHS_SOURCE_MANIFEST`, `WORKED_EXAMPLE_FAQ`, `PERINATAL_RECORD_FEASIBILITY`); each product's `README` + user docs (`CODEBOOK` / `COMPARABILITY` / `FAQ` / `GETTING_STARTED` / `REPRODUCING` / `ABOUT_*` / `VALIDATION` / `PROVENANCE`) + `scripts/` + `metadata/` + `output/validation/` + layout/threshold CSVs; `notebooks/*.ipynb` (executed worked examples only — NOT the builders); `csv/published_tabulations/`; `tests/`.
+
+  **Borderline — confirm at D.3 run:** `VERSION_ROADMAP.md` + `docs/PIPELINE_TIMING_BENCHMARK.md` (excluded above as process docs; re-include if you decide they help users) and `tests/` (included above; drop if you'd rather keep the public tree minimal).
 
 - **D.4. Paper 1 — Data Resource Profile** (`paper/draft_v2_hmd_styled.md`). Numeric + envelope sync; IJE trim; admin markers; cite new Zenodo + GitHub from D.2–D.3. Fresh-chat helper: `NEXT_STEPS.md` §19.1. Submit to IJE when human says go.
 
