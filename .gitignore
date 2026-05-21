@@ -46,3 +46,11 @@ env/
 .env
 .env.local
 .claude/settings.local.json
+
+# Copyrighted third-party reference articles — kept locally for Paper-2 work,
+# never committed or published (the 11 tracked figure PDFs live in **/figures/).
+/*.pdf
+
+# Phase-E (Paper 2) Ananth-2022 replication scratch outputs — regenerable from
+# notebooks/ananth2022_*.py; the .md receipts are committed, these bulk CSVs are not.
+RECEIPTS/ananth2022_*outputs*/
