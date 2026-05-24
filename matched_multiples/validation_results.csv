@@ -2,6 +2,34 @@ target_id,source,description,expected,actual,status,diff,pdf_sha256
 window_1995-1997_count,Row-count conservation across harmonize step,Harmonized rows for window 1995-1997 match yearly_clean,324490,324490,PASS,0,
 window_1995-2000_count,Row-count conservation across harmonize step,Harmonized rows for window 1995-2000 match yearly_clean,699144,699144,PASS,0,
 window_2016-2020_count,Row-count conservation across harmonize step,Harmonized rows for window 2016-2020 match yearly_clean,641934,641934,PASS,0,
+1995_1997_total,1995-1997 Table 1 Total column (BIRTHID@1 totals),1995-1997 total,324490,324490,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_live_birth,1995-1997 Table 1 Total column (BIRTHID@1 totals),1995-1997 live_birth,317622,317622,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_survivor,1995-1997 Table 1 Total column (BIRTHID@1 totals),1995-1997 survivor,307152,307152,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_infant_death,1995-1997 Table 1 Total column (BIRTHID@1 totals),1995-1997 infant_death,10470,10470,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_fetal_death,1995-1997 Table 1 Total column (BIRTHID@1 totals),1995-1997 fetal_death,6868,6868,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc1_survivor,1995-1997 Table 1 complete-set × survivor (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=1 survivor,304398,304398,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc1_infant_death,1995-1997 Table 1 complete-set × infant_death (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=1 infant_death,10007,10007,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc1_fetal_death,1995-1997 Table 1 complete-set × fetal_death (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=1 fetal_death,6129,6129,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc2_survivor,1995-1997 Table 1 incomplete-set × survivor (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=2 survivor,175,175,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc2_infant_death,1995-1997 Table 1 incomplete-set × infant_death (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=2 infant_death,66,66,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc2_fetal_death,1995-1997 Table 1 incomplete-set × fetal_death (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=2 fetal_death,29,29,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc3_survivor,1995-1997 Table 1 unmatched-set × survivor (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=3 survivor,2579,2579,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc3_infant_death,1995-1997 Table 1 unmatched-set × infant_death (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=3 infant_death,397,397,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_1997_sc3_fetal_death,1995-1997 Table 1 unmatched-set × fetal_death (NBER tab1 structure sha=2778c656…),1995-1997 set_complete=3 fetal_death,710,710,PASS,0,f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae675d66
+1995_2000_total,1995-2000 Table 1 Total column (BIRTHID@1 totals),1995-2000 total,699144,699144,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_live_birth,1995-2000 Table 1 Total column (BIRTHID@1 totals),1995-2000 live_birth,684998,684998,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_survivor,1995-2000 Table 1 Total column (BIRTHID@1 totals),1995-2000 survivor,662779,662779,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_infant_death,1995-2000 Table 1 Total column (BIRTHID@1 totals),1995-2000 infant_death,22219,22219,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_fetal_death,1995-2000 Table 1 Total column (BIRTHID@1 totals),1995-2000 fetal_death,14146,14146,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc1_survivor,1995-2000 Table 1 complete-set × survivor (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=1 survivor,657183,657183,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc1_infant_death,1995-2000 Table 1 complete-set × infant_death (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=1 infant_death,21059,21059,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc1_fetal_death,1995-2000 Table 1 complete-set × fetal_death (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=1 fetal_death,12382,12382,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc2_survivor,1995-2000 Table 1 incomplete-set × survivor (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=2 survivor,439,439,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc2_infant_death,1995-2000 Table 1 incomplete-set × infant_death (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=2 infant_death,169,169,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc2_fetal_death,1995-2000 Table 1 incomplete-set × fetal_death (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=2 fetal_death,102,102,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc3_survivor,1995-2000 Table 1 unmatched-set × survivor (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=3 survivor,5157,5157,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc3_infant_death,1995-2000 Table 1 unmatched-set × infant_death (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=3 infant_death,991,991,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
+1995_2000_sc3_fetal_death,1995-2000 Table 1 unmatched-set × fetal_death (NBER tab1 structure sha=2778c656…),1995-2000 set_complete=3 fetal_death,1662,1662,PASS,0,07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886
 total,2016-2020 PDF Table 1 'Total' column,All records (2016-2020),641934,641934,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
 live_birth,2016-2020 PDF Table 1 'Total' column,Live births: survivor + infant_death (2016-2020),633734,633734,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be
 survivor,2016-2020 PDF Table 1 'Total' column,Survivors (2016-2020),626541,626541,PASS,0,ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be

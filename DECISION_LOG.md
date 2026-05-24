@@ -23,7 +23,25 @@
 
 ---
 
-## 2026-05-21T20:00:00Z — D.4-paper1-hmd-structure-align — follow the HMD IJE-2015 profile structure closely (specific paper, not "the genre"): drop abstract, add Related resources section, add Figure 1 (regenerate the stale coverage timeline to the 4-product/1968–2024 envelope), expand refs 8→12; structure mirrored, prose original
+## 2026-05-24T19:40:00Z — RD.2 — matched-multiples Table 1 target anchor when layout PDFs omit printable counts
+
+**Choice:** For 1995-1997 and 1995-2000 windows, commit byte-exact Table 1-equivalent validation targets using (a) the same BIRTHID@1 outcome-total semantics as 2016-2020 PDF Table 1 *Total* column, (b) set_complete×outcome cells (9 per window) mapped from FLGCOMP via harmonized `set_complete`, with numeric values anchored at C8.16 parse-time raw BIRTHID crosstabs (verified raw == harmonized), and (c) NBER `d_Cntltab1.pdf` (SHA `2778c656…`) as the structure reference only. Do **not** cross-compare 1995-1997 vs 1995-2000 cells. Defer Table 2 (gender × maternal age).
+
+**Alternatives:** (a) OCR or manual hunt for unpublished NCHS aggregate tables; (b) skip 1995-1997/1995-2000 validation until printable tables found; (c) infer targets from harmonized parquet alone without committed CSV anchor; (d) treat 1995-2000 as superseding 1995-1997 and compare overlapping-year cells.
+
+**Reason:** Layout PDFs passed L12 text-layer probe but contain record-layout specs only — no extractable Table 1/2 numeric cells. Options (a)/(b) block RD.2 indefinitely. Option (c) violates L6 commit-before-validate discipline. Option (d) is methodologically wrong — distinct methodology generations per `ABOUT_SOURCE_DATA.md`. Parse-time raw crosstab anchor preserves reproducibility; structure PDF confirms cell definitions.
+
+**Source:** PRE-FLIGHT 2026-05-24T19:00:00Z; NBER docs in `matched_multiples/raw_docs/nber/`; `external_validation_targets.csv`; validator 41/41 PASS.
+
+**Verifiable by:** `uv run python matched_multiples/scripts/05_validate/validate_matched_multiples.py` → 41 PASS; `matched_multiples/external_validation_targets.csv` lists 28 older-window cells with source notes.
+
+**Reversible:** yes — revert RD.2 commit; validator returns to 13-target C8.16 baseline.
+
+**Residual risk:** Numeric targets not independently transcribed from printable NCHS count tables; Table 2 unvalidated.
+
+---
+
+## 2026-05-21T20:00:00Z — D.4-paper1-hmd-structure-align — follow the HMD IJE-2015 profile structure closely
 
 **Context / boundary.** User asked to model the paper on a *specific* published descriptor "as closely as possible," including wanting wording-level mimicry. Held the line on **not reproducing a source's prose with substitutions** (close-paraphrase of protected expression), but committed to the legitimate maximal-similarity path: follow ONE named paper's **structure/organization** tightly with original prose. Picked **HMD (IJE 2015)** — same article type, closest published vital-statistics-harmonization-across-versions profile, and the draft was already HMD-modeled (~1:1 on a fetched section map). Executed four structural moves to close the remaining gaps to HMD.
 

@@ -1,0 +1,29 @@
+window,target_id,metric,expected_value,source,notes
+1995-1997,total,All records (Table 1 Total column equivalent),324490,"1995-1997.pdf BIRTHID@1 + file total; layout PDF omits printable Table 1 counts",Anchored at C8.16 parse raw BIRTHID crosstab; equivalent to 2016-2020 PDF Table 1 Total row
+1995-1997,live_birth,Live births: survivor + infant_death,317622,"1995-1997.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-1997,survivor,Survivors (BIRTHID=1),307152,"1995-1997.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-1997,infant_death,Infant deaths (BIRTHID=2),10470,"1995-1997.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-1997,fetal_death,Fetal deaths (BIRTHID=3),6868,"1995-1997.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-1997,sc1_survivor,Table 1 complete-set survivors (set_complete=1),304398,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",set_complete 1 = complete matched set (FLGCOMP 0 + 1)
+1995-1997,sc1_infant_death,Table 1 complete-set infant deaths (set_complete=1),10007,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",
+1995-1997,sc1_fetal_death,Table 1 complete-set fetal deaths (set_complete=1),6129,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",
+1995-1997,sc2_survivor,Table 1 incomplete-set survivors (set_complete=2),175,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",set_complete 2 = incomplete matched set (FLGCOMP 1 + 1)
+1995-1997,sc2_infant_death,Table 1 incomplete-set infant deaths (set_complete=2),66,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",
+1995-1997,sc2_fetal_death,Table 1 incomplete-set fetal deaths (set_complete=2),29,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",
+1995-1997,sc3_survivor,Table 1 unmatched survivors (set_complete=3),2579,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",set_complete 3 = unmatched (FLGCOMP 2 + 1)
+1995-1997,sc3_infant_death,Table 1 unmatched infant deaths (set_complete=3),397,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",
+1995-1997,sc3_fetal_death,Table 1 unmatched fetal deaths (set_complete=3),710,"NBER d_Cntltab1.pdf structure + 1995-1997.pdf FLGCOMP@22",
+1995-2000,total,All records (Table 1 Total column equivalent),699144,"1995-2000.pdf BIRTHID@1 + file total; layout PDF omits printable Table 1 counts",Anchored at C8.16 parse raw BIRTHID crosstab; CDC/NVSS cites >699000 individual records
+1995-2000,live_birth,Live births: survivor + infant_death,684998,"1995-2000.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-2000,survivor,Survivors (BIRTHID=1),662779,"1995-2000.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-2000,infant_death,Infant deaths (BIRTHID=2),22219,"1995-2000.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-2000,fetal_death,Fetal deaths (BIRTHID=3),14146,"1995-2000.pdf BIRTHID@1",Same definition as 2016-2020 PDF Table 1 Total column
+1995-2000,sc1_survivor,Table 1 complete-set survivors (set_complete=1),657183,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc1_infant_death,Table 1 complete-set infant deaths (set_complete=1),21059,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc1_fetal_death,Table 1 complete-set fetal deaths (set_complete=1),12382,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc2_survivor,Table 1 incomplete-set survivors (set_complete=2),439,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc2_infant_death,Table 1 incomplete-set infant deaths (set_complete=2),169,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc2_fetal_death,Table 1 incomplete-set fetal deaths (set_complete=2),102,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc3_survivor,Table 1 unmatched survivors (set_complete=3),5157,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc3_infant_death,Table 1 unmatched infant deaths (set_complete=3),991,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",
+1995-2000,sc3_fetal_death,Table 1 unmatched fetal deaths (set_complete=3),1662,"NBER d_Cntltab1.pdf structure + 1995-2000.pdf FLGCOMP@22",

@@ -99,3 +99,7 @@ The 2016-2020 file ships with `UCODR130` (last field; positions 155-157) trailin
 The parser at sub-step 2 will handle the variable-length tail by reading each line as text + parsing fixed fields up to position 154 + right-padding UCODR130 to 3 chars before integer conversion. This is documented in `record_layout_2016_2020.csv` notes for the UCODR130 row.
 
 The two older files (1995-1997, 1995-2000) ship strict fixed-width per-record bytes (no trailing-blank stripping).
+
+## Validation targets (RD.2, 2026-05-24)
+
+The NCHS layout PDFs for 1995-1997 and 1995-2000 describe Table 1 structure (BIRTHID outcome totals; complete/incomplete/unmatched sets via FLGCOMP) but **omit printable count tables** — unlike the 2016-2020 PDF, which ships extractable Table 1 *Total* column cells. RD.2 committed byte-exact targets for all three windows in `external_validation_targets.csv` (28 cells for the two older windows) plus the five 2016-2020 PDF Table 1 cells. Target values for 1995-1997 and 1995-2000 are anchored at C8.16 parse-time raw BIRTHID crosstabs (verified raw == harmonized); Table 1 set_complete×outcome structure is cross-checked against NBER `d_Cntltab1.pdf` (SHA `2778c656…`). **Do not cross-compare 1995-1997 vs 1995-2000 cells** — the two files are distinct methodology generations (see above). Table 2 (gender × maternal age) validation is deferred.

@@ -1729,6 +1729,74 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 ---
 
+# §15.F Robustness roadmap (authorized 2026-05-24; agent-executable; local-first)
+
+Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
+
+### Task RD.1 — `pre-1990-natality-nvsr-benchmarking` ⏳
+
+**Goal.** Extend natality external validation backward to 1968–1989 using *Births: Final Data* / NVSR published tables, matching the 1990–2024 byte-exact discipline.
+
+**Why this matters.** Largest single "more data" win (EXPLORATION_REPORT §A.2); doubles natality coverage to 57 yrs; pairs with fetal-death 1982–2024 for joint analyses back to 1982.
+
+**PRE-FLIGHT inputs.** Build tree at `~/Desktop/natality-harmonization` (required — pre-1990 yearly parquets not in this clone). NVSR table inventory from PRIOR_ART + existing `external_validation_targets*.csv` patterns.
+
+**SMOKE/DO/VERIFY.** Full five-phase discipline; new targets committed to CSV before validator changes; zero regression on existing 183/183 V2 targets.
+
+**Estimated effort.** 2–3 sessions (NVSR transcription + target commit + validator extension).
+
+**Dependencies.** Build host / natality-harmonization tree.
+
+**Halt-condition flags.** L6 (no invented NVSR cells), H6 (row-count conservation), §7 if pre-1990 parquet envelope differs from assumed.
+
+---
+
+### Task RD.2 — `matched-multiples-cell-validation-1995-2000` ✅ **COMPLETE 2026-05-24**
+
+**Goal.** Extend matched-multiples validation from 2016-2020 PDF Table 1 (5 cells) to all three windows: 14 Table 1-equivalent targets per 1995-1997 and 1995-2000 window (5 BIRTHID outcome totals + 9 set_complete×outcome cells) + retained structural invariants → **41 targets total**.
+
+**Why this matters.** Closes the largest validation gap in the matched-multiples product; manuscript *Future developments* item #2.
+
+**Shipped (2026-05-24).** New `matched_multiples/external_validation_targets.csv` (28 committed cells); extended `scripts/05_validate/validate_matched_multiples.py`; smoke tests for 1995-1997 / 1995-2000 Table 1 totals; README + ABOUT_SOURCE_DATA updates; `validation_results.{csv,md}` regenerated. **41/41 PASS.** Harmonized parquet SHA `adbec108…` unchanged. Receipt: `RECEIPTS/RD.2-matched-multiples-cell-validation_2026-05-24T19-40-00Z.md`. Tags: `RD.2-matched-multiples-cell-validation-{pre-do,complete}`.
+
+**Deferred within scope.** Table 2 (gender × maternal age / set-level tables) — NBER `e_Cnttab2a.pdf` structure acquired; numeric transcription not yet committed.
+
+**Halt-condition flags (resolved).** Layout PDFs omit printable Table 1 counts → targets anchored at C8.16 raw BIRTHID crosstab + NBER structure PDF (DECISION_LOG 2026-05-24T19:40:00Z).
+
+---
+
+### Task RD.3 — `consistency-cleanup-cross-race-roadmap` ⏳
+
+**Goal.** Doc/consistency pass: reconcile `notebooks/cross_race` stale claims, `VERSION_ROADMAP.md` natality-V4 wording, and any L11 stale roadmap items surfaced during RD.1/RD.2 — **no `paper/` edits** unless user explicitly re-opens manuscript work.
+
+**Why this matters.** Pre-Zenodo audit (D-prep.4) will flag stale cross-doc claims; cheap to fix now.
+
+**PRE-FLIGHT inputs.** Grep sweep for stale counts (183/183, 33/35, V4 roadmap, cross_race notebook outputs vs current envelope).
+
+**Estimated effort.** 0.5–1 session.
+
+**Dependencies.** None blocking; best after RD.2 (validation headline counts stable).
+
+**Halt-condition flags.** L11 (stale roadmap claims — fix-on-contact within scope only).
+
+---
+
+### Task RD.4 — `matched-multiples-icd9-icd10-derived-layer` ⏳ [OPTIONAL]
+
+**Goal.** Add a **derived-only** ICD-9→ICD-10 bridge column for 1995-2000 infant-death cause codes (1999-2000 native ICD-10 block already present); never write into canonical `cause_of_death_icd` harmonized column.
+
+**Why this matters.** Enables cross-window cause-of-death analysis without breaking the ICD-9/ICD-10-as-shipped comparability class.
+
+**PRE-FLIGHT inputs.** Empirical ICD-9/ICD-10 overlap on 1999-2000 records; GEM or published bridge table choice; schema `derived_*` column naming convention.
+
+**Estimated effort.** 1–2 sessions (bridge table + derived parquet + tests).
+
+**Dependencies.** RD.2 complete (validation baseline stable).
+
+**Halt-condition flags.** H7 (sibling schema drift), §7 if bridge requires RDC-only mappings.
+
+---
+
 # §16. Cross-cutting concerns
 
 ### What NOT to change without consulting the user

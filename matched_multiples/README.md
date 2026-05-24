@@ -68,13 +68,14 @@ df_us_resident = df[
 
 Each PDF includes one or more published tables that the harmonized parquet should reproduce byte-exact:
 
-- **1995-1997 PDF Tables 1-2** — not yet transcribed; record-level counts of matched/unmatched and gender combinations.
-- **1995-2000 PDF Tables 1-2** — not yet transcribed.
+- **1995-1997 Table 1** — 14/14 byte-exact (5 BIRTHID outcome totals + 9 set_complete×outcome cells; layout PDF omits printable counts — see `external_validation_targets.csv`).
+- **1995-2000 Table 1** — 14/14 byte-exact (same structure; validate against this window only, not 1995-1997).
 - **2016-2020 PDF Table 1** — 5/5 *Total* column cells byte-exact (see `validation_results.md`).
+- **Table 2 (gender × maternal age)** — deferred; set-level tables not yet transcribed.
 
 ## Status (C8.16-complete; in-repo)
 
-C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). The harmonized parquet (1,665,568 rows × 24 cols) reproduces 5 of 5 PDF Table 1 *Total* cells byte-exact for the 2016-2020 window plus 8 structural invariants (cause-of-death scoping; quadruplet exclusion; residence_status suppression; row-count conservation; cross-window plurality coverage).
+C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 (2026-05-24) extended validation to all three windows: 14 Table 1 cells byte-exact per 1995-1997 and 1995-2000 window + 5 for 2016-2020 (41 targets total incl. structural invariants). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets in `validation_results.csv`.
 
 Pipeline artifacts:
 

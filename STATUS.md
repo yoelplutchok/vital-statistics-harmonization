@@ -1,6 +1,53 @@
-# STATUS — last updated 2026-05-21T17:00:00Z
+# STATUS — last updated 2026-05-24T19:40:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T19:40:00Z — **RD.2 MATCHED-MULTIPLES CELL VALIDATION COMPLETE — 41/41 targets PASS (1995-1997 + 1995-2000 Table 1 cells added; 2016-2020 + structural invariants retained).**
+
+### What shipped
+
+User redirected session from paper work to the *Future developments* robustness roadmap (§15.F). RD.2 closed the matched-multiples validation gap:
+
+1. **`external_validation_targets.csv`** — 28 new committed cells (14 per 1995-1997 and 1995-2000 window: 5 BIRTHID outcome totals + 9 set_complete×outcome).
+2. **Validator extended** — `validate_matched_multiples.py` now evaluates 41 targets (was 13); loads committed CSV for older windows.
+3. **Smoke tests** — Table 1 Total-column tests for all three windows (1995-1997, 1995-2000, 2016-2020).
+4. **Docs** — `README.md`, `ABOUT_SOURCE_DATA.md` validation section; `NEXT_STEPS.md` §15.F robustness roadmap (RD.1–RD.4).
+
+**Autonomous decision:** NCHS layout PDFs for 1995-1997/1995-2000 omit printable Table 1 counts → targets anchored at C8.16 parse-time raw BIRTHID crosstab; structure cross-checked against NBER `d_Cntltab1.pdf`. No cross-compare between 1995-1997 vs 1995-2000 cells (different methodology generations).
+
+### Verify
+
+- Validator: **41 PASS / 0 FAIL**.
+- Pytest `matched_multiples/tests/`: **13 passed**.
+- Harmonized parquet SHA `adbec108…` unchanged.
+- Uncommitted `paper/` + `PROJECT_STRUCTURE.md` edits left unstaged per user instruction.
+- Receipt: `RECEIPTS/RD.2-matched-multiples-cell-validation_2026-05-24T19-40-00Z.md`. PRE-FLIGHT: `PRE_FLIGHT_LOG.md` 2026-05-24T19:00:00Z. Tags `RD.2-matched-multiples-cell-validation-{pre-do,complete}`.
+
+### Next planned task — **RD.1 or RD.3 (robustness roadmap)**
+
+- **RD.1** pre-1990 natality NVSR benchmarking — requires `~/Desktop/natality-harmonization` build tree (2–3 sessions).
+- **RD.3** consistency cleanup (cross_race notebook, VERSION_ROADMAP) — local, ~0.5–1 session; no paper/ unless user re-opens manuscript work.
+- **RD.4** optional ICD-9→ICD-10 derived layer — deferred.
+- Paper / D.4 submission path remains available but explicitly deferred this session.
+
+### Open questions for human
+
+1. Continue robustness roadmap (RD.1 vs RD.3) or return to D.4 submission readiness?
+2. Transcribe Table 2 (gender × maternal age) for matched-multiples now or defer?
+
+### Forward-looking HALTs
+
+1. RD.1 needs natality build host — not clone-only.
+2. Table 2 numeric targets not yet committed (NBER PDF acquired).
+3. Carried: 4 gate parquets absent in clone; companion-notebook regen owed for IJE submission; uncommitted paper drafts exist.
+
+### Build artifacts current
+
+- `matched_multiples/validation_results.{csv,md}`: 41/41 PASS.
+- Harmonized parquet: `adbec108…` (unchanged).
+- Zero mutation on 4 HVS gate parquets.
 
 ---
 

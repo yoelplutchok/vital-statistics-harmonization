@@ -1,9 +1,10 @@
 """DESIGN: tracks-current-state — matched-multiples release smoke suite.
 
-Authored at C8.16 DO sub-step 3 (2026-05-14). Eight tests pinning the C8.16
-release surface: harmonized parquet row+column shape, 3-window coverage,
-schema↔parquet column parity, record-type domain, 2016-2020 PDF Table 1
-byte-exact reproduction, residence-status suppression in 2016-2020, and
+Authored at C8.16 DO sub-step 3 (2026-05-14); extended at RD.2 (2026-05-24). Ten test
+functions (13 parametrized cases) pinning the matched-multiples release surface:
+harmonized parquet row+column shape, 3-window coverage, schema↔parquet column parity,
+record-type domain, Table 1 Total-column byte-exact reproduction for all three windows
+(1995-1997, 1995-2000, 2016-2020), residence-status suppression in 2016-2020, and
 cause-of-death scoping to infant-death rows.
 
 Run from the monorepo root with:
@@ -45,6 +46,23 @@ PDF_2016_TARGETS = {
     "survivor": 626_541,
     "infant_death": 7_193,
     "fetal_death": 8_200,
+}
+
+# 1995-1997 / 1995-2000 Table 1 Total-column equivalents (BIRTHID@1 totals;
+# committed in external_validation_targets.csv at RD.2).
+PDF_1995_1997_TARGETS = {
+    "total": 324_490,
+    "live_birth": 317_622,
+    "survivor": 307_152,
+    "infant_death": 10_470,
+    "fetal_death": 6_868,
+}
+PDF_1995_2000_TARGETS = {
+    "total": 699_144,
+    "live_birth": 684_998,
+    "survivor": 662_779,
+    "infant_death": 22_219,
+    "fetal_death": 14_146,
 }
 
 
@@ -99,16 +117,40 @@ def test_record_type_domain():
     assert types == EXPECTED_RECORD_TYPES
 
 
-def test_2016_2020_pdf_table_1():
-    df = _load()
-    sub = df[df["data_window"] == "2016-2020"]
-    actual = {
+def _table1_actuals(sub: pd.DataFrame) -> dict[str, int]:
+    return {
         "total": len(sub),
         "live_birth": int(sub["record_type"].isin(["survivor", "infant_death"]).sum()),
         "survivor": int((sub["record_type"] == "survivor").sum()),
         "infant_death": int((sub["record_type"] == "infant_death").sum()),
         "fetal_death": int((sub["record_type"] == "fetal_death").sum()),
     }
+
+
+def test_1995_1997_table_1_total_column():
+    df = _load()
+    sub = df[df["data_window"] == "1995-1997"]
+    actual = _table1_actuals(sub)
+    for k, expected in PDF_1995_1997_TARGETS.items():
+        assert actual[k] == expected, (
+            f"1995-1997 {k}: {actual[k]} vs Table 1 Total column {expected}"
+        )
+
+
+def test_1995_2000_table_1_total_column():
+    df = _load()
+    sub = df[df["data_window"] == "1995-2000"]
+    actual = _table1_actuals(sub)
+    for k, expected in PDF_1995_2000_TARGETS.items():
+        assert actual[k] == expected, (
+            f"1995-2000 {k}: {actual[k]} vs Table 1 Total column {expected}"
+        )
+
+
+def test_2016_2020_pdf_table_1():
+    df = _load()
+    sub = df[df["data_window"] == "2016-2020"]
+    actual = _table1_actuals(sub)
     for k, expected in PDF_2016_TARGETS.items():
         assert actual[k] == expected, (
             f"2016-2020 {k}: {actual[k]} vs PDF Table 1 {expected}"

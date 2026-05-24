@@ -8,6 +8,32 @@
 
 ---
 
+## PRE-FLIGHT for RD.2-matched-multiples-cell-validation — 2026-05-24T19:00:00Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.2 — extend matched-multiples validation to 1995-1997 and 1995-2000 Table 1-equivalent cells (14 targets per window: 5 BIRTHID outcome totals + 9 set_complete×outcome) plus retain 2016-2020 PDF Table 1 (5) and structural invariants (8) → 41 targets total. User authorized autonomous decision-making; paper work explicitly deferred (leave uncommitted `paper/` edits unstaged).
+
+**Inputs verified:**
+- Harmonized parquet present: `matched_multiples/output/harmonized/matched_multiples_harmonized.parquet` SHA `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549`.
+- Layout PDFs `1995-1997.pdf` / `1995-2000.pdf` — text layer present but **no extractable Table 1 count tables** (record-layout specs only).
+- NBER supplementary PDFs downloaded to `matched_multiples/raw_docs/nber/` (`d_Cntltab1.pdf` structure anchor SHA `2778c656…`).
+- Raw BIRTHID crosstab == harmonized record_type counts (exploratory probe; anchors committed targets).
+
+**Scope of mutation:** `matched_multiples/` (new `external_validation_targets.csv`; validator; tests; README; ABOUT_SOURCE_DATA; regenerated `validation_results.{csv,md}`) + monorepo state logs (`NEXT_STEPS.md` §15.F; `STATUS.md`; `PRE_FLIGHT_LOG.md`; `DECISION_LOG.md`; `RECEIPTS/`). **No harmonized parquet rebuild; 4 gate SHAs + MM harmonized SHA unchanged.**
+
+### Field-value snapshot (Convention 3)
+
+| Artifact | Pre-DO state | Plan assumes |
+|---|---|---|
+| `validate_matched_multiples.py` target count | 13 (2016-2020 Table 1 + invariants) | extend to 41 ✓ |
+| `validation_results.md` headline | "13 PASS / 0 FAIL" | "41 PASS / 0 FAIL" ✓ |
+| `test_release_smoke.py` Table 1 tests | 2016-2020 only | +1995-1997 +1995-2000 ✓ |
+| Harmonized parquet SHA | `adbec108…` | unchanged ✓ |
+| Uncommitted `paper/*` edits | present (user: do not stage) | excluded from commit ✓ |
+
+**§7 checked:** none tripped. **Plan:** tag `RD.2-matched-multiples-cell-validation-pre-do` → DO → validator 41/41 + pytest 13P → RECEIPT + STATUS + commit (scoped) → tag `…-complete`.
+
+---
+
 ## PRE-FLIGHT for D.4-paper1-hmd-structure-align — 2026-05-21T19:30:00Z — **RESULT: PROCEED**
 
 **Task.** Tighten `paper/draft_v2_hmd_styled.md` to follow the **HMD IJE-2015 Data Resource Profile structure** more closely (user-directed, after a section-by-section HMD-vs-draft map showed ~1:1 already). Four moves: (1) **drop the abstract paragraph** (HMD opens directly at "Data resource basics"; the summary lives in the nutshell box); (2) **add a "Related resources" section** (mirrors HMD's "Related Databases"; content = superseded single-product deposits + adjacent harmonized resources, from `docs/PRIOR_ART.md`; original prose); (3) **add Figure 1 = cross-product coverage timeline** (mirrors HMD's Figure 1) — regenerate the **stale** `figures/fig1_coverage_timeline` (built 2026-05-12: shows natality 1990–, linked 2005–, no matched multiples) to the current envelope, then add an in-text callout + caption; (4) **expand references toward ~16** (add gregory2024, nichd2024, nber, icpsr from PRIOR_ART; cited in Basics + Related resources). Following HMD's *structure/organization*, NOT its wording (original prose throughout).
