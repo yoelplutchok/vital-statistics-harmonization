@@ -1,6 +1,37 @@
-# STATUS — last updated 2026-05-24T22:34:22Z
+# STATUS — last updated 2026-05-24T22:57:47Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T22:57:47Z — **KICKOFF `[plan-update]` + RD.1b Phase A COMPLETE — §15.F is default queue; D.4 gated; natality 215/215 external validation PASS.**
+
+### What shipped
+
+1. **`KICKOFF.md`** — default work queue = `NEXT_STEPS.md` §15.F until CLOSED; **D.4 deferred** until robustness follow-ons done (user: expand before paper).
+2. **RD.1b Phase A** — 10 `lbw_rate_pct` cells (1980–1989, childstats HEALTH1.B); SAMPWT-weighted LBW from raw parquets (1980–1988); compare script extended.
+3. **Validation** — **215/215 PASS** (was 205/205 after RD.1). Gate derived SHA `acb5c48a…` unchanged.
+4. **Tests** — `test_pre1990_lbw_rate_smoke.py` (3 passed on build host; 9 total with RD.1 smokes).
+
+### Verify
+
+- Build-host compare exit 0; 0 FAIL.
+- `pytest natality/tests/test_pre1990_*.py`: 9 passed.
+
+### Next planned task
+
+**§15.F queue (per KICKOFF):** RD.1b Phase B (preterm 1980–1989 if source found) or **RD.2 Table 2** matched-multiples cells; then RD.4 optional, D-prep.8/9, latest-year refresh. **D.4 / Paper 1** only after §15.F CLOSED.
+
+### Open questions for human
+
+1. Prioritize RD.1b Phase B (preterm) vs RD.2 Table 2 next?
+2. Accept 1989 LBW tolerance 0.06 (childstats 7.1 vs microdata 7.05%) or transcribe a tighter NVSR cell?
+
+### Forward-looking HALTs
+
+1. After natality re-derive: expect **215/215** PASS with `--yearly-parquet-dir`.
+2. Fresh-chat KICKOFF now defaults to §15.F — not D.4.
+3. `paper/` out of scope until §15.F CLOSED or re-authorization.
 
 ---
 

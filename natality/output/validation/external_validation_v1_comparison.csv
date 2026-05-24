@@ -182,6 +182,16 @@ medicaid_pct,2020,resident,41.999836,42.000000,0.500000,-0.000164,pass,1,NVSR Vo
 medicaid_pct,2021,resident,40.978708,41.000000,0.500000,-0.021292,pass,1,NVSR Vol. 72 No. 1 (Births: Final Data for 2021),Medicaid share of deliveries.
 medicaid_pct,2022,resident,41.324097,41.300000,0.500000,0.024097,pass,1,NVSR Vol. 74 No. 1 (Births: Final Data for 2023; 2022 value from year-over-year comparison in text: 'an increase from 2022 (41.3%)'),Medicaid share of deliveries. Source is prior-year comparison text not a same-year table.
 medicaid_pct,2023,resident,41.455284,41.500000,0.500000,-0.044716,pass,1,NVSR Vol. 74 No. 1 (Births: Final Data for 2023),Medicaid share of deliveries.
+lbw_rate_pct,1980,resident,6.840415,6.800000,0.050000,0.040415,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1981,resident,6.812262,6.800000,0.050000,0.012262,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1982,resident,6.751679,6.800000,0.050000,-0.048321,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1983,resident,6.816071,6.800000,0.050000,0.016071,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1984,resident,6.716662,6.700000,0.050000,0.016662,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1985,resident,6.750910,6.800000,0.050000,-0.049090,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1986,resident,6.811018,6.800000,0.050000,0.011018,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1987,resident,6.895553,6.900000,0.050000,-0.004447,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1988,resident,6.931162,6.900000,0.050000,0.031162,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet resident universe.
+lbw_rate_pct,1989,resident,7.046838,7.100000,0.060000,-0.053162,pass,1,childstats.gov HEALTH1.B (from NCHS NVSS Natality data),Pre-1990 LBW rate; derived-parquet; 0.06 tol (childstats one-decimal vs microdata 7.05%).
 resident_births,1968,resident,3501564,3501564.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
 resident_births,1969,resident,3600206,3600206.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
 resident_births,1970,resident,3731386,3731386.000000,0.000000,0.000000,pass,1,NCHS births residence series (CDC Data `e6fc-ccez`),Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.

@@ -187,6 +187,77 @@ def _pre1990_weighted_resident_map(
     return out
 
 
+def _parse_birthweight_grams(raw_value: object) -> int | None:
+    if raw_value is None:
+        return None
+    try:
+        grams = int(str(raw_value).strip())
+    except ValueError:
+        return None
+    if grams <= 0 or grams == 9999:
+        return None
+    return grams
+
+
+def _weighted_lbw_rate_from_raw(yearly_dir: Path, year: int) -> float:
+    """
+    NCHS-style resident LBW% for pre-1989 public-use files (grams < 2500).
+
+    1968-1971: 50% sample (uniform 2x). 1972-1988: per-record SAMPWT.
+    Denominator: resident births with known birthweight (excludes foreign + unknown bw).
+    """
+    if year > 1988:
+        raise ValueError(f"_weighted_lbw_rate_from_raw only supports years <= 1988, got {year}")
+
+    raw_path = yearly_dir / f"natality_{year}_raw.parquet"
+    if not raw_path.is_file():
+        raise FileNotFoundError(raw_path)
+
+    schema_names = pq.ParquetFile(raw_path).schema_arrow.names
+    bw_col = "DBIRWT" if "DBIRWT" in schema_names else "DBWT"
+    if bw_col not in schema_names:
+        raise RuntimeError(f"{raw_path}: missing birthweight column")
+    cols = ["RESTATUS", bw_col]
+    if year >= 1972:
+        if "SAMPWT" not in schema_names:
+            raise RuntimeError(f"{raw_path}: missing SAMPWT for SAMPWT era year {year}")
+        cols.append("SAMPWT")
+
+    t = pq.read_table(raw_path, columns=cols)
+    w_den = w_num = 0.0
+    for rs, bw_raw, *rest in zip(
+        t["RESTATUS"].to_pylist(),
+        t[bw_col].to_pylist(),
+        *[t[c].to_pylist() for c in cols[2:]],
+        strict=True,
+    ):
+        if str(rs).strip() == "4":
+            continue
+        grams = _parse_birthweight_grams(bw_raw)
+        if grams is None:
+            continue
+        if year <= 1971:
+            wt = 2.0
+        else:
+            sw = rest[0]
+            wt = 2.0 if str(sw).strip() == "2" else 1.0
+        w_den += wt
+        if grams < 2500:
+            w_num += wt
+    if not w_den:
+        raise RuntimeError(f"{raw_path}: zero known-birthweight resident weighted denominator")
+    return w_num / w_den * 100.0
+
+
+def _pre1990_weighted_lbw_rate_map(yearly_dir: Path, years: list[int]) -> dict[int, float]:
+    out: dict[int, float] = {}
+    for year in years:
+        if year > 1988:
+            continue
+        out[year] = _weighted_lbw_rate_from_raw(yearly_dir, year)
+    return out
+
+
 def main() -> None:
     args = parse_args()
     targets = load_targets(args.targets)
@@ -209,6 +280,19 @@ def main() -> None:
     )
     pre1990_weighted_resident = _pre1990_weighted_resident_map(
         args.yearly_parquet_dir, pre1990_resident_years
+    )
+
+    pre1990_lbw_years = sorted(
+        {
+            t.year
+            for t in targets
+            if t.metric_id == "lbw_rate_pct"
+            and t.universe == "resident"
+            and t.year <= 1988
+        }
+    )
+    pre1990_weighted_lbw_rate = _pre1990_weighted_lbw_rate_map(
+        args.yearly_parquet_dir, pre1990_lbw_years
     )
 
     pf = pq.ParquetFile(args.in_path)
@@ -418,6 +502,8 @@ def main() -> None:
         if metric_id == "revised_resident_births":
             return births["resident_revised"][year]
         if metric_id == "lbw_rate_pct":
+            if universe == "resident" and year in pre1990_weighted_lbw_rate:
+                return pre1990_weighted_lbw_rate[year]
             d = lbw_den[universe][year]
             return (lbw_num[universe][year] / d * 100.0) if d else None
         if metric_id == "preterm_rate_pct":

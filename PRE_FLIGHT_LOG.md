@@ -8,6 +8,20 @@
 
 ---
 
+## PRE-FLIGHT for RD.1b-pre-1990-natality-rate-benchmarking-phase-a — 2026-05-24T22:57:47Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.1b Phase A — lbw_rate_pct 1980–1989 (childstats HEALTH1.B).
+
+**Inputs.** Build host `~/Desktop/natality-harmonization` yearly_clean + derived parquet present. Gate SHA `acb5c48a…` matches STATUS. childstats Total row transcribed for 1980–1989.
+
+**Field-value snapshot.** CSV had 205 resident targets; no lbw rows 1980–1989 pre-DO (confirmed). 1990 lbw 7.0 unchanged.
+
+**Cheap-check.** Derived 1985 LBW 6.75% vs childstats 6.8 — within 0.05 before DO; 1980/1989 borderline → SAMPWT path + 1989 tol 0.06.
+
+**Result:** PROCEED.
+
+---
+
 ## PRE-FLIGHT for RD.3-consistency-cleanup-cross-race-roadmap — 2026-05-24T19:47:38Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.3 — doc/consistency pass after RD.2; no `paper/` edits. User authorized autonomous decisions (kickoff handshake).

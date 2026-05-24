@@ -1733,9 +1733,13 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
 
-### Task RD.1 — `pre-1990-natality-nvsr-benchmarking` ⏳
+### Task RD.1 — `pre-1990-natality-nvsr-benchmarking` ✅ **COMPLETE 2026-05-24**
 
 **Goal.** Extend natality external validation backward to 1968–1989 using *Births: Final Data* / NVSR published tables, matching the 1990–2024 byte-exact discipline.
+
+**Shipped (2026-05-24).** 22 `resident_births` cells (1968–1989); SAMPWT-weighted compare path; smoke tests. **205/205 PASS** (183/183 1990–2024 unchanged). Receipt: `RECEIPTS/RD.1-pre-1990-natality-nvsr-benchmarking_2026-05-24T20-20-42Z.md`. Tags: `RD.1-pre-1990-natality-nvsr-benchmarking-{pre-do,complete}`.
+
+**Deferred to RD.1b.** Rate metrics (LBW, preterm, twin, cesarean, etc.) for years before 1990.
 
 **Why this matters.** Largest single "more data" win (EXPLORATION_REPORT §A.2); doubles natality coverage to 57 yrs; pairs with fetal-death 1982–2024 for joint analyses back to 1982.
 
@@ -1794,6 +1798,32 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 **Dependencies.** RD.2 complete (validation baseline stable).
 
 **Halt-condition flags.** H7 (sibling schema drift), §7 if bridge requires RDC-only mappings.
+
+---
+
+### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏳ (Phase A ✅ 2026-05-24; Phase B–C open)
+
+**Phase A shipped (2026-05-24).** 10 `lbw_rate_pct` cells (1980–1989) from childstats HEALTH1.B; SAMPWT-weighted raw LBW path for 1980–1988; **215/215 PASS**. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-a_*.md`. Tags: `RD.1b-pre-1990-natality-rate-benchmarking-phase-a-{pre-do,complete}`.
+
+### Task RD.1b (continued) — Phase B–C ⏳ **NEXT after Phase A**
+
+**Goal.** Extend natality external validation **rate** targets backward before 1990, in slices:
+
+1. **Phase A (this task’s MVP):** `lbw_rate_pct` for **1980–1989** from childstats.gov table HEALTH1.B (Total row; same source class as 1990–2004 targets). Tolerance 0.05 pct-pt. Derived-parquet stream (1989 = 100% file; 1980–1988 validated on build host — add SAMPWT-weighted rate path only if derived rates fail).
+2. **Phase B (follow-on session):** `preterm_rate_pct` 1980–1989 if a citable national series is located (HEALTH1.A starts 1990; do not invent).
+3. **Phase C (follow-on / defer):** 1968–1979 rates — NVSR *Vital Statistics of the United States* / MVSR transcription (no childstats HEALTH1.A/B floor before 1980).
+
+**Why this matters.** Closes the largest remaining natality validation gap after RD.1; manuscript *Future developments* “pre-1990 NVSR benchmarking” item.
+
+**PRE-FLIGHT inputs.** Build tree `~/Desktop/natality-harmonization`; `external_validation_targets_v1.csv`; childstats HEALTH1.B cited values; 4 gate derived SHA `acb5c48a…` unchanged.
+
+**SMOKE/DO/VERIFY.** Five-phase discipline; commit targets before validator changes; zero regression on 205/205 resident-birth + 183/183 1990+ rate cells; expect **+10** LBW cells → **215/215** minimum on Phase A alone.
+
+**Estimated effort.** Phase A ~0.5–1 session; Phase B–C +2–3 sessions if authorized.
+
+**Dependencies.** RD.1 complete.
+
+**Halt-condition flags.** L6 (no invented NVSR/childstats cells), §7 if derived vs SAMPWT-weighted rates diverge >tolerance for 1972–1988.
 
 ---
 

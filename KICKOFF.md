@@ -38,24 +38,32 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-21, post D-prep.6–9 + audit-fix-r4 + user Phase-D scope trim)
+## Current planned sequence (as of 2026-05-24, post D.2/D.3 + user “expand before paper” directive)
 
-**Latest plan-update (2026-05-21).** **Phase D-prep is CLOSED** (D-prep.1–9 + `pre-zenodo-audit-fix-bundle-r4`). Gate parquets on the build host verified **4/4 PASS** (2026-05-21; see `STATUS.md` newest section).
+**Latest plan-update (2026-05-24).** **Phase D distribution is DONE** (unified Zenodo v1.0.1 `10.5281/zenodo.20326150`; public GitHub `08a2287`). **D.4 / Paper 1 is DEFERRED** until the **§15.F robustness roadmap** queue below is **CLOSED** (user directive: finish expansion work before manuscript prep).
 
-**When you paste this kickoff in a fresh chat, the default work queue is:**
+**When you paste this kickoff in a fresh chat, the default work queue is `NEXT_STEPS.md` §15.F** — execute in order until every row is ✅ or explicitly deferred by the human. Do **not** open `paper/` edits unless the user re-authorizes D.4.
 
-| Order | Step | What it is | Who does it |
+| Order | Task ID | What it is | Status |
 |---|---|---|---|
-| **1** | **D.2** | **Unified Zenodo deposit** — new concept DOI for the full HVS resource (four products). Package gate parquets from build host; upload at zenodo.org. Update `CITATION.cff` + `README.md` with the new DOI after publish. | Agent prepares metadata/zip checklist; **human uploads** in Zenodo UI |
-| **2** | **D.3** | **Refresh public GitHub** (same repo, not a new repo): https://github.com/yoelplutchok/vital-statistics-harmonization — re-rsync dev monorepo → `~/Desktop/vital-statistics-harmonization-public/`, scrub internal files, push to overwrite stale **v1.0** (2026-05-12). | Agent prepares rsync/scrub; **human pushes** if needed |
-| **3** | **D.4 / Paper 1** | **Data Resource Profile** — `paper/draft_v2_hmd_styled.md`: numeric pass vs current envelope, IJE word limit, admin sections, inject Zenodo DOI + GitHub URL from steps 1–2. Use `NEXT_STEPS.md` **§19.1** for a fresh-chat polish prompt. Submit when ready. | Agent + human; fresh chat OK for §19.1 |
+| **1** | **RD.1** | Pre-1990 natality **resident_births** NVSR benchmarking (1968–1989) | ✅ COMPLETE 2026-05-24 (205/205) |
+| **2** | **RD.1b** | Pre-1990 natality **rate** targets (LBW 1980–1989 from childstats; preterm + 1968–1979 rates as follow-on) | ⏳ **NEXT** |
+| **3** | **RD.2 follow-on** | Matched-multiples **Table 2** cells (gender × maternal age) | ⏳ |
+| **4** | **RD.4** | Matched-multiples ICD-9→ICD-10 derived layer (optional) | ⏳ optional |
+| **5** | **D-prep.8** | Convenience CSVs through 2023–2024 (`live_births_by_year`, stratified denominators) | ⏳ needs build host |
+| **6** | **D-prep.9** | Build-host notebook re-execute (`paper_companion`, `cross_race_fetal_mortality`, …) | ⏳ needs build host |
+| **7** | **Latest-year refresh** | Linked 2024 cohort / natality 2025 when NCHS publishes | ⏳ trigger on new zips |
+| **8** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, final numeric pass | **GATED** — only after §15.F CLOSED |
 
-**Explicitly DEFERRED (user 2026-05-21 — handle later, no agent work unless re-authorized):**
+**§15.F exit criterion (queue CLOSED):** RD.1b shipped (or human defers remaining slices with DECISION_LOG entry); RD.2 Table 2 shipped or deferred; RD.4 + D-prep.8/9 + latest-year refresh each ✅ or explicitly deferred; `STATUS.md` “Next planned task” = **D.4**.
 
-- **D.1** — redirect notices / archive / delete on the two **old** GitHub repos (`natality-harmonization`, `fetal-death-harmonization`)
-- **D.2 legacy patches** — description-only updates on old Zenodo concept DOIs `10.5281/zenodo.19363074` and `10.5281/zenodo.20031571`
+**Explicitly DEFERRED (unless user re-authorizes):**
 
-**After D.4 submits:** **Phase E** = companion empirical paper via fresh chats + `NEXT_STEPS.md` §19.2 (not in this monorepo’s default agent scope).
+- **D.1** — old-repo redirects (`natality-harmonization`, `fetal-death-harmonization`)
+- **D.2 legacy patches** — description-only updates on old Zenodo DOIs `10.5281/zenodo.19363074` and `10.5281/zenodo.20031571`
+- **D.4** — while §15.F queue is open (see above)
+
+**After §15.F CLOSED → D.4 submits → Phase E** = companion empirical paper via fresh chats + `NEXT_STEPS.md` §19.2.
 
 **Build-host note:** Gate parquets are **not** in a typical git clone (gitignored). Paths: `~/Desktop/fetal-death-harmonization-build/output/harmonized/` and `~/Desktop/natality-harmonization/output/harmonized/`. See per-product `PROVENANCE.md`.
 
@@ -367,33 +375,28 @@ BEFORE doing ANY work, read these files in this exact order:
 
 5. LESSONS.md end-to-end (if it has entries).
 
-CURRENT WORK QUEUE (2026-05-21 — overrides STATUS.md "Next planned task"
+CURRENT WORK QUEUE (2026-05-24 — overrides STATUS.md "Next planned task"
 for task selection; STATUS.md remains authoritative for facts):
 
-  Phase D-prep is CLOSED. Default sequence unless I direct otherwise:
+  D.2 + D.3 are DONE (Zenodo 10.5281/zenodo.20326150 v1.0.1; GitHub 08a2287).
+  Default sequence unless I direct otherwise: NEXT_STEPS.md §15.F robustness
+  roadmap until CLOSED — then D.4 / Paper 1. Do NOT edit paper/ while §15.F
+  is open unless I explicitly re-authorize D.4.
 
-  (1) D.2 — NEW unified Zenodo deposit (four products; agent prepares
-      .zenodo.json + upload bundle; I upload at zenodo.org; then update
-      CITATION.cff + README with new DOI).
-
-  (2) D.3 — REFRESH public GitHub (same repo — NOT a new repo):
-      github.com/yoelplutchok/vital-statistics-harmonization
-      (overwrite stale v1.0 from 2026-05-12). Rsync to
-      ~/Desktop/vital-statistics-harmonization-public/, scrub internals,
-      push. Parquets stay on Zenodo, not git.
-
-  (3) D.4 / Paper 1 — paper/draft_v2_hmd_styled.md (numeric + IJE prep;
-      cite Zenodo DOI from (1) and GitHub from (2); NEXT_STEPS.md §19.1
-      for polish prompt).
+  (1) RD.1b — pre-1990 natality rate benchmarking (NEXT; see §15.F)
+  (2) RD.2 follow-on — matched-multiples Table 2 cells
+  (3) RD.4 — MM ICD-9→ICD-10 derived layer [optional]
+  (4) D-prep.8 — convenience CSVs 2023–2024 [build host]
+  (5) D-prep.9 — notebook re-execute [build host]
+  (6) Latest-year refresh when NCHS ships new zips
+  (7) D.4 / Paper 1 — GATED until §15.F CLOSED
 
   DEFERRED unless I re-authorize: D.1 old-repo redirects; legacy Zenodo
-  description patches on 10.5281/zenodo.19363074 and 10.5281/zenodo.20031571.
+  patches; D.4 while §15.F open.
 
   Gate parquets: NOT in git clone (gitignored). Build-host paths in
-  fetal_death/PROVENANCE.md and natality/PROVENANCE.md. Before D.2 zip:
-  re-hash the 4 gate files you are publishing (~1 min) — prior PASS only
-  proves correctness at that earlier time; pre-upload hash anchors the
-  immutable Zenodo bytes (§9-#15).
+  fetal_death/PROVENANCE.md and natality/PROVENANCE.md. Natality work that
+  needs yearly raw parquets: ~/Desktop/natality-harmonization/.
 
 After reading, tell me in 4-6 sentences:
   (a) the current task per STATUS.md AND the next task per KICKOFF.md's

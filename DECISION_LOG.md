@@ -23,6 +23,20 @@
 
 ---
 
+## 2026-05-24T22:57:47Z — `[plan-update]` + RD.1b Phase A — KICKOFF default queue → §15.F until CLOSED; D.4 gated; lbw 1980–1989 only
+
+**Choice:** User directed expansion-before-paper. Updated `KICKOFF.md` so fresh sessions default to `NEXT_STEPS.md` §15.F (not D.4). Shipped RD.1b Phase A only: 10 LBW cells 1980–1989; deferred preterm 1980–1989 and all 1968–1979 rates.
+
+**Alternatives:** (a) Widen all pre-1990 LBW tolerances to 0.07 — rejected (only 1989 needed 0.06). (b) Skip SAMPWT LBW path — rejected (1980 failed at 6.87 unweighted).
+
+**Reason:** childstats HEALTH1.B is the same source class as 1990–2004 LBW targets; HEALTH1.A preterm starts 1990; SAMPWT aligns 1980–1988 with RD.1 resident-birth methodology.
+
+**Verifiable by:** `external_validation_v1_comparison.md` pass 215; `pytest test_pre1990_lbw_rate_smoke.py`.
+
+**Reversible:** yes — remove CSV rows + revert compare script branch.
+
+---
+
 ## 2026-05-24T19:47:38Z — RD.3 — consistency cleanup: cite unified Zenodo v1.0.1 everywhere user-facing; do not edit `paper/`
 
 **Choice:** Closed RD.3 as doc-only fixes: refresh `VERSION_ROADMAP.md` + root `README.md` (41/41 matched-multiples) + `natality/README.md` / `fetal_death/README.md` Zenodo lines + `cross_race_fetal_mortality.ipynb` intro (seven eras, 2014-2024) + `PROJECT_STRUCTURE.md` notebook row. Left `paper/` and uncommitted manuscript drafts untouched. Did not expand scope to convenience-parquet "pending refresh" wording in `natality/README.md` (separate verify on build host).
