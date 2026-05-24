@@ -238,6 +238,32 @@ medicaid_pct,2021,resident,41.0,0.5,"NVSR Vol. 72 No. 1 (Births: Final Data for 
 medicaid_pct,2022,resident,41.3,0.5,"NVSR Vol. 74 No. 1 (Births: Final Data for 2023; 2022 value from year-over-year comparison in text: 'an increase from 2022 (41.3%)')",Medicaid share of deliveries. Source is prior-year comparison text not a same-year table.
 medicaid_pct,2023,resident,41.5,0.5,"NVSR Vol. 74 No. 1 (Births: Final Data for 2023)",Medicaid share of deliveries.
 
+# RD.1 pre-1990 natality resident_births (1968-1989) — NCHS residence series (CDC Data e6fc-ccez).
+# Validated via SAMPWT-weighted raw yearly parquets (1968-1971 uniform 2x; 1972-1988 per-record SAMPWT).
+# Rate metrics (LBW, preterm, etc.) remain 1990+ only until NVSR transcription extends backward.
+resident_births,1968,resident,3501564,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1969,resident,3600206,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1970,resident,3731386,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1971,resident,3555970,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1972,resident,3258411,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1973,resident,3136965,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1974,resident,3159958,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1975,resident,3144198,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1976,resident,3167788,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1977,resident,3326632,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1978,resident,3333279,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1979,resident,3494398,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1980,resident,3612258,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1981,resident,3629238,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1982,resident,3680537,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1983,resident,3638933,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1984,resident,3669141,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1985,resident,3760561,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1986,resident,3756547,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1987,resident,3809394,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1988,resident,3909510,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; SAMPWT-weighted validation for years <=1988.
+resident_births,1989,resident,4040958,0,"NCHS births residence series (CDC Data `e6fc-ccez`)",Pre-1990 resident births; derived-parquet unweighted (100% file).
+
 # Notes:
 # - universe options: resident | resident_revised
 # - metric_id options supported by the comparison script:

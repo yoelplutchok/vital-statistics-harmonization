@@ -82,6 +82,12 @@ def parse_args() -> argparse.Namespace:
         default=750_000,
         help="Rows per Parquet batch scan",
     )
+    p.add_argument(
+        "--yearly-parquet-dir",
+        type=Path,
+        default=repo_root / "output" / "yearly_clean",
+        help="Directory with natality_{year}_raw.parquet (required for pre-1989 resident_births SAMPWT weighting)",
+    )
     return p.parse_args()
 
 
@@ -135,6 +141,52 @@ def _count_not_null(arr: pa.Array) -> int:
     return int(pc.sum(pc.cast(pc.invert(pc.is_null(arr)), pa.int64())).as_py() or 0)
 
 
+def _weighted_resident_births_from_raw(yearly_dir: Path, year: int) -> int:
+    """
+    NCHS residence-tabulated birth totals for pre-1990 public-use files.
+
+    1968-1971 are 50% samples (uniform 2x inflation). 1972-1988 use per-record
+    SAMPWT (1=100% state record, 2=50% state record → weight 2). 1989+ uses the
+    derived parquet stream (100% file; no SAMPWT on the 1989 V2 layout).
+    """
+    raw_path = yearly_dir / f"natality_{year}_raw.parquet"
+    if not raw_path.is_file():
+        raise FileNotFoundError(raw_path)
+
+    schema_names = pq.ParquetFile(raw_path).schema_arrow.names
+    if year <= 1971:
+        if "RESTATUS" not in schema_names:
+            raise RuntimeError(f"{raw_path}: missing RESTATUS for 50% sample year {year}")
+        t = pq.read_table(raw_path, columns=["RESTATUS"])
+        rs = t["RESTATUS"].to_pylist()
+        resident = sum(1 for v in rs if str(v).strip() != "4")
+        return resident * 2
+
+    if year <= 1988:
+        if "RESTATUS" not in schema_names or "SAMPWT" not in schema_names:
+            raise RuntimeError(f"{raw_path}: missing RESTATUS/SAMPWT for SAMPWT era year {year}")
+        t = pq.read_table(raw_path, columns=["RESTATUS", "SAMPWT"])
+        total = 0.0
+        for rs, sw in zip(t["RESTATUS"].to_pylist(), t["SAMPWT"].to_pylist(), strict=True):
+            if str(rs).strip() == "4":
+                continue
+            total += 2.0 if str(sw).strip() == "2" else 1.0
+        return int(total)
+
+    raise ValueError(f"_weighted_resident_births_from_raw only supports years <= 1988, got {year}")
+
+
+def _pre1990_weighted_resident_map(
+    yearly_dir: Path, years: list[int]
+) -> dict[int, int]:
+    out: dict[int, int] = {}
+    for year in years:
+        if year > 1988:
+            continue
+        out[year] = _weighted_resident_births_from_raw(yearly_dir, year)
+    return out
+
+
 def main() -> None:
     args = parse_args()
     targets = load_targets(args.targets)
@@ -145,6 +197,19 @@ def main() -> None:
     if not args.in_path.is_file():
         raise FileNotFoundError(args.in_path)
     args.out_dir.mkdir(parents=True, exist_ok=True)
+
+    pre1990_resident_years = sorted(
+        {
+            t.year
+            for t in targets
+            if t.metric_id == "resident_births"
+            and t.universe == "resident"
+            and t.year <= 1988
+        }
+    )
+    pre1990_weighted_resident = _pre1990_weighted_resident_map(
+        args.yearly_parquet_dir, pre1990_resident_years
+    )
 
     pf = pq.ParquetFile(args.in_path)
     cols = set(pf.schema_arrow.names)
@@ -347,6 +412,8 @@ def main() -> None:
     # Helper to get metric value
     def metric_value(metric_id: str, year: int, universe: str) -> float | int | None:
         if metric_id == "resident_births":
+            if universe == "resident" and year in pre1990_weighted_resident:
+                return pre1990_weighted_resident[year]
             return births["resident"][year]
         if metric_id == "revised_resident_births":
             return births["resident_revised"][year]
@@ -456,7 +523,8 @@ def main() -> None:
             [
                 "# External validation comparison (V1)",
                 "",
-                f"Computed from `{args.in_path}` (resident-only universes use `is_foreign_resident == false`).",
+                f"Computed from `{args.in_path}` (resident-only universes use `is_foreign_resident == false`; "
+                f"1968-1988 `resident_births` use SAMPWT-weighted totals from `{args.yearly_parquet_dir}`).",
                 "",
                 f"- Targets: `{args.targets}`",
                 f"- Output CSV: `{out_csv}`",

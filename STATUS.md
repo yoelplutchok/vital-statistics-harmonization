@@ -1,6 +1,42 @@
-# STATUS — last updated 2026-05-24T19:47:38Z
+# STATUS — last updated 2026-05-24T20:20:42Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T20:20:42Z — **RD.1 PRE-1990 NATALITY NVSR BENCHMARKING COMPLETE — 205/205 external targets PASS (22 new resident-birth cells 1968–1989; 183/183 1990–2024 unchanged).**
+
+### What shipped
+
+§15.F RD.1 on build host `~/Desktop/natality-harmonization`:
+
+1. **`external_validation_targets_v1.csv`** — 22 new `resident_births` rows (1968–1989) sourced from CDC `e6fc-ccez` (NCHS residence series).
+2. **`compare_external_targets_v1.py`** — pre-1989 `resident_births` uses SAMPWT-weighted totals from `output/yearly_clean/natality_{year}_raw.parquet` (1968–1971 uniform 2×; 1972–1988 per-record SAMPWT; 1989+ derived stream unchanged).
+3. **`test_pre1990_resident_births_smoke.py`** — anchor-year CDC parity (6 tests).
+4. **Validation** — `external_validation_v1_comparison.csv`: **205/205 PASS / 0 FAIL** (was 183/183 for 1990–2024 only).
+5. **Docs** — root `README.md` + `natality/README.md` validation headline updated.
+
+### Verify
+
+- Build-host parquets used; monorepo has no `natality/raw_data/` or harmonized parquets in clone.
+- Natality derived SHA `acb5c48a9abf82ac78e6bf210d6be5d62cba6afae271b978b0e53ed528856974` unchanged (gate).
+- `pytest natality/tests/test_pre1990_resident_births_smoke.py`: 6 passed.
+- Zero canonical parquet mutation.
+
+### Next planned task
+
+**D.4** (paper submission readiness) or **RD.4** (matched-multiples ICD-9→ICD-10 layer, optional). Pre-1990 **rate** targets (LBW, preterm, twin, cesarean, etc.) remain a follow-on slice (NVSR PDF transcription for years before *Births: Final Data* narrative tables).
+
+### Open questions for human
+
+1. Commit + tag `RD.1-pre-1990-natality-nvsr-benchmarking-complete`?
+2. Extend pre-1990 validation to rate metrics in a follow-on session, or defer?
+
+### Forward-looking HALTs
+
+1. Re-run `compare_external_targets_v1.py` on build host after any natality re-derive; expect 205/205 resident-birth PASS.
+2. `--yearly-parquet-dir` must point at `natality_{year}_raw.parquet` for years ≤1988.
+3. Carried: companion-notebook regen; `paper/` edits out of scope unless re-opened.
 
 ---
 

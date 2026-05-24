@@ -1,13 +1,13 @@
 # External validation comparison (V1)
 
-Computed from `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` (resident-only universes use `is_foreign_resident == false`).
+Computed from `/Users/yoelplutchok/Desktop/natality-harmonization/output/harmonized/natality_v2_harmonized_derived.parquet` (resident-only universes use `is_foreign_resident == false`; 1968-1988 `resident_births` use SAMPWT-weighted totals from `/Users/yoelplutchok/Desktop/natality-harmonization/output/yearly_clean`).
 
-- Targets: `/Users/yoelplutchok/Desktop/natality-harmonization/metadata/external_validation_targets_v1.csv`
-- Output CSV: `/Users/yoelplutchok/Desktop/natality-harmonization/output/validation/external_validation_v1_comparison.csv`
+- Targets: `natality/metadata/external_validation_targets_v1.csv`
+- Output CSV: `natality/output/validation/external_validation_v1_comparison.csv`
 
 ## Summary
 
-- pass: 183
+- pass: 205
 - fail: 0
 - missing expected or actual: 0
 
