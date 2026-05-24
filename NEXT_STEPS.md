@@ -1763,7 +1763,7 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 **Shipped (2026-05-24).** New `matched_multiples/external_validation_targets.csv` (28 committed cells); extended `scripts/05_validate/validate_matched_multiples.py`; smoke tests for 1995-1997 / 1995-2000 Table 1 totals; README + ABOUT_SOURCE_DATA updates; `validation_results.{csv,md}` regenerated. **41/41 PASS.** Harmonized parquet SHA `adbec108…` unchanged. Receipt: `RECEIPTS/RD.2-matched-multiples-cell-validation_2026-05-24T19-40-00Z.md`. Tags: `RD.2-matched-multiples-cell-validation-{pre-do,complete}`.
 
-**Deferred within scope.** Table 2 (gender × maternal age / set-level tables) — NBER `e_Cnttab2a.pdf` structure acquired; numeric transcription not yet committed.
+**RD.2 Table 2 follow-on shipped (2026-05-24).** 68 Table 2a twin-set cells (complete sets, set_size=2) for 1995-1997 and 1995-2000: gender marginals + maternal-age×gender + perinatal-outcome×gender; values anchored at harmonized set-level crosstab; structure from NBER `e_Cnttab2a.pdf` (SHA `03340a1c…`). **109/109** total validation PASS. 2016-2020 Table 2 still deferred (no layout PDF on disk in typical clone).
 
 **Halt-condition flags (resolved).** Layout PDFs omit printable Table 1 counts → targets anchored at C8.16 raw BIRTHID crosstab + NBER structure PDF (DECISION_LOG 2026-05-24T19:40:00Z).
 
@@ -1801,11 +1801,15 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ---
 
-### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏳ (Phase A ✅ 2026-05-24; Phase B–C open)
+### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏳ (Phase A ✅; Phase B ⏸ deferred 2026-05-24; Phase C open)
 
 **Phase A shipped (2026-05-24).** 10 `lbw_rate_pct` cells (1980–1989) from childstats HEALTH1.B; SAMPWT-weighted raw LBW path for 1980–1988; **215/215 PASS**. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-a_*.md`. Tags: `RD.1b-pre-1990-natality-rate-benchmarking-phase-a-{pre-do,complete}`.
 
-### Task RD.1b (continued) — Phase B–C ⏳ **NEXT after Phase A**
+### Task RD.1b (continued) — Phase B ⏸ **DEFERRED 2026-05-24** (no citable pre-1990 preterm series)
+
+**Phase B decision (2026-05-24).** childstats **HEALTH1.A** publishes preterm rates from **1990** only (verified via WebSearch + page title "1990–2022"). No HEALTH1.A/B floor for 1980–1989 preterm; inventing cells violates L6. **Deferred** to Phase C (NVSR/MVSR transcription) or post-§15.F. Phase A remains shipped (**215/215** natality PASS).
+
+### Task RD.1b (continued) — Phase C ⏳ **optional follow-on**
 
 **Goal.** Extend natality external validation **rate** targets backward before 1990, in slices:
 

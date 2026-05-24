@@ -48,6 +48,7 @@ PDF_1995_1997_SHA = "f982ad93fbd435484173d6a08014e503e7f45208994cf1305b20ad0cae6
 PDF_1995_2000_SHA = "07b7260d4284402f9068f9dc160612b0fb0240fdd0536c6c1ad1d0ffd478b886"
 PDF_2016_2020_SHA = "ed5e96ab662e970dc8fab3295942b3dfffac8c845120b8e92e125cf7d39152be"
 NBER_TAB1_STRUCTURE_SHA = "2778c65674b702eb245ee5f5fc0fb1a7e0e393e49693e0d6fa1d4726a4257f33"
+NBER_TAB2_STRUCTURE_SHA = "03340a1c6c681b70065b70be325d9ec1df043854ce6956ac8f337d0d43a2c310"
 
 # 2016-2020 PDF Table 1 *Total* column (extractable from 2016-2020.pdf p15).
 _TARGETS_2016_2020 = [
@@ -95,6 +96,110 @@ def _birthid_totals(sub: pd.DataFrame) -> dict[str, int]:
 
 def _set_complete_outcome(sub: pd.DataFrame, sc: int, outcome: str) -> int:
     return int(((sub["set_complete"] == sc) & (sub["record_type"] == outcome)).sum())
+
+
+def _age_bucket(age: int, window: str) -> str | None:
+    if window in ("1995-1997", "1995-2000"):
+        if age == 15 or age <= 19:
+            return "lt20"
+        if 20 <= age <= 29:
+            return "20_29"
+        if 30 <= age <= 39:
+            return "30_39"
+        if age >= 40:
+            return "40p"
+        return None
+    if age <= 19:
+        return "lt20"
+    if 20 <= age <= 29:
+        return "20_29"
+    if 30 <= age <= 39:
+        return "30_39"
+    if age >= 40:
+        return "40p"
+    return None
+
+
+def _gender_of_twin_set(sexes: list[str]) -> str | None:
+    known = sorted(x for x in sexes if x in ("M", "F"))
+    if len(known) != 2:
+        return None
+    if known == ["F", "F"]:
+        return "FF"
+    if known == ["M", "M"]:
+        return "MM"
+    return "FM"
+
+
+def _outcome_of_twin_set(record_types: list[str]) -> str | None:
+    rts = set(record_types)
+    if rts == {"survivor"}:
+        return "two_survivors"
+    if rts == {"survivor", "infant_death"}:
+        return "surv_id"
+    if rts == {"survivor", "fetal_death"}:
+        return "surv_fd"
+    if rts == {"infant_death"}:
+        return "two_id"
+    if rts == {"infant_death", "fetal_death"}:
+        return "id_fd"
+    if rts == {"fetal_death"}:
+        return "two_fd"
+    return None
+
+
+def _table2_set_counts(df: pd.DataFrame, window: str) -> dict[str, int]:
+    """Set-level Table 2a counts: complete twin sets by gender, age, and outcome."""
+    sub = df[(df["data_window"] == window) & (df["set_size"] == 2) & (df["set_complete"] == 1)]
+    counts: dict[str, int] = {}
+    sets: list[tuple[str, str, str]] = []
+    for _, g in sub.groupby("set_id"):
+        gs = _gender_of_twin_set(g["sex_infant"].tolist())
+        ages = g["maternal_age"].dropna().unique()
+        if gs is None or len(ages) != 1:
+            continue
+        ab = _age_bucket(int(ages[0]), window)
+        oc = _outcome_of_twin_set(g["record_type"].tolist())
+        if ab is None or oc is None:
+            continue
+        sets.append((gs, ab, oc))
+    counts["t2_total_complete_twin_sets"] = len(sets)
+    for gs in ("FM", "FF", "MM"):
+        counts[f"t2_gender_{gs}"] = sum(1 for s in sets if s[0] == gs)
+    for ab in ("lt20", "20_29", "30_39", "40p"):
+        for gs in ("FM", "FF", "MM"):
+            counts[f"t2_age_{ab}_{gs}"] = sum(1 for s in sets if s[1] == ab and s[0] == gs)
+    for oc in ("two_survivors", "surv_id", "surv_fd", "two_id", "id_fd", "two_fd"):
+        for gs in ("FM", "FF", "MM"):
+            counts[f"t2_out_{oc}_{gs}"] = sum(1 for s in sets if s[2] == oc and s[0] == gs)
+    return counts
+
+
+def _evaluate_window_table2(df: pd.DataFrame, window: str, pdf_sha: str) -> list[dict[str, object]]:
+    """Evaluate NBER Table 2a-equivalent set-level cells (1995-1997 / 1995-2000 only)."""
+    committed = _load_committed_targets().get(window, {})
+    actuals = _table2_set_counts(df, window)
+    results: list[dict[str, object]] = []
+    for tid, expected in sorted(committed.items()):
+        if not tid.startswith("t2_"):
+            continue
+        actual = actuals.get(tid)
+        if actual is None:
+            continue
+        results.append({
+            "target_id": f"{window.replace('-', '_')}_{tid}",
+            "source": (
+                f"{window} Table 2a twin-set cells "
+                f"(NBER e_Cnttab2a.pdf structure sha={NBER_TAB2_STRUCTURE_SHA[:8]}…)"
+            ),
+            "description": f"{window} {tid}",
+            "expected": expected,
+            "actual": actual,
+            "status": "PASS" if actual == expected else "FAIL",
+            "diff": actual - expected,
+            "pdf_sha256": pdf_sha,
+        })
+    return results
 
 
 def _evaluate_window_table1(df: pd.DataFrame, window: str, pdf_sha: str) -> list[dict[str, object]]:
@@ -263,7 +368,9 @@ def main() -> int:
     results: list[dict[str, object]] = []
     results.extend(_evaluate_window_row_counts(df))
     results.extend(_evaluate_window_table1(df, "1995-1997", PDF_1995_1997_SHA))
+    results.extend(_evaluate_window_table2(df, "1995-1997", PDF_1995_1997_SHA))
     results.extend(_evaluate_window_table1(df, "1995-2000", PDF_1995_2000_SHA))
+    results.extend(_evaluate_window_table2(df, "1995-2000", PDF_1995_2000_SHA))
     results.extend(_evaluate_2016_2020(df))
     results.extend(_evaluate_structural(df))
 
@@ -283,6 +390,7 @@ def main() -> int:
         fh.write("Targets cover 2016-2020 PDF Table 1 cells (5 byte-exact),\n")
         fh.write("1995-1997 + 1995-2000 Table 1 Total-column + set_complete×outcome cells\n")
         fh.write("(28 from external_validation_targets.csv),\n")
+        fh.write("1995-1997 + 1995-2000 Table 2a twin-set cells (68 committed),\n")
         fh.write("row-count conservation across the harmonize step (3),\n")
         fh.write("and structural invariants (5). See `validation_results.csv` for\n")
         fh.write("the per-row table.\n\n")

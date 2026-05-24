@@ -1,7 +1,8 @@
 """DESIGN: tracks-current-state — matched-multiples release smoke suite.
 
-Authored at C8.16 DO sub-step 3 (2026-05-14); extended at RD.2 (2026-05-24). Ten test
-functions (13 parametrized cases) pinning the matched-multiples release surface:
+Authored at C8.16 DO sub-step 3 (2026-05-14); extended at RD.2 (2026-05-24) and
+RD.2 Table 2 follow-on (2026-05-24). Twelve test functions pinning the
+matched-multiples release surface:
 harmonized parquet row+column shape, 3-window coverage, schema↔parquet column parity,
 record-type domain, Table 1 Total-column byte-exact reproduction for all three windows
 (1995-1997, 1995-2000, 2016-2020), residence-status suppression in 2016-2020, and
@@ -117,6 +118,26 @@ def test_record_type_domain():
     assert types == EXPECTED_RECORD_TYPES
 
 
+TABLE2_TOTAL_COMPLETE_TWINS = {
+    "1995-1997": 150_987,
+    "1995-2000": 323_806,
+}
+
+
+def _table2_total_complete_twin_sets(sub: pd.DataFrame) -> int:
+    twin = sub[(sub["set_size"] == 2) & (sub["set_complete"] == 1)]
+    n_sets = 0
+    for _, g in twin.groupby("set_id"):
+        sexes = sorted(x for x in g["sex_infant"].tolist() if x in ("M", "F"))
+        if len(sexes) != 2:
+            continue
+        ages = g["maternal_age"].dropna().unique()
+        if len(ages) != 1:
+            continue
+        n_sets += 1
+    return n_sets
+
+
 def _table1_actuals(sub: pd.DataFrame) -> dict[str, int]:
     return {
         "total": len(sub),
@@ -145,6 +166,17 @@ def test_1995_2000_table_1_total_column():
         assert actual[k] == expected, (
             f"1995-2000 {k}: {actual[k]} vs Table 1 Total column {expected}"
         )
+
+
+@pytest.mark.parametrize("window", ["1995-1997", "1995-2000"])
+def test_table2_total_complete_twin_sets(window: str):
+    df = _load()
+    sub = df[df["data_window"] == window]
+    actual = _table2_total_complete_twin_sets(sub)
+    expected = TABLE2_TOTAL_COMPLETE_TWINS[window]
+    assert actual == expected, (
+        f"{window} Table 2 total complete twin sets: {actual} vs {expected}"
+    )
 
 
 def test_2016_2020_pdf_table_1():

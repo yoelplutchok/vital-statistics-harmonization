@@ -1,6 +1,34 @@
-# STATUS — last updated 2026-05-24T22:57:47Z
+# STATUS — last updated 2026-05-24T23:16:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T23:16:00Z — **RD.1b Phase B DEFERRED + RD.2 Table 2a COMPLETE — natality 215/215; matched-multiples 109/109.**
+
+### What shipped
+
+1. **RD.1b Phase B** — preterm 1980–1989 **deferred** (childstats HEALTH1.A starts 1990; L6 no invented cells). Accepted 1989 LBW tol 0.06 from Phase A.
+2. **RD.2 Table 2a** — 68 twin-set validation cells (1995-1997 + 1995-2000); validator + smoke tests; **109/109** matched-multiples PASS (was 41/41).
+
+### Verify
+
+- Natality: **215/215 PASS** on build host; gate SHA `acb5c48a…` unchanged.
+- Matched multiples: **109/109 PASS**; harmonized SHA `adbec108…` unchanged.
+- `pytest natality/tests/test_pre1990_*.py`: 9 passed; `pytest matched_multiples/tests/`: 15 passed.
+
+### Next planned task
+
+**§15.F:** RD.4 (optional MM ICD-9→ICD-10), D-prep.8 convenience CSVs, D-prep.9 notebooks, latest-year refresh, or RD.1b Phase C (1968–1979 rate transcription). **D.4 gated.**
+
+### Open questions for human
+
+(none — autonomous decisions logged in DECISION_LOG)
+
+### Forward-looking HALTs
+
+1. 2016-2020 Table 2 needs layout PDF before further MM validation expansion.
+2. Pre-1990 preterm requires NVSR/MVSR source hunt (Phase C class), not childstats.
 
 ---
 

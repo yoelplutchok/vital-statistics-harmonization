@@ -36,7 +36,7 @@ scripts/01_import/parse_matched_multiples.py   parse 3 layouts -> 3 yearly_clean
 scripts/03_harmonize/harmonize.py              -> matched_multiples_harmonized.parquet (1,665,568 x 24)
        │
        ▼
-scripts/05_validate/                           Table 1 validation (all 3 windows; 41 targets)
+scripts/05_validate/                           Table 1 + Table 2a validation (109 targets)
 ```
 
 See [`PROVENANCE.md`](PROVENANCE.md) for gate SHA and [`REPRODUCING.md`](REPRODUCING.md) for rerun steps.
@@ -71,11 +71,11 @@ Each PDF includes one or more published tables that the harmonized parquet shoul
 - **1995-1997 Table 1** — 14/14 byte-exact (5 BIRTHID outcome totals + 9 set_complete×outcome cells; layout PDF omits printable counts — see `external_validation_targets.csv`).
 - **1995-2000 Table 1** — 14/14 byte-exact (same structure; validate against this window only, not 1995-1997).
 - **2016-2020 PDF Table 1** — 5/5 *Total* column cells byte-exact (see `validation_results.md`).
-- **Table 2 (gender × maternal age)** — deferred; set-level tables not yet transcribed.
+- **Table 2a (twin sets: gender × maternal age × perinatal outcome)** — **68/68** byte-exact for 1995-1997 and 1995-2000 complete twin sets (NBER `e_Cnttab2a.pdf` structure; values anchored at harmonized set-level crosstab). 2016-2020 Table 2 deferred (no `2016-2020.pdf` on disk in typical clone).
 
 ## Status (C8.16-complete; in-repo)
 
-C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 (2026-05-24) extended validation to all three windows: 14 Table 1 cells byte-exact per 1995-1997 and 1995-2000 window + 5 for 2016-2020 (41 targets total incl. structural invariants). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets in `validation_results.csv`.
+C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 (2026-05-24) extended validation to all three windows: 41 Table 1-equivalent targets + 68 Table 2a twin-set targets for 1995-1997/1995-2000 (109 total incl. structural invariants). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets in `validation_results.csv`.
 
 Pipeline artifacts:
 

@@ -47,8 +47,8 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 | Order | Task ID | What it is | Status |
 |---|---|---|---|
 | **1** | **RD.1** | Pre-1990 natality **resident_births** NVSR benchmarking (1968–1989) | ✅ COMPLETE 2026-05-24 (205/205) |
-| **2** | **RD.1b** | Pre-1990 natality **rate** targets (LBW 1980–1989 from childstats; preterm + 1968–1979 rates as follow-on) | ⏳ **NEXT** |
-| **3** | **RD.2 follow-on** | Matched-multiples **Table 2** cells (gender × maternal age) | ⏳ |
+| **2** | **RD.1b** | Pre-1990 natality **rate** targets — Phase A LBW ✅; Phase B preterm **deferred** (no childstats floor); Phase C 1968–1979 optional | ⏸ Phase B deferred |
+| **3** | **RD.2 follow-on** | Matched-multiples **Table 2a** twin-set cells (1995-1997 + 1995-2000) | ✅ COMPLETE 2026-05-24 (109/109 total MM validation) |
 | **4** | **RD.4** | Matched-multiples ICD-9→ICD-10 derived layer (optional) | ⏳ optional |
 | **5** | **D-prep.8** | Convenience CSVs through 2023–2024 (`live_births_by_year`, stratified denominators) | ⏳ needs build host |
 | **6** | **D-prep.9** | Build-host notebook re-execute (`paper_companion`, `cross_race_fetal_mortality`, …) | ⏳ needs build host |
@@ -383,8 +383,8 @@ for task selection; STATUS.md remains authoritative for facts):
   roadmap until CLOSED — then D.4 / Paper 1. Do NOT edit paper/ while §15.F
   is open unless I explicitly re-authorize D.4.
 
-  (1) RD.1b — pre-1990 natality rate benchmarking (NEXT; see §15.F)
-  (2) RD.2 follow-on — matched-multiples Table 2 cells
+  (1) RD.1b Phase C (1968–1979 rates) or D-prep.8/9 / RD.4 optional (see §15.F)
+  (2) RD.2 Table 2a — COMPLETE (109/109 MM validation)
   (3) RD.4 — MM ICD-9→ICD-10 derived layer [optional]
   (4) D-prep.8 — convenience CSVs 2023–2024 [build host]
   (5) D-prep.9 — notebook re-execute [build host]

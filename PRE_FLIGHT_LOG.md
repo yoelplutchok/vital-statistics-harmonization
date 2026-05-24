@@ -8,6 +8,32 @@
 
 ---
 
+## PRE-FLIGHT for RD.2-table2-matched-multiples — 2026-05-24T23:10:00Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.2 follow-on — Table 2a twin-set cells (gender × maternal age × perinatal outcome) for 1995-1997 and 1995-2000 complete twin sets.
+
+**Inputs.** Harmonized parquet SHA `adbec108…` present. NBER `e_Cnttab2a.pdf` text-extractable (L12 probe: 864 chars). `external_validation_targets.csv` has 28 Table 1 rows pre-DO.
+
+**Field-value snapshot.** No `t2_*` rows pre-DO (confirmed). Table 1 targets unchanged.
+
+**Cheap-check.** Set-level crosstab on 1995-1997: 150,987 complete twin sets; age×gender cells sum to gender marginals.
+
+**Result:** PROCEED.
+
+---
+
+## PRE-FLIGHT for RD.1b-phase-b-preterm-deferral — 2026-05-24T23:10:00Z — **RESULT: PROCEED (doc-only deferral)**
+
+**Task.** §15.F RD.1b Phase B — preterm_rate_pct 1980–1989.
+
+**Source probe.** childstats HEALTH1.A title/series = "1990–2022" only; no national preterm floor before 1990 (L6: do not invent).
+
+**Decision.** Defer Phase B; no CSV rows, no compare-script changes. Natality 215/215 regression re-run on build host.
+
+**Result:** PROCEED (deferral documentation only).
+
+---
+
 ## PRE-FLIGHT for RD.1b-pre-1990-natality-rate-benchmarking-phase-a — 2026-05-24T22:57:47Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.1b Phase A — lbw_rate_pct 1980–1989 (childstats HEALTH1.B).

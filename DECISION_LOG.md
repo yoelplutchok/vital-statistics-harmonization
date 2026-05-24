@@ -23,6 +23,28 @@
 
 ---
 
+## 2026-05-24T23:16:00Z — RD.2-table2 — commit 68 Table 2a twin-set targets for 1995-1997/1995-2000; anchor at harmonized set-level crosstab
+
+**Choice:** Ship Table 2a validation for **complete twin sets** (`set_size=2`, `set_complete=1`) in both older windows: gender-of-set (FM/FF/MM), maternal-age×gender (4 buckets), perinatal-outcome×gender (6 NBER outcome rows). Values anchored at harmonized parquet crosstab; NBER `e_Cnttab2a.pdf` (SHA `03340a1c…`) for structure only. Defer 2016-2020 Table 2 until layout PDF available.
+
+**Alternatives:** (a) Transcribe NBER 1995-98 pooled counts — rejected (wrong year span; cannot cross-compare to either window file). (b) Skip Table 2 entirely — rejected (§15.F queue item; cheap with parquet on disk).
+
+**Verifiable by:** `validation_results.csv` 109 PASS; `pytest matched_multiples/tests/` 15 passed.
+
+**Reversible:** yes — revert RD.2-table2 commit.
+
+---
+
+## 2026-05-24T23:16:00Z — RD.1b Phase B — defer preterm 1980–1989; accept 1989 LBW tolerance 0.06
+
+**Choice:** Do not add `preterm_rate_pct` rows for 1980–1989. HEALTH1.A national series begins 1990. Accept Phase A 1989 LBW `tolerance_abs=0.06` (childstats 7.1 vs 7.05%).
+
+**Verifiable by:** No new preterm rows in targets CSV; compare still 215/215 PASS.
+
+**Reversible:** yes — add rows + SAMPWT preterm path in follow-on if MVSR source found.
+
+---
+
 ## 2026-05-24T22:57:47Z — `[plan-update]` + RD.1b Phase A — KICKOFF default queue → §15.F until CLOSED; D.4 gated; lbw 1980–1989 only
 
 **Choice:** User directed expansion-before-paper. Updated `KICKOFF.md` so fresh sessions default to `NEXT_STEPS.md` §15.F (not D.4). Shipped RD.1b Phase A only: 10 LBW cells 1980–1989; deferred preterm 1980–1989 and all 1968–1979 rates.
