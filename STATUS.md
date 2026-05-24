@@ -1,6 +1,36 @@
-# STATUS — last updated 2026-05-24T23:16:00Z
+# STATUS — last updated 2026-05-25T00:55:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-25T00:55:00Z — **RD.4 COMPLETE — matched-multiples ICD-10 derived layer (harmonized gate unchanged; 109/109 validation).**
+
+### What shipped
+
+1. **RD.4** — `scripts/04_derive/derive_matched_multiples.py` + CMS `2018_I9gem.txt`; derived parquet 1,665,568 × 27 (`cause_of_death_icd10_derived` + source/approx flags). **76** infant-death rows `gem_unmapped` (14 distinct ICD-9 UCOD codes).
+2. **Docs** — `metadata/derived_schema.csv`, `metadata/icd_gem/README.md`, `PROVENANCE.md`, `README.md`, `file_inventory.csv` GEM row.
+3. **Tests** — `test_icd10_derived_smoke.py` (8 tests); full MM suite **23 passed**.
+
+### Verify
+
+- Harmonized gate SHA `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549` unchanged.
+- Derived SHA `682302e3413cdcebadd4bab2a6cf9ae3d52f505cd2611c44df6591f6995cea00`.
+- Validation **109/109 PASS**.
+
+### Next planned task
+
+**§15.F:** D-prep.8 convenience CSVs 2023–2024 (build host), D-prep.9 notebook paths/re-execute, latest-year refresh, or RD.1b Phase C (optional). **D.4 gated.**
+
+### Open questions for human
+
+1. Defer RD.1b Phase C and D-prep.8/9 explicitly to close §15.F, or run build-host tasks next?
+2. Publish `matched_multiples_derived.parquet` on next Zenodo patch, or keep harmonized-only in deposit until requested?
+
+### Forward-looking HALTs
+
+1. Re-derive after any harmonized rebuild; gate SHA must stay `adbec108…`.
+2. D-prep.8 needs natality + fetal parquets on build host.
 
 ---
 

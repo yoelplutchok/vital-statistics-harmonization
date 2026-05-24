@@ -49,7 +49,7 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 | **1** | **RD.1** | Pre-1990 natality **resident_births** NVSR benchmarking (1968–1989) | ✅ COMPLETE 2026-05-24 (205/205) |
 | **2** | **RD.1b** | Pre-1990 natality **rate** targets — Phase A LBW ✅; Phase B preterm **deferred** (no childstats floor); Phase C 1968–1979 optional | ⏸ Phase B deferred |
 | **3** | **RD.2 follow-on** | Matched-multiples **Table 2a** twin-set cells (1995-1997 + 1995-2000) | ✅ COMPLETE 2026-05-24 (109/109 total MM validation) |
-| **4** | **RD.4** | Matched-multiples ICD-9→ICD-10 derived layer (optional) | ⏳ optional |
+| **4** | **RD.4** | Matched-multiples ICD-9→ICD-10 derived layer (optional) | ✅ COMPLETE 2026-05-25 |
 | **5** | **D-prep.8** | Convenience CSVs through 2023–2024 (`live_births_by_year`, stratified denominators) | ⏳ needs build host |
 | **6** | **D-prep.9** | Build-host notebook re-execute (`paper_companion`, `cross_race_fetal_mortality`, …) | ⏳ needs build host |
 | **7** | **Latest-year refresh** | Linked 2024 cohort / natality 2025 when NCHS publishes | ⏳ trigger on new zips |

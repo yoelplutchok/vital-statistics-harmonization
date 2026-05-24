@@ -33,7 +33,10 @@ raw_data/matched_multiples/                  raw NCHS zips (3 total; SHA in docs
 scripts/01_import/parse_matched_multiples.py   parse 3 layouts -> 3 yearly_clean parquets
        │
        ▼
-scripts/03_harmonize/harmonize.py              -> matched_multiples_harmonized.parquet (1,665,568 x 24)
+scripts/03_harmonize/harmonize_matched_multiples.py -> matched_multiples_harmonized.parquet (1,665,568 x 24)
+       │
+       ▼
+scripts/04_derive/derive_matched_multiples.py  -> matched_multiples_derived.parquet (optional; +3 ICD-10 cols)
        │
        ▼
 scripts/05_validate/                           Table 1 + Table 2a validation (109 targets)
@@ -81,6 +84,7 @@ Pipeline artifacts:
 
 - `output/yearly_clean/matched_multiples_<window>_raw.parquet` (3 files; gitignored; reproducible). Row counts: 324,490 / 699,144 / 641,934.
 - `output/harmonized/matched_multiples_harmonized.parquet` (1 file; gitignored; reproducible). 1,665,568 rows × 24 cols.
+- `output/harmonized/matched_multiples_derived.parquet` (optional RD.4; gitignored). Same rows × 27 cols (`cause_of_death_icd10_derived` + provenance flags; canonical `cause_of_death_icd` unchanged).
 - `validation_results.{csv,md}` at subproject root (tracked).
 - `tests/test_release_smoke.py` (11 tests; SHAPE-not-VALUE per Convention 1).
 

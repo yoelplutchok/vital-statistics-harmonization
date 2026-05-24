@@ -8,6 +8,22 @@
 
 ---
 
+## PRE-FLIGHT for RD.4-matched-multiples-icd9-icd10-derived-layer — 2026-05-25T00:45:00Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.4 — optional derived ICD-10 bridge for infant-death UCOD (no harmonized mutation).
+
+**Inputs.** Harmonized gate SHA `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549` ✓. RD.2 validation 109/109 ✓. CMS `2018_I9gem.txt` downloaded; committed copy SHA `44f4079c…` ✓.
+
+**Field-value snapshot.** `cause_of_death_icd` / `cause_of_death_icd_revision` on harmonized parquet: 39,882 infant_death rows; 25,219 ICD-9 + 14,663 native ICD-10. 1995-2000 raw: UCOD9 and UCOD10 **mutually exclusive** on same record (0 dual-populated) — era split per revision flag.
+
+**GEM probe.** 462/476 distinct ICD-9 UCOD codes map (97.1%); 14 codes → `gem_unmapped`.
+
+**Halt conditions.** None tripped.
+
+**Result:** PROCEED.
+
+---
+
 ## PRE-FLIGHT for RD.2-table2-matched-multiples — 2026-05-24T23:10:00Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.2 follow-on — Table 2a twin-set cells (gender × maternal age × perinatal outcome) for 1995-1997 and 1995-2000 complete twin sets.

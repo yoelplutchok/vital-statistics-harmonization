@@ -26,6 +26,21 @@ Verify:
 shasum -a 256 matched_multiples_harmonized.parquet
 ```
 
+## Derived parquet (optional RD.4 layer)
+
+| File | Rows × cols | Size | SHA-256 |
+|---|---|---|---|
+| `matched_multiples_derived.parquet` | 1,665,568 × 27 | ~13 MB | `682302e3413cdcebadd4bab2a6cf9ae3d52f505cd2611c44df6591f6995cea00` |
+
+Adds `cause_of_death_icd10_derived`, `cause_of_death_icd10_derived_source`, and
+`cause_of_death_icd10_gem_approximate` via CMS 2018 ICD-9→ICD-10 GEM
+(`metadata/icd_gem/2018_I9gem.txt`). The harmonized gate SHA above is unchanged.
+
+```bash
+uv run python matched_multiples/scripts/04_derive/derive_matched_multiples.py
+shasum -a 256 matched_multiples_derived.parquet
+```
+
 ## Per-window raw parquets (`output/yearly_clean/`)
 
 Parsed fixed-width NCHS source members before harmonization. Row counts match NCHS documentation Table 1 totals (validated at C8.16).

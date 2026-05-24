@@ -23,6 +23,20 @@
 
 ---
 
+## 2026-05-25T00:55:00Z — RD.4 — CMS 2018 diagnosis GEM for ICD-10 derived UCOD; native ICD-10 passthrough
+
+**Choice:** Use committed `2018_I9gem.txt` (CMS 2018 ICD-9-CM→ICD-10-CM diagnosis GEM). For `cause_of_death_icd_revision==10`, copy `cause_of_death_icd` to `cause_of_death_icd10_derived` (`native_icd10`). For revision 9, map via NCHS UCOD→GEM key rules (incl. 4-char→5-char padding and `E` prefix for external causes). Unmapped codes → `gem_unmapped` (null derived code). Do not alter harmonized `cause_of_death_icd`.
+
+**Alternatives:** (a) NCHS mortality-specific ICD-9/10 comparability tables — deferred (heavier transcription). (b) Overwrite harmonized column — rejected (RD.4 scope / within_era comparability).
+
+**Reason:** 1995-2000 UCOD9/UCOD10 blocks are mutually exclusive per record; cross-window analysis needs a single ICD-10 column without breaking as-shipped revision tagging.
+
+**Verifiable by:** `pytest matched_multiples/tests/`; harmonized SHA `adbec108…`; derived SHA `682302e3…`.
+
+**Reversible:** yes — delete derived parquet + derive scripts; harmonized untouched.
+
+---
+
 ## 2026-05-24T23:16:00Z — RD.2-table2 — commit 68 Table 2a twin-set targets for 1995-1997/1995-2000; anchor at harmonized set-level crosstab
 
 **Choice:** Ship Table 2a validation for **complete twin sets** (`set_size=2`, `set_complete=1`) in both older windows: gender-of-set (FM/FF/MM), maternal-age×gender (4 buckets), perinatal-outcome×gender (6 NBER outcome rows). Values anchored at harmonized parquet crosstab; NBER `e_Cnttab2a.pdf` (SHA `03340a1c…`) for structure only. Defer 2016-2020 Table 2 until layout PDF available.

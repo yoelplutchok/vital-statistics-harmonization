@@ -1785,19 +1785,9 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ---
 
-### Task RD.4 — `matched-multiples-icd9-icd10-derived-layer` ⏳ [OPTIONAL]
+### Task RD.4 — `matched-multiples-icd9-icd10-derived-layer` ✅ **COMPLETE 2026-05-25**
 
-**Goal.** Add a **derived-only** ICD-9→ICD-10 bridge column for 1995-2000 infant-death cause codes (1999-2000 native ICD-10 block already present); never write into canonical `cause_of_death_icd` harmonized column.
-
-**Why this matters.** Enables cross-window cause-of-death analysis without breaking the ICD-9/ICD-10-as-shipped comparability class.
-
-**PRE-FLIGHT inputs.** Empirical ICD-9/ICD-10 overlap on 1999-2000 records; GEM or published bridge table choice; schema `derived_*` column naming convention.
-
-**Estimated effort.** 1–2 sessions (bridge table + derived parquet + tests).
-
-**Dependencies.** RD.2 complete (validation baseline stable).
-
-**Halt-condition flags.** H7 (sibling schema drift), §7 if bridge requires RDC-only mappings.
+**Shipped (2026-05-25).** Derived-only ICD-10 bridge (`cause_of_death_icd10_derived` + source flags) via CMS 2018 diagnosis GEM; native ICD-10 passthrough; canonical `cause_of_death_icd` unchanged. `scripts/04_derive/derive_matched_multiples.py`; `metadata/icd_gem/2018_I9gem.txt`; `matched_multiples_derived.parquet` (1,665,568 × 27); `derived_schema.csv`; smoke tests. Harmonized gate SHA `adbec108…` unchanged. 76 infant-death rows `gem_unmapped` (14 ICD-9 UCOD codes). Receipt: `RECEIPTS/RD.4-matched-multiples-icd9-icd10-derived-layer_2026-05-25T00-55-00Z.md`. Tags: `RD.4-matched-multiples-icd9-icd10-derived-layer-{pre-do,complete}`.
 
 ---
 
