@@ -23,6 +23,22 @@
 
 ---
 
+## 2026-05-24T19:47:38Z — RD.3 — consistency cleanup: cite unified Zenodo v1.0.1 everywhere user-facing; do not edit `paper/`
+
+**Choice:** Closed RD.3 as doc-only fixes: refresh `VERSION_ROADMAP.md` + root `README.md` (41/41 matched-multiples) + `natality/README.md` / `fetal_death/README.md` Zenodo lines + `cross_race_fetal_mortality.ipynb` intro (seven eras, 2014-2024) + `PROJECT_STRUCTURE.md` notebook row. Left `paper/` and uncommitted manuscript drafts untouched. Did not expand scope to convenience-parquet "pending refresh" wording in `natality/README.md` (separate verify on build host).
+
+**Alternatives:** (a) bundle D.4 paper numeric sync in same session — rejected (explicit RD.3 no-paper scope + user prior deferral). (b) execute `cross_race` notebook on build host — rejected (VERIFY is grep + pytest only; notebook re-exec is D-prep.9 / D.4 territory).
+
+**Reason:** L11 stale-roadmap defense after RD.2; KICKOFF default after RD.2 was RD.3 (local, no build host). Unified deposit shipped 2026-05-21 — user-facing docs still said "not yet deposited" / "5/5" in places.
+
+**Source:** PRE-FLIGHT 2026-05-24T19:47:38Z; STATUS D.2/D.3 complete sections; `10.5281/zenodo.20326150`.
+
+**Verifiable by:** `grep -r 'not yet deposited' README.md VERSION_ROADMAP.md natality/README.md` → 0; root README matched-multiples row shows 41/41.
+
+**Reversible:** yes — `git revert` RD.3 commit.
+
+---
+
 ## 2026-05-24T19:40:00Z — RD.2 — matched-multiples Table 1 target anchor when layout PDFs omit printable counts
 
 **Choice:** For 1995-1997 and 1995-2000 windows, commit byte-exact Table 1-equivalent validation targets using (a) the same BIRTHID@1 outcome-total semantics as 2016-2020 PDF Table 1 *Total* column, (b) set_complete×outcome cells (9 per window) mapped from FLGCOMP via harmonized `set_complete`, with numeric values anchored at C8.16 parse-time raw BIRTHID crosstabs (verified raw == harmonized), and (c) NBER `d_Cntltab1.pdf` (SHA `2778c656…`) as the structure reference only. Do **not** cross-compare 1995-1997 vs 1995-2000 cells. Defer Table 2 (gender × maternal age).

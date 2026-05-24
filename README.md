@@ -16,7 +16,7 @@ Future development happens here; the original repos are mirrors.
 | **Natality** | 1968–2024 (57 years) | 201,161,456 | 84 (71 harmonized + 13 derived) | 183/183 *Births: Final Data* targets byte-exact (1990–2024; pre-1990 benchmarking planned) | [`natality/`](natality/) |
 | **Linked birth–infant death** | 1983–2023 (38 years; permanent 1992–1994 NCHS-linkage gap) | 149,386,620 | 97 (94 v3 columns + 3 within-era cohort columns) | **2005–2023**: 33/35 byte-exact + 2 cells differ by 1 record (within documented tolerance). **Pre-2005 cohort (1983–2004)**: per-year cohort denominator + resident-births byte-exact 19/19, published IMR within ±0.02 19/19, weighted 1983–1984 byte-exact; a documented NCHS numerator-file-vs-denominator-linkage residual for 3 of 19 years (same class as the 2 differ-by-1 cells) | [`natality/`](natality/) |
 | **Fetal death** | 1982–2024 (43 years) | 2,427,233 | 89 (73 harmonized + 16 derived) | 29/29 per-year counts + 26/26 per-year fetal mortality rates byte-exact (V2 era); 13/19 detail cells byte-exact + 6 documented diffs | [`fetal_death/`](fetal_death/) |
-| **Matched multiples** | 1995–1997 + 1995–2000 + 2016–2020 (3 windows) | 1,665,568 | 24 harmonized | 5/5 byte-exact cells from 2016-2020 PDF Table 1 *Total* column (Total / Birth / Survivor / Infant death / Fetal death); twin "complete-set" IMR = 10.14/1,000 reproduces PDF prose byte-exact | [`matched_multiples/`](matched_multiples/) |
+| **Matched multiples** | 1995–1997 + 1995–2000 + 2016–2020 (3 windows) | 1,665,568 | 24 harmonized | **41/41** committed Table 1-equivalent targets byte-exact (14 cells × 1995–1997 + 14 × 1995–2000 + 5 × 2016–2020 PDF *Total* column + structural invariants); twin complete-set IMR = 10.14/1,000 reproduces 2016–2020 PDF prose byte-exact | [`matched_multiples/`](matched_multiples/) |
 
 Each product is also distributed as per-year raw parquets preserving every documented source field for users who need detail outside the harmonized schema.
 
@@ -72,7 +72,7 @@ The harmonized data ship as Apache Parquet. Entry points: **Python** — per-pro
 
 ## Validation
 
-All three products are validated against every per-year figure NCHS publishes in the relevant *National Vital Statistics Reports* series under each product's canonical analytic filter. Validation tables ship inside each subproject's `metadata/` and `output/validation/` directories, and the verification scripts under each `scripts/05_validate/` are runnable end-to-end.
+All four products are validated against published NCHS aggregate tables (per-year *NVSR* figures for natality, linked, and fetal death; PDF Table 1-equivalent cells for matched multiples) under each product's canonical analytic filter. Validation tables ship inside each subproject's `metadata/` and `output/validation/` directories (matched multiples: `validation_results.{csv,md}` at subproject root), and the verification scripts under each `scripts/05_validate/` are runnable end-to-end.
 
 ## Reproducibility
 
@@ -96,7 +96,7 @@ Per-subproject `requirements.txt` files are preserved as discovery pointers for 
 
 ## Companion paper
 
-A Data Resource Profile manuscript covering all three products as a unified resource is being prepared. Drafts live in [`paper/`](paper/). The current preferred draft is [`paper/draft_v2_hmd_styled.md`](paper/draft_v2_hmd_styled.md), modeled on the IJE Data Resource Profile for the Human Mortality Database.
+A Data Resource Profile manuscript covering all four products as a unified resource is being prepared. Drafts live in [`paper/`](paper/). The current preferred draft is [`paper/draft_v2_hmd_styled.md`](paper/draft_v2_hmd_styled.md), modeled on the IJE Data Resource Profile for the Human Mortality Database.
 
 ## Citation
 

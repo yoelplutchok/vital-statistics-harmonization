@@ -155,8 +155,8 @@ Cross-product worked examples. Each notebook should be runnable end-to-end again
 
 | Notebook | Status | Purpose |
 |---|---|---|
-| `joint_use_demo.ipynb` | Stub | Compute fetal mortality rate by maternal race using all three products jointly. To be filled in. |
-| `paper_companion.ipynb` | Stub | Reproduce every numeric claim in the paper from the parquets. To be filled in. |
+| `joint_use_demo.ipynb` | Executed | Compute fetal mortality rate by maternal race using all three products jointly; reproduces *NVSR 73-09* Table 4 cells. |
+| `paper_companion.ipynb` | Executed | Reproduce the paper's numeric claims from the parquets (refresh against current parquets before submission). |
 | `matched_multiples_demo.ipynb` | C8.16 | Reproduce 5 PDF Table 1 *Total* cells (Total / Birth / Survivor / Infant death / Fetal death) byte-exact + complete-twin-set IMR (10.14/1,000) byte-exact + cross-window plurality coverage. |
 
 ## shared/helpers/
@@ -217,7 +217,7 @@ Each notebook lists its parquet inputs and helper-module imports. All notebooks 
 | `paper_companion.ipynb` | ✓ | ✓ | ✓ | (built post-Task 4) | Reproduces every manuscript numeric |
 | `maternal_age_stratified_imr.ipynb` (C.6.a) | — | — | ✓ | (linked-only) | Per-stratum cells vs *NVSR* IMR table |
 | `preterm_outcomes_time_series.ipynb` (C.6.b) | ✓ | ✓ | ✓ | `canonical_join_keys` | Per-year preterm cells |
-| `cross_race_fetal_mortality.ipynb` (C.6.c) | ✓ | — | — | (fetal-only) | 2017 bridged-race + 2022 single-race |
+| `cross_race_fetal_mortality.ipynb` (C.6.c) | ✓ | ✓ (denom) | — | (fetal + natality) | Section 1: 7/7 *NVSR 73-09* Table A 2022 race FMR cells; 1982–2024 cross-era panel |
 | `education_gradient.ipynb` (C.6.d, future) | — | ✓ | — | — | TBD (C8.15) |
 | `state_reporting_quirks.ipynb` (C.6.e, future) | ✓ | ✓ | — | — | Documentary; no NVSR cells (geography suppressed) |
 

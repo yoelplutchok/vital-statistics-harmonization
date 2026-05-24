@@ -1,6 +1,47 @@
-# STATUS — last updated 2026-05-24T19:40:00Z
+# STATUS — last updated 2026-05-24T19:47:38Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T19:47:38Z — **RD.3 CONSISTENCY CLEANUP COMPLETE — VERSION_ROADMAP + README + cross_race notebook + Zenodo lines aligned to v1.0.1 / 41/41 MM validation.**
+
+### What shipped
+
+§15.F RD.3 (user: autonomous decisions; no `paper/` edits):
+
+1. **`VERSION_ROADMAP.md`** — four-product shipped table; unified Zenodo **v1.0.1** (`10.5281/zenodo.20326150`) + GitHub `08a2287`; removed stale "pending deposit" framing.
+2. **Root `README.md`** — matched-multiples **41/41**; validation section covers all four products.
+3. **`natality/README.md`**, **`fetal_death/README.md`** — cite unified HVS deposit; fetal V1 years 2005-2024.
+4. **`notebooks/cross_race_fetal_mortality.ipynb`** — seven layout eras; 2014-2024 OE-era note.
+5. **`PROJECT_STRUCTURE.md`** — cross_race notebook row matches notebook scope (natality denom + 2022 Table A cells).
+
+### Verify
+
+- Residual stale grep clean on user-facing docs (`5/5`, `not yet deposited`).
+- `matched_multiples/tests/`: **13 passed**.
+- Zero canonical-state mutation.
+- Receipt: `RECEIPTS/RD.3-consistency-cleanup-cross-race-roadmap_2026-05-24T19-47-38Z.md`. PRE-FLIGHT: `PRE_FLIGHT_LOG.md` 2026-05-24T19:47:38Z. Tags `RD.3-consistency-cleanup-cross-race-roadmap-{pre-do,complete}`.
+
+### Next planned task — **RD.1** (pre-1990 natality NVSR) or **D.4** (submission readiness)
+
+- **RD.1** — needs `~/Desktop/natality-harmonization` build tree (2-3 sessions).
+- **D.4** — author markers, companion-notebook regen (build host), optional IJE Key Features conversion; uncommitted `paper/` drafts remain out of scope unless re-opened.
+
+### Open questions for human
+
+1. RD.1 vs D.4 next?
+2. Table 2 matched-multiples transcription now or defer?
+
+### Forward-looking HALTs
+
+1. RD.1 needs natality build host.
+2. `natality/README.md` convenience-parquet "pending refresh" lines may still be stale — verify on build host.
+3. Carried: 4 gate parquets absent in clone; companion-notebook regen for IJE.
+
+### Build artifacts current
+
+- Unchanged from RD.2 (41/41 MM validation; harmonized `adbec108…`).
 
 ---
 

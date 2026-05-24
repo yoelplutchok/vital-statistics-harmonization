@@ -1765,13 +1765,13 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ---
 
-### Task RD.3 — `consistency-cleanup-cross-race-roadmap` ⏳
+### Task RD.3 — `consistency-cleanup-cross-race-roadmap` ✅ **COMPLETE 2026-05-24**
 
 **Goal.** Doc/consistency pass: reconcile `notebooks/cross_race` stale claims, `VERSION_ROADMAP.md` natality-V4 wording, and any L11 stale roadmap items surfaced during RD.1/RD.2 — **no `paper/` edits** unless user explicitly re-opens manuscript work.
 
 **Why this matters.** Pre-Zenodo audit (D-prep.4) will flag stale cross-doc claims; cheap to fix now.
 
-**PRE-FLIGHT inputs.** Grep sweep for stale counts (183/183, 33/35, V4 roadmap, cross_race notebook outputs vs current envelope).
+**Shipped (2026-05-24).** `VERSION_ROADMAP.md` → unified Zenodo v1.0.1 + four-product table; root `README.md` → 41/41 matched-multiples + four-product validation framing; `natality/README.md` + `fetal_death/README.md` Zenodo/citation lines; `cross_race_fetal_mortality.ipynb` intro (seven eras, 2014–2024 OE); `PROJECT_STRUCTURE.md` notebook-deps row. Residual grep: no `5/5` / `not yet deposited` in user-facing docs (append-only logs excluded). Receipt: `RECEIPTS/RD.3-consistency-cleanup-cross-race-roadmap_2026-05-24T19-47-38Z.md`. Tags: `RD.3-consistency-cleanup-cross-race-roadmap-{pre-do,complete}`.
 
 **Estimated effort.** 0.5–1 session.
 
@@ -1823,7 +1823,7 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ### Stale items in current docs to fix on contact
 
-- `fetal_death/README.md` Version Roadmap lists "V4: Natality companion product" as future. Natality is already shipped. Reword to "Joint-use convenience layer + cross-product validation notebook" per `VERSION_ROADMAP.md` at the monorepo root.
+- ~~`fetal_death/README.md` Version Roadmap lists "V4: Natality companion product" as future.~~ **Resolved RD.3 (2026-05-24)** — fetal README roadmap now lists joint-use layer; no V4 natality line.
 
 ---
 

@@ -36,7 +36,7 @@ scripts/01_import/parse_matched_multiples.py   parse 3 layouts -> 3 yearly_clean
 scripts/03_harmonize/harmonize.py              -> matched_multiples_harmonized.parquet (1,665,568 x 24)
        │
        ▼
-scripts/05_validate/                           PDF Table 1 validation (2016-2020 window)
+scripts/05_validate/                           Table 1 validation (all 3 windows; 41 targets)
 ```
 
 See [`PROVENANCE.md`](PROVENANCE.md) for gate SHA and [`REPRODUCING.md`](REPRODUCING.md) for rerun steps.

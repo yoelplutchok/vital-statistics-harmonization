@@ -8,6 +8,29 @@
 
 ---
 
+## PRE-FLIGHT for RD.3-consistency-cleanup-cross-race-roadmap — 2026-05-24T19:47:38Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.3 — doc/consistency pass after RD.2; no `paper/` edits. User authorized autonomous decisions (kickoff handshake).
+
+**Stale-string sweep (Convention 3 / L11):**
+
+| Pattern | Hits in user-facing docs | Action |
+|---|---|---|
+| `5/5 byte` (matched-multiples headline) | `README.md` L19 | → 41/41 framing ✓ |
+| `not yet deposited` / `pending Zenodo` | `VERSION_ROADMAP.md`, `natality/README.md` | → cite `10.5281/zenodo.20326150` v1.0.1 ✓ |
+| `cross_race` "four era-revisions" | notebook cell 0 | → seven layout eras ✓ |
+| `2014-2022` OE-era | notebook cell 0 | → 2014-2024 ✓ |
+| `PROJECT_STRUCTURE` cross_race NVSR row | "2017 bridged + 2022" | → Section 1 Table A + 1982–2024 panel ✓ |
+| `fetal_death/README` V1 years | 2005-2022 | → 2005-2024 ✓ |
+
+**Scope:** doc/markdown/ipynb-intro only. Zero parquet/schema/validator mutation.
+
+**4 gate parquets:** not in clone (gitignored); N/A for this doc-only task.
+
+**RESULT: PROCEED**
+
+---
+
 ## PRE-FLIGHT for RD.2-matched-multiples-cell-validation — 2026-05-24T19:00:00Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.2 — extend matched-multiples validation to 1995-1997 and 1995-2000 Table 1-equivalent cells (14 targets per window: 5 BIRTHID outcome totals + 9 set_complete×outcome) plus retain 2016-2020 PDF Table 1 (5) and structural invariants (8) → 41 targets total. User authorized autonomous decision-making; paper work explicitly deferred (leave uncommitted `paper/` edits unstaged).

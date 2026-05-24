@@ -146,7 +146,7 @@ A regression-protection pytest suite (`tests/`) covers the schema, row-count, an
 
 | Version | Scope | Years |
 |---------|-------|-------|
-| V1 | Core harmonization + cause of death + reporting thresholds | 2005-2022 |
+| V1 | Core harmonization + cause of death + reporting thresholds | 2005-2024 |
 | V2 | Backward extension to 1992; 1989-revision era | 1992-2002 (base deposit) |
 | V2.1 | 2003-2004 transition years | +2 years |
 | V3a | 1989-1991 backward extension | +3 years |
@@ -167,4 +167,4 @@ This project leverages methodology from the **U.S. Natality Harmonization Projec
 
 ## Citation
 
-Plutchok, Y. (2026). *Harmonized U.S. Fetal Death Microdata, 1982-2024* (v2.4.0 in-repo; v2.0.0 Zenodo deposit) [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.20031571
+Plutchok, Y. (2026). *U.S. Harmonized Vital Statistics (HVS) Microdata* (v1.0.1; includes fetal death v2.4.0) [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.20326150 — superseded fetal-only deposit (1992–2022): https://doi.org/10.5281/zenodo.20031571
