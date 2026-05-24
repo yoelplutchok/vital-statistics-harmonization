@@ -1,6 +1,40 @@
-# STATUS — last updated 2026-05-24T20:20:42Z
+# STATUS — last updated 2026-05-24T22:34:22Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T22:34:22Z — **RD.1 COMMITTED + D.4 MANUSCRIPT VALIDATION SYNC — tags `RD.1-pre-1990-natality-nvsr-benchmarking-complete`; paper counts aligned to 205/205 + 41/41.**
+
+### What shipped
+
+Kickoff session (autonomous close-out of RD.1 housekeeping + D.4 numeric pass):
+
+1. **RD.1 committed** @ `f8a5094` — targets CSV, weighted compare script, smoke tests, README headlines; tag `RD.1-pre-1990-natality-nvsr-benchmarking-complete`.
+2. **D.4 paper sync** @ `d390349` — `paper/draft_v2_hmd_styled.md` validation paragraph + Future developments + case study 2 updated (205/205 resident births, 183/183 rates, 41/41 matched multiples; pre-1990 rates deferred; MM Table 2 deferred).
+3. **Decisions (no human prompt):** commit RD.1 yes; defer pre-1990 *rate* targets (NVSR transcription); defer `draft_v2_hmd_styled_humanized.md` (untracked, not submission substrate).
+
+### Verify
+
+- `pytest natality/tests/test_pre1990_resident_births_smoke.py`: 6 passed (clone).
+- Gate derived SHA `acb5c48a…` unchanged.
+- `paper/draft_v2_hmd_styled_humanized.md` left untracked.
+
+### Next planned task
+
+**D.4 submission readiness (remaining):** IJE body word-trim (Abstract + Key Features add length vs prior ≤2,500 body); resolve deposit-structure FLAGS (seven parquets); author markers (`<!-- YP -->`); build-host `paper_companion.ipynb` + `cross_race_fetal_mortality.ipynb` re-execute. Optional: RD.4 ICD-9→ICD-10 layer; pre-1990 rate benchmarking follow-on.
+
+### Open questions for human
+
+1. Submit `draft_v2_hmd_styled.md` vs promote humanized draft?
+2. Re-run companion + cross_race notebooks on build host before submit?
+3. Pre-1990 rate benchmarking session now or post-submission?
+
+### Forward-looking HALTs
+
+1. After any natality re-derive: build-host compare with `--yearly-parquet-dir`; expect **205/205** resident-birth PASS.
+2. Manuscript body word count exceeds IJE 2,500 limit until trim pass — do not submit without re-measure.
+3. `cross_race_fetal_mortality.ipynb` still unexecuted locally (parquets gitignored).
 
 ---
 
