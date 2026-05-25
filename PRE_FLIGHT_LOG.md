@@ -8,6 +8,20 @@
 
 ---
 
+## PRE-FLIGHT for convenience-csv-extend-2023-2024 (D-prep.8 re-verify) — 2026-05-25T01:00:00Z — **RESULT: PROCEED (idempotent)**
+
+**Task.** §15.F / D-prep.8 — extend convenience CSVs through 2023-2024.
+
+**Field-value snapshot.** `live_births_by_year.csv` ends 2024 (rows 2023 `3,596,017`, 2024 `3,628,934`). `stratified_denominators.csv`: 4,990 rows, years through 2024. Per-year strat sums = LBY for 2022-2024 byte-exact.
+
+**Build host.** Natality derived `acb5c48a…` at `~/Desktop/natality-harmonization/output/harmonized/`; fetal gates at build dir + monorepo `output/harmonized/` symlink — present.
+
+**Halt conditions.** None.
+
+**Result:** PROCEED — DO limited to docstring alignment unless rebuild fails parity (not needed).
+
+---
+
 ## PRE-FLIGHT for RD.4-matched-multiples-icd9-icd10-derived-layer — 2026-05-25T00:45:00Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.4 — optional derived ICD-10 bridge for infant-death UCOD (no harmonized mutation).

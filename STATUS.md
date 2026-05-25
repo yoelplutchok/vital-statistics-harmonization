@@ -1,6 +1,34 @@
-# STATUS — last updated 2026-05-25T00:55:00Z
+# STATUS — last updated 2026-05-25T01:05:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-25T01:05:00Z — **D-prep.8 RE-VERIFIED CLOSED — convenience CSVs through 2024 already shipped; gate SHAs unchanged.**
+
+### What shipped
+
+1. **D-prep.8 (re-verify)** — Confirmed `live_births_by_year.csv` + `stratified_denominators.csv` through **2024** (original build 2026-05-20). Per-year strat sums = LBY byte-exact for 2022–2024. `pytest` stratified parity: **2 passed**.
+2. **Doc** — `build_stratified_denominators.py` module docstring: bridged-race null window **2020–2024** (was stale 2018–2022).
+
+### Verify
+
+- Four gate parquet SHAs unchanged (`38e2cecb…`, `185c071e…`, `acb5c48a…`, `f630d8cf…`).
+- Receipt: `RECEIPTS/convenience-csv-extend-2023-2024_reverify_2026-05-25T01-05-00Z.md`.
+
+### Next planned task
+
+**§15.F:** **D-prep.9** notebook portable paths + re-execute (build host). Then latest-year refresh (NCHS trigger) or explicit deferrals to close §15.F. **D.4 gated.**
+
+### Open questions for human
+
+1. Proceed **D-prep.9** this session or defer §15.F closure (RD.1b Phase C, latest-year refresh)?
+2. When NVSR 2024 final publishes, refresh LBY 2024 `source` row?
+
+### Forward-looking HALTs
+
+1. D-prep.9 VERIFY needs executed notebooks if parquets on build host.
+2. 2024 LBY uses HVS natality canonical until NVSR final — reconcile on publish.
 
 ---
 

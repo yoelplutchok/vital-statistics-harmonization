@@ -18,9 +18,9 @@ the full harmonized parquet is the canonical input.
 Year scope: 1992-2002 + 2005-2024 (31 joint-coverage years between
 natality 1968-2024 and fetal-death 1982-2024 excl. 2003-2004).
 
-Bridged-race coverage gap: rows for 2018-2022 have
+Bridged-race coverage gap: rows for 2020-2024 have
 `maternal_race_bridged = NaN` because NCHS dropped MBRACE from the public-
-use file for those years. Joint-use rate computation by bridged race is
+use file starting 2020. Joint-use rate computation by bridged race is
 limited to 1992-2002 + 2005-2017 (24 years) without further work.
 
 Usage:
