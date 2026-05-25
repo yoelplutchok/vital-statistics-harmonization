@@ -1729,9 +1729,9 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 ---
 
-# §15.F Robustness roadmap — ⏳ **OPEN** (reopened 2026-05-25; supersedes CLOSED 03:00Z)
+# §15.F Robustness roadmap — ✅ **CLOSED** (2026-05-25T14:37:09Z; supersedes reopen 12:00Z)
 
-**Exit status.** Queue **OPEN** (ready to close). **Next default agent task:** close §15.F → **D.4**, or latest-year refresh (NCHS trigger). Shipped: RD.1, RD.1b Phases A–**C** (**249/249**), RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **D.4 gated** until §15.F closed.
+**Exit status.** Queue **CLOSED**. Shipped: RD.1, RD.1b Phases A–**C** (**249/249**), RD.1b audit remediation (F1/F2/F3/F5), RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **Deferred:** latest-year refresh (NCHS trigger). **Next default agent task:** **D.4 / Paper 1** (`paper/draft_v2_hmd_styled.md`); `paper/` edits authorized 2026-05-25.
 
 Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
 

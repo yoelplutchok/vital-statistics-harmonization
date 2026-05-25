@@ -23,6 +23,38 @@
 
 ---
 
+## 2026-05-25T14:37:09Z — section-15f-closure-final — Close §15.F after RD.1b B+C + audit remediation
+
+**Choice:** Close `NEXT_STEPS.md` §15.F with explicit deferral of **latest-year refresh** only (NCHS trigger). Do not defer RD.1b Phase C (already shipped 249/249). Authorize **D.4 / Paper 1** `paper/` edits per user "go" (supersedes 03:00Z closure that deferred Phase C).
+
+**Alternatives:** (a) Keep §15.F open until latest-year refresh — rejected: KICKOFF exit criterion allows deferral with DECISION_LOG. (b) Defer D.4 again — rejected: user confirmed proceed.
+
+**Reason:** All §15.F tasks complete: RD.1, RD.1b A/B/C, RD.2, RD.3, RD.4, D-prep.8/9; audit F1/F2/F3/F5 applied; 249/249 unchanged on build host.
+
+**Source:** `STATUS.md` 2026-05-25T03:05Z; `RECEIPTS/RD.1b-phase-b-c-audit-remediation_2026-05-25T03-05-07Z.md`; user message "go".
+
+**Verifiable by:** `grep "§15.F.*CLOSED" NEXT_STEPS.md KICKOFF.md`; no open §15.F task without ✅ or explicit deferral row.
+
+**Reversible:** yes — `[plan-update]` to reopen §15.F if latest-year or new robustness task is authorized mid-D.4.
+
+---
+
+## 2026-05-25T14:37:09Z — D.4-paper1-rd-envelope-sync — Manuscript validation footnotes + IJE trim after RD.1b
+
+**Choice:** Sync `paper/draft_v2_hmd_styled.md` to **249/249** natality and **109/109** matched-multiples validation; move pre-1990 comparability detail to footnotes `[^pre1990_1968]` and `[^zenodo_validation]`; re-trim main text (Basics→Access) to ≤2,500 words while preserving headline record counts and DOI/GitHub lines.
+
+**Alternatives:** (a) Fresh-chat §19.1 only — rejected for in-session sync user authorized. (b) Keep inline 205/205 framing — rejected: stale after RD.1b.
+
+**Reason:** RD.1b + audit remediation shipped; deposit v1.0.1 validation tables still pre-RD.1b — footnote documents docs-only v1.0.2 before submission without inventing numbers.
+
+**Source:** `natality/docs/COMPARABILITY.md` §Pre-1990; `README.md` validation table; prior D.4 receipts.
+
+**Verifiable by:** `grep "249/249" paper/draft_v2_hmd_styled.md`; word-count script in `RECEIPTS/D.4-paper1-rd-envelope-sync_2026-05-25T14-37-09Z.md`.
+
+**Reversible:** yes — git revert `paper/draft_v2_hmd_styled.md`.
+
+---
+
 ## 2026-05-25T02:47:41Z — RD.1b Phase C audit follow-up (F1) — 1971 LBW re-sourced to MVSR 7.7% @ 0.05
 
 **Choice:** Amend `lbw_rate_pct,1971` from `7.6 / tol 0.06` (IOM 1985 Table B.1 secondary; 7.64%) to **`7.7 / tol 0.05`**, sourced to MVSR Vol. 23 No. 8 Supp (`mv23_08sacc.pdf`), which states 1972 LBW "7.7 percent … the same percent as in 1971." Supersedes the **1971 portion** of the 2026-05-25T02:05:00Z "0.06 pct-pt tolerance for 1971 and 1973 LBW" entry; **1973 LBW is unchanged (7.6 / tol 0.06)** — its 7.6% is a direct `mv23_11sacc` cite and microdata 7.548% genuinely needs 0.06.

@@ -8,6 +8,35 @@
 
 ---
 
+## PRE-FLIGHT for D.4-paper1-rd-envelope-sync — 2026-05-25T14:37:09Z — **RESULT: PROCEED**
+
+**Task.** D.4 — sync `paper/draft_v2_hmd_styled.md` after RD.1b (249/249, 109/109); IJE main-text trim; pre-1990 footnotes. User authorized `paper/` via "go" after §15.F closure.
+
+**Field-value snapshot.**
+
+| Claim | Plan assumed | Actual (pre-DO) |
+|---|---|---|
+| Natality validation headline | 205/205 or 215/215 | **249/249** per STATUS + README |
+| MM validation | 41/41 | **109/109** per RD.2 Table 2a |
+| Main-text word budget | ≤2,500 | ~3,300+ after RD sync (needs re-trim) |
+| 1968 LBW/preterm caveats | in COMPARABILITY only | F3 notes in CSV; manuscript footnote owed |
+
+**Halt conditions.** None tripped in clone. Build-host VERIFY (paper_companion, gate SHA) deferred — parquets gitignored.
+
+**Result:** PROCEED — doc-only `paper/` + state files.
+
+---
+
+## PRE-FLIGHT for section-15f-closure-final — 2026-05-25T14:37:09Z — **RESULT: PROCEED**
+
+**Task.** Final §15.F closure after RD.1b B+C + audit remediation (supersedes 03:00Z premature closure).
+
+**Field-value snapshot.** RD.1 ✅; RD.1b A/B/C ✅ 249/249; audit F1/F2/F3/F5 ✅; RD.2 109/109; RD.3 ✅; RD.4 ✅; D-prep.8/9 ✅. Latest-year: no NCHS trigger verified → defer.
+
+**Result:** PROCEED.
+
+---
+
 ## PRE-FLIGHT for RD.1b-pre-1990-natality-rate-benchmarking-phase-c — 2026-05-25T01:30:00Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.1b Phase C — `lbw_rate_pct` + `preterm_rate_pct` 1968–1979 (MVSR / NVSS transcription).

@@ -1,6 +1,43 @@
-# STATUS — last updated 2026-05-25T03:05:07Z
+# STATUS — last updated 2026-05-25T14:37:09Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-25T14:37:09Z — **§15.F CLOSED (final) + D.4 in-progress — manuscript 249/249 + 109/109 sync; main text ≤2,500 words.**
+
+### Current phase
+
+Post–Phase D distribution; **§15.F robustness roadmap CLOSED**. **D.4 / Paper 1** is the default queue (user authorized `paper/` edits this session).
+
+### What shipped
+
+1. **§15.F final closure** — RD.1b Phases B+C + audit remediation complete; latest-year refresh deferred (NCHS trigger). `NEXT_STEPS.md` §15.F, `KICKOFF.md`, `DECISION_LOG.md` updated.
+2. **D.4 partial** — `paper/draft_v2_hmd_styled.md`: validation counts **249/249** / **109/109**; pre-1990 footnotes `[^pre1990_1968]` / `[^zenodo_validation]` / `[^mm_validation]`; deposit wording fixes; main-text trim (~2,275 words, Basics→Access); Key Features ≤200 words.
+
+### In-progress
+
+D.4 submission prep: build-host `paper_companion` re-run; Zenodo docs-only v1.0.2; notebook execution (`cross_race_fetal_mortality`); admin `<!-- YP -->` review.
+
+### Next planned task
+
+**D.4 completion** on build host (VERIFY numerics + companion notebook) → human submission go-ahead.
+
+### Open questions for human
+
+1. Include untracked `paper/draft_v2_hmd_styled_humanized.md` in D.4 scope or ignore?
+2. Publish Zenodo docs-only **v1.0.2** before IJE submission (recommended in `[^zenodo_validation]` footnote)?
+3. Refresh LBY 2024 `source` row when NVSR 2024 final publishes.
+
+### Forward-looking HALTs (D.4 VERIFY on build host)
+
+1. Gate derived SHA `acb5c48a…` unchanged if any validation CSV touched.
+2. `paper_companion` all PASS after draft numeric edits.
+3. `cross_race_fetal_mortality.ipynb` executed with outputs before citing case study 3.
+
+### Blocked
+
+(none)
 
 ---
 

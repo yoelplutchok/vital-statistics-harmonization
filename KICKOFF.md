@@ -38,19 +38,15 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-25, §15.F REOPENED — RD.1b Phase B next)
+## Current planned sequence (as of 2026-05-25, §15.F CLOSED — D.4 next)
 
-**Latest plan-update (2026-05-25).** **§15.F robustness roadmap REOPENED**. **RD.1b Phase C ✅** (249/249). **Default agent queue:** close §15.F → **D.4** (or latest-year refresh on NCHS trigger). **D.4 / Paper 1 gated** until §15.F closed; do **not** edit `paper/` until then.
-
-**When you paste this kickoff in a fresh chat, the default work queue is RD.1b Phase C** (1968–1979 rate transcription) unless latest-year refresh is triggered. See `NEXT_STEPS.md` §15.F RD.1b Phase C block.
+**Latest plan-update (2026-05-25).** **§15.F robustness roadmap CLOSED**. **RD.1b Phases B+C ✅** (249/249) + audit remediation ✅. **Default agent queue:** **D.4 / Paper 1** (IJE trim, validation sync, admin markers). Latest-year refresh remains **NCHS trigger**–deferred.
 
 | Order | Task ID | What it is | Status |
 |---|---|---|---|
-| **1** | **RD.1b Phase C** | Pre-1990 natality **rates** 1968–1979 (NVSR/MVSR transcription) | **NEXT** (~2–3 sessions) |
-| — | **RD.1b Phase C** | Pre-1990 **lbw_rate_pct** + **preterm_rate_pct** 1968–1979 | ✅ 249/249 (2026-05-25) |
-| — | **RD.1b Phase B** | Pre-1990 **preterm_rate_pct** 1980–1989 | ✅ (included in 249/249) |
-| **3** | **Latest-year refresh** | Natality 2025 / linked 2024 cohort when NCHS publishes | ⏳ NCHS trigger |
-| **4** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, numeric pass | **GATED** — after §15.F CLOSED |
+| **1** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, numeric pass | **NEXT** |
+| — | **RD.1b** | Pre-1990 LBW + preterm rates 1968–1989 | ✅ 249/249 (2026-05-25) |
+| **2** | **Latest-year refresh** | Natality 2025 / linked 2024 cohort when NCHS publishes | ⏳ NCHS trigger |
 | — | **RD.1** | Pre-1990 **resident_births** 1968–1989 | ✅ 205/205 |
 | — | **RD.1b Phase A** | LBW rate 1980–1989 | ✅ 215/215 |
 | — | **RD.2 + RD.4 + D-prep.8/9** | MM validation, ICD-10 layer, notebooks | ✅ |
@@ -375,22 +371,17 @@ BEFORE doing ANY work, read these files in this exact order:
 
 5. LESSONS.md end-to-end (if it has entries).
 
-CURRENT WORK QUEUE (2026-05-24 — §15.F REOPENED; RD.1b Phase C NEXT):
+CURRENT WORK QUEUE (2026-05-25 — §15.F CLOSED; D.4 NEXT):
 
-  D.2 + D.3 are DONE (Zenodo 10.5281/zenodo.20326150 v1.0.1; GitHub 08a2287).
-  §15.F robustness roadmap REOPENED. RD.1b Phase B ✅ (225/225). Default queue: Phase C.
-  Do NOT edit paper/ until §15.F CLOSED (after Phase C + latest-year
-  refresh each ✅ or explicitly deferred).
+  D.2 + D.3 DONE (Zenodo 10.5281/zenodo.20326150 v1.0.1; GitHub 08a2287).
+  §15.F CLOSED (RD.1–RD.4, RD.1b 249/249, audit remediation). paper/ edits authorized.
 
-  (1) RD.1b Phase C — rates 1968–1979 (NVSR/MVSR transcription) **NEXT**
-  (3) Latest-year refresh when NCHS publishes new zips
-  (4) D.4 / Paper 1 — GATED until §15.F CLOSED
+  (1) D.4 / Paper 1 — IJE finalization **NEXT**
+  (2) Latest-year refresh when NCHS publishes new zips (deferred)
 
-  Build host for RD.1b: ~/Desktop/natality-harmonization/output/yearly_clean/
-  Gate parquets gitignored; natality derived SHA acb5c48a… must stay byte-exact.
+  Gate parquets gitignored; natality derived SHA acb5c48a… must stay byte-exact on build host.
 
-  DEFERRED unless re-authorized: D.1 old-repo redirects; legacy Zenodo patches; D.4
-  while §15.F open.
+  DEFERRED unless re-authorized: D.1 old-repo redirects; legacy Zenodo patches.
 
 After reading, tell me in 4-6 sentences:
   (a) the current task per STATUS.md AND the next task per KICKOFF.md's
