@@ -1729,7 +1729,9 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 ---
 
-# §15.F Robustness roadmap (authorized 2026-05-24; agent-executable; local-first)
+# §15.F Robustness roadmap — ✅ **CLOSED 2026-05-25** (DECISION_LOG 2026-05-25T03:00:00Z)
+
+**Exit status.** Queue **CLOSED**. Shipped: RD.1, RD.1b Phase A, RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **Deferred:** RD.1b Phase B (2026-05-24, no childstats preterm floor), RD.1b Phase C (1968–1979 rates), latest-year refresh (NCHS trigger). **Next default agent queue:** **D.4 / Paper 1** — explicit human re-authorization required before `paper/` edits.
 
 Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
 
@@ -1791,7 +1793,7 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ---
 
-### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏳ (Phase A ✅; Phase B ⏸ deferred 2026-05-24; Phase C open)
+### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏸ (Phase A ✅; Phase B ⏸ deferred 2026-05-24; Phase C ⏸ deferred 2026-05-25)
 
 **Phase A shipped (2026-05-24).** 10 `lbw_rate_pct` cells (1980–1989) from childstats HEALTH1.B; SAMPWT-weighted raw LBW path for 1980–1988; **215/215 PASS**. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-a_*.md`. Tags: `RD.1b-pre-1990-natality-rate-benchmarking-phase-a-{pre-do,complete}`.
 
@@ -1799,7 +1801,9 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 **Phase B decision (2026-05-24).** childstats **HEALTH1.A** publishes preterm rates from **1990** only (verified via WebSearch + page title "1990–2022"). No HEALTH1.A/B floor for 1980–1989 preterm; inventing cells violates L6. **Deferred** to Phase C (NVSR/MVSR transcription) or post-§15.F. Phase A remains shipped (**215/215** natality PASS).
 
-### Task RD.1b (continued) — Phase C ⏳ **optional follow-on**
+### Task RD.1b (continued) — Phase C ⏸ **DEFERRED 2026-05-25** (optional; post-§15.F)
+
+**Closure decision (2026-05-25).** Phase C (1968–1979 NVSR/MVSR rate transcription) **deferred** at §15.F closure per DECISION_LOG 2026-05-25T03:00:00Z. Phase A LBW 1980–1989 remains shipped (**215/215**). Re-open via `[plan-update]` if user authorizes before or after D.4.
 
 **Goal.** Extend natality external validation **rate** targets backward before 1990, in slices:
 
@@ -1818,6 +1822,20 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 **Dependencies.** RD.1 complete.
 
 **Halt-condition flags.** L6 (no invented NVSR/childstats cells), §7 if derived vs SAMPWT-weighted rates diverge >tolerance for 1972–1988.
+
+---
+
+### Task D-prep.8 — `convenience-csv-extend-2023-2024` ✅ **COMPLETE 2026-05-25** (re-verified)
+
+**Shipped.** `live_births_by_year.csv` + `stratified_denominators.csv` through **2024**; parity tests pass. Receipt: `RECEIPTS/convenience-csv-extend-2023-2024_reverify_2026-05-25T01-05-00Z.md`.
+
+### Task D-prep.9 — `notebook-portable-paths` ✅ **COMPLETE 2026-05-25**
+
+**Shipped.** All eight `notebooks/_build_*.py` re-executed; 8/8 PASS; no `/Users/...` literals in shipped notebooks. Receipt: `RECEIPTS/notebook-portable-paths-reverify_2026-05-25T02-30-00Z.md`. Commit `c55c5df`.
+
+### Task latest-year-refresh — ⏸ **DEFERRED 2026-05-25** (NCHS trigger)
+
+**Goal.** Extend envelope when NCHS publishes new public-use zips (e.g., natality 2025, linked 2024 cohort, fetal 2023+). **Deferred** at §15.F closure — no new release verified 2026-05-25. Re-open when `https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm` lists new years.
 
 ---
 

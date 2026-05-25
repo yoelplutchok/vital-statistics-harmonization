@@ -23,6 +23,24 @@
 
 ---
 
+## 2026-05-25T03:00:00Z — section-15f-closure — Close §15.F robustness roadmap; defer RD.1b Phase C + latest-year refresh; open D.4 queue
+
+**Choice:** Declare `NEXT_STEPS.md` §15.F **CLOSED** (2026-05-25). Explicit deferrals: **RD.1b Phase C** (1968–1979 NVSR/MVSR rate transcription — optional; Phase A LBW 1980–1989 already shipped; Phase B preterm already deferred 2026-05-24); **latest-year refresh** (linked 2024 cohort / natality 2025+ / fetal 2023+ when NCHS publishes — trigger-based, no new zips verified this session). Set STATUS “Next planned task” = **D.4 / Paper 1**. Do **not** edit `paper/` in the closure session — D.4 remains gated on explicit re-authorization per KICKOFF.
+
+**Alternatives:** (a) Run RD.1b Phase C before closure — rejected (2–3 session NVSR transcription; user authorized closure via kickoff “proceed”). (b) Probe NCHS for 2025 natality now — rejected (no publish trigger; defer is standard for annual extension). (c) Begin D.4 manuscript edits in same session — rejected (closure is doc/state-only; paper gate preserved).
+
+**Reason:** KICKOFF §15.F exit criterion satisfied: RD.1 ✅, RD.2 Table 2 ✅, RD.4 ✅, D-prep.8/9 ✅, RD.1b remaining slices explicitly deferred with this entry, latest-year refresh explicitly deferred. User directive (2026-05-24) to finish expansion before paper is satisfied by shipped queue items; remaining items are optional or NCHS-triggered.
+
+**Source:** KICKOFF.md §15.F exit criterion; STATUS 2026-05-25T02:30:00Z; user session authorization “proceed” after kickoff handshake proposing §15.F closure.
+
+**Verifiable by:** `grep "§15.F.*CLOSED" NEXT_STEPS.md KICKOFF.md`; STATUS top section “Next planned task” = D.4; DECISION_LOG entry present; no `paper/draft_v2_hmd_styled.md` edits in closure commit.
+
+**Reversible:** yes — `[plan-update]` can reopen §15.F and re-gate D.4 if user re-authorizes RD.1b Phase C or latest-year work before manuscript prep.
+
+**Residual risks:** (a) 1968–1979 rate validation gap remains until Phase C runs. (b) Envelope ends at 2024 natality / 2023 linked until NCHS refresh. (c) `live_births_by_year` 2024 `source` row still HVS-canonical until NVSR 2024 final — carry forward from D-prep.8.
+
+---
+
 ## 2026-05-25T00:55:00Z — RD.4 — CMS 2018 diagnosis GEM for ICD-10 derived UCOD; native ICD-10 passthrough
 
 **Choice:** Use committed `2018_I9gem.txt` (CMS 2018 ICD-9-CM→ICD-10-CM diagnosis GEM). For `cause_of_death_icd_revision==10`, copy `cause_of_death_icd` to `cause_of_death_icd10_derived` (`native_icd10`). For revision 9, map via NCHS UCOD→GEM key rules (incl. 4-char→5-char padding and `E` prefix for external causes). Unmapped codes → `gem_unmapped` (null derived code). Do not alter harmonized `cause_of_death_icd`.

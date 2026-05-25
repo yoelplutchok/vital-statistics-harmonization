@@ -1,6 +1,42 @@
-# STATUS — last updated 2026-05-25T01:05:00Z
+# STATUS — last updated 2026-05-25T03:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-25T03:00:00Z — **§15.F CLOSED — robustness roadmap complete; next = D.4 / Paper 1 (paper/ gated).**
+
+### Current phase
+
+Post–Phase D distribution; **§15.F robustness roadmap CLOSED**. Manuscript prep (D.4) is the default next queue item.
+
+### What shipped
+
+1. **§15.F closure** — Explicit deferrals logged: **RD.1b Phase C** (1968–1979 NVSR/MVSR rate transcription); **latest-year refresh** (NCHS trigger). Queue exit criterion satisfied (RD.1–RD.4, D-prep.8/9 ✅).
+2. **State updates** — `DECISION_LOG.md`, `NEXT_STEPS.md` §15.F, `KICKOFF.md`, `PRE_FLIGHT_LOG.md` (closure PRE-FLIGHT + **D.4 PRE-FLIGHT checklist** prep).
+3. **Receipt** — `RECEIPTS/section-15f-closure_2026-05-25T03-00-00Z.md`.
+
+### Verify
+
+- SMOKE: `pytest matched_multiples/tests/test_icd10_derived_smoke.py natality/tests/test_pre1990_*.py` → **17 passed**.
+- No `paper/draft_v2_hmd_styled.md` edits this session.
+- Zero canonical parquet / schema mutation.
+
+### Next planned task
+
+**D.4 / Paper 1** — `paper/draft_v2_hmd_styled.md` IJE finalization (trim, FLAG markers, numeric pass, admin sections). **Requires explicit human re-authorization of `paper/` edits** before DO phase. See `PRE_FLIGHT_LOG.md` “PRE-FLIGHT for D.4-paper-1”.
+
+### Open questions for human
+
+1. **Authorize D.4** this session or next — in-repo edits vs fresh-chat §19.1 pass first?
+2. When NVSR 2024 final publishes, refresh LBY 2024 `source` row (carry-forward from D-prep.8).
+3. Include `paper/draft_v2_hmd_styled_humanized.md` (untracked) in D.4 scope or ignore?
+
+### Forward-looking HALTs (D.4 PRE-FLIGHT)
+
+1. Gate SHA re-hash on build host before any manuscript numeric VERIFY (`38e2cecb…`, `185c071e…`, `acb5c48a…`, `f630d8cf…`).
+2. Re-run `notebooks/_build_paper_companion.py` after any draft numeric edit.
+3. Resolve all `<!-- FLAG -->` markers in `paper/draft_v2_hmd_styled.md` before submission.
 
 ---
 

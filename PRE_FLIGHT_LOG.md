@@ -8,6 +8,59 @@
 
 ---
 
+## PRE-FLIGHT for section-15f-closure — 2026-05-25T03:00:00Z — **RESULT: PROCEED**
+
+**Task.** Close `NEXT_STEPS.md` §15.F robustness roadmap per KICKOFF exit criterion: log explicit deferrals for remaining open items; set STATUS “Next planned task” = **D.4 / Paper 1**; prep D.4 PRE-FLIGHT checklist (no `paper/` edits this session).
+
+**Field-value snapshot (§15.F queue state).**
+
+| Item | Expected | Actual |
+|---|---|---|
+| RD.1 | ✅ 205/205 | Receipt `RD.1-pre-1990-natality-nvsr-benchmarking_2026-05-24T20-20-42Z.md` |
+| RD.1b Phase A | ✅ 215/215 incl. LBW 1980–1989 | Receipt `RD.1b-pre-1990-natality-rate-benchmarking-phase-a_*.md` |
+| RD.1b Phase B | ⏸ deferred 2026-05-24 | Receipt `RD.1b-phase-b-preterm-deferral_2026-05-24T23-16-00Z.md` |
+| RD.1b Phase C | open → **defer this session** | No receipt; user authorized closure via kickoff “proceed” |
+| RD.2 + Table 2a | ✅ 109/109 MM | Receipts RD.2 + Table 2 follow-on |
+| RD.3 | ✅ | Receipt `RD.3-consistency-cleanup-cross-race-roadmap_2026-05-24T19-47-38Z.md` |
+| RD.4 | ✅ | Receipt `RD.4-matched-multiples-icd9-icd10-derived-layer_2026-05-25T00-55-00Z.md` |
+| D-prep.8 | ✅ through 2024 | Receipt `convenience-csv-extend-2023-2024_reverify_2026-05-25T01-05-00Z.md` |
+| D-prep.9 | ✅ 8/8 notebooks | Receipt `notebook-portable-paths-reverify_2026-05-25T02-30-00Z.md`; commit `c55c5df` |
+| Latest-year refresh | open → **defer this session** | No NCHS 2025 natality / 2024 linked trigger verified this session |
+| Gate parquets in clone | gitignored / missing | Expected; last verified on build host post D-prep.9 |
+
+**SMOKE.** `pytest matched_multiples/tests/test_icd10_derived_smoke.py natality/tests/test_pre1990_*.py -q` → **17 passed**. Grep `notebooks/*.ipynb` for `/Users/` → **zero hits**.
+
+**Halt conditions.** None tripped. §7-#18 not testable without gate parquets in clone; last build-host PASS 2026-05-25T02:30:00Z STATUS.
+
+**Result:** PROCEED — doc-only closure + D.4 PRE-FLIGHT prep; zero canonical mutation.
+
+---
+
+## PRE-FLIGHT for D.4-paper-1 — **PENDING USER AUTHORIZATION** (prep only; not executed)
+
+**Task.** Phase D.4 — Data Resource Profile finalization (`paper/draft_v2_hmd_styled.md`). **Gated:** human must explicitly re-authorize `paper/` edits before any DO phase.
+
+**Inputs to verify at D.4 session start (build host recommended for numeric VERIFY).**
+
+- [ ] User re-authorizes D.4 / `paper/` edits (§15.F now CLOSED).
+- [ ] Four gate parquet SHAs on build host: `38e2cecb…`, `185c071e…`, `acb5c48a…`, `f630d8cf…` (§7-#18 halt on mismatch).
+- [ ] Unified Zenodo DOI in `CITATION.cff` / README: `10.5281/zenodo.20326150` (v1.0.1).
+- [ ] Public GitHub sync: commit `08a2287` or later on `yoelplutchok/vital-statistics-harmonization`.
+- [ ] Re-run `notebooks/_build_paper_companion.py` → `paper_companion.ipynb` all PASS; CSV `paper_companion_results.csv` matches draft claims.
+- [ ] Validation headline counts vs draft: natality **215/215**; linked **33/35 byte-exact + 2 differ-by-1**; fetal **29/29 counts + 26/26 rates** (V2 era); MM **109/109**.
+- [ ] Word count: main text ≤2,500 words (excl. abstract, Key Features, refs, tables, admin) — Task 5 baseline 2,501; re-audit after edits.
+- [ ] Resolve inline `<!-- FLAG -->` markers in draft (Zenodo seven-parquet deposit wording; Key Features ≤200 words; BUNMD citation; etc.).
+- [ ] Table 1 era boundaries vs `record_layout_*.csv` + user guides (`paper/README.md` outstanding item).
+- [ ] Admin sections: Author contributions, AI disclosure, Funding — review `<!-- YP: ... -->` notes before submission.
+- [ ] References: IJE Vancouver / Index Medicus format (`paper/README.md` deferred item).
+- [ ] Optional: fresh-chat pass via `NEXT_STEPS.md` §19.1 prompt + attachments before in-repo edits.
+
+**Halt-condition flags.** L6 (no invented numerics); any paper_companion FAIL; gate SHA drift; validation regression.
+
+**Result:** NOT STARTED — awaiting explicit D.4 go-ahead.
+
+---
+
 ## PRE-FLIGHT for notebook-portable-paths (D-prep.9 re-verify) — 2026-05-25T02:00:00Z — **RESULT: PROCEED**
 
 **Task.** §15.F D-prep.9 — re-verify portable `notebooks/_paths.py` + re-execute all eight `_build_*.py` notebooks on build host; confirm `natality/notebooks/quickstart.ipynb` has no `/Users/...` literals.
