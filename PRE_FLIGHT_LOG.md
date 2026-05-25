@@ -8,6 +8,20 @@
 
 ---
 
+## PRE-FLIGHT for RD.1b-pre-1990-natality-rate-benchmarking-phase-c — 2026-05-25T01:30:00Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.1b Phase C — `lbw_rate_pct` + `preterm_rate_pct` 1968–1979 (MVSR / NVSS transcription).
+
+**Inputs.** Build host `~/Desktop/natality-harmonization/output/yearly_clean/natality_{1968..1979}_raw.parquet` present. Gate derived SHA `acb5c48a9abf82ac…` unchanged. Baseline compare **225/225 PASS**.
+
+**Field-value snapshot.** `external_validation_targets_v1.csv`: 225 targets pre-DO; 0 rows for 1968–1979 LBW/preterm. MVSR transcribed (24 cells): 1969–1979 from Final Natality / Registered Births PDFs (mv22_12, mv23_08/11, mv24_11, mv25_10, mv26_12, mv27_11, mv29_01, mv31_08); 1968 LBW 8.2% (Series 21 No. 48 / adjacent MVSR); 1971 LBW 7.6% (IOM 1985 Table B.1); 1968 preterm 8.9% (GESTREC 0–4 per Nat1968doc). Weighted raw probes: all years within tolerance after 1971/1973 LBW 0.06 pct-pt tol.
+
+**Halt conditions.** L6 not tripped (every cell has citable source). None other.
+
+**Result:** PROCEED.
+
+---
+
 ## PRE-FLIGHT for RD.1b-pre-1990-natality-rate-benchmarking-phase-b — 2026-05-24T18:00:00Z — **RESULT: PROCEED**
 
 **Task.** §15.F RD.1b Phase B — `preterm_rate_pct` 1980–1989 (MVSR Advance Reports).

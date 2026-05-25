@@ -40,14 +40,15 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ## Current planned sequence (as of 2026-05-25, §15.F REOPENED — RD.1b Phase B next)
 
-**Latest plan-update (2026-05-24).** **§15.F robustness roadmap REOPENED**. **RD.1b Phase B ✅** (225/225). **Default agent queue: RD.1b Phase C** → latest-year refresh → D.4. **D.4 / Paper 1 gated** until §15.F closed; do **not** edit `paper/` until then.
+**Latest plan-update (2026-05-25).** **§15.F robustness roadmap REOPENED**. **RD.1b Phase C ✅** (249/249). **Default agent queue:** close §15.F → **D.4** (or latest-year refresh on NCHS trigger). **D.4 / Paper 1 gated** until §15.F closed; do **not** edit `paper/` until then.
 
 **When you paste this kickoff in a fresh chat, the default work queue is RD.1b Phase C** (1968–1979 rate transcription) unless latest-year refresh is triggered. See `NEXT_STEPS.md` §15.F RD.1b Phase C block.
 
 | Order | Task ID | What it is | Status |
 |---|---|---|---|
 | **1** | **RD.1b Phase C** | Pre-1990 natality **rates** 1968–1979 (NVSR/MVSR transcription) | **NEXT** (~2–3 sessions) |
-| — | **RD.1b Phase B** | Pre-1990 **preterm_rate_pct** 1980–1989 | ✅ 225/225 (2026-05-24) |
+| — | **RD.1b Phase C** | Pre-1990 **lbw_rate_pct** + **preterm_rate_pct** 1968–1979 | ✅ 249/249 (2026-05-25) |
+| — | **RD.1b Phase B** | Pre-1990 **preterm_rate_pct** 1980–1989 | ✅ (included in 249/249) |
 | **3** | **Latest-year refresh** | Natality 2025 / linked 2024 cohort when NCHS publishes | ⏳ NCHS trigger |
 | **4** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, numeric pass | **GATED** — after §15.F CLOSED |
 | — | **RD.1** | Pre-1990 **resident_births** 1968–1989 | ✅ 205/205 |

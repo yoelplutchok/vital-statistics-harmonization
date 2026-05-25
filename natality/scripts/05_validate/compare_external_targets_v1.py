@@ -258,13 +258,52 @@ def _pre1990_weighted_lbw_rate_map(yearly_dir: Path, years: list[int]) -> dict[i
     return out
 
 
+def _weighted_preterm_rate_from_raw_1968(yearly_dir: Path) -> float:
+    """
+    1968 public-use file uses GESTREC (not GESTREC3): codes 0-4 = <37 weeks per Nat1968doc.
+
+    Denominator: resident births with known gestation (GESTREC 0-8; excludes 9 not stated).
+    50% sample: uniform 2x inflation.
+    """
+    raw_path = yearly_dir / "natality_1968_raw.parquet"
+    if not raw_path.is_file():
+        raise FileNotFoundError(raw_path)
+
+    schema_names = pq.ParquetFile(raw_path).schema_arrow.names
+    if "GESTREC" not in schema_names:
+        raise RuntimeError(f"{raw_path}: missing GESTREC for 1968")
+    t = pq.read_table(raw_path, columns=["RESTATUS", "GESTREC"])
+    w_den = w_num = 0.0
+    for rs, gr in zip(t["RESTATUS"].to_pylist(), t["GESTREC"].to_pylist(), strict=True):
+        if str(rs).strip() == "4":
+            continue
+        g = str(gr).strip()
+        if g == "9" or g == "":
+            continue
+        try:
+            code = int(g)
+        except ValueError:
+            continue
+        if code < 0 or code > 8:
+            continue
+        wt = 2.0
+        w_den += wt
+        if code <= 4:
+            w_num += wt
+    if not w_den:
+        raise RuntimeError(f"{raw_path}: zero known-gestation resident weighted denominator")
+    return w_num / w_den * 100.0
+
+
 def _weighted_preterm_rate_from_raw(yearly_dir: Path, year: int) -> float:
     """
     NCHS-style resident preterm% for pre-1989 public-use files (GESTREC3 code 1 = <37 weeks).
 
     Denominator: resident births with known gestation (GESTREC3 codes 1 or 2; excludes 0/3).
-    1972-1988: per-record SAMPWT. 1968-1971: uniform 2x (not used for RD.1b Phase B years).
+    1972-1988: per-record SAMPWT. 1969-1971: uniform 2x. 1968: use GESTREC via _weighted_preterm_rate_from_raw_1968.
     """
+    if year == 1968:
+        return _weighted_preterm_rate_from_raw_1968(yearly_dir)
     if year > 1988:
         raise ValueError(f"_weighted_preterm_rate_from_raw only supports years <= 1988, got {year}")
 

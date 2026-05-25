@@ -1731,7 +1731,7 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 # §15.F Robustness roadmap — ⏳ **OPEN** (reopened 2026-05-25; supersedes CLOSED 03:00Z)
 
-**Exit status.** Queue **OPEN**. **Next default agent task:** **RD.1b Phase C** (1968–1979 rate transcription) or latest-year refresh (NCHS trigger). Shipped: RD.1, RD.1b Phase A + **Phase B**, RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **D.4 gated** until §15.F closed.
+**Exit status.** Queue **OPEN** (ready to close). **Next default agent task:** close §15.F → **D.4**, or latest-year refresh (NCHS trigger). Shipped: RD.1, RD.1b Phases A–**C** (**249/249**), RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **D.4 gated** until §15.F closed.
 
 Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
 
@@ -1793,7 +1793,7 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ---
 
-### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏳ (Phase A ✅; Phase B ✅; **Phase C NEXT**)
+### Task RD.1b — `pre-1990-natality-rate-benchmarking` ✅ (Phase A ✅; Phase B ✅; Phase C ✅ **249/249**)
 
 **Phase A shipped (2026-05-24).** 10 `lbw_rate_pct` cells (1980–1989) from childstats HEALTH1.B; SAMPWT-weighted raw LBW path for 1980–1988; **215/215 PASS**. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-a_*.md`. Tags: `RD.1b-pre-1990-natality-rate-benchmarking-phase-a-{pre-do,complete}`.
 
@@ -1819,7 +1819,11 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 **Supersedes:** 2026-05-24 childstats-only deferral (DECISION_LOG RD.1b Phase B) — MVSR path now authorized.
 
-### Task RD.1b (continued) — Phase C ⏳ **after Phase B**
+### Task RD.1b (continued) — Phase C ✅ **COMPLETE 2026-05-25**
+
+**Shipped.** 24 `lbw_rate_pct` + `preterm_rate_pct` cells (1968–1979) in `external_validation_targets_v1.csv`; `_weighted_preterm_rate_from_raw_1968`; `test_pre1990_rate_phase_c_smoke.py`. Build-host VERIFY **249/249 PASS**; gate derived SHA `acb5c48a…` unchanged. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-c_2026-05-25T02-05-00Z.md`.
+
+### Task RD.1b (continued) — Phase C (archived spec) ⏳ **was: after Phase B**
 
 **Goal.** Extend natality external validation **rate** targets backward before 1990, in slices:
 

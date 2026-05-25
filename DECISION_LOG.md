@@ -23,6 +23,34 @@
 
 ---
 
+## 2026-05-25T02:05:00Z — RD.1b Phase C — 1968 preterm uses GESTREC 0–4 (not GESTREC3)
+
+**Choice:** `_weighted_preterm_rate_from_raw_1968` counts GESTREC codes 0–4 as under 37 weeks; denominator = resident births with GESTREC 0–8 (excludes 9 not stated). Uniform 2× sample inflation.
+
+**Alternatives:** (a) Map 1968 to GESTREC3 — impossible (column absent). (b) Skip 1968 preterm target — rejected (Phase C scope is 1968–1979).
+
+**Reason:** Nat1968doc defines GESTREC 0–4 as under 37 weeks; weighted raw 8.90% aligns with MVSR-adjacent 1969 level 9.8% (mv22_12).
+
+**Verifiable by:** `compare_external_targets_v1.py` row `preterm_rate_pct,1968`; smoke `test_pre1990_rate_phase_c_smoke.py`.
+
+**Reversible:** yes — amend target or mapping via DECISION_LOG + validator.
+
+---
+
+## 2026-05-25T02:05:00Z — RD.1b Phase C — 0.06 pct-pt tolerance for 1971 and 1973 LBW
+
+**Choice:** `lbw_rate_pct` targets 1971 and 1973 keep MVSR/IOM published one-decimal (7.6%) with **tolerance 0.06** (not 0.05).
+
+**Alternatives:** (a) Change targets to two-decimal IOM values (7.64, 7.53) — rejected for headline parity with MVSR narrative tables. (b) Fail VERIFY — rejected (micro 7.655/7.548 vs 7.6 is rounding-class).
+
+**Reason:** SAMPWT-weighted raw differs by 0.052–0.055 pct-pt from one-decimal MVSR; same pattern as Phase A 1989 LBW 0.06 tol.
+
+**Verifiable by:** comparison CSV rows `lbw_rate_pct,1971` and `lbw_rate_pct,1973`; RECEIPT Phase C VERIFY 249/249.
+
+**Reversible:** yes.
+
+---
+
 ## 2026-05-24T18:00:00Z — RD.1b Phase B — GESTREC3/GESTAT3 codes 1|2 denominator for pre-1990 preterm%
 
 **Choice:** Preterm compare path uses resident births with **known gestation only** (GESTREC3 or GESTAT3 codes 1 or 2; exclude 0 non-reporting and 3 not stated). 1980–1988: SAMPWT-weighted raw `GESTREC3` code 1; 1989: unweighted `GESTAT3` code 1.

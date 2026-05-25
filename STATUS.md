@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-05-25T02:05:00Z — **RD.1b Phase C COMPLETE — LBW + preterm 1968–1979; 249/249 natality validation.**
+
+**Shipped.**
+
+1. **RD.1b Phase C** — 24 MVSR/NVSS-sourced `lbw_rate_pct` + `preterm_rate_pct` cells (1968–1979); `_weighted_preterm_rate_from_raw_1968` (GESTREC 0–4); `test_pre1990_rate_phase_c_smoke.py`.
+2. **VERIFY** — build-host **249/249 PASS**; gate derived SHA `acb5c48a…` unchanged; `pytest natality/tests/test_pre1990_*.py` 19 passed.
+
+**Next default agent task:** Close **§15.F** (review deferrals) → **D.4** Paper 1, or latest-year refresh on NCHS trigger.
+
+**Halt conditions.** None tripped.
+
+---
+
 ## 2026-05-24T18:00:00Z — **RD.1b Phase B COMPLETE — preterm 1980–1989; 225/225 natality validation.**
 
 ### Current phase
