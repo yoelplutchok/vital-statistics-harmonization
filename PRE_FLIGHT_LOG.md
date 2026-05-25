@@ -8,6 +8,36 @@
 
 ---
 
+## PRE-FLIGHT for RD.1b-pre-1990-natality-rate-benchmarking-phase-b — 2026-05-24T18:00:00Z — **RESULT: PROCEED**
+
+**Task.** §15.F RD.1b Phase B — `preterm_rate_pct` 1980–1989 (MVSR Advance Reports).
+
+**Inputs.** Build host yearly_clean 1980–1989 raw parquets present. Gate derived SHA `acb5c48a9abf82ac…` matches STATUS. Baseline compare **215/215 PASS** (pre-DO).
+
+**Field-value snapshot.** `external_validation_targets_v1.csv`: 215 targets; 0 preterm rows 1980–1989 pre-DO. MVSR transcribed: 8.9, 9.4, 9.5, 9.6, 9.4, 9.8, 10.0, 10.2, 10.2, 10.6 (mv36/mv34/mv37/mv38/mv39/mv40 PDFs). Micro probe (GESTREC3/GESTAT3 codes 1|2 denom): all years within 0.05 of MVSR.
+
+**Halt conditions.** None tripped.
+
+**Result:** PROCEED.
+
+---
+
+## PRE-FLIGHT for RD.1b Phase B (preterm 1980–1989) — **NEXT SESSION STUB** (2026-05-25T12:00:00Z)
+
+**Task.** §15.F RD.1b Phase B — add `preterm_rate_pct` validation targets 1980–1989; extend `compare_external_targets_v1.py` weighted raw path; smoke test; VERIFY **225/225**.
+
+**Field-value snapshot.** Current `external_validation_targets_v1.csv`: **215** rate/count targets; **0** preterm rows for 1980–1989. Phase A LBW rows 1980–1989 present. Compare baseline **215/215 PASS** (2026-05-24).
+
+**Build host.** `~/Desktop/natality-harmonization/output/yearly_clean/natality_{1980..1989}_raw.parquet` — present on build machine. Gate derived `acb5c48a…` at build path.
+
+**Probe notes (2026-05-25).** Weighted `GESTREC3==1` vs MVSR: 1980 8.89% vs 8.9%; 1984 9.41% vs 9.4%; 1985 9.76% vs 9.8%. 1989: use unweighted `GESTAT3` (~10.58% raw; cite MVSR 1989 advance report at PRE-FLIGHT).
+
+**DO checklist.** (1) Transcribe + commit 10 MVSR targets. (2) `_weighted_preterm_rate_from_raw` + compare wiring. (3) `test_pre1990_preterm_rate_smoke.py`. (4) Full compare VERIFY. (5) RECEIPT + tags `RD.1b-pre-1990-natality-rate-benchmarking-phase-b-{pre-do,complete}`.
+
+**Result:** NOT STARTED — awaiting next session PRE-FLIGHT execution.
+
+---
+
 ## PRE-FLIGHT for section-15f-closure — 2026-05-25T03:00:00Z — **RESULT: PROCEED**
 
 **Task.** Close `NEXT_STEPS.md` §15.F robustness roadmap per KICKOFF exit criterion: log explicit deferrals for remaining open items; set STATUS “Next planned task” = **D.4 / Paper 1**; prep D.4 PRE-FLIGHT checklist (no `paper/` edits this session).

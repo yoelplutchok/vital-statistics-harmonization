@@ -258,6 +258,89 @@ def _pre1990_weighted_lbw_rate_map(yearly_dir: Path, years: list[int]) -> dict[i
     return out
 
 
+def _weighted_preterm_rate_from_raw(yearly_dir: Path, year: int) -> float:
+    """
+    NCHS-style resident preterm% for pre-1989 public-use files (GESTREC3 code 1 = <37 weeks).
+
+    Denominator: resident births with known gestation (GESTREC3 codes 1 or 2; excludes 0/3).
+    1972-1988: per-record SAMPWT. 1968-1971: uniform 2x (not used for RD.1b Phase B years).
+    """
+    if year > 1988:
+        raise ValueError(f"_weighted_preterm_rate_from_raw only supports years <= 1988, got {year}")
+
+    raw_path = yearly_dir / f"natality_{year}_raw.parquet"
+    if not raw_path.is_file():
+        raise FileNotFoundError(raw_path)
+
+    schema_names = pq.ParquetFile(raw_path).schema_arrow.names
+    if "GESTREC3" not in schema_names:
+        raise RuntimeError(f"{raw_path}: missing GESTREC3")
+    cols = ["RESTATUS", "GESTREC3"]
+    if year >= 1972:
+        if "SAMPWT" not in schema_names:
+            raise RuntimeError(f"{raw_path}: missing SAMPWT for SAMPWT era year {year}")
+        cols.append("SAMPWT")
+
+    t = pq.read_table(raw_path, columns=cols)
+    w_den = w_num = 0.0
+    for rs, g3, *rest in zip(
+        t["RESTATUS"].to_pylist(),
+        t["GESTREC3"].to_pylist(),
+        *[t[c].to_pylist() for c in cols[2:]],
+        strict=True,
+    ):
+        if str(rs).strip() == "4":
+            continue
+        g = str(g3).strip()
+        if g not in ("1", "2"):
+            continue
+        if year <= 1971:
+            wt = 2.0
+        else:
+            sw = rest[0]
+            wt = 2.0 if str(sw).strip() == "2" else 1.0
+        w_den += wt
+        if g == "1":
+            w_num += wt
+    if not w_den:
+        raise RuntimeError(f"{raw_path}: zero known-gestation resident weighted denominator")
+    return w_num / w_den * 100.0
+
+
+def _unweighted_preterm_rate_from_raw_1989(yearly_dir: Path) -> float:
+    """1989 V2 layout: 100% file; GESTAT3 code 1 = <37 weeks; no SAMPWT."""
+    raw_path = yearly_dir / "natality_1989_raw.parquet"
+    if not raw_path.is_file():
+        raise FileNotFoundError(raw_path)
+
+    schema_names = pq.ParquetFile(raw_path).schema_arrow.names
+    if "GESTAT3" not in schema_names:
+        raise RuntimeError(f"{raw_path}: missing GESTAT3 for 1989")
+    t = pq.read_table(raw_path, columns=["RESTATUS", "GESTAT3"])
+    den = num = 0
+    for rs, g3 in zip(t["RESTATUS"].to_pylist(), t["GESTAT3"].to_pylist(), strict=True):
+        if str(rs).strip() == "4":
+            continue
+        g = str(g3).strip()
+        if g not in ("1", "2"):
+            continue
+        den += 1
+        if g == "1":
+            num += 1
+    if not den:
+        raise RuntimeError(f"{raw_path}: zero known-gestation resident denominator")
+    return num / den * 100.0
+
+
+def _pre1990_weighted_preterm_rate_map(yearly_dir: Path, years: list[int]) -> dict[int, float]:
+    out: dict[int, float] = {}
+    for year in years:
+        if year > 1988:
+            continue
+        out[year] = _weighted_preterm_rate_from_raw(yearly_dir, year)
+    return out
+
+
 def main() -> None:
     args = parse_args()
     targets = load_targets(args.targets)
@@ -293,6 +376,29 @@ def main() -> None:
     )
     pre1990_weighted_lbw_rate = _pre1990_weighted_lbw_rate_map(
         args.yearly_parquet_dir, pre1990_lbw_years
+    )
+
+    pre1990_preterm_years = sorted(
+        {
+            t.year
+            for t in targets
+            if t.metric_id == "preterm_rate_pct"
+            and t.universe == "resident"
+            and t.year <= 1988
+        }
+    )
+    pre1990_weighted_preterm_rate = _pre1990_weighted_preterm_rate_map(
+        args.yearly_parquet_dir, pre1990_preterm_years
+    )
+    pre1990_preterm_1989 = (
+        _unweighted_preterm_rate_from_raw_1989(args.yearly_parquet_dir)
+        if any(
+            t.metric_id == "preterm_rate_pct"
+            and t.universe == "resident"
+            and t.year == 1989
+            for t in targets
+        )
+        else None
     )
 
     pf = pq.ParquetFile(args.in_path)
@@ -507,6 +613,10 @@ def main() -> None:
             d = lbw_den[universe][year]
             return (lbw_num[universe][year] / d * 100.0) if d else None
         if metric_id == "preterm_rate_pct":
+            if universe == "resident" and year in pre1990_weighted_preterm_rate:
+                return pre1990_weighted_preterm_rate[year]
+            if universe == "resident" and year == 1989 and pre1990_preterm_1989 is not None:
+                return pre1990_preterm_1989
             d = pre_den[universe][year]
             return (pre_num[universe][year] / d * 100.0) if d else None
         if metric_id == "singleton_rate_pct":

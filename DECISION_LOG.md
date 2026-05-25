@@ -23,6 +23,36 @@
 
 ---
 
+## 2026-05-24T18:00:00Z — RD.1b Phase B — GESTREC3/GESTAT3 codes 1|2 denominator for pre-1990 preterm%
+
+**Choice:** Preterm compare path uses resident births with **known gestation only** (GESTREC3 or GESTAT3 codes 1 or 2; exclude 0 non-reporting and 3 not stated). 1980–1988: SAMPWT-weighted raw `GESTREC3` code 1; 1989: unweighted `GESTAT3` code 1.
+
+**Alternatives:** (a) Include code 3 in denominator — rejected (1980 micro 7.05% vs MVSR 8.9%). (b) Derived-parquet `preterm_lt37` for 1989 — rejected (plan specifies raw GESTAT3 for 100% file).
+
+**Reason:** Aligns with MVSR “prior to 37 completed weeks” among gestations with stated length; probe-validated all 10 years within 0.05 pct-pt of transcribed MVSR narrative rates.
+
+**Verifiable by:** `compare_external_targets_v1.py` VERIFY 225/225; receipt `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-b_2026-05-24T18-00-00Z.md`.
+
+**Reversible:** yes — amend targets or denominator rule via new DECISION_LOG + validator change.
+
+---
+
+## 2026-05-25T12:00:00Z — `[plan-update]` — Reopen §15.F; next session = **RD.1b Phase B** (preterm 1980–1989)
+
+**Choice:** **Supersede** the 2026-05-25T03:00:00Z §15.F closure (DECISION_LOG `section-15f-closure`). Reopen `NEXT_STEPS.md` §15.F. User directs Phase B to **next session** (not this one). Update `KICKOFF.md` default queue → **RD.1b Phase B** first; then Phase C; then latest-year refresh; **D.4 gated** until §15.F closed.
+
+**Phase B scope (authorized).** Add 10 `preterm_rate_pct` cells (1980–1989). Source class: **MVSR Advance Report of Final Natality Statistics** (NOT childstats HEALTH1.A — that table starts 1990). Compare path: SAMPWT-weighted raw `GESTREC3` (1980–1988) + unweighted raw `GESTAT3` (1989 100% file); extend `compare_external_targets_v1.py` mirroring Phase A LBW. Probe-validated on build host: 1980 micro 8.89% vs MVSR 8.9%; 1984 9.41% vs 9.4%; 1985 9.76% vs 9.8%.
+
+**Alternatives:** (a) Keep §15.F closed → D.4 next — rejected (user wants B before paper). (b) Run Phase B this session — rejected (user: next session). (c) Re-defer Phase B — rejected.
+
+**Reason:** User clarified they do not want to defer Phase B/C; only scheduling Phase B for the following session. KICKOFF must default fresh chats to Phase B so paste-and-go works.
+
+**Verifiable by:** `KICKOFF.md` + STATUS top section “Next planned task” = RD.1b Phase B; §15.F header no longer CLOSED; handshake block lists Phase B as (1).
+
+**Reversible:** yes — `[plan-update]` can re-close §15.F after B+C ship.
+
+---
+
 ## 2026-05-25T03:00:00Z — section-15f-closure — Close §15.F robustness roadmap; defer RD.1b Phase C + latest-year refresh; open D.4 queue
 
 **Choice:** Declare `NEXT_STEPS.md` §15.F **CLOSED** (2026-05-25). Explicit deferrals: **RD.1b Phase C** (1968–1979 NVSR/MVSR rate transcription — optional; Phase A LBW 1980–1989 already shipped; Phase B preterm already deferred 2026-05-24); **latest-year refresh** (linked 2024 cohort / natality 2025+ / fetal 2023+ when NCHS publishes — trigger-based, no new zips verified this session). Set STATUS “Next planned task” = **D.4 / Paper 1**. Do **not** edit `paper/` in the closure session — D.4 remains gated on explicit re-authorization per KICKOFF.

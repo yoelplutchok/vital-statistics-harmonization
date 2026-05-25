@@ -38,31 +38,29 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-25, §15.F CLOSED)
+## Current planned sequence (as of 2026-05-25, §15.F REOPENED — RD.1b Phase B next)
 
-**Latest plan-update (2026-05-25).** **§15.F robustness roadmap is CLOSED** (DECISION_LOG 2026-05-25T03:00:00Z). **Phase D distribution is DONE** (unified Zenodo v1.0.1 `10.5281/zenodo.20326150`; public GitHub `08a2287`). **Default agent queue: D.4 / Paper 1** — requires explicit human re-authorization before `paper/` edits.
+**Latest plan-update (2026-05-24).** **§15.F robustness roadmap REOPENED**. **RD.1b Phase B ✅** (225/225). **Default agent queue: RD.1b Phase C** → latest-year refresh → D.4. **D.4 / Paper 1 gated** until §15.F closed; do **not** edit `paper/` until then.
 
-**When you paste this kickoff in a fresh chat, the default work queue is D.4 / Paper 1** (see `PRE_FLIGHT_LOG.md` D.4 PRE-FLIGHT checklist). Optional re-opens: RD.1b Phase C, latest-year refresh (NCHS trigger). Do **not** edit `paper/` until the human re-authorizes D.4.
+**When you paste this kickoff in a fresh chat, the default work queue is RD.1b Phase C** (1968–1979 rate transcription) unless latest-year refresh is triggered. See `NEXT_STEPS.md` §15.F RD.1b Phase C block.
 
 | Order | Task ID | What it is | Status |
 |---|---|---|---|
-| **1** | **RD.1** | Pre-1990 natality **resident_births** NVSR benchmarking (1968–1989) | ✅ COMPLETE 2026-05-24 (205/205) |
-| **2** | **RD.1b** | Pre-1990 natality **rate** targets — Phase A LBW ✅; Phase B preterm **deferred**; Phase C **deferred** | ⏸ Phase B+C deferred |
-| **3** | **RD.2 follow-on** | Matched-multiples **Table 2a** twin-set cells (1995-1997 + 1995-2000) | ✅ COMPLETE 2026-05-24 (109/109 total MM validation) |
-| **4** | **RD.4** | Matched-multiples ICD-9→ICD-10 derived layer (optional) | ✅ COMPLETE 2026-05-25 |
-| **5** | **D-prep.8** | Convenience CSVs through 2023–2024 (`live_births_by_year`, stratified denominators) | ✅ COMPLETE 2026-05-25 |
-| **6** | **D-prep.9** | Build-host notebook re-execute (`paper_companion`, `cross_race_fetal_mortality`, …) | ✅ COMPLETE 2026-05-25 |
-| **7** | **Latest-year refresh** | Linked 2024 cohort / natality 2025 when NCHS publishes | ⏸ **DEFERRED 2026-05-25** (NCHS trigger) |
-| **8** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, final numeric pass | **NEXT** — re-authorize `paper/` |
+| **1** | **RD.1b Phase C** | Pre-1990 natality **rates** 1968–1979 (NVSR/MVSR transcription) | **NEXT** (~2–3 sessions) |
+| — | **RD.1b Phase B** | Pre-1990 **preterm_rate_pct** 1980–1989 | ✅ 225/225 (2026-05-24) |
+| **3** | **Latest-year refresh** | Natality 2025 / linked 2024 cohort when NCHS publishes | ⏳ NCHS trigger |
+| **4** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, numeric pass | **GATED** — after §15.F CLOSED |
+| — | **RD.1** | Pre-1990 **resident_births** 1968–1989 | ✅ 205/205 |
+| — | **RD.1b Phase A** | LBW rate 1980–1989 | ✅ 215/215 |
+| — | **RD.2 + RD.4 + D-prep.8/9** | MM validation, ICD-10 layer, notebooks | ✅ |
 
-**§15.F exit criterion (queue CLOSED 2026-05-25):** ✅ All required rows shipped or explicitly deferred; STATUS “Next planned task” = **D.4**.
+**§15.F exit criterion (queue OPEN):** Phase B ✅ → Phase C ✅ or deferred with DECISION_LOG → latest-year ✅ or deferred → STATUS “Next planned task” = **D.4**.
 
 **Explicitly DEFERRED (unless user re-authorizes):**
 
-- **D.1** — old-repo redirects (`natality-harmonization`, `fetal-death-harmonization`)
-- **D.2 legacy patches** — description-only updates on old Zenodo DOIs `10.5281/zenodo.19363074` and `10.5281/zenodo.20031571`
-- **RD.1b Phase C** — 1968–1979 rate transcription (optional validation expansion)
-- **Latest-year refresh** — until NCHS publishes new public-use years
+- **D.1** — old-repo redirects
+- **D.2 legacy patches** — old Zenodo DOI description-only updates
+- **D.4** — while §15.F queue open
 
 **After §15.F CLOSED → D.4 submits → Phase E** = companion empirical paper via fresh chats + `NEXT_STEPS.md` §19.2.
 
@@ -376,23 +374,22 @@ BEFORE doing ANY work, read these files in this exact order:
 
 5. LESSONS.md end-to-end (if it has entries).
 
-CURRENT WORK QUEUE (2026-05-25 — §15.F CLOSED):
+CURRENT WORK QUEUE (2026-05-24 — §15.F REOPENED; RD.1b Phase C NEXT):
 
   D.2 + D.3 are DONE (Zenodo 10.5281/zenodo.20326150 v1.0.1; GitHub 08a2287).
-  §15.F robustness roadmap CLOSED 2026-05-25. Default queue: D.4 / Paper 1.
-  Re-authorize paper/ edits explicitly before any D.4 DO phase.
+  §15.F robustness roadmap REOPENED. RD.1b Phase B ✅ (225/225). Default queue: Phase C.
+  Do NOT edit paper/ until §15.F CLOSED (after Phase C + latest-year
+  refresh each ✅ or explicitly deferred).
 
-  (1) D.4 / Paper 1 — IJE trim, FLAG resolution, numeric pass (NEXT)
-  (2) Optional re-open: RD.1b Phase C (1968–1979 rates)
-  (3) Optional re-open: latest-year refresh when NCHS publishes
-  (4) Phase E companion paper — after D.4 submits (fresh chat + §19.2)
+  (1) RD.1b Phase C — rates 1968–1979 (NVSR/MVSR transcription) **NEXT**
+  (3) Latest-year refresh when NCHS publishes new zips
+  (4) D.4 / Paper 1 — GATED until §15.F CLOSED
 
-  DEFERRED unless re-authorized: D.1 old-repo redirects; legacy Zenodo
-  patches; RD.1b Phase C; latest-year refresh.
+  Build host for RD.1b: ~/Desktop/natality-harmonization/output/yearly_clean/
+  Gate parquets gitignored; natality derived SHA acb5c48a… must stay byte-exact.
 
-  Gate parquets: NOT in git clone (gitignored). Build-host paths in
-  fetal_death/PROVENANCE.md and natality/PROVENANCE.md. Natality work that
-  needs yearly raw parquets: ~/Desktop/natality-harmonization/.
+  DEFERRED unless re-authorized: D.1 old-repo redirects; legacy Zenodo patches; D.4
+  while §15.F open.
 
 After reading, tell me in 4-6 sentences:
   (a) the current task per STATUS.md AND the next task per KICKOFF.md's

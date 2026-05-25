@@ -241,7 +241,18 @@ medicaid_pct,2023,resident,41.5,0.5,"NVSR Vol. 74 No. 1 (Births: Final Data for 
 # RD.1 pre-1990 natality resident_births (1968-1989) — NCHS residence series (CDC Data e6fc-ccez).
 # Validated via SAMPWT-weighted raw yearly parquets (1968-1971 uniform 2x; 1972-1988 per-record SAMPWT).
 # RD.1b Phase A: lbw_rate_pct 1980-1989 (childstats.gov HEALTH1.B Total row; 1980-2022 table).
-# Preterm + 1968-1979 rates deferred (HEALTH1.A starts 1990; no childstats LBW floor before 1980).
+# RD.1b Phase B: preterm_rate_pct 1980-1989 (MVSR Advance Report; SAMPWT-weighted GESTREC3 1980-1988; unweighted GESTAT3 1989).
+# 1968-1979 rates: RD.1b Phase C (after B).
+preterm_rate_pct,1980,resident,8.9,0.05,"NCHS MVSR Vol. 36 No. 4 Supp (Advance Report 1985; mv36_04sacc.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1981,resident,9.4,0.05,"NCHS MVSR Vol. 34 No. 6 Supp (Advance Report 1983; mv34_06s.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1982,resident,9.5,0.05,"NCHS MVSR Vol. 34 No. 6 Supp (Advance Report 1983; mv34_06s.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1983,resident,9.6,0.05,"NCHS MVSR Vol. 34 No. 6 Supp (Advance Report 1983; mv34_06s.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1984,resident,9.4,0.05,"NCHS MVSR Vol. 36 No. 4 Supp (Advance Report 1985; mv36_04sacc.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1985,resident,9.8,0.05,"NCHS MVSR Vol. 36 No. 4 Supp (Advance Report 1985; mv36_04sacc.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1986,resident,10.0,0.05,"NCHS MVSR Vol. 37 No. 3 Supp (Advance Report 1986; mv37_03s.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1987,resident,10.2,0.05,"NCHS MVSR Vol. 38 No. 3 Supp (Advance Report 1987; mv38_03s.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1988,resident,10.2,0.05,"NCHS MVSR Vol. 39 No. 4 Supp (Advance Report 1988; mv39_04s.pdf)",Pre-1990 preterm; SAMPWT-weighted raw GESTREC3 (codes 1|2 denom).
+preterm_rate_pct,1989,resident,10.6,0.05,"NCHS MVSR Vol. 40 No. 8 Supp (Advance Report 1989; mv40_08s.pdf)",Pre-1990 preterm; unweighted raw GESTAT3 100% file (codes 1|2 denom).
 lbw_rate_pct,1980,resident,6.8,0.05,"childstats.gov HEALTH1.B (from NCHS NVSS Natality data)",Pre-1990 LBW rate; derived-parquet resident universe.
 lbw_rate_pct,1981,resident,6.8,0.05,"childstats.gov HEALTH1.B (from NCHS NVSS Natality data)",Pre-1990 LBW rate; derived-parquet resident universe.
 lbw_rate_pct,1982,resident,6.8,0.05,"childstats.gov HEALTH1.B (from NCHS NVSS Natality data)",Pre-1990 LBW rate; derived-parquet resident universe.

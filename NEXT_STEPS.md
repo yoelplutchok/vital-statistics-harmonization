@@ -1729,9 +1729,9 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 ---
 
-# §15.F Robustness roadmap — ✅ **CLOSED 2026-05-25** (DECISION_LOG 2026-05-25T03:00:00Z)
+# §15.F Robustness roadmap — ⏳ **OPEN** (reopened 2026-05-25; supersedes CLOSED 03:00Z)
 
-**Exit status.** Queue **CLOSED**. Shipped: RD.1, RD.1b Phase A, RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **Deferred:** RD.1b Phase B (2026-05-24, no childstats preterm floor), RD.1b Phase C (1968–1979 rates), latest-year refresh (NCHS trigger). **Next default agent queue:** **D.4 / Paper 1** — explicit human re-authorization required before `paper/` edits.
+**Exit status.** Queue **OPEN**. **Next default agent task:** **RD.1b Phase C** (1968–1979 rate transcription) or latest-year refresh (NCHS trigger). Shipped: RD.1, RD.1b Phase A + **Phase B**, RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **D.4 gated** until §15.F closed.
 
 Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
 
@@ -1793,17 +1793,33 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 ---
 
-### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏸ (Phase A ✅; Phase B ⏸ deferred 2026-05-24; Phase C ⏸ deferred 2026-05-25)
+### Task RD.1b — `pre-1990-natality-rate-benchmarking` ⏳ (Phase A ✅; Phase B ✅; **Phase C NEXT**)
 
 **Phase A shipped (2026-05-24).** 10 `lbw_rate_pct` cells (1980–1989) from childstats HEALTH1.B; SAMPWT-weighted raw LBW path for 1980–1988; **215/215 PASS**. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-a_*.md`. Tags: `RD.1b-pre-1990-natality-rate-benchmarking-phase-a-{pre-do,complete}`.
 
-### Task RD.1b (continued) — Phase B ⏸ **DEFERRED 2026-05-24** (no citable pre-1990 preterm series)
+### Task RD.1b (continued) — Phase B ✅ **COMPLETE 2026-05-24** (session execute)
 
-**Phase B decision (2026-05-24).** childstats **HEALTH1.A** publishes preterm rates from **1990** only (verified via WebSearch + page title "1990–2022"). No HEALTH1.A/B floor for 1980–1989 preterm; inventing cells violates L6. **Deferred** to Phase C (NVSR/MVSR transcription) or post-§15.F. Phase A remains shipped (**215/215** natality PASS).
+**Goal.** Add 10 `preterm_rate_pct` cells (**1980–1989**), resident universe, byte-exact vs MVSR *Advance Report of Final Natality Statistics*.
 
-### Task RD.1b (continued) — Phase C ⏸ **DEFERRED 2026-05-25** (optional; post-§15.F)
+**Shipped.** 10 MVSR-sourced targets in `external_validation_targets_v1.csv`; `_weighted_preterm_rate_from_raw` + `_unweighted_preterm_rate_from_raw_1989` in `compare_external_targets_v1.py`; `test_pre1990_preterm_rate_smoke.py`. Build-host VERIFY **225/225 PASS**; gate derived SHA `acb5c48a…` unchanged. Receipt: `RECEIPTS/RD.1b-pre-1990-natality-rate-benchmarking-phase-b_*.md`. Tags: `RD.1b-pre-1990-natality-rate-benchmarking-phase-b-{pre-do,complete}`.
 
-**Closure decision (2026-05-25).** Phase C (1968–1979 NVSR/MVSR rate transcription) **deferred** at §15.F closure per DECISION_LOG 2026-05-25T03:00:00Z. Phase A LBW 1980–1989 remains shipped (**215/215**). Re-open via `[plan-update]` if user authorizes before or after D.4.
+**Source class.** MVSR supplements (NOT childstats HEALTH1.A — starts 1990). Example cites: `mv36_04sacc.pdf` (1985: 9.8%, 1984: 9.4%, 1980: 8.9%); `mv37_03s.pdf` (1986: 10.0%); `mv39_04s.pdf` (1988 narrative). Transcribe one MVSR cite per year before DO.
+
+**Compare path.** Extend `compare_external_targets_v1.py`:
+- 1980–1988: SAMPWT-weighted raw `GESTREC3` code `1` = <37 weeks (mirror `_weighted_lbw_rate_from_raw`).
+- 1989: unweighted raw `GESTAT3` (100% file; no `SAMPWT`).
+
+**PRE-FLIGHT inputs.** Build tree `~/Desktop/natality-harmonization/output/yearly_clean/`; `external_validation_targets_v1.csv`; gate derived SHA `acb5c48a…` unchanged.
+
+**SMOKE/DO/VERIFY.** Commit targets before validator; `test_pre1990_preterm_rate_smoke.py`; full compare → **225/225** minimum; zero regression on 215 existing cells.
+
+**Estimated effort.** ~0.5–1 session.
+
+**Halt-condition flags.** L6 (no invented cells); §7 if microdata vs MVSR diverges >tolerance after transcription audit.
+
+**Supersedes:** 2026-05-24 childstats-only deferral (DECISION_LOG RD.1b Phase B) — MVSR path now authorized.
+
+### Task RD.1b (continued) — Phase C ⏳ **after Phase B**
 
 **Goal.** Extend natality external validation **rate** targets backward before 1990, in slices:
 

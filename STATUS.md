@@ -1,6 +1,61 @@
-# STATUS — last updated 2026-05-25T03:00:00Z
+# STATUS — last updated 2026-05-24T18:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-24T18:00:00Z — **RD.1b Phase B COMPLETE — preterm 1980–1989; 225/225 natality validation.**
+
+### Current phase
+
+Post–Phase D distribution; **§15.F robustness roadmap OPEN**. **D.4 gated** until §15.F closes.
+
+### What shipped
+
+1. **RD.1b Phase B** — 10 `preterm_rate_pct` MVSR targets (1980–1989); SAMPWT-weighted `GESTREC3` (1980–1988) + unweighted `GESTAT3` (1989); `compare_external_targets_v1.py` + `test_pre1990_preterm_rate_smoke.py`.
+2. **VERIFY** — build-host compare **225/225 PASS**; gate derived SHA `acb5c48a…` unchanged.
+3. **Docs** — root `README.md` + `natality/README.md` validation headlines → 225/225.
+
+### Next planned task
+
+**RD.1b Phase C** (1968–1979 NVSR/MVSR rate transcription) or **latest-year refresh** (NCHS trigger). Then close §15.F (deferrals logged) → **D.4**.
+
+### Open questions for human
+
+(none — proceed Phase C or defer to close §15.F)
+
+### Forward-looking HALTs (RD.1b Phase C PRE-FLIGHT)
+
+1. Gate derived SHA `acb5c48a…` unchanged post-task.
+2. Zero regression on **225/225** after any validator/target edit.
+3. Commit NVSR/MVSR targets before compare-script changes (L6).
+
+---
+
+## 2026-05-25T12:00:00Z — **`[plan-update]` §15.F REOPENED — next session = RD.1b Phase B (preterm 1980–1989).**
+
+### Current phase
+
+Post–Phase D distribution; **§15.F robustness roadmap REOPENED** (supersedes 2026-05-25T03:00:00Z premature closure). **D.4 / Paper 1 remains gated** until §15.F closes.
+
+### What shipped (this session)
+
+Doc-only `[plan-update]`: `KICKOFF.md`, `NEXT_STEPS.md` §15.F, `DECISION_LOG.md`, `PRE_FLIGHT_LOG.md` (Phase B next-session stub), this `STATUS.md` section. **No RD.1b Phase B DO work** — user scheduled for next session.
+
+### Next planned task
+
+**RD.1b Phase B** — `preterm_rate_pct` 1980–1989 via MVSR Advance Reports + SAMPWT-weighted raw compare path (`GESTREC3` / `GESTAT3`). Build host: `~/Desktop/natality-harmonization/output/yearly_clean/`. Target: **225/225** natality validation (215 + 10). Then **RD.1b Phase C** (1968–1979 rates), then latest-year refresh (NCHS trigger), then D.4.
+
+### Open questions for human
+
+(none — Phase B authorized for next session; paste `KICKOFF.md` to start)
+
+### Forward-looking HALTs (RD.1b Phase B PRE-FLIGHT)
+
+1. Gate derived SHA `acb5c48a…` unchanged post-task (validation-only).
+2. Commit MVSR-sourced targets **before** validator changes (L6).
+3. Zero regression on existing **215/215** cells.
+4. See `PRE_FLIGHT_LOG.md` “PRE-FLIGHT for RD.1b Phase B — next session stub”.
 
 ---
 
