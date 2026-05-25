@@ -1,6 +1,22 @@
-# STATUS — last updated 2026-05-24T18:00:00Z
+# STATUS — last updated 2026-05-25T03:05:07Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-25T03:05:07Z — **RD.1b Phase B/C audit remediation — F1/F2/F3/F5 applied; 249/249 unchanged; §15.F clear to close.**
+
+**Shipped.**
+
+1. **Audit** — fresh-eyes adversarial audit of RD.1b Phase B+C (`AUDITS/RD.1b-phase-b-c-audit_2026-05-25T02-42-45Z.md`): **PASS-WITH-NOTES** (0 critical/high; 3 med, 3 low). All 34 new rate cells independently transcribed from cited MVSR PDFs / verified against PUF docs (Nat1968doc GESTREC 0–4); GESTREC3 `{1,2}` = known-gestation denominator confirmed (code 3 = not-stated); gate SHA + non-regression confirmed.
+2. **F1** — `lbw_rate_pct,1971` re-sourced IOM `7.6/0.06` → MVSR `mv23_08sacc` **`7.7/0.05`** (passes at standard tol; DECISION_LOG `2026-05-25T02:47:41Z`; 1973 LBW unchanged at 7.6/0.06).
+3. **F2** — new §"Pre-1990 (1968–1989) external-validation comparability" in `natality/docs/COMPARABILITY.md` (preterm LMP-reporting-area / known-gestation denominator; 1968 recode; 1989-vs-1990 construct break; LBW sourcing); broader pre-1990 narrative still C8.20.
+4. **F3** — 1968 LBW/preterm CSV `notes` flag INDIRECT / PUF-DEFINITIONAL (manuscript footnote owed; `paper/` gated).
+5. **F5** — README "205 resident-births" → **56 resident-births + 44 LBW/preterm 1968–1989 + 149 1990+ rate/indicator cells = 249**.
+
+**VERIFY.** Build-host compare **249/249 PASS / 0 fail / 0 missing**; 1971 LBW actual 7.6553 vs 7.7 (|diff| 0.045); gate derived SHA `acb5c48a…` unchanged; CSV parses 249 rows intact. No validator / parquet / schema mutation (F1/F3 = target value/tol/notes; F2/F5 = docs). `pytest natality/tests/test_pre1990_*.py` 19 passed (pre-fix; tests do not reference 1971).
+
+**Forward-looking.** §15.F clear of audit blockers (F4 smoke-test-independence + F6 1973 0.06-tol accepted as-is) → default queue **D.4**. Manuscript footnote for the two 1968 cells owed at next `paper/` session. Receipt: `RECEIPTS/RD.1b-phase-b-c-audit-remediation_2026-05-25T03-05-07Z.md`.
 
 ---
 

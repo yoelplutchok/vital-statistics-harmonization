@@ -1,6 +1,6 @@
 # Comparability across years (1990–2024)
 
-> **v3.0.0 scope note.** As of natality **v3.0.0** the product spans **1968–2024** (57 years — see `ABOUT_THIS_RELEASE.md`). The comparability decisions documented below cover the **1990–2024** era; the pre-1990 (1968–1989) comparability narrative (1968/1989 certificate eras, 1-digit MRACE→bridged race recode, conservative-null pre-1990 fields, sample-fraction history) is tracked as a dedicated cross-product COMPARABILITY follow-up (task C8.20 / soft-flag (aa)) and is not yet reflected here. The 1990–2024 slice is byte-identical to v2.8 (verified at C8.17 DO step 6), so every decision below is unchanged.
+> **v3.0.0 scope note.** As of natality **v3.0.0** the product spans **1968–2024** (57 years — see `ABOUT_THIS_RELEASE.md`). The comparability decisions documented below cover the **1990–2024** era; the pre-1990 (1968–1989) comparability narrative (1968/1989 certificate eras, 1-digit MRACE→bridged race recode, conservative-null pre-1990 fields, sample-fraction history) is tracked as a dedicated cross-product COMPARABILITY follow-up (task C8.20 / soft-flag (aa)) and is otherwise not yet reflected here — **except** for the pre-1990 *external-validation* comparability facts (LBW/preterm targets and their gestation/birthweight denominators), which are documented in §"Pre-1990 (1968–1989) external-validation comparability" below. The 1990–2024 slice is byte-identical to v2.8 (verified at C8.17 DO step 6), so every decision below is unchanged.
 
 This document records comparability decisions for the harmonized U.S. natality microdata.
 
@@ -76,6 +76,26 @@ The harmonized `certificate_revision` column takes one of four values:
      - **2009–2013**: Structural missingness for unrevised-certificate records. NCHS stopped carrying forward unrevised smoking data into the CIG fields, so unrevised records have 100% null smoking. As states adopted the revised certificate, the null rate fell from 44% (2009) to 14% (2013).
    - **2014+**: All states on revised certificate; null rate < 5% (2014) declining to < 0.5% (2016+).
    - **Rule**: for trend analyses using smoking, be aware that the "known-smoking" population changes substantially across years. Treating unknown as a Kitagawa stratum conflates measurement coverage with population composition.
+
+## Pre-1990 (1968–1989) external-validation comparability
+
+> Scope: this section documents the comparability facts needed to read the **pre-1990 LBW and preterm external-validation targets** (`metadata/external_validation_targets_v1.csv`, rows 1968–1989) and to join the pre-1990 rate series to the 1990+ series. It does **not** replace the broader pre-1990 comparability narrative (certificate eras, 1-digit MRACE→bridged race, conservative-null fields, sample fractions), which remains the C8.20 / soft-flag (aa) follow-up. Provenance: audit `AUDITS/RD.1b-phase-b-c-audit_2026-05-25T02-42-45Z.md`.
+
+The 1968–1989 LBW/preterm benchmarks are validated against MVSR *Final Natality Statistics* / *Registered Births* narrative percentages (+ childstats HEALTH1.B for 1980–1989 LBW), recomputed from the public-use yearly files via `scripts/05_validate/compare_external_targets_v1.py` (SAMPWT-weighted 1972–1988; uniform 2× for the 50%-sample 1968–1971; unweighted for the 1989 100% file). Key measurement breaks:
+
+**1. Preterm denominator = known gestation in the LMP reporting area (NOT all births).**
+Pre-1990 preterm% = births <37 weeks ÷ births with *stated* gestation, restricted to states that measured gestation from the last normal menstrual period (LMP). In the public-use recode `GESTREC3` (1969–1988) / `GESTAT3` (1989): code 1 = <37 wk (preterm), code 2 = 37+ wk (term + postterm), **code 3 = not stated / state not in the LMP reporting area** — and code 3 is excluded from both numerator and denominator (matching NCHS's published methodology). The excluded fraction is large and shrinks as the reporting area expands: ~40% combined not-in-area + not-stated in 1972, ~20% in 1980, ~4% by 1985–1988, ~1.4% in 1989. **Consequence:** the pre-1990 preterm rate is a reporting-area, known-gestation rate; it is not computed over all U.S. births, and the denominator population changes composition year to year. (Confirmed against the MVSR narrative, e.g. mv31_08: "74.5 percent of births in 1980 occurred at term, defined as 37–41 weeks … 8.9 percent were preterm.")
+
+**2. 1968 preterm uses a different recode (GESTREC, not GESTREC3) and is a PUF-definitional figure — not a direct external transcription.**
+The 1968 public-use file carries the detailed `GESTREC` recode (Nat1968doc p6: 0 = <20 wk … 4 = 36 wk, 5 = 37–39, …, 8 = 43+, 9 = not stated). The 1968 preterm target (8.9%) is computed as codes 0–4 (<37 wk) ÷ codes 0–8 (known gestation), bracketed by the 1969 MVSR level (9.8%). It is **not** an externally published 1968 "premature" headline and is **not** the LMP-area narrative used from 1972 onward — treat it as a definitional reproduction and footnote it as such in any manuscript.
+
+**3. 1989 preterm (raw `GESTAT3`) ≠ 1990+ derived `preterm_lt37`.**
+1989 is validated on the raw 3-category `GESTAT3` (100% file, unweighted) = 10.6%; 1990+ uses the derived `preterm_lt37` built from full LMP gestation. The two are numerically close (1989 ≈ 1990 ≈ 10.6%) but are **different measurement constructs** — do not assume identical measurement across the 1989/1990 boundary.
+
+**4. LBW is more comparable across the 1990 boundary.**
+Pre-1990 LBW% = births <2,500 g ÷ resident births with *known* birthweight (`DBIRWT`/`DBWT`; 9999 = not stated, excluded), SAMPWT-weighted (1972–1988) / uniform 2× (1968–1971). This matches the 1990+ `low_birthweight` definition, and the gestation reporting-area caveat does **not** apply to LBW (birthweight was reported nationwide). Target-sourcing notes: **1968 LBW (8.2%) is an indirect cite** — no direct 1968 MVSR headline; bracketed by NCHS Series 21 No. 48 (1967 = 8.2%) and MVSR mv22_12 (1969 = 8.1%); footnote as indirect. **1971 LBW = 7.7%** from MVSR mv23_08sacc ("the same percent as in 1971"). **1973 LBW (7.6%)** carries a 0.06 pct-pt tolerance (microdata 7.55% vs the one-decimal published 7.6%). See DECISION_LOG (2026-05-25 entries).
+
+**Gestation-era continuity.** The pre-1990 LMP-based preterm series connects to the 1990–2002 LMP era (structural break #5 above), then breaks at 2003 (combined gestation) and 2014 (obstetric estimate). A continuous 1968–2024 preterm trend therefore spans (a) the pre-1990 reporting-area / known-gestation caveat, (b) the 1989/1990 raw-vs-derived construct change, and (c) the 2003 and 2014 source breaks. Stratify or annotate accordingly.
 
 ## Variable decisions (summary)
 

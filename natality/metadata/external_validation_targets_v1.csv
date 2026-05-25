@@ -243,10 +243,10 @@ medicaid_pct,2023,resident,41.5,0.5,"NVSR Vol. 74 No. 1 (Births: Final Data for 
 # RD.1b Phase A: lbw_rate_pct 1980-1989 (childstats.gov HEALTH1.B Total row; 1980-2022 table).
 # RD.1b Phase B: preterm_rate_pct 1980-1989 (MVSR Advance Report; SAMPWT-weighted GESTREC3 1980-1988; unweighted GESTAT3 1989).
 # RD.1b Phase C: lbw_rate_pct + preterm_rate_pct 1968-1979 (MVSR Final Natality / Registered Births; IOM 1985 Table B.1 for 1971 LBW).
-lbw_rate_pct,1968,resident,8.2,0.05,"NCHS Series 21 No. 48 (1967 national 8.2%); MVSR mv22_12 (1969=8.1%)",Pre-1990 LBW; SAMPWT-uniform 2x raw; 1968 between 1967/1969 published levels.
+lbw_rate_pct,1968,resident,8.2,0.05,"NCHS Series 21 No. 48 (1967 national 8.2%); MVSR mv22_12 (1969=8.1%)",Pre-1990 LBW; INDIRECT CITE (no direct 1968 MVSR headline; bracketed by 1967=8.2% / 1969=8.1%); uniform 2x raw; footnote as indirect (COMPARABILITY pre-1990 section).
 lbw_rate_pct,1969,resident,8.1,0.05,"NCHS MVSR Vol. 22 No. 12 Supp (Registered Births 1970; mv22_12sacc.pdf)",Pre-1990 LBW; compared with 7.9% in 1970.
 lbw_rate_pct,1970,resident,7.9,0.05,"NCHS MVSR Vol. 22 No. 12 Supp (Registered Births 1970; mv22_12sacc.pdf)",Pre-1990 LBW; 7.9% weighed 2,500 g or less.
-lbw_rate_pct,1971,resident,7.6,0.06,"NCHS NVSS national (IOM 1985 Preventing Low Birthweight Table B.1; 7.64%)",Pre-1990 LBW; 0.06 tol (IOM two-decimal vs MVSR one-decimal 7.6).
+lbw_rate_pct,1971,resident,7.7,0.05,"NCHS MVSR Vol. 23 No. 8 Supp (Final Natality Statistics 1972; mv23_08sacc.pdf): 1972 LBW 7.7% 'the same percent as in 1971'; corroborated by IOM 1985 Table B.1 (7.64%)",Pre-1990 LBW; 7.7% one-decimal NCHS (mv23_08 back-reference); SAMPWT-uniform 2x microdata 7.655% within 0.05.
 lbw_rate_pct,1972,resident,7.7,0.05,"NCHS MVSR Vol. 23 No. 8 Supp (Final Natality Statistics 1972; mv23_08sacc.pdf)",Pre-1990 LBW; During 1972 7.7% of all live births.
 lbw_rate_pct,1973,resident,7.6,0.06,"NCHS MVSR Vol. 23 No. 11 Supp (Final Natality Statistics 1973; mv23_11sacc.pdf)",Pre-1990 LBW; 0.06 tol (MVSR 7.6% vs weighted raw 7.55%).
 lbw_rate_pct,1974,resident,7.4,0.05,"NCHS MVSR Vol. 24 No. 11 Supp (Final Natality Statistics 1974; mv24_11s2acc.pdf)",Pre-1990 LBW; During 1974 7.4% of all live births.
@@ -255,7 +255,7 @@ lbw_rate_pct,1976,resident,7.3,0.05,"NCHS MVSR Vol. 26 No. 12 Supp (Final Natali
 lbw_rate_pct,1977,resident,7.1,0.05,"NCHS MVSR Vol. 27 No. 11 Supp (Final Natality Statistics 1977; mv27_11sacc.pdf)",Pre-1990 LBW; 7.1% in 1977 vs 7.3% in 1976.
 lbw_rate_pct,1978,resident,7.1,0.05,"NCHS MVSR Vol. 29 No. 1 Supp (Final Natality Statistics 1978; mv29_01sacc.pdf)",Pre-1990 LBW; 7.1% in 1978 unchanged from 1977.
 lbw_rate_pct,1979,resident,6.9,0.05,"NCHS MVSR Vol. 31 No. 8 Supp (Final Natality Statistics 1980; mv31_08sacc.pdf)",Pre-1990 LBW; 6.9% observed in 1979 (1980 report).
-preterm_rate_pct,1968,resident,8.9,0.05,"NCHS public-use Nat1968doc (GESTREC 0-4=<37 wk); MVSR mv22_12 (1969=9.8%)",Pre-1990 preterm; raw GESTREC 0-4 numer; codes 5-8 denom (excl 9).
+preterm_rate_pct,1968,resident,8.9,0.05,"NCHS public-use Nat1968doc (GESTREC 0-4=<37 wk); MVSR mv22_12 (1969=9.8%)",Pre-1990 preterm; PUF-DEFINITIONAL (GESTREC 0-4 numer / 0-8 denom excl 9 per Nat1968doc; not a published 1968 headline; bracketed by 1969=9.8%); footnote as definitional (COMPARABILITY pre-1990 section).
 preterm_rate_pct,1969,resident,9.8,0.05,"NCHS MVSR Vol. 22 No. 12 Supp (Registered Births 1970; mv22_12sacc.pdf)",Pre-1990 preterm; 9.3% in 1970 vs 9.8% in 1969 (premature).
 preterm_rate_pct,1970,resident,9.3,0.05,"NCHS MVSR Vol. 22 No. 12 Supp (Registered Births 1970; mv22_12sacc.pdf)",Pre-1990 preterm; 9.3% premature vs 9.8% in 1969.
 preterm_rate_pct,1971,resident,9.3,0.05,"NCHS MVSR Vol. 23 No. 8 Supp (Final Natality Statistics 1972; mv23_08sacc.pdf)",Pre-1990 preterm; 9.3% in 1971 (LMP areas) vs 9.6% in 1972.

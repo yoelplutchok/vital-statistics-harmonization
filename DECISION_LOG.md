@@ -23,6 +23,22 @@
 
 ---
 
+## 2026-05-25T02:47:41Z — RD.1b Phase C audit follow-up (F1) — 1971 LBW re-sourced to MVSR 7.7% @ 0.05
+
+**Choice:** Amend `lbw_rate_pct,1971` from `7.6 / tol 0.06` (IOM 1985 Table B.1 secondary; 7.64%) to **`7.7 / tol 0.05`**, sourced to MVSR Vol. 23 No. 8 Supp (`mv23_08sacc.pdf`), which states 1972 LBW "7.7 percent … the same percent as in 1971." Supersedes the **1971 portion** of the 2026-05-25T02:05:00Z "0.06 pct-pt tolerance for 1971 and 1973 LBW" entry; **1973 LBW is unchanged (7.6 / tol 0.06)** — its 7.6% is a direct `mv23_11sacc` cite and microdata 7.548% genuinely needs 0.06.
+
+**Alternatives:** (a) Keep 7.6 @ 0.06 — rejected: the IOM secondary (7.64→7.6) conflicts with the MVSR primary already in the citation set (7.7%), and microdata 7.655% rounds to 7.7 (not 7.6), leaving the cell at 92% of a widened tolerance. (b) Use IOM two-decimal 7.64 @ 0.05 — viable (\|7.655−7.64\|=0.015) but 7.7 is the one-decimal NCHS published figure and preserves headline parity with the MVSR narrative.
+
+**Reason:** Fresh-eyes audit finding F1 (`AUDITS/RD.1b-phase-b-c-audit_2026-05-25T02-42-45Z.md`). `mv23_08sacc`: "During 1972, 7.7 percent of all live births were classified as low-birth-weight infants … the same percent as in 1971." SAMPWT-uniform-2× microdata = 7.6553% → \|7.6553−7.7\| = 0.0447 < 0.05 (passes at standard tolerance).
+
+**Source:** `natality/metadata/external_validation_targets_v1.csv` row `lbw_rate_pct,1971`; MVSR `mv23_08sacc.pdf` (`https://www.cdc.gov/nchs/data/mvsr/supp/mv23_08sacc.pdf`).
+
+**Verifiable by:** `compare_external_targets_v1.py` → 249/249 unchanged; row `lbw_rate_pct,1971` actual 7.6553 vs expected 7.7 (\|diff\| 0.045, pass at 0.05).
+
+**Reversible:** yes — revert the single CSV row.
+
+---
+
 ## 2026-05-25T02:05:00Z — RD.1b Phase C — 1968 preterm uses GESTREC 0–4 (not GESTREC3)
 
 **Choice:** `_weighted_preterm_rate_from_raw_1968` counts GESTREC codes 0–4 as under 37 weeks; denominator = resident births with GESTREC 0–8 (excludes 9 not stated). Uniform 2× sample inflation.
