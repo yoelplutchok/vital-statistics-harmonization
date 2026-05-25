@@ -133,7 +133,9 @@ def build() -> nbformat.NotebookNode:
             "             'infant_death', 'neonatal_death', 'postneonatal_death'],\n"
             ")\n"
             "print(f'Linked parquet rows (2005-2023 total): {len(linked):,}')\n"
-            "print(f'Linked parquet years: {sorted(linked[\"data_year\"].unique().tolist())}')"
+            "print(f'Linked parquet years: {sorted(linked[\"data_year\"].unique().tolist())}')\n"
+            "for _col in ('infant_death', 'neonatal_death', 'postneonatal_death'):\n"
+            "    linked[_col] = pd.to_numeric(linked[_col], errors='coerce').fillna(0).astype('int8')"
         ),
         code(
             "# Canonical filter: residence_status != 4 (U.S. residents only, matches NCHS validation universe)\n"
@@ -235,11 +237,17 @@ def build() -> nbformat.NotebookNode:
             "ts"
         ),
         code(
-            "# Cross-validate the 5 years with imr_per_1000 encoded in the CSV (2015 + 2020 + 2021 + 2022 + 2023)\n"
+            "# Cross-validate the 5 cohort-era years with unweighted IMR in the user guides\n"
+            "# (2015 + 2020-2023). Pre-2005 imr_per_1000 rows exist in the CSV since C8.18 but\n"
+            "# use a different linkage universe — out of scope for this 2005-2023 notebook.\n"
+            "cohort_imr_years = [2015, 2020, 2021, 2022, 2023]\n"
             "imr_targets = targets[targets['metric_id'] == 'imr_per_1000'].copy()\n"
+            "imr_targets['data_year'] = imr_targets['data_year'].astype(int)\n"
+            "imr_targets = imr_targets[imr_targets['data_year'].isin(cohort_imr_years)]\n"
             "imr_targets = imr_targets[['data_year', 'expected_value', 'tolerance_abs']]\n"
             "imr_targets.columns = ['data_year', 'imr_csv', 'imr_tolerance']\n"
-            "joined = ts.merge(imr_targets, on='data_year', how='inner')\n"
+            "ts_cohort = ts[(ts['data_year'] >= 2005) & (ts['data_year'] <= 2023)].copy()\n"
+            "joined = ts_cohort.merge(imr_targets, on='data_year', how='inner')\n"
             "joined['diff'] = (joined['imr_per_1000'] - joined['imr_csv']).round(3)\n"
             "joined['status'] = joined.apply(\n"
             "    lambda r: 'PASS' if abs(r['diff']) <= r['imr_tolerance'] else f\"FAIL |diff|={abs(r['diff'])}\",\n"
@@ -252,8 +260,8 @@ def build() -> nbformat.NotebookNode:
             "fail_count = (joined['status'] != 'PASS').sum()\n"
             "assert fail_count == 0, f'Section 2: {fail_count} encoded-year IMR cell(s) FAIL — see table above'\n"
             "print(f'Section 2: {len(joined)}/5 encoded-year IMR cells PASS (byte-exact within ±{joined[\"imr_tolerance\"].max():.2f}).')\n"
-            "print(f'\\n19-year IMR range: {ts[\"imr_per_1000\"].min():.2f} (lowest) to {ts[\"imr_per_1000\"].max():.2f} (highest) per 1,000.')\n"
-            "print(f'2005 IMR: {ts.loc[ts[\"data_year\"]==2005, \"imr_per_1000\"].iloc[0]:.2f}; 2023 IMR: {ts.loc[ts[\"data_year\"]==2023, \"imr_per_1000\"].iloc[0]:.2f}.')"
+            "print(f'\\n19-year IMR range: {ts_cohort[\"imr_per_1000\"].min():.2f} (lowest) to {ts_cohort[\"imr_per_1000\"].max():.2f} (highest) per 1,000.')\n"
+            "print(f'2005 IMR: {ts_cohort.loc[ts_cohort[\"data_year\"]==2005, \"imr_per_1000\"].iloc[0]:.2f}; 2023 IMR: {ts_cohort.loc[ts_cohort[\"data_year\"]==2023, \"imr_per_1000\"].iloc[0]:.2f}.')"
         ),
         md(
             "**Section 2 result.** All five years with an unweighted IMR encoded in the validation\n"

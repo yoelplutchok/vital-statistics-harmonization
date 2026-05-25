@@ -4,6 +4,35 @@
 
 ---
 
+## 2026-05-25T02:30:00Z — **D-prep.9 COMPLETE — all eight worked-example notebooks re-executed on build host; gate SHAs unchanged.**
+
+### What shipped
+
+1. **D-prep.9 re-verify** — Re-ran all `notebooks/_build_*.py` builders; **8/8 PASS** (joint_use, paper_companion, matched_multiples, maternal_age, education, state_reporting, cross_race, preterm).
+2. **Builder fixes** — Memory-safe year-filtered parquet reads (education, cross_race, preterm); maternal_age linked death-flag coercion + cohort-era IMR target scope (post–C8.18 CSV).
+3. **Docs** — `PRE_FLIGHT_LOG.md` entry; receipt `RECEIPTS/notebook-portable-paths-reverify_2026-05-25T02-30-00Z.md`.
+
+### Verify
+
+- Four gate parquet SHAs unchanged (`38e2cecb…`, `185c071e…`, `acb5c48a…`, `f630d8cf…`).
+- No `/Users/...` literals in shipped `.ipynb` sources.
+
+### Next planned task
+
+**§15.F closure:** human may defer **latest-year refresh** (NCHS trigger) and **RD.1b Phase C** (optional); when deferred, STATUS “Next planned task” → **D.4 / Paper 1** (still gated until human re-authorizes `paper/`).
+
+### Open questions for human
+
+1. Close §15.F now (defer latest-year + RD.1b Phase C) and open **D.4**, or run remaining §15.F items first?
+2. Reconcile 2024 `live_births_by_year` `source` when NVSR 2024 final publishes?
+
+### Forward-looking HALTs
+
+1. Re-run matching `_build_*.py` after any hand-edit to a worked-example notebook.
+2. Gate SHA re-hash immediately before next Zenodo upload.
+
+---
+
 ## 2026-05-25T01:05:00Z — **D-prep.8 RE-VERIFIED CLOSED — convenience CSVs through 2024 already shipped; gate SHAs unchanged.**
 
 ### What shipped

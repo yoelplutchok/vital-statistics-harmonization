@@ -5,13 +5,10 @@ C17,19,Natality columns,84,84,PASS,
 C22,19,Fetal death columns,89,89,PASS,
 C25,21,"50 × 197 × 10 = 98,500 byte comparisons","98,500","98,500",PASS,
 C26,21,zero mismatches 1992-2002,0,0 years not external-validated,PASS,
-C27,23,natality boundaries,5,5,PASS,
-C28,23,linked boundaries,3,3,PASS,
-C29,23,fetal-death boundaries,2,3,PASS,manuscript counts transitions (2); Table 1 has 3 eras (eras = transitions + 1 for fetal-death)
+C27,23,natality boundaries,5,6,PASS,manuscript counts transitions (5); Table 1 has 6 eras (eras = transitions + 1 for fetal-death)
 C30,45,natality 71 harm + 13 deriv = 84,71 + 13 = 84,parquet=84 cols (schema CSV uses cross-era ontology with 98 rows),PASS,schema CSV split not directly extractable; parquet total verified
 C34,69,five fetal-death normalizations,5,5 per release-notes Summary line,PASS,release notes B1-B6 plus relabels; Summary line confirms 5 normalizations + 3 relabels
 C37,83,live_births_by_year sources NVSR 57-08 + 73-09,NVSR 57-08 (1995-2002) + NVSR 73-09 (2005-2022) + 2023-2024 per JOINT_USE,col source populated,PASS,
-C39,94,183/183 natality V1 targets,183/183,183/183,PASS,
 C40,94,33/35 byte-exact + 2 differ by 1,33 byte-exact + 2 by 1 = 35 total,33 byte-exact + 2 by 1 = 35 total,PASS,
 C41,94,29/29 per-year fetal-death counts,29/29,29/29,PASS,
 C42,94,26/26 per-year fetal mortality rates,26/26,26 target rows,PASS,
@@ -24,6 +21,7 @@ C48,104,FAGECOMB blank V1 2007-2013(+),blank (manuscript uses raw NCHS name),raw
 C49,104,MEDUC_REC blank V1 2007-2013(+),blank (manuscript uses raw NCHS name),raw NCHS MEDUC_REC maps to harmonized: ['maternal_education_cat4'],L11,manuscript italicises raw NCHS field name as if a harmonized column — Task 5 wording fix
 C31,45,linked 84 + 7 + 3 = 94,+ 10 over natality,parquet=97 (linked-natality=13),DIFF,
 C32,45,fetal-death 73 harmonized + 16 derived = 89,73 + 16 = 89,74 + 15 = 89,DIFF,
+C39,94,183/183 natality V1 targets,183/183,215/215,DIFF,
 C07,9,2003-2014 natality phasing,NCHS source docs,(cite-only or out-of-monorepo),CITE-ONLY,
 C08,9,2005-2017 V1 fetal-death window,fetal_death/COMPARABILITY.md,(cite-only or out-of-monorepo),CITE-ONLY,
 C09,9,100% A-version in 2018,fetal_death/COMPARABILITY.md,(cite-only or out-of-monorepo),CITE-ONLY,
@@ -49,3 +47,5 @@ C02/C18/C54,"3, 19, 125",Linked B-ID 2005-2023,"74,943,824","149,386,620",DIFF+7
 C03/C21/C55,"3, 19, 125",Fetal death 1992-2022,"1,634,195","2,427,233",DIFF+793038,
 C05,7,fetal deaths 20-30K/year,"20,000-30,000","19,837-32,694","DIFF (range=19,837-32,694)",
 C19,19,Linked B-ID columns,94,97,DIFF+3,
+C28,23,linked boundaries,3,5,DIFF+2,manuscript counts transitions (3); Table 1 has 5 eras (eras = transitions + 1 for fetal-death)
+C29,23,fetal-death boundaries,2,5,DIFF+3,manuscript counts transitions (2); Table 1 has 5 eras (eras = transitions + 1 for fetal-death)

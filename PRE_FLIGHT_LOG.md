@@ -8,6 +8,20 @@
 
 ---
 
+## PRE-FLIGHT for notebook-portable-paths (D-prep.9 re-verify) — 2026-05-25T02:00:00Z — **RESULT: PROCEED**
+
+**Task.** §15.F D-prep.9 — re-verify portable `notebooks/_paths.py` + re-execute all eight `_build_*.py` notebooks on build host; confirm `natality/notebooks/quickstart.ipynb` has no `/Users/...` literals.
+
+**Field-value snapshot.** Four gate SHA prefixes on disk: `38e2cecb…`, `185c071e…`, `acb5c48a…`, `f630d8cf…` (build-host paths). MM harmonized `adbec108…` at monorepo `matched_multiples/output/harmonized/`. Prior D-prep.9 receipt 2026-05-20; this session = post–RD.4 re-execute pass.
+
+**SMOKE plan.** Grep `.ipynb` for `/Users/` (expect zero). `_paths.gate_parquet()` resolves all five inputs. Builders execute via `nbclient` from repo root.
+
+**Halt conditions.** None tripped. §7-#18 if gate SHA mismatch — not observed.
+
+**Result:** PROCEED.
+
+---
+
 ## PRE-FLIGHT for convenience-csv-extend-2023-2024 (D-prep.8 re-verify) — 2026-05-25T01:00:00Z — **RESULT: PROCEED (idempotent)**
 
 **Task.** §15.F / D-prep.8 — extend convenience CSVs through 2023-2024.
