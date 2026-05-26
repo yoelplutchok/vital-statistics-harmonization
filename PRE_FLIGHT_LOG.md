@@ -8,6 +8,74 @@
 
 ---
 
+## PRE-FLIGHT for LY-linked-2024 — 2026-05-26T13:15:00Z — **RESULT: PROCEED (verify-only)**
+
+**Task.** §15.G LY-linked-2024 — `2024PE2023CO.zip` (2024 period / **2023 cohort**).
+
+**Field-value snapshot.**
+
+| Artifact | Plan assumed | Actual |
+|---|---|---|
+| Linked envelope max `data_year` | extend beyond 2022 → 2023 | **2023** already present (C8.18 v4) |
+| `file_inventory.csv` `2023_linked` | `2024PE2023CO.zip` | row present, `imported=true` ✓ |
+| Build-host zip | on disk | `~/Desktop/natality-harmonization/raw_data/linked/2024PE2023CO.zip` (432 MB) ✓ |
+| `linked_2023_denomplus.parquet` rows | match harmonized 2023 slice | **3,605,081** (= harmonized `data_year==2023`) ✓ |
+| Linked harmonized gate | `ea89ab3c…` | `ea89ab3c009de00cddb88aad84aa50fde376a47f96b6865113a600fb5a0907c7` ✓ |
+| Linked derived gate | `22a4523d…` (post–LINK-ICD10) | `22a4523d6e62e018acd1c8648275a9f98d86ee711f61c017f885df6952b73b5e` ✓ |
+| Natality derived gate | `acb5c48a…` | `acb5c48a9abf82ac78e6bf210d6be5d62cba6afae271b978b0e53ed528856974` ✓ |
+| `external_validation_targets_v3_linked.csv` 2023 cells | seven metrics from `24PE23CO_linkedUG.pdf` | rows present (lines 32–36, 45–46) ✓ |
+| CDC vital statistics online | lists 2024 period/2023 cohort | confirmed 2026-05-26 ✓ |
+| `2025PE2024CO.zip` (cohort 2024) | not required this task | not listed on CDC page (defer) |
+
+**NCHS naming check.** `2024PE2023CO` = period **2024**, cohort **2023** (not “year 2024” in `data_year`). Extending “beyond 2023” in cohort terms requires `2025PE2024CO` when NCHS publishes.
+
+**Halt conditions.** None tripped. Layout probe (SMOKE `parse_linked_cohort_year.py --max-rows 5000`) succeeded; member names `VS2023LINK` / `VS2024LINK` match 2022-era period-cohort pattern.
+
+**Result:** PROCEED **verify-only** — no full re-harmonize/re-derive; refresh validation artifact in repo + document cohort-2024 deferral.
+
+---
+
+## PRE-FLIGHT for LINK-ICD10 — 2026-05-26T12:00:00Z — **RESULT: PROCEED**
+
+**Task.** §15.G LINK-ICD10 — linked cohort 1983–1998 ICD-9→ICD-10 derived layer (CMS 2018 diagnosis GEM; sibling of RD.4).
+
+**Field-value snapshot.**
+
+| Artifact | Assumed | Actual |
+|---|---|---|
+| Linked harmonized gate SHA | `ea89ab3c…` | `ea89ab3c009de00cddb88aad84aa50fde376a47f96b6865113a600fb5a0907c7` ✓ |
+| Linked derived gate SHA (pre-DO) | `f630d8cf…` | `f630d8cf20db72eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` ✓ |
+| Natality derived SHA | `acb5c48a…` | `acb5c48a9abf82ac78e6bf210d6be5d62cba6afae271b978b0e53ed528856974` ✓ (unchanged post-DO) |
+| Linked derived cols | 97 | 97 (`underlying_cause_icd9` present; no `underlying_cause_icd10_derived`) |
+| GEM file | committed under `matched_multiples/metadata/icd_gem/2018_I9gem.txt` | present, >400 KB |
+
+**Halt conditions.** None tripped. Build host parquets on disk.
+
+**Result:** PROCEED — re-derive linked derived only; harmonized byte-exact invariant expected.
+
+---
+
+## PRE-FLIGHT for MM-T2 — 2026-05-26T00:26:00Z — **RESULT: PROCEED**
+
+**Task.** §15.G MM-T2 — add 2016–2020 Table 2a (gender × maternal age × perinatal outcome) validation targets; extend validator + smoke tests.
+
+**Field-value snapshot.**
+
+| Artifact | Assumed | Actual |
+|---|---|---|
+| `external_validation_targets.csv` rows | 97 (no 2016 `t2_*`) | 97; 0 rows with `window=2016-2020` and `target_id` prefix `t2_` |
+| Harmonized gate SHA | `adbec108…` | `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549` ✓ |
+| Prior validation | 109/109 PASS | `validation_results.csv` 109 PASS pre-DO |
+| PDF `2016-2020.pdf` | SHA `ed5e96ab…` | Fetched from CDC vital-stats page path `matched-multiple-birth-fetal-death-2016-2020.pdf` (legacy `2016-2020.pdf` URL 404); SHA matches |
+
+**L9 PDF probe.** Table 2A on p16 (outcome-only counts); gender×age×outcome cross-tab not printable — same class as RD.2 for 1995 windows. Harmonized `t2_total_complete_twin_sets` = 308,461 vs PDF Table 2A total twin sets 308,981 (complete-set filter difference; documented in RECEIPT).
+
+**Halt conditions.** None tripped. PDF extractable (text layer); citable source obtained.
+
+**Result:** PROCEED — doc/validation-target only; no parquet rebuild.
+
+---
+
 ## PRE-FLIGHT for D.4-paper1-rd-envelope-sync — 2026-05-25T14:37:09Z — **RESULT: PROCEED**
 
 **Task.** D.4 — sync `paper/draft_v2_hmd_styled.md` after RD.1b (249/249, 109/109); IJE main-text trim; pre-1990 footnotes. User authorized `paper/` via "go" after §15.F closure.

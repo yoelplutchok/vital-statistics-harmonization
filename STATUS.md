@@ -1,6 +1,159 @@
-# STATUS — last updated 2026-05-25T14:37:09Z
+# STATUS — last updated 2026-05-26T13:30:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-26T13:30:00Z — **LY-linked-2024 COMPLETE — 2023 cohort verified; cohort 2024 deferred.**
+
+### Current phase
+
+**§15.G OPEN.** **LY-linked-2024** ✅ (verify-only). Next default: **D.2-docs** → **D.4-paper**.
+
+### What shipped
+
+1. **LY-linked-2024** — Confirmed `2024PE2023CO.zip` = **2023 cohort** (already in v4 envelope since C8.18); **35/35** linked NVSR validation refreshed; gate SHAs unchanged (`ea89ab3c…` / `22a4523d…` / `acb5c48a…`).
+2. **Deferral** — Cohort **2024** (`2025PE2024CO.zip`) not on CDC (2026-05-26); trigger when NCHS publishes.
+3. **Docs** — `NCHS_SOURCE_MANIFEST.md`, `PROVENANCE.md`, `NEXT_STEPS.md` §15.G, `KICKOFF.md` sequence updated.
+
+### In-progress
+
+- Uncommitted `paper/draft_v2_hmd_styled_humanized.md` (out of scope).
+- **D.4-paper** build-host VERIFY still pending.
+
+### Next planned task
+
+**D.2-docs** — Zenodo docs-only v1.0.2 validation-table sync (no parquet rebuild).
+
+### Open questions for human
+
+1. Include `paper/draft_v2_hmd_styled_humanized.md` in D.4 scope?
+2. Publish Zenodo docs-only **v1.0.2** before IJE (143/143 MM + linked 100 cols)?
+3. Optional: update `file_inventory.csv` for CDC renamed matched-multiples PDF path.
+
+### Forward-looking HALTs (§15.G)
+
+1. **D.2-docs:** sync deposit docs to 249/249 + 143/143 + linked **100** cols / `22a4523d…`.
+2. **Cohort 2024 linked:** plan-update + ingest when `2025PE2024CO.zip` appears.
+3. Natality `acb5c48a…` byte-exact unless task documents drift.
+
+### Blocked
+
+(none)
+
+---
+
+## 2026-05-26T12:30:00Z — **LINK-ICD10 COMPLETE — linked derived 100 cols; ICD-10 GEM bridge shipped.**
+
+### Current phase
+
+**§15.G OPEN.** **LINK-ICD10** ✅. Next default: **LY-linked-2024** → **D.2-docs** → **D.4-paper**.
+
+### What shipped
+
+1. **LINK-ICD10** — `underlying_cause_icd10_derived` + provenance columns on linked derived parquet (CMS 2018 GEM); harmonized gate `ea89ab3c…` unchanged; linked derived gate **`22a4523d…`** (was `f630d8cf…`, 97→100 cols).
+2. **VERIFY** — 2005–2023 anchor columns byte-identical vs pre-DO; linked validator **35/35**; smoke **7/7**; snapshot **346** cols.
+3. **GEM stats** — 1983–1998 ICD-9 deaths: 99.12% `gem_from_icd9`; 0.88% `gem_unmapped` (37 distinct UCOD).
+4. **Paper/docs** — Future developments crosswalk bullet removed; weaknesses updated; COMPARABILITY/CODEBOOK/README/PROVENANCE synced.
+
+### In-progress
+
+- Uncommitted `paper/draft_v2_hmd_styled_humanized.md` (out of scope).
+- **D.4-paper** build-host VERIFY still pending.
+
+### Next planned task
+
+**LY-linked-2024** — linked 2024 period / 2023 cohort ingest (build host).
+
+### Open questions for human
+
+1. Include `paper/draft_v2_hmd_styled_humanized.md` in D.4 scope?
+2. Publish Zenodo docs-only **v1.0.2** before IJE (linked gate now `22a4523d…`, 100 cols)?
+3. Optional: update `file_inventory.csv` / manifest for CDC renamed matched-multiples PDF path.
+
+### Forward-looking HALTs (§15.G)
+
+1. **LY-linked-2024:** document linked derived SHA change in RECEIPT; unexpected layout → §7 halt.
+2. **D.2-docs:** sync deposit docs to 249/249 + 143/143 + linked **100** cols / `22a4523d…`.
+3. Natality `acb5c48a…` byte-exact unless LY/LINK task documents drift.
+
+### Blocked
+
+(none)
+
+---
+
+## 2026-05-26T00:40:00Z — **MM-T2 COMPLETE — matched multiples 143/143 (2016–2020 Table 2a shipped).**
+
+### Current phase
+
+**§15.G OPEN.** **MM-T2** ✅. Next default: **LINK-ICD10** → **LY-linked-2024** → **D.2-docs** → **D.4-paper**.
+
+### What shipped
+
+1. **MM-T2** — +34 `t2_*` rows in `external_validation_targets.csv` for 2016–2020; validator + smoke extended; **143/143 PASS**; harmonized gate SHA `adbec108…` unchanged.
+2. **Paper/docs** — `paper/draft_v2_hmd_styled.md` validation headline 109→143; Future developments Table 2 bullet removed; weaknesses updated.
+
+### In-progress
+
+- Uncommitted `paper/draft_v2_hmd_styled_humanized.md` (out of MM-T2 scope).
+- **D.4-paper** build-host VERIFY (`paper_companion`, `cross_race_fetal_mortality.ipynb`) still pending.
+
+### Next planned task
+
+**LINK-ICD10** — linked cohort 1983–1998 ICD-9→ICD-10 derived layer (build host; linked derived SHA will change).
+
+### Open questions for human
+
+1. Include `paper/draft_v2_hmd_styled_humanized.md` in D.4 scope?
+2. Publish Zenodo docs-only **v1.0.2** before IJE (now needs **143/143** MM counts)?
+3. Optional: update `file_inventory.csv` / manifest doc path to `matched-multiple-birth-fetal-death-2016-2020.pdf` (CDC renamed FTP object).
+
+### Forward-looking HALTs (§15.G)
+
+1. **LINK-ICD10**: document linked derived SHA change in RECEIPT; natality `acb5c48a…` byte-exact unless task says otherwise.
+2. **D.2-docs**: sync deposit validation tables to 249/249 + 143/143.
+3. **LY-linked-2024**: halt on unexpected linked zip layout.
+
+### Blocked
+
+(none)
+
+---
+
+## 2026-05-26T00:05:58Z — **`[plan-update]` §15.G OPEN — default queue = Future developments closure (MM-T2 first).**
+
+### Current phase
+
+Post–§15.F; **§15.G pre-submission enhancements OPEN**. Default agent queue per **`KICKOFF.md`** + **`NEXT_STEPS.md` §15.G** (not generic D.4-only).
+
+### What shipped (this plan-update only)
+
+Doc-only: `KICKOFF.md` handshake + sequence table; `NEXT_STEPS.md` §15.G task specs; §15.F exit pointer → §15.G.
+
+### In-progress
+
+Uncommitted `paper/draft_v2_hmd_styled.md` edits may exist (present-tense Future developments, matched multiples wording). **D.4-paper** VERIFY still pending on build host.
+
+### Next planned task
+
+**MM-T2** — matched multiples 2016–2020 Table 2 validation (`2016-2020.pdf`, extend `external_validation_targets.csv`). Then **LINK-ICD10** → **LY-linked-2024** → **D.2-docs** → **D.4-paper** per §15.G order unless user redirects.
+
+### Open questions for human
+
+1. Include untracked `paper/draft_v2_hmd_styled_humanized.md` in D.4 scope or ignore?
+2. Publish Zenodo docs-only **v1.0.2** before IJE submission?
+3. Natality 2025 zip: re-probe CDC when starting **LY-natality-2025**.
+
+### Forward-looking HALTs (§15.G)
+
+1. Natality derived SHA `acb5c48a…` unchanged unless LINK-ICD10 / LY-linked DO documents expected drift.
+2. MM-T2: halt if 2016–2020 Table 2 not extractable from PDF with citable source (L6/L9).
+3. LY-linked-2024: halt on unexpected linked zip layout (§7 schema-era).
+
+### Blocked
+
+(none)
 
 ---
 

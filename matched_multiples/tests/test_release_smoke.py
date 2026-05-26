@@ -1,7 +1,7 @@
 """DESIGN: tracks-current-state — matched-multiples release smoke suite.
 
 Authored at C8.16 DO sub-step 3 (2026-05-14); extended at RD.2 (2026-05-24) and
-RD.2 Table 2 follow-on (2026-05-24). Twelve test functions pinning the
+RD.2 Table 2 follow-on (2026-05-24); MM-T2 (2026-05-26). Twelve test functions pinning the
 matched-multiples release surface:
 harmonized parquet row+column shape, 3-window coverage, schema↔parquet column parity,
 record-type domain, Table 1 Total-column byte-exact reproduction for all three windows
@@ -121,6 +121,7 @@ def test_record_type_domain():
 TABLE2_TOTAL_COMPLETE_TWINS = {
     "1995-1997": 150_987,
     "1995-2000": 323_806,
+    "2016-2020": 308_461,
 }
 
 
@@ -168,7 +169,7 @@ def test_1995_2000_table_1_total_column():
         )
 
 
-@pytest.mark.parametrize("window", ["1995-1997", "1995-2000"])
+@pytest.mark.parametrize("window", ["1995-1997", "1995-2000", "2016-2020"])
 def test_table2_total_complete_twin_sets(window: str):
     df = _load()
     sub = df[df["data_window"] == window]

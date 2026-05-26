@@ -1731,7 +1731,7 @@ Per the 2026-05-24 `[plan-update]` (KICKOFF.md "Phase D-prep" section + DECISION
 
 # §15.F Robustness roadmap — ✅ **CLOSED** (2026-05-25T14:37:09Z; supersedes reopen 12:00Z)
 
-**Exit status.** Queue **CLOSED**. Shipped: RD.1, RD.1b Phases A–**C** (**249/249**), RD.1b audit remediation (F1/F2/F3/F5), RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **Deferred:** latest-year refresh (NCHS trigger). **Next default agent task:** **D.4 / Paper 1** (`paper/draft_v2_hmd_styled.md`); `paper/` edits authorized 2026-05-25.
+**Exit status.** Queue **CLOSED**. Shipped: RD.1, RD.1b Phases A–**C** (**249/249**), RD.1b audit remediation (F1/F2/F3/F5), RD.2 (+ Table 2a), RD.3, RD.4, D-prep.8, D-prep.9. **Next default agent queue:** **§15.G** (close `paper/draft_v2_hmd_styled.md` *Future developments* gaps + D.4 submission prep). See KICKOFF.md "Current planned sequence".
 
 Per the manuscript *Future developments* robustness roadmap (user-authorized 2026-05-24; supersedes stale KICKOFF "D.2 next" queue for agent sessions that explicitly defer paper work). Four tasks strengthen validation and consistency without canonical parquet mutation unless a task explicitly requires it. **Default invariant: 4 gate parquet SHAs byte-exact** (`38e2cecb…` / `185c071e…` / `acb5c48a…` / `f630d8cf…`); matched-multiples harmonized (`adbec108…`) may be read but not rebuilt in doc/validation-only tasks.
 
@@ -1853,9 +1853,72 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 **Shipped.** All eight `notebooks/_build_*.py` re-executed; 8/8 PASS; no `/Users/...` literals in shipped notebooks. Receipt: `RECEIPTS/notebook-portable-paths-reverify_2026-05-25T02-30-00Z.md`. Commit `c55c5df`.
 
-### Task latest-year-refresh — ⏸ **DEFERRED 2026-05-25** (NCHS trigger)
+### Task latest-year-refresh — ⏸ **SPLIT** (2026-05-26: linked 2024 actionable; natality 2025 still trigger)
 
-**Goal.** Extend envelope when NCHS publishes new public-use zips (e.g., natality 2025, linked 2024 cohort, fetal 2023+). **Deferred** at §15.F closure — no new release verified 2026-05-25. Re-open when `https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm` lists new years.
+**Goal.** Extend envelope when NCHS publishes new public-use zips. **Linked 2024 period / 2023 cohort** is listed on CDC vital statistics online (2026-05-26) → **§15.G task LY-linked-2024**. **Natality 2025** not verified on CDC page yet → remain trigger-deferred as **LY-natality-2025**. Fetal death 2024 already in envelope.
+
+---
+
+# §15.G Pre-submission enhancements — **OPEN** (2026-05-26; closes `paper/` *Future developments* bullets)
+
+**Purpose.** Execute the actionable items still listed in `paper/draft_v2_hmd_styled.md` §Future developments (and D.4 submission prep). **Default agent queue** after §15.F closure. **Standing authorization** unless a §7 halt trips.
+
+**Out of scope (do not start without explicit re-authorization):** Census / NCHS RDC restricted-use linkage; D.1 old-repo redirects; legacy Zenodo description-only patches to old concept DOIs.
+
+**Build-host note.** Tasks **LY-linked-2024**, **LINK-ICD10**, and D.4 VERIFY (paper_companion, `cross_race_fetal_mortality.ipynb`) need gate parquets on disk (`~/Desktop/natality-harmonization/output/harmonized/`, etc.). **MM-T2** and **D.2-docs** are doc/validation-target only (no parquet rebuild unless a task explicitly requires it).
+
+**Default invariant:** four gate parquet SHAs byte-exact (`38e2cecb…` / `185c071e…` / `acb5c48a…` / linked derived `22a4523d…` post–LINK-ICD10) unless a task extends linked derived or matched-multiples derived (document expected SHA change in RECEIPT).
+
+| Order | Task ID | What | Build host? | Est. |
+|---|---|---|---|---|
+| **1** | **MM-T2** | Matched multiples **2016–2020 Table 2** validation targets | Optional (harmonized parquet for VERIFY) | ✅ 2026-05-26 |
+| **2** | **LINK-ICD10** | Linked cohort **ICD-9→ICD-10 derived** layer (CMS GEM; sibling of RD.4 on matched multiples) | **Yes** (re-derive linked derived) | ✅ 2026-05-26 |
+| **3** | **LY-linked-2024** | Latest-year **linked 2024 period / 2023 cohort** zip ingest + harmonize + validate | **Yes** | ✅ 2026-05-26 |
+| **4** | **D.2-docs** | Zenodo **docs-only v1.0.2** — refresh validation CSVs/comparison tables to match 249/249 (no parquet rebuild) | No | ~0.25 session |
+| **5** | **D.4-paper** | Finish **Paper 1**: commit paper edits; build-host `paper_companion` + execute `cross_race_fetal_mortality.ipynb`; resolve `<!-- FLAG -->` / admin markers | **Yes** (VERIFY) | 0.5–1 session |
+| — | **LY-natality-2025** | Natality 2025 zip when CDC lists it | **Yes** | trigger |
+
+### Task MM-T2 — `matched-multiples-2016-2020-table2-validation` ✅ **COMPLETE 2026-05-26**
+
+**Goal.** Add committed validation targets for **2016–2020 Table 2** (gender × maternal age × perinatal outcome), closing the gap called out in `paper/draft_v2_hmd_styled.md` Future developments and Weaknesses. Current: **109/109** (41 Table 1 + 68 Table 2a for 1995–1997/1995–2000 only).
+
+**PRE-FLIGHT inputs.** `matched_multiples/external_validation_targets.csv`; download/obtain **`2016-2020.pdf`** from NCHS (`docs/NCHS_SOURCE_MANIFEST.md` §4 SHA `ed5e96ab…`; often missing from git clone — fetch from `ftp.cdc.gov/.../matched-multiples/` documentation path). Sibling precedent: RD.2 Table 2a used NBER `e_Cnttab2a.pdf` structure + values anchored at harmonized set-level crosstab.
+
+**SMOKE/DO/VERIFY.** Five-phase discipline; commit targets before validator changes; extend `validate_matched_multiples.py` if needed; full compare → target count increases; harmonized gate SHA `adbec108…` unchanged unless DO touches harmonize (should not).
+
+**Halt flags.** L6 (no invented cells); L9 (PDF/table transcription must cite page); halt if 2016–2020 PDF has no extractable Table 2 and no citable external table.
+
+### Task LINK-ICD10 — `linked-cohort-icd9-icd10-derived-layer` ✅ **COMPLETE 2026-05-26**
+
+**Goal.** Add derived ICD-10 bridge for linked **1983–1998** infant deaths from `underlying_cause_icd9` via CMS 2018 diagnosis GEM (same pattern as RD.4 `derive_matched_multiples.py` + `metadata/icd_gem/2018_I9gem.txt`). Closes paper Future developments "Linked cohort ICD-9→ICD-10 crosswalk" bullet for public-use users.
+
+**PRE-FLIGHT.** `natality/scripts/04_derive/` linked derive path; gate linked derived SHA `f630d8cf…`; schema/derived_schema update; document unmapped codes in RECEIPT.
+
+**VERIFY.** Re-run linked validation where applicable; 2005–2023 slice byte-identical vs baseline; smoke test for GEM mapping.
+
+### Task LY-linked-2024 — `latest-year-linked-2024-period` ✅ **COMPLETE 2026-05-26**
+
+**Goal.** Ingest **2024 period / 2023 cohort** linked birth–infant death public-use zip (CDC vital statistics online, verified 2026-05-26); extend in-repo envelope beyond 2023; update validation targets and docs.
+
+**Disposition (verify-only).** `2024PE2023CO.zip` is the **2023 cohort** file (NCHS `{period}PE{cohort}CO` naming). Cohort 2023 was already parsed (`linked_2023_denomplus.parquet`), harmonized into v4 (`149,386,620` rows; max `data_year` 2023), and validated (**35/35** 2005–2023 NVSR surface including seven 2023 cells). No parquet rebuild this session. **Cohort 2024** (`2025PE2024CO.zip`) is not yet on CDC (same deferral as C8.2 PRE-FLIGHT 2026-05-12); trigger task when NCHS publishes.
+
+**PRE-FLIGHT.** Probe NCHS FTP for exact zip name + user guide; snapshot current linked envelope end year (2023); gate SHA before/after documented in RECEIPT.
+
+**Halt flags.** §7 if zip layout differs from expected era; schema-version bump needs plan-update.
+
+### Task D.2-docs — `zenodo-docs-only-v1.0.2-validation-sync` ⏳
+
+**Goal.** Prepare docs-only Zenodo **v1.0.2** bundle so deposit validation tables match manuscript (**249/249** natality, **143/143** matched multiples, linked **100** cols / `22a4523d…`, etc.) without re-uploading parquets. Human uploads to Zenodo.
+
+**DO scope.** Refresh `natality/metadata/external_validation_targets_v1.csv` comparison outputs, `natality/docs/COMPARABILITY.md`, validation MDs as needed; update root `README.md` / `CITATION.cff` version note if human approves.
+
+### Task D.4-paper — `paper1-submission-prep` ⏳ (parallel-friendly)
+
+**Goal.** Complete IJE Data Resource Profile submission prep on `paper/draft_v2_hmd_styled.md` (present-tense resource snapshot; no roadmap/changelog voice). **Uncommitted paper edits** may exist in working tree — commit when human asks.
+
+**VERIFY checklist.** Main text ≤2,500 words; `paper_companion` all PASS on build host; execute `cross_race_fetal_mortality.ipynb`; resolve `<!-- YP -->` / abstract FLAG; align Future developments text after MM-T2 / LINK-ICD10 / LY tasks land.
+
+**Gated:** `paper/` edits authorized (2026-05-25+).
 
 ---
 

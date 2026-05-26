@@ -35,9 +35,11 @@ Raw NCHS zips: [`metadata/file_inventory.csv`](metadata/file_inventory.csv) (95 
 | File | Rows × cols | Size | SHA-256 |
 |---|---|---|---|
 | `natality_v3_linked_harmonized.parquet` | 149,386,620 × 81 | 1.5 GB | `ea89ab3c009de00cddb88aad84aa50fde376a47f96b6865113a600fb5a0907c7` |
-| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 97 | 2.0 GB | `f630d8cf20db72eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` |
+| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 100 | 2.0 GB | `22a4523d6e62eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` |
 
-**Gate artifact for cross-product checks:** `natality_v3_linked_harmonized_derived.parquet` (`f630d8cf…`).
+**Gate artifact for cross-product checks:** `natality_v3_linked_harmonized_derived.parquet` (`22a4523d…`). Prior gate (pre–LINK-ICD10, 97 cols): `f630d8cf…`.
+
+**LINK-ICD10 (2026-05-26):** Re-ran `derive_linked_v3.py` only (harmonized `ea89ab3c…` unchanged). Adds `underlying_cause_icd10_derived` + provenance columns via CMS `2018_I9gem.txt` (same GEM as matched multiples RD.4).
 
 Verify on your copy:
 
@@ -70,4 +72,4 @@ End-to-end pipeline: `scripts/01_import/` → `03_harmonize/` → `04_derive/` �
 
 ---
 
-*Refreshed 2026-05-24 at D-prep.2 (`provenance-refresh-current-envelope`). Four primary parquet SHAs independently re-hashed at PRE-FLIGHT; gate derived SHAs `acb5c48a…` / `f630d8cf…` byte-exact vs STATUS anchors.*
+*Refreshed 2026-05-26 at LY-linked-2024 (verify-only; linked gate `22a4523d…` post–LINK-ICD10). Natality derived gate `acb5c48a…` unchanged.*

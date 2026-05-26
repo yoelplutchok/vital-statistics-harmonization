@@ -13,7 +13,7 @@ Gate parquets (SHA-256 in [`natality/PROVENANCE.md`](PROVENANCE.md)):
 | File | Shape | SHA-256 (prefix) |
 |---|---|---|
 | `natality_v2_harmonized_derived.parquet` | 201,161,456 × 84 | `acb5c48a…` |
-| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 97 | `f630d8cf…` |
+| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 100 | `22a4523d…` |
 
 The legacy standalone repo [yoelplutchok/natality-harmonization](https://github.com/yoelplutchok/natality-harmonization) mirrors earlier Zenodo deposits (v2.7.0 = 1990–2024 natality slice only).
 

@@ -23,6 +23,52 @@
 
 ---
 
+## 2026-05-26T13:30:00Z — LY-linked-2024 — verify-only closure; cohort 2023 already in v4 envelope
+
+**Choice:** Close §15.G LY-linked-2024 as **verify-only** (no parquet rebuild). Confirm `2024PE2023CO.zip` supplies cohort year **2023** (already ingested at C8.18 DO step 6b + validated at LINK-ICD10). Re-run `compare_external_targets_v3_linked.py` to refresh committed validation MD/CSV. Defer **cohort 2024** to a future task when NCHS publishes `2025PE2024CO.zip` (CDC vital statistics online checked 2026-05-26; same deferral class as C8.2 linked portion 2026-05-12).
+
+**Alternatives:** (a) Full re-parse/re-harmonize/re-derive 1983–2023 — rejected (multi-hour; zero expected byte change; §7-#17). (b) Claim task blocked because envelope already at 2023 — rejected (task goal is to close the §15.G “latest linked year” item with evidence, not to wait for cohort 2024).
+
+**Reason:** NCHS period-cohort naming `{period}PE{cohort}CO` means the 2024-period release extends the **2023** cohort, not `data_year=2024`. C8.18 already shipped that cohort; seven 2023 NVSR targets pass byte-exact.
+
+**Source:** `natality/metadata/file_inventory.csv` row `2023_linked`; CDC https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm (2026-05-26); build-host gate SHAs; `external_validation_v3_linked_comparison.md` 35/35.
+
+**Verifiable by:** `shasum` linked derived `22a4523d…`; validator `35 pass`; max `data_year` 2023 on harmonized parquet.
+
+**Reversible:** yes — full re-harmonize if a future audit finds 2023 slice drift.
+
+---
+
+## 2026-05-26T12:30:00Z — LINK-ICD10 — CMS 2018 GEM ICD-10 derived bridge on linked derived parquet
+
+**Choice:** Add `underlying_cause_icd10_derived`, `underlying_cause_icd10_derived_source`, `underlying_cause_icd10_gem_approximate` via re-run of `derive_linked_v3.py` only. Native passthrough when `underlying_cause_icd10` populated; GEM from `underlying_cause_icd9` otherwise. Do not mutate harmonized `underlying_cause_icd9` / `underlying_cause_icd10`. Use the committed CMS `2018_I9gem.txt` under `matched_multiples/metadata/icd_gem/` (same file as RD.4).
+
+**Alternatives:** (a) Separate optional derived parquet — rejected (users expect one canonical linked derived file). (b) Extend `cause_group` to ICD-9 era via GEM — rejected (scope = bridge column only; `cause_group` stays 1999+ on native ICD-10).
+
+**Reason:** Closes §15.G / paper Future developments item; enables cross-era ICD-10 cause tabulations without imputing over harmonized revision-tagged columns.
+
+**Verifiable by:** linked derived 100 cols; gate `22a4523d…`; smoke 7/7; validator 35/35; 2005+ anchor regression PASS.
+
+**Reversible:** yes — revert derive script + re-run from harmonized; restore `f630d8cf…` gate.
+
+---
+
+## 2026-05-26T00:40:00Z — MM-T2 — 2016-2020 Table 2a targets harmonized-anchored; PDF outcome-only Table 2A not transcribed
+
+**Choice:** Commit 34 `t2_*` cells for window `2016-2020` with values from harmonized set-level crosstab (`_table2_set_counts`). Source cites `matched-multiple-birth-fetal-death-2016-2020.pdf` Table 2A twin-set semantics (SHA `ed5e96ab…`) plus NBER `e_Cnttab2a.pdf` gender×age×outcome structure (SHA `03340a1c…`). Do **not** add separate PDF Table 2A outcome-only cells (p16) — different table shape and set definition (PDF total twin sets 308,981 vs complete sets 308,461).
+
+**Alternatives:** (a) Halt on legacy FTP 404 for `2016-2020.pdf` — rejected; CDC vital-stats page sibling URL succeeds with matching SHA. (b) Transcribe PDF Table 2A outcome rows as validation targets — rejected; MM-T2 scope is gender×age×outcome cross-tab per paper Future developments / RD.2 precedent.
+
+**Reason:** 2016–2020 PDF p16 ships outcome-only Table 2A; gender×age×outcome cross-tab is not printable (same residual class as 1995 windows). RD.2 Table 2a precedent: harmonized anchor + structure reference.
+
+**Source:** `/tmp/mm_t2_probe/matched-multiple-birth-fetal-death-2016-2020.pdf` p16; `external_validation_targets.csv`; RECEIPT `MM-T2-matched-multiples-2016-2020-table2_2026-05-26T00-40-00Z.md`.
+
+**Verifiable by:** `validate_matched_multiples.py` → 143/143; `grep "2016-2020,t2_" matched_multiples/external_validation_targets.csv | wc -l` → 34.
+
+**Reversible:** yes — remove 34 CSV rows + revert validator call.
+
+---
+
 ## 2026-05-25T14:37:09Z — section-15f-closure-final — Close §15.F after RD.1b B+C + audit remediation
 
 **Choice:** Close `NEXT_STEPS.md` §15.F with explicit deferral of **latest-year refresh** only (NCHS trigger). Do not defer RD.1b Phase C (already shipped 249/249). Authorize **D.4 / Paper 1** `paper/` edits per user "go" (supersedes 03:00Z closure that deferred Phase C).

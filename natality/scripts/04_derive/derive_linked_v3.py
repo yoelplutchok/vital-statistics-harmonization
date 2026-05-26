@@ -3,7 +3,8 @@
 Derive analysis-ready indicators from the V3 linked harmonized file.
 
 Adds the same birth-side derived columns as the natality V2 derive script,
-plus death-side derived columns: neonatal_death, postneonatal_death.
+plus death-side derived columns: neonatal_death, postneonatal_death,
+cause_group, and LINK-ICD10 ICD-10-underlying-cause bridge columns.
 
 Input:
   output/harmonized/natality_v3_linked_harmonized.parquet
@@ -15,11 +16,22 @@ Output (default):
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(_SCRIPT_DIR))
+from icd9_to_icd10_gem import load_gem_tables, map_nchs_ucod  # noqa: E402
+
+ICD10_DERIVED_COLS = (
+    "underlying_cause_icd10_derived",
+    "underlying_cause_icd10_derived_source",
+    "underlying_cause_icd10_gem_approximate",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,6 +46,12 @@ def parse_args() -> argparse.Namespace:
         default=repo_root / "output" / "harmonized" / "natality_v3_linked_harmonized_derived.parquet",
     )
     p.add_argument("--batch-rows", type=int, default=500_000)
+    p.add_argument(
+        "--gem",
+        type=Path,
+        default=None,
+        help="Override CMS 2018_I9gem.txt path (default: matched_multiples/metadata/icd_gem/)",
+    )
     return p.parse_args()
 
 
@@ -139,6 +157,38 @@ def _cause_group(ucod: pa.Array) -> pa.Array:
     return pa.array(labels, type=pa.string())
 
 
+def _add_icd10_derived_columns(
+    ucod9: pa.Array,
+    ucod10: pa.Array,
+    by_key: dict[str, list[tuple[str, bool, bool, bool]]],
+) -> tuple[pa.Array, pa.Array, pa.Array]:
+    """CMS GEM bridge for ICD-9-era deaths; native passthrough for ICD-10 era."""
+    c9 = ucod9.to_pylist()
+    c10 = ucod10.to_pylist()
+    n = len(c9)
+    derived: list[str | None] = [None] * n
+    source: list[str | None] = [None] * n
+    approx: list[int | None] = [None] * n
+    for i in range(n):
+        if c10[i] is not None and str(c10[i]).strip():
+            derived[i] = str(c10[i]).strip()
+            source[i] = "native_icd10"
+            approx[i] = 0
+        elif c9[i] is not None and str(c9[i]).strip():
+            i10, flag = map_nchs_ucod(str(c9[i]).strip(), by_key)
+            if i10:
+                derived[i] = i10
+                source[i] = "gem_from_icd9"
+                approx[i] = 1 if flag else 0
+            else:
+                source[i] = "gem_unmapped"
+    return (
+        pa.array(derived, type=pa.string()),
+        pa.array(source, type=pa.string()),
+        pa.array(approx, type=pa.int8()),
+    )
+
+
 def _age_cat(age: pa.Array) -> pa.Array:
     is_null = pc.is_null(age)
     out = pc.if_else(is_null, pa.scalar(None, type=pa.string()), pa.scalar("40+", type=pa.string()))
@@ -180,9 +230,13 @@ def main() -> None:
         pa.field("neonatal_death", pa.bool_()),
         pa.field("postneonatal_death", pa.bool_()),
         pa.field("cause_group", pa.string()),
+        pa.field("underlying_cause_icd10_derived", pa.string()),
+        pa.field("underlying_cause_icd10_derived_source", pa.string()),
+        pa.field("underlying_cause_icd10_gem_approximate", pa.int8()),
     ])
     out_schema = pa.schema(out_fields)
 
+    by_key = load_gem_tables(args.gem)
     writer: pq.ParquetWriter | None = None
     try:
         for batch in pf.iter_batches(batch_size=args.batch_rows):
@@ -195,6 +249,7 @@ def main() -> None:
             infant_death = batch.column(batch.schema.get_field_index("infant_death"))
             aged_days = batch.column(batch.schema.get_field_index("age_at_death_days"))
             ucod = batch.column(batch.schema.get_field_index("underlying_cause_icd10"))
+            ucod9 = batch.column(batch.schema.get_field_index("underlying_cause_icd9"))
 
             # Birth-side derived
             bw_clean = _null_if_equal(bw, 9999)
@@ -241,12 +296,16 @@ def main() -> None:
             postneonatal = pc.if_else(is_survivor, pa.scalar(False), postneonatal_for_deaths)
 
             cause_grp = _cause_group(ucod)
+            icd10_der, icd10_src, icd10_approx = _add_icd10_derived_columns(
+                ucod9, ucod, by_key
+            )
 
             out_arrays = list(batch.columns) + [
                 ga_clean, bw_clean, apgar_clean,
                 lbw, vlbw, preterm, vpreterm, singleton, age_cat, fage_cat,
                 diab_bool, chyp_bool, ghyp_bool,
                 neonatal, postneonatal, cause_grp,
+                icd10_der, icd10_src, icd10_approx,
             ]
             out_batch = pa.RecordBatch.from_arrays(out_arrays, schema=out_schema)
             out_tbl = pa.Table.from_batches([out_batch], schema=out_schema)

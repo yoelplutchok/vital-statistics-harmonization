@@ -147,7 +147,7 @@ Implemented by:
 | `age_at_death_days` | Age at death (days) | int16 | 0–365 or null | `years_available` 1989–2023 (1992–1994 gap). Null for survivors. **NULL for ALL 1983–1988** (the keyless numerator carries the AGER5 recode only — use `age_at_death_recode5`) |
 | `age_at_death_recode5` | Age at death 5-category recode | int8 | 1–5 or null | 1=<1hr; 2=1–23hr; 3=1–6d; 4=7–27d; 5=28d+. Null for survivors. The day-precise-free age signal available for the keyless 1983–1988 era |
 | `underlying_cause_icd10` | Underlying cause of death (ICD-10) | string | ICD-10 codes or null | `years_available` 1999–2023 (1992–1994 gap). **NULL for 1983–1998 (the ICD-9 era — use `underlying_cause_icd9`)**. Null for survivors |
-| `underlying_cause_icd9` | Underlying cause of death (ICD-9) | string | ICD-9 codes or null | **NEW at v4 (C8.18).** The ICD-9-era cause representation; populated cohort years **1983–1998** (1992–1994 gap); NULL 1999+ (ICD-10 era) and for survivors. No published 9→10 crosswalk is applied (a deferred derivation task) |
+| `underlying_cause_icd9` | Underlying cause of death (ICD-9) | string | ICD-9 codes or null | **NEW at v4 (C8.18).** The ICD-9-era cause representation; populated cohort years **1983–1998** (1992–1994 gap); NULL 1999+ (ICD-10 era) and for survivors. Cross-era ICD-10 view: `underlying_cause_icd10_derived` on the derived parquet (LINK-ICD10) |
 | `cause_recode_130` | 130 Infant Cause of Death recode | int16 | 1–158 or null | NCHS 130-cause recode; residual codes 131–158 (including SIDS=135) are valid. Do NOT filter `<= 130` — drops ~23% of deaths including all SIDS. Null for survivors. ICD-10 era (1999+) |
 | `cause_recode_61` | 61-cause ICD-9-era recode | int16 | 1–61 or null | **NEW at v4 (C8.18).** The ICD-9-era sibling of `cause_recode_130`; NCHS 61-cause recode, cohort years **1983–1998** (1992–1994 gap); NULL 1999+ and for survivors |
 | `manner_of_death` | Manner of death | int8 | 1–7 or null | 1=accident; 3=homicide; 5=could not determine; 7=natural. Null for survivors. `years_available` 2003–2023 |
@@ -161,6 +161,9 @@ Implemented by:
 | `neonatal_death` | Neonatal death (<28 days) | bool | `infant_death AND age_at_death_days < 28` |
 | `postneonatal_death` | Postneonatal death (28–364 days) | bool | `infant_death AND age_at_death_days >= 28` |
 | `cause_group` | Standard infant cause-of-death grouping | string | 13 categories based on ICD-10 underlying cause: `congenital_anomalies` (Q00–Q99), `short_gestation_lbw` (P07), `sids` (R95), `maternal_complications` (P01), `placenta_cord_membranes` (P02), `unintentional_injuries` (V01–X59), `bacterial_sepsis` (P36), `respiratory_distress` (P22), `nec` (P77), `circulatory` (I00–I99), `assault` (X85–Y09), `other_perinatal` (remaining P00–P96), `other` (all else). Null for survivors |
+| `underlying_cause_icd10_derived` | Underlying cause (ICD-10 derived bridge) | string | ICD-10 code or null | **LINK-ICD10.** 1983–1998: CMS GEM from `underlying_cause_icd9`; 1999+: copy `underlying_cause_icd10`. Null for survivors / rows without cause |
+| `underlying_cause_icd10_derived_source` | ICD-10 derived provenance | string | `native_icd10` / `gem_from_icd9` / `gem_unmapped` | Set when a death-side cause is present |
+| `underlying_cause_icd10_gem_approximate` | GEM approximate flag | int8 | 0 / 1 / null | 1 when `source=gem_from_icd9` and CMS GEM row was approximate |
 
 Plus birth-side derived columns: `gestational_age_weeks_clean`, `birthweight_grams_clean`, `apgar5_clean`, `low_birthweight`, `very_low_birthweight`, `preterm_lt37`, `very_preterm_lt32`, `singleton`, `maternal_age_cat`, `father_age_cat`, `diabetes_any_bool`, `hypertension_chronic_bool`, `hypertension_gestational_bool`.
 

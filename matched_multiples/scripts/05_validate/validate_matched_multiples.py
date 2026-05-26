@@ -18,6 +18,10 @@ Primary byte-exact targets per window:
   committed in external_validation_targets.csv (anchored at C8.16 parse-time
   raw BIRTHID crosstab; structure cross-checked against NBER d_Cntltab1.pdf).
 
+  **2016-2020 Table 2a** — gender × maternal age × perinatal outcome for
+  complete twin sets (34 cells in external_validation_targets.csv; PDF Table
+  2A ships outcome-only counts; cross-tab structure from NBER e_Cnttab2a.pdf).
+
 Structural invariants:
   - Row count totals per window match the yearly_clean parquet row counts.
   - record_type × data_window contingencies match raw BIRTHID splits.
@@ -176,7 +180,7 @@ def _table2_set_counts(df: pd.DataFrame, window: str) -> dict[str, int]:
 
 
 def _evaluate_window_table2(df: pd.DataFrame, window: str, pdf_sha: str) -> list[dict[str, object]]:
-    """Evaluate NBER Table 2a-equivalent set-level cells (1995-1997 / 1995-2000 only)."""
+    """Evaluate Table 2a-equivalent set-level cells (gender × age × outcome)."""
     committed = _load_committed_targets().get(window, {})
     actuals = _table2_set_counts(df, window)
     results: list[dict[str, object]] = []
@@ -186,12 +190,17 @@ def _evaluate_window_table2(df: pd.DataFrame, window: str, pdf_sha: str) -> list
         actual = actuals.get(tid)
         if actual is None:
             continue
+        structure_ref = (
+            f"NBER e_Cnttab2a.pdf structure sha={NBER_TAB2_STRUCTURE_SHA[:8]}…"
+            if window in ("1995-1997", "1995-2000")
+            else (
+                f"2016-2020.pdf Table 2A semantics + NBER e_Cnttab2a.pdf "
+                f"structure sha={NBER_TAB2_STRUCTURE_SHA[:8]}…"
+            )
+        )
         results.append({
             "target_id": f"{window.replace('-', '_')}_{tid}",
-            "source": (
-                f"{window} Table 2a twin-set cells "
-                f"(NBER e_Cnttab2a.pdf structure sha={NBER_TAB2_STRUCTURE_SHA[:8]}…)"
-            ),
+            "source": f"{window} Table 2a twin-set cells ({structure_ref})",
             "description": f"{window} {tid}",
             "expected": expected,
             "actual": actual,
@@ -372,6 +381,7 @@ def main() -> int:
     results.extend(_evaluate_window_table1(df, "1995-2000", PDF_1995_2000_SHA))
     results.extend(_evaluate_window_table2(df, "1995-2000", PDF_1995_2000_SHA))
     results.extend(_evaluate_2016_2020(df))
+    results.extend(_evaluate_window_table2(df, "2016-2020", PDF_2016_2020_SHA))
     results.extend(_evaluate_structural(df))
 
     results_df = pd.DataFrame(results)
@@ -390,7 +400,7 @@ def main() -> int:
         fh.write("Targets cover 2016-2020 PDF Table 1 cells (5 byte-exact),\n")
         fh.write("1995-1997 + 1995-2000 Table 1 Total-column + set_complete×outcome cells\n")
         fh.write("(28 from external_validation_targets.csv),\n")
-        fh.write("1995-1997 + 1995-2000 Table 2a twin-set cells (68 committed),\n")
+        fh.write("1995-1997 + 1995-2000 + 2016-2020 Table 2a twin-set cells (102 committed),\n")
         fh.write("row-count conservation across the harmonize step (3),\n")
         fh.write("and structural invariants (5). See `validation_results.csv` for\n")
         fh.write("the per-row table.\n\n")

@@ -38,28 +38,29 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 
 ---
 
-## Current planned sequence (as of 2026-05-25, §15.F CLOSED — D.4 next)
+## Current planned sequence (as of 2026-05-26, §15.G OPEN — pre-submission enhancements)
 
-**Latest plan-update (2026-05-25).** **§15.F robustness roadmap CLOSED**. **RD.1b Phases B+C ✅** (249/249) + audit remediation ✅. **Default agent queue:** **D.4 / Paper 1** (IJE trim, validation sync, admin markers). Latest-year refresh remains **NCHS trigger**–deferred.
+**Latest plan-update (2026-05-26).** **§15.F CLOSED**. **§15.G OPEN** — default queue closes gaps in `paper/draft_v2_hmd_styled.md` §Future developments + finishes D.4 submission prep. Full task specs: **`NEXT_STEPS.md` §15.G**.
 
 | Order | Task ID | What it is | Status |
 |---|---|---|---|
-| **1** | **D.4 / Paper 1** | `paper/draft_v2_hmd_styled.md` — IJE trim, markers, numeric pass | **NEXT** |
-| — | **RD.1b** | Pre-1990 LBW + preterm rates 1968–1989 | ✅ 249/249 (2026-05-25) |
-| **2** | **Latest-year refresh** | Natality 2025 / linked 2024 cohort when NCHS publishes | ⏳ NCHS trigger |
-| — | **RD.1** | Pre-1990 **resident_births** 1968–1989 | ✅ 205/205 |
-| — | **RD.1b Phase A** | LBW rate 1980–1989 | ✅ 215/215 |
-| — | **RD.2 + RD.4 + D-prep.8/9** | MM validation, ICD-10 layer, notebooks | ✅ |
+| **1** | **MM-T2** | Matched multiples 2016–2020 **Table 2** validation (PDF + targets) | ✅ |
+| **2** | **LINK-ICD10** | Linked cohort 1983–1998 ICD-9→ICD-10 **derived** (CMS GEM) | ✅ |
+| **3** | **LY-linked-2024** | Linked **2024 period / 2023 cohort** ingest (CDC lists file) | ✅ |
+| **4** | **D.2-docs** | Zenodo **docs-only v1.0.2** validation-table sync | ⏳ |
+| **5** | **D.4-paper** | Paper 1 finish: companion notebook, FLAGS, commit draft | ⏳ |
+| — | **LY-natality-2025** | Natality 2025 when CDC posts zip | ⏳ trigger |
+| — | **RD.1b / §15.F** | Robustness roadmap | ✅ 249/249 (2026-05-25) |
 
-**§15.F exit criterion (queue OPEN):** Phase B ✅ → Phase C ✅ or deferred with DECISION_LOG → latest-year ✅ or deferred → STATUS “Next planned task” = **D.4**.
+**Paper voice.** Manuscript describes the resource **as it exists now** (present tense). Do not write “earlier roadmaps,” “planned,” or “have now shipped” in `paper/` — update §Future developments after §15.G tasks land.
 
-**Explicitly DEFERRED (unless user re-authorizes):**
+**Explicitly OUT OF SCOPE (unless user re-authorizes):**
 
+- **RDC / Census restricted-use linkage** (paper lists under Future developments but not executable on public-use data)
 - **D.1** — old-repo redirects
 - **D.2 legacy patches** — old Zenodo DOI description-only updates
-- **D.4** — while §15.F queue open
 
-**After §15.F CLOSED → D.4 submits → Phase E** = companion empirical paper via fresh chats + `NEXT_STEPS.md` §19.2.
+**After §15.G + D.4-paper → human IJE submission → Phase E** (companion paper via `NEXT_STEPS.md` §19.2).
 
 **Build-host note:** Gate parquets are **not** in a typical git clone (gitignored). Paths: `~/Desktop/fetal-death-harmonization-build/output/harmonized/` and `~/Desktop/natality-harmonization/output/harmonized/`. See per-product `PROVENANCE.md`.
 
@@ -354,7 +355,8 @@ BEFORE doing ANY work, read these files in this exact order:
 1. STATUS.md  — current project state, current task, in-progress, blocks,
    open questions for human.
 
-2. NEXT_STEPS.md  — operating protocol (§1-§13) and full task list (§14-§15).
+2. NEXT_STEPS.md  — operating protocol (§1-§13) and full task list (§14-§15;
+   after §15.F closure the default queue is §15.G).
    §1 session-start, §2 four core principles, §4 five-phase structure
    (incl. §4.2.1 SHAPE-not-VALUE smoke + DESIGN docstring tag, §4.5
    commit-message brevity), §5 PRE-FLIGHT template (incl. Field-value
@@ -371,17 +373,24 @@ BEFORE doing ANY work, read these files in this exact order:
 
 5. LESSONS.md end-to-end (if it has entries).
 
-CURRENT WORK QUEUE (2026-05-25 — §15.F CLOSED; D.4 NEXT):
+CURRENT WORK QUEUE (2026-05-26 — §15.G OPEN; see NEXT_STEPS.md §15.G):
 
   D.2 + D.3 DONE (Zenodo 10.5281/zenodo.20326150 v1.0.1; GitHub 08a2287).
-  §15.F CLOSED (RD.1–RD.4, RD.1b 249/249, audit remediation). paper/ edits authorized.
+  §15.F CLOSED. §15.G = close paper "Future developments" gaps + D.4 prep.
+  paper/ edits authorized. Substrate: paper/draft_v2_hmd_styled.md (present tense; matched multiples two words).
 
-  (1) D.4 / Paper 1 — IJE finalization **NEXT**
-  (2) Latest-year refresh when NCHS publishes new zips (deferred)
+  Default order (unless user redirects):
+  (1) MM-T2 — matched multiples 2016-2020 Table 2 validation ✅
+  (2) LINK-ICD10 — linked 1983-1998 ICD-9→ICD-10 derived layer ✅
+  (3) LY-linked-2024 — linked 2024 period/2023 cohort (CDC lists; build host) ✅
+  (4) D.2-docs — Zenodo docs-only v1.0.2 validation sync **NEXT**
+  (5) D.4-paper — paper_companion + cross_race notebook + FLAGS + commit draft
 
-  Gate parquets gitignored; natality derived SHA acb5c48a… must stay byte-exact on build host.
+  LY-natality-2025: wait for CDC natality 2025 zip.
+  OUT OF SCOPE: RDC/Census linkage; D.1; legacy Zenodo patches.
 
-  DEFERRED unless re-authorized: D.1 old-repo redirects; legacy Zenodo patches.
+  Build host for LY/LINK-ICD10/D.4 VERIFY: ~/Desktop/natality-harmonization/output/harmonized/
+  Gate SHA acb5c48a… (natality derived) must stay byte-exact unless task documents change.
 
 After reading, tell me in 4-6 sentences:
   (a) the current task per STATUS.md AND the next task per KICKOFF.md's

@@ -74,11 +74,11 @@ Each PDF includes one or more published tables that the harmonized parquet shoul
 - **1995-1997 Table 1** — 14/14 byte-exact (5 BIRTHID outcome totals + 9 set_complete×outcome cells; layout PDF omits printable counts — see `external_validation_targets.csv`).
 - **1995-2000 Table 1** — 14/14 byte-exact (same structure; validate against this window only, not 1995-1997).
 - **2016-2020 PDF Table 1** — 5/5 *Total* column cells byte-exact (see `validation_results.md`).
-- **Table 2a (twin sets: gender × maternal age × perinatal outcome)** — **68/68** byte-exact for 1995-1997 and 1995-2000 complete twin sets (NBER `e_Cnttab2a.pdf` structure; values anchored at harmonized set-level crosstab). 2016-2020 Table 2 deferred (no `2016-2020.pdf` on disk in typical clone).
+- **Table 2a (twin sets: gender × maternal age × perinatal outcome)** — **102/102** byte-exact for all three windows' complete twin sets (34 cells per window; NBER `e_Cnttab2a.pdf` gender×age×outcome structure; 2016-2020 uses `matched-multiple-birth-fetal-death-2016-2020.pdf` Table 2A semantics; values anchored at harmonized set-level crosstab).
 
 ## Status (C8.16-complete; in-repo)
 
-C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 (2026-05-24) extended validation to all three windows: 41 Table 1-equivalent targets + 68 Table 2a twin-set targets for 1995-1997/1995-2000 (109 total incl. structural invariants). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets in `validation_results.csv`.
+C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 (2026-05-24) extended validation to all three windows: 41 Table 1-equivalent targets + 102 Table 2a twin-set targets (34 per window; MM-T2 added 2016-2020). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets in `validation_results.csv`.
 
 Pipeline artifacts:
 
@@ -86,6 +86,6 @@ Pipeline artifacts:
 - `output/harmonized/matched_multiples_harmonized.parquet` (1 file; gitignored; reproducible). 1,665,568 rows × 24 cols.
 - `output/harmonized/matched_multiples_derived.parquet` (optional RD.4; gitignored). Same rows × 27 cols (`cause_of_death_icd10_derived` + provenance flags; canonical `cause_of_death_icd` unchanged).
 - `validation_results.{csv,md}` at subproject root (tracked).
-- `tests/test_release_smoke.py` (11 tests; SHAPE-not-VALUE per Convention 1).
+- `tests/test_release_smoke.py` (16 tests incl. parametrized Table 2; SHAPE-not-VALUE per Convention 1).
 
 Cross-window comparability: `within_era` for race / education / delivery-method (different revision-era field semantics); `full` for set-level identifiers + record-type + sex_infant + age-at-death.
