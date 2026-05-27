@@ -81,7 +81,7 @@ Full details in `docs/COMPARABILITY.md`. Highlights:
 
 | Dataset | External targets | Result |
 |---------|-----------------|--------|
-| V2 Natality (1968-2024 product; 1990-2024 benchmarked) | 183 targets across 1990-2024 (births, LBW%, preterm%, plurality, singleton%, male%, cesarean%, smoking%, Medicaid%); pre-1990 (1968-1989) NVSR benchmarking is a planned incremental addition | 183/183 pass |
+| V2 Natality (1968-2024) | 249 external targets: 56 resident-birth counts (1968-2024); 44 pre-1990 LBW/preterm rate cells (1968-1989); 149 1990+ rate/indicator cells | 249/249 pass |
 | V2 Natality invariants | Deterministic consistency checks | 0 violations |
 | V3/v4 Linked — 2005-2023 | 35 active targets across 2005, 2010, 2015, 2020-2023 (births, infant deaths, IMR, neonatal/postneonatal deaths, neonatal/postneonatal IMR) | 35/35 active pass (33 byte-exact + 2 differ by 1 within documented tolerance) |
 | V3/v4 Linked — pre-2005 cohort (1983-2004) | Per-year vs the NCHS cohort linked-file user guides: cohort denominator + resident births (19 yrs); published IMR (19 yrs); weighted 1983-1984 | Denominator + resident-births byte-exact 19/19; IMR within ±0.02 19/19; weighted 1983-1984 byte-exact; documented numerator-file residual for 1989/1998/2002 (3 of 19, same NCHS class as the 2 differ-by-1 cells) — all within documented tolerance |
@@ -100,7 +100,7 @@ python scripts/01_import/parse_all_pre1990_years.py --years 1968-1989   # pre-19
 python scripts/01_import/parse_all_v1_years.py --years 1990-2024
 python scripts/03_harmonize/harmonize_v1_core.py --years 1968-2024
 python scripts/04_derive/derive_v1_core.py
-python scripts/05_validate/compare_external_targets_v1.py                 # 183 NVSR targets (1990-2024; pre-1990 benchmarking planned)
+python scripts/05_validate/compare_external_targets_v1.py                 # 249 external targets (1968-2024; pre-1989 resident_births need --yearly-parquet-dir)
 python scripts/05_validate/validate_v1_invariants.py --years 1990-2024
 python scripts/05_validate/harmonized_missingness.py
 

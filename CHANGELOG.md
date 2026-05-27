@@ -11,6 +11,19 @@ Each section below cites the per-task receipts (in `RECEIPTS/` of the developmen
 
 ---
 
+## [1.0.2] — 2026-05-26 — Zenodo docs-only validation sync (§15.G D.2-docs)
+
+**Parquets unchanged** from v1.0.1 (four gate SHAs byte-exact: `38e2cecb…` / `185c071e…` / `acb5c48a…` / `22a4523d…`). This release refreshes deposit documentation and machine-readable validation outputs only.
+
+- **Natality** — Regenerated `external_validation_v1_comparison.{csv,md}`: **249/249 PASS** (was 215/205 in prior deposited comparison tables; adds RD.1b pre-1990 LBW/preterm rate cells). User-facing docs (`VALIDATION.md`, `ABOUT_THIS_RELEASE.md`, `COMPARABILITY.md`, etc.) updated from 183/183 / “planned pre-1990” framing.
+- **Linked** — Re-ran `external_validation_v3_linked_comparison.{csv,md}` against linked derived **100** columns (gate `22a4523d…` post–LINK-ICD10); **35/35 PASS** for 2005–2023 NVSR surface. `PROVENANCE.md` already documents full gate SHA.
+- **Matched multiples** — `validation_results.{csv,md}` at **143/143** (MM-T2 Table 2a for 2016–2020) ships in the docs bundle.
+- **Deposit metadata** — Root `.zenodo.json` + `CITATION.cff` bumped to v1.0.2; upload instructions in `docs/ZENODO_v1.0.2_UPLOAD.md`.
+
+(Receipt: `RECEIPTS/D.2-docs_zenodo-docs-only-v1.0.2-validation-sync_2026-05-26T*.md`.)
+
+---
+
 ## [Unreleased / v1.1-WIP] — Tier 1 + Tier 2 work (Phase C of pre-submission scope expansion)
 
 Work in progress as of 2026-05-13. Will tag as `v1.1` at the next public-repo sync once Phase C completes (or sooner if Tier 1 completes and Tier 2 is split into `v1.2`). Task identifiers (`C8.1`, `C8.4`, …) reference `NEXT_STEPS.md` §15.C entries.

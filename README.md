@@ -16,7 +16,7 @@ Future development happens here; the original repos are mirrors.
 | **Natality** | 1968–2024 (57 years) | 201,161,456 | 84 (71 harmonized + 13 derived) | **249/249** external validation targets byte-exact (56 resident-births 1968–2024; 44 LBW/preterm rate cells 1968–1989; 149 1990+ rate/indicator cells) | [`natality/`](natality/) |
 | **Linked birth–infant death** | 1983–2023 (38 years; permanent 1992–1994 NCHS-linkage gap) | 149,386,620 | 100 (81 harmonized + 19 derived incl. ICD-10 GEM bridge) | **2005–2023**: 33/35 byte-exact + 2 cells differ by 1 record (within documented tolerance). **Pre-2005 cohort (1983–2004)**: per-year cohort denominator + resident-births byte-exact 19/19, published IMR within ±0.02 19/19, weighted 1983–1984 byte-exact; a documented NCHS numerator-file-vs-denominator-linkage residual for 3 of 19 years (same class as the 2 differ-by-1 cells) | [`natality/`](natality/) |
 | **Fetal death** | 1982–2024 (43 years) | 2,427,233 | 89 (73 harmonized + 16 derived) | 29/29 per-year counts + 26/26 per-year fetal mortality rates byte-exact (V2 era); 13/19 detail cells byte-exact + 6 documented diffs | [`fetal_death/`](fetal_death/) |
-| **Matched multiples** | 1995–1997 + 1995–2000 + 2016–2020 (3 windows) | 1,665,568 | 24 harmonized | **143/143** committed validation targets byte-exact (41 Table 1-equivalent + 102 Table 2a twin-set cells across all three windows + structural invariants); twin complete-set IMR = 10.14/1,000 reproduces 2016–2020 PDF prose byte-exact | [`matched_multiples/`](matched_multiples/) |
+| **Matched multiples** | 1995–1997 + 1995–2000 + 2016–2020 (3 windows) | 1,665,568 | 24 harmonized | **143/143** committed validation targets byte-exact (33 Table 1-class + 102 Table 2a twin-set + 8 row-count/structural checks); twin complete-set IMR = 10.14/1,000 reproduces 2016–2020 PDF prose byte-exact | [`matched_multiples/`](matched_multiples/) |
 
 Each product is also distributed as per-year raw parquets preserving every documented source field for users who need detail outside the harmonized schema.
 
@@ -102,7 +102,7 @@ A Data Resource Profile manuscript covering all four products as a unified resou
 
 See [`CITATION.cff`](CITATION.cff) for citation metadata. Cite the unified HVS Zenodo deposit:
 
-- Plutchok Y. *U.S. Harmonized Vital Statistics (HVS) Microdata: Natality, Linked Birth–Infant Death, Fetal Death, and Matched Multiples* (v1.0.1). Zenodo. https://doi.org/10.5281/zenodo.20326150
+- Plutchok Y. *U.S. Harmonized Vital Statistics (HVS) Microdata: Natality, Linked Birth–Infant Death, Fetal Death, and Matched Multiples* (concept DOI; **v1.0.1** published 2026-05-21; **v1.0.2** docs-only refresh staged in-repo — parquets unchanged, validation tables synced). Zenodo. https://doi.org/10.5281/zenodo.20326150
 
 Superseded single-product deposits (immutable): natality + linked https://doi.org/10.5281/zenodo.19363074; fetal death 1992–2022 https://doi.org/10.5281/zenodo.20031571.
 

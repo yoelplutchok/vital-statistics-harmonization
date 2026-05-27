@@ -23,6 +23,22 @@
 
 ---
 
+## 2026-05-26T14:00:00Z — D.2-docs — Zenodo v1.0.2 docs-only bundle staged in-repo; parquets unchanged
+
+**Choice:** Stage v1.0.2 as a **docs-only** Zenodo new version: refresh validation comparison outputs and user-facing deposit metadata; **do not** re-upload the seven v1.0.1 parquets. Bump `.zenodo.json` + `CITATION.cff` to 1.0.2 in-repo; human publishes via `docs/ZENODO_v1.0.2_UPLOAD.md`.
+
+**Alternatives:** (a) Full re-deposit with parquets — rejected (unnecessary; §9-#15 immutability satisfied by carrying forward bytes). (b) Wait for D.4-paper before any Zenodo touch — rejected (manuscript footnote and deposit integrity benefit from aligned tables before IJE).
+
+**Reason:** v1.0.1 deposit comparison tables still showed 215/183-era summaries; in-repo envelope is **249/249** natality, **143/143** matched multiples, linked **100** cols / `22a4523d…` (LINK-ICD10 + MM-T2 + RD.1b).
+
+**Source:** Build-host `compare_external_targets_v1.py` → 249 pass; `compare_external_targets_v3_linked.py` → 35 pass, 100 columns; `shasum` linked derived `22a4523d6e62…`.
+
+**Verifiable by:** `natality/output/validation/external_validation_v1_comparison.md` summary; gate re-hash in upload runbook; four gate SHA prefixes unchanged vs STATUS.
+
+**Reversible:** yes — Zenodo version history preserves v1.0.1; git revert doc-only commit.
+
+---
+
 ## 2026-05-26T13:30:00Z — LY-linked-2024 — verify-only closure; cohort 2023 already in v4 envelope
 
 **Choice:** Close §15.G LY-linked-2024 as **verify-only** (no parquet rebuild). Confirm `2024PE2023CO.zip` supplies cohort year **2023** (already ingested at C8.18 DO step 6b + validated at LINK-ICD10). Re-run `compare_external_targets_v3_linked.py` to refresh committed validation MD/CSV. Defer **cohort 2024** to a future task when NCHS publishes `2025PE2024CO.zip` (CDC vital statistics online checked 2026-05-26; same deferral class as C8.2 linked portion 2026-05-12).

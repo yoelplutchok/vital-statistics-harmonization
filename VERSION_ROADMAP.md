@@ -4,14 +4,14 @@ The unified U.S. Harmonized Vital Statistics (HVS) resource versions each subpro
 
 ## Currently shipped
 
-| Subproject | Version (repo) | Coverage | Records | In unified HVS Zenodo v1.0.1 |
+| Subproject | Version (repo) | Coverage | Records | In unified HVS Zenodo |
 |---|---|---|---|---|
-| Natality | **v3.0.0** (1968–2024; v2.8.0 column rename) | 1968–2024 | 201,161,456 | yes |
-| Linked birth–infant death | **v4.0.0** (1983–2023 cohort; permanent 1992–1994 gap; parquet prefix `natality_v3_linked_*`) | 1983–2023 | 149,386,620 | yes |
-| Fetal death | **v2.4.0** (V2.1 + V3a + V3b + 2023–2024) | 1982–2024 | 2,427,233 | yes |
-| Matched multiples | **C8.16** (3 NCHS windows; RD.2 validation) | 1995–1997 + 1995–2000 + 2016–2020 | 1,665,568 | yes |
+| Natality | **v3.0.0** (1968–2024; v2.8.0 column rename) | 1968–2024 | 201,161,456 | v1.0.1 parquets; **249/249** validation in v1.0.2 docs |
+| Linked birth–infant death | **v4.0.0** (1983–2023 cohort; permanent 1992–1994 gap; parquet prefix `natality_v3_linked_*`; LINK-ICD10 derived 100 cols) | 1983–2023 | 149,386,620 | v1.0.1 parquets; **100** cols / gate `22a4523d…` in v1.0.2 docs |
+| Fetal death | **v2.4.0** (V2.1 + V3a + V3b + 2023–2024) | 1982–2024 | 2,427,233 | yes (unchanged v1.0.1) |
+| Matched multiples | **C8.16** (3 NCHS windows; MM-T2 **143/143** validation) | 1995–1997 + 1995–2000 + 2016–2020 | 1,665,568 | v1.0.1 parquets; **143/143** targets in v1.0.2 docs |
 
-**Unified deposit (version-of-record):** [10.5281/zenodo.20326150](https://doi.org/10.5281/zenodo.20326150) (v1.0.1, published 2026-05-21). Seven harmonized/derived parquets + docs/metadata zip + `SHA256SUMS.txt`. **Public GitHub:** [yoelplutchok/vital-statistics-harmonization](https://github.com/yoelplutchok/vital-statistics-harmonization) at commit `08a2287` (v1.0.1; parquets on Zenodo, not in git).
+**Unified deposit (version-of-record):** [10.5281/zenodo.20326150](https://doi.org/10.5281/zenodo.20326150). **v1.0.1** published 2026-05-21 (seven harmonized/derived parquets + docs/metadata zip + `SHA256SUMS.txt`). **v1.0.2** (docs-only; staged in-repo 2026-05-26): refresh validation comparison tables and deposit metadata to **249/249** natality, linked **100** columns (`22a4523d…`), matched multiples **143/143** — **parquets unchanged** from v1.0.1. Upload runbook: [`docs/ZENODO_v1.0.2_UPLOAD.md`](docs/ZENODO_v1.0.2_UPLOAD.md). **Public GitHub:** [yoelplutchok/vital-statistics-harmonization](https://github.com/yoelplutchok/vital-statistics-harmonization) at commit `08a2287` (v1.0.1; parquets on Zenodo, not in git).
 
 **Superseded single-product Zenodo deposits (immutable):** natality + linked [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074); fetal death v2.0.0 (1992–2022) [10.5281/zenodo.20031571](https://doi.org/10.5281/zenodo.20031571). Legacy description-only patches on those concept DOIs are deferred per user 2026-05-21.
 

@@ -1,6 +1,6 @@
 # External validation comparison (V3 linked birth-infant death)
 
-Computed from `natality_v3_linked_harmonized_derived.parquet` (resident-only: `is_foreign_resident == false`).
+Computed from `natality_v3_linked_harmonized_derived.parquet` (149,386,620 rows × **100** columns; gate SHA `22a4523d…`; resident-only: `is_foreign_resident == false`).
 
 - Targets: `/Users/yoelplutchok/Desktop/vital-statistics-harmonization/natality/metadata/external_validation_targets_v3_linked.csv`
 - Output CSV: `external_validation_v3_linked_comparison.csv`

@@ -1874,7 +1874,7 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 | **1** | **MM-T2** | Matched multiples **2016–2020 Table 2** validation targets | Optional (harmonized parquet for VERIFY) | ✅ 2026-05-26 |
 | **2** | **LINK-ICD10** | Linked cohort **ICD-9→ICD-10 derived** layer (CMS GEM; sibling of RD.4 on matched multiples) | **Yes** (re-derive linked derived) | ✅ 2026-05-26 |
 | **3** | **LY-linked-2024** | Latest-year **linked 2024 period / 2023 cohort** zip ingest + harmonize + validate | **Yes** | ✅ 2026-05-26 |
-| **4** | **D.2-docs** | Zenodo **docs-only v1.0.2** — refresh validation CSVs/comparison tables to match 249/249 (no parquet rebuild) | No | ~0.25 session |
+| **4** | **D.2-docs** | Zenodo **docs-only v1.0.2** — refresh validation CSVs/comparison tables to match 249/249 (no parquet rebuild) | No | ✅ 2026-05-26 |
 | **5** | **D.4-paper** | Finish **Paper 1**: commit paper edits; build-host `paper_companion` + execute `cross_race_fetal_mortality.ipynb`; resolve `<!-- FLAG -->` / admin markers | **Yes** (VERIFY) | 0.5–1 session |
 | — | **LY-natality-2025** | Natality 2025 zip when CDC lists it | **Yes** | trigger |
 
@@ -1906,11 +1906,11 @@ Per the manuscript *Future developments* robustness roadmap (user-authorized 202
 
 **Halt flags.** §7 if zip layout differs from expected era; schema-version bump needs plan-update.
 
-### Task D.2-docs — `zenodo-docs-only-v1.0.2-validation-sync` ⏳
+### Task D.2-docs — `zenodo-docs-only-v1.0.2-validation-sync` ✅ **COMPLETE 2026-05-26**
 
 **Goal.** Prepare docs-only Zenodo **v1.0.2** bundle so deposit validation tables match manuscript (**249/249** natality, **143/143** matched multiples, linked **100** cols / `22a4523d…`, etc.) without re-uploading parquets. Human uploads to Zenodo.
 
-**DO scope.** Refresh `natality/metadata/external_validation_targets_v1.csv` comparison outputs, `natality/docs/COMPARABILITY.md`, validation MDs as needed; update root `README.md` / `CITATION.cff` version note if human approves.
+**Shipped (2026-05-26).** Regenerated `external_validation_v1_comparison.{csv,md}` (**249/249** PASS) and `external_validation_v3_linked_comparison.{csv,md}` (**35/35**, 100 cols) on build host; synced natality user docs + root `.zenodo.json` / `CITATION.cff` / `CHANGELOG.md` / `VERSION_ROADMAP.md`; upload runbook `docs/ZENODO_v1.0.2_UPLOAD.md`. Zero parquet mutation; linked gate `22a4523d…` verified. Receipt: `RECEIPTS/D.2-docs_zenodo-docs-only-v1.0.2-validation-sync_2026-05-26T14-00-00Z.md`.
 
 ### Task D.4-paper — `paper1-submission-prep` ⏳ (parallel-friendly)
 

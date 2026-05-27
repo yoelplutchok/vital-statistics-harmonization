@@ -1,6 +1,44 @@
-# STATUS — last updated 2026-05-26T13:30:00Z
+# STATUS — last updated 2026-05-26T14:00:00Z
 
 > **Append-only.** To update: add a new dated section at the top. Do not edit earlier sections. Each session reads the most recent section as the authoritative current state and writes its own session-end section above it.
+
+---
+
+## 2026-05-26T14:00:00Z — **D.2-docs COMPLETE — Zenodo v1.0.2 docs bundle staged in-repo; human upload next.**
+
+### Current phase
+
+**§15.G OPEN.** **D.2-docs** ✅. Next default: **D.4-paper**.
+
+### What shipped
+
+1. **D.2-docs** — Regenerated `external_validation_v1_comparison` (**249/249**); `external_validation_v3_linked_comparison` (**35/35**, 100 cols); synced natality deposit docs + root `.zenodo.json` / `CITATION.cff` v1.0.2; `docs/ZENODO_v1.0.2_UPLOAD.md` runbook.
+2. **VERIFY** — Build-host linked gate `22a4523d…` confirmed; zero parquet mutation.
+
+### In-progress
+
+- **Human:** publish Zenodo **v1.0.2** (replace docs zip only; keep v1.0.1 parquets).
+- **D.4-paper** build-host VERIFY still pending.
+
+### Next planned task
+
+**D.4-paper** — `paper_companion`, `cross_race_fetal_mortality.ipynb`, FLAGS, commit draft.
+
+### Open questions for human
+
+1. Publish Zenodo v1.0.2 before starting D.4 VERIFY?
+2. Include `paper/draft_v2_hmd_styled_humanized.md` in D.4 scope?
+3. Optional: update `file_inventory.csv` for CDC renamed matched-multiples PDF path.
+
+### Forward-looking HALTs (§15.G)
+
+1. Zenodo upload: four gate SHA prefixes unchanged (`38e2cecb` / `185c071e` / `acb5c48a` / `22a4523d`) — §7-#18 on mismatch.
+2. **D.4-paper:** natality `acb5c48a…` byte-exact unless task documents drift.
+3. Cohort 2024 linked: plan-update when `2025PE2024CO.zip` appears.
+
+### Blocked
+
+(none)
 
 ---
 

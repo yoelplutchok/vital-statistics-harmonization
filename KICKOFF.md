@@ -47,7 +47,7 @@ Raise it as a §7 halt condition (BEFORE the first DO mutation) and ask the huma
 | **1** | **MM-T2** | Matched multiples 2016–2020 **Table 2** validation (PDF + targets) | ✅ |
 | **2** | **LINK-ICD10** | Linked cohort 1983–1998 ICD-9→ICD-10 **derived** (CMS GEM) | ✅ |
 | **3** | **LY-linked-2024** | Linked **2024 period / 2023 cohort** ingest (CDC lists file) | ✅ |
-| **4** | **D.2-docs** | Zenodo **docs-only v1.0.2** validation-table sync | ⏳ |
+| **4** | **D.2-docs** | Zenodo **docs-only v1.0.2** validation-table sync | ✅ |
 | **5** | **D.4-paper** | Paper 1 finish: companion notebook, FLAGS, commit draft | ⏳ |
 | — | **LY-natality-2025** | Natality 2025 when CDC posts zip | ⏳ trigger |
 | — | **RD.1b / §15.F** | Robustness roadmap | ✅ 249/249 (2026-05-25) |
@@ -383,8 +383,8 @@ CURRENT WORK QUEUE (2026-05-26 — §15.G OPEN; see NEXT_STEPS.md §15.G):
   (1) MM-T2 — matched multiples 2016-2020 Table 2 validation ✅
   (2) LINK-ICD10 — linked 1983-1998 ICD-9→ICD-10 derived layer ✅
   (3) LY-linked-2024 — linked 2024 period/2023 cohort (CDC lists; build host) ✅
-  (4) D.2-docs — Zenodo docs-only v1.0.2 validation sync **NEXT**
-  (5) D.4-paper — paper_companion + cross_race notebook + FLAGS + commit draft
+  (4) D.2-docs — Zenodo docs-only v1.0.2 validation sync ✅ (human: upload per docs/ZENODO_v1.0.2_UPLOAD.md)
+  (5) D.4-paper — paper_companion + cross_race notebook + FLAGS + commit draft **NEXT**
 
   LY-natality-2025: wait for CDC natality 2025 zip.
   OUT OF SCOPE: RDC/Census linkage; D.1; legacy Zenodo patches.

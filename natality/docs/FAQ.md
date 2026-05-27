@@ -15,7 +15,7 @@
 
 - For **birth outcome research** (LBW, preterm, demographic trends): use `output/convenience/natality_v2_residents_only.parquet` (pre-filtered to residents, 82 columns)
 - For **infant mortality research** (IMR, cause-specific mortality, neonatal vs postneonatal): use `output/convenience/natality_v3_linked_residents_only.parquet` (pre-filtered to residents; reflects the v3 2005–2023 slice — 92 columns — pending the v4 1983–2023 convenience refresh; for the full 1983–2023 envelope use the harmonized-derived file below + the `residence_status != 4` filter)
-- For analyses that need **foreign residents** or the `residence_status` column: use the full `natality_v2_harmonized_derived.parquet` (84 columns) or `natality_v3_linked_harmonized_derived.parquet` (97 columns; linked v4 1983–2023)
+- For analyses that need **foreign residents** or the `residence_status` column: use the full `natality_v2_harmonized_derived.parquet` (84 columns) or `natality_v3_linked_harmonized_derived.parquet` (100 columns; linked v4 1983–2023)
 - For **auditing or debugging**: use the yearly `output/yearly_clean/` or `output/linked/` files
 
 ## Are these data nationally representative?

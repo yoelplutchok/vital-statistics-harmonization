@@ -23,7 +23,7 @@ df_res = df[df["is_foreign_resident"] == False]
 # Or use the pre-filtered convenience file (recommended for most analyses):
 df_res = pd.read_parquet("output/convenience/natality_v2_residents_only.parquet")
 
-# v4 Linked: 149.4M births with infant death data, 1983-2023 (97 columns; permanent 1992-1994 NCHS-linkage gap)
+# v4 Linked: 149.4M births with infant death data, 1983-2023 (100 columns; permanent 1992-1994 NCHS-linkage gap)
 linked = pd.read_parquet("output/harmonized/natality_v3_linked_harmonized_derived.parquet")
 linked_res = linked[linked["is_foreign_resident"] == False]
 

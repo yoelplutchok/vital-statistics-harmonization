@@ -1,14 +1,16 @@
 cff-version: 1.2.0
 message: "If you use the U.S. Harmonized Vital Statistics resource, please cite the unified Zenodo deposit (DOI below)."
 title: "U.S. Harmonized Vital Statistics Microdata"
-version: "1.0.1"
+version: "1.0.2"
 doi: 10.5281/zenodo.20326150
 abstract: >
   A unified resource integrating harmonized U.S. natality, linked birth–infant death, fetal death, and matched-multiples
   (twins/triplets/quadruplets) public-use microdata released by the National Center for Health Statistics (NCHS) into
   stable parquet column schemas spanning multiple Standard Certificate revisions and NCHS layout reformats. Each product
   is validated against every per-year figure NCHS publishes in the relevant National Vital Statistics Reports series
-  (or against documentation Table 1 cells in the case of matched multiples).
+  (or against documentation Table 1 / Table 2a cells in the case of matched multiples). Version 1.0.2 is a docs-only
+  Zenodo release: harmonized parquets are unchanged from v1.0.1; validation comparison tables and deposit metadata reflect
+  natality 249/249, linked derived 100 columns (gate SHA 22a4523d…), and matched multiples 143/143 targets.
 authors:
   - family-names: Plutchok
     given-names: Yoel

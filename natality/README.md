@@ -148,7 +148,7 @@ End-to-end runtime on a single modern laptop: ~1 hour wall clock for parse, ~15 
 - **Reproducibility**: every output can be regenerated from `raw_data/` + committed scripts + committed `metadata/*.csv`.
 - **Transparency**: the raw-field-to-harmonized-column mapping is in `scripts/01_import/field_specs.py` with inline comments per era, and mirrored in `metadata/harmonized_schema.csv` for machine consumption.
 - **Explicit comparability documentation**: every column that's not fully comparable across 1990–2024 is flagged in the CODEBOOK and has a corresponding entry in COMPARABILITY.md's pitfall tables.
-- **Honest validation**: 183/183 and 35/35 are headline numbers, but individual transcription failures, single-year coverage gaps, and known quirks (e.g., two null-`record_weight` survivor rows in 2014/2015; the documented pre-2005 cohort numerator-file residual for 1989/1998/2002 — the same NCHS class as those 2 cells) are documented rather than papered over.
+- **Honest validation**: **249/249** (natality) and **35/35** (linked 2005–2023 NVSR surface) are headline numbers, but individual transcription failures, single-year coverage gaps, and known quirks (e.g., two null-`record_weight` survivor rows in 2014/2015; the documented pre-2005 cohort numerator-file residual for 1989/1998/2002 — the same NCHS class as those 2 cells) are documented rather than papered over.
 
 ## Citation
 
