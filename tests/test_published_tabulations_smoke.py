@@ -32,7 +32,7 @@ _REPO = Path(__file__).resolve().parents[1]
 _BUILDER = _REPO / "scripts" / "_build_published_tabulations.py"
 _OUT_DIR = _REPO / "csv" / "published_tabulations"
 
-# The 10 curated tabulations (DECISION_LOG 2026-05-23T18:00:00Z). SHAPE pin:
+# The 10 curated tabulations (2026-05-23T18:00:00Z). SHAPE pin:
 # the SET of deliverables is a structural contract, not a mutable value.
 _EXPECTED_CSVS = {
     "natality_births_by_year.csv",

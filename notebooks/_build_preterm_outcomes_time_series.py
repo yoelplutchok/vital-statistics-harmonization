@@ -261,7 +261,7 @@ def build() -> nbformat.NotebookNode:
             "births forward to deaths in the same + next calendar year). For joint years where both\n"
             "products exist (2005-2023), the **preterm rate computed from each parquet should match\n"
             "within the C8.4-documented 0.01% drift bound** (see `tests/test_invariants_join.py` +\n"
-            "DECISION_LOG 2026-05-13T03:00:00Z; max observed natality-vs-linked drift across the 19\n"
+            "2026-05-13T03:00:00Z; max observed natality-vs-linked drift across the 19\n"
             "joint years is 0.0055%, well within 0.01%)."
         ),
         code(

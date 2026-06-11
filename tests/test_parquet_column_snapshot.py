@@ -16,7 +16,7 @@ The per-column SHA test IS value-pinning by design — that is exactly
 what a regression baseline
 asserts. Re-snapshot is triggered ONLY by an authorized §11 plan-update
 (e.g., C8.13's dictionary-encoding reshape), which produces a sibling
-`v<X+1>_<UTC>_columns.csv` and a DECISION_LOG entry naming the cause.
+`v<X+1>_<UTC>_columns.csv` and a entry naming the cause.
 
 Skip-if-parquet-missing: each per-parquet sub-check skips if its parquet
 is not on disk, so a CI environment without canonical parquets gates on
@@ -39,7 +39,7 @@ from tests.snapshots._build_snapshot import (
 
 # `tracks-current-state` (Convention 2 / L17): re-pinned in the SAME commit
 # as the C8.18 DO step 6b linked v3->v4 re-harmonize canonical mutation
-# (DECISION_LOG 2026-05-23T02:00:00Z). The v4 linked-derived parquet adds 3
+# (2026-05-23T02:00:00Z). The v4 linked-derived parquet adds 3
 # columns (link_segment + underlying_cause_icd9 + cause_recode_61): 94 -> 97;
 # LINK-ICD10 (+3 ICD-10 derived cols): 97 -> 100;
 # total 340 -> 343 (C8.18); LINK-ICD10 343 -> 346. FD + natality_v2 unchanged. Sibling of the

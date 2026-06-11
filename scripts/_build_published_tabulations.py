@@ -4,7 +4,7 @@
 Generates the 10 curated top-NVSR-cited cross-tabulations as pre-computed
 CSVs so users can cite HVS without loading the multi-GB parquets.
 
-Design (DECISION_LOG 2026-05-23T18:00:00Z):
+Design (2026-05-23T18:00:00Z):
   D1  Public-use NCHS has NO sub-national geography — the §15.D "per-state"
       tabs are structurally infeasible; substituted by the feasible, higher-
       NVSR-citation race + maternal-age national stratifications + documented.
@@ -52,7 +52,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
-# ── Canonical gate-verified parquet paths (DECISION_LOG 2026-05-23T11:00:00Z
+# ── Canonical gate-verified parquet paths (2026-05-23T11:00:00Z
 #    monorepo-path-drift pin: fetal canonical = the -build/ tree, NOT the
 #    stale flat ~/Desktop/fetal-death-harmonization/). Env-overridable.
 FETAL = os.environ.get("HVS_FETAL_DERIVED", os.path.expanduser(

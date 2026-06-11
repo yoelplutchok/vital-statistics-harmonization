@@ -407,7 +407,7 @@ def _iter_two_file_1983_1988(
     surface — a documented within-era structural difference, not a
     silent deviation: COMPARABILITY / harmonized_schema notes at
     5c/6 + the manuscript Coverage paragraph = Phase-D D.4;
-    DECISION_LOG 2026-05-19T08:00:00Z).
+    2026-05-19T08:00:00Z).
 
     ``max_rows`` caps **each segment independently** (up to
     ``max_rows`` den rows + up to ``max_rows`` num rows), so a bounded
@@ -533,7 +533,7 @@ def _expected_parsed_schema(year: int) -> pa.Schema | None:
     a §7 latent defect in the RESOLVED-5b ``run_parse`` surfaced at the
     5c-iii Convention-3/SMOKE cheap-check; the human-authorized minimal
     root-cause fix (PRE_FLIGHT_LOG 2026-05-20T00:00:00Z addendum +
-    DECISION_LOG + LESSONS; anti-pattern #7 fix-the-root-cause).
+    + LESSONS; anti-pattern #7 fix-the-root-cause).
     """
     if not (1983 <= year <= 1988):
         return None

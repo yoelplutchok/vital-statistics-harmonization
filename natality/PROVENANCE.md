@@ -35,7 +35,7 @@ Raw NCHS zips: [`metadata/file_inventory.csv`](metadata/file_inventory.csv) (95 
 | File | Rows × cols | Size | SHA-256 |
 |---|---|---|---|
 | `natality_v3_linked_harmonized.parquet` | 149,386,620 × 81 | 1.5 GB | `ea89ab3c009de00cddb88aad84aa50fde376a47f96b6865113a600fb5a0907c7` |
-| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 100 | 2.0 GB | `22a4523d6e62eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` |
+| `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 100 | 2.0 GB | `22a4523d6e62e018acd1c8648275a9f98d86ee711f61c017f885df6952b73b5e` |
 
 **Gate artifact for cross-product checks:** `natality_v3_linked_harmonized_derived.parquet` (`22a4523d…`). Prior gate (pre–LINK-ICD10, 97 cols): `f630d8cf…`.
 
@@ -68,8 +68,8 @@ Residents-only and other convenience parquets (when present under `output/conven
 
 ## Reproducibility
 
-End-to-end pipeline: `scripts/01_import/` → `03_harmonize/` → `04_derive/` → `05_validate/`. See [`REPRODUCING.md`](REPRODUCING.md) and [`docs/PIPELINE_TIMING_BENCHMARK.md`](../docs/PIPELINE_TIMING_BENCHMARK.md).
+End-to-end pipeline: `scripts/01_import/` → `03_harmonize/` → `04_derive/` → `05_validate/`. See [`REPRODUCING.md`](REPRODUCING.md).
 
 ---
 
-*Refreshed 2026-05-26 at LY-linked-2024 (verify-only; linked gate `22a4523d…` post–LINK-ICD10). Natality derived gate `acb5c48a…` unchanged.*
+*Refreshed 2026-05-26 at LY-linked-2024 (verify-only) and auditfix (full linked-derived SHA corrected post–LINK-ICD10). Natality derived gate `acb5c48a…` unchanged.*

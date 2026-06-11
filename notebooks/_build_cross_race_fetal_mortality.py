@@ -32,7 +32,7 @@ Validates ≥3 NVSR-equivalent cells: 7 NVSR 73-09 Table A 2022 cells
 (byte-exact via joint_use_demo Section B precedent) + 9 per-era
 bridged-race conservation invariants (sum-of-4-cats + null = total per
 year). The B3 1-digit-recode caveats (V3b code 7 + code 9 → null per
-DECISION_LOG 2026-05-12T18:30:00Z; V3a code 09 → null per DECISION_LOG
+2026-05-12T18:30:00Z; V3a code 09 → null per 
 2026-05-12T14:30:00Z) are documented inline.
 
 Cell layout:
@@ -62,7 +62,7 @@ Per C8.10c PRE-FLIGHT 2026-05-13T16:30:00Z (PRE_FLIGHT_LOG.md): one
 13T16:15:00Z Option A. The §15 PRE-FLIGHT-input "NVSR validation cells
 per notebook (L9 cheap-check)" has no encoded source for race-
 stratified V3a/V3b 1982-1991 FD (all 3 validation CSVs have zero race
-cells; per DECISION_LOG 2026-05-12T14:30Z + 18:30Z, NVSR Series 21
+cells; per 2026-05-12T14:30Z + 18:30Z, NVSR Series 21
 race cells for that era are post-submission scope). Resolution: 7
 NVSR 73-09 Table A 2022 cells from joint_use_demo Section B (already
 byte-exact-validated at Task 2 receipt 2026-05-11) serve as the
@@ -74,9 +74,9 @@ notebook's already-validated byte-exact result.
 References:
 - joint_use_demo Section B (lines 239-310): 7-cell NVSR 73-09 Table A
   2022 race-stratified FMR validation table (the precedent).
-- DECISION_LOG 2026-05-12T14:30:00Z: V3a B3 maternal_race_bridged code
+- 2026-05-12T14:30:00Z: V3a B3 maternal_race_bridged code
   09 → null (1989-rev "All other Races"; 165 records / 0.087% V3a).
-- DECISION_LOG 2026-05-12T18:30:00Z: V3b B3 code 7 + code 9 → null
+- 2026-05-12T18:30:00Z: V3b B3 code 7 + code 9 → null
   (1978-rev; ~89 records code 7; ~18,700 code 9 / 3-5% per V3b year).
 """
 
@@ -129,7 +129,7 @@ def build() -> nbformat.NotebookNode:
             "  `maternal_race_bridged` 1982-2013; `race_hispanic_revised` collapsed to bridged\n"
             "  4-cat for 2014+. 2014 OE-methodology boundary marked.\n"
             "\n"
-            "**B3 1-digit-recode caveats (DECISION_LOG 2026-05-12T14:30:00Z + 18:30:00Z):**\n"
+            "**B3 1-digit-recode caveats (2026-05-12T14:30:00Z + 18:30:00Z):**\n"
             "\n"
             "- V3b (1982-1988, 1978-revision MRACE 0-9): code 7 ('Other nonwhite' residual) → null\n"
             "  (~89 records across 1982-1988); code 9 ('Not stated') → null (~18,700 records,\n"
@@ -326,9 +326,9 @@ def build() -> nbformat.NotebookNode:
             "Per-era null fractions report the B3 1-digit-recode caveat impact:\n"
             "\n"
             "- **V3b 1982-1988** — null = (V3b code 7 'Other nonwhite' + V3b code 9 'Not stated')\n"
-            "  per DECISION_LOG 2026-05-12T18:30:00Z; empirical per-year null fraction 2.65-3.27%\n"
+            "  per 2026-05-12T18:30:00Z; empirical per-year null fraction 2.65-3.27%\n"
             "  under the tab==2 canonical universe.\n"
-            "- **V3a 1989-1991** — null = V3a code 09 'All other Races' per DECISION_LOG\n"
+            "- **V3a 1989-1991** — null = V3a code 09 'All other Races' per \n"
             "  2026-05-12T14:30:00Z; empirical per-year null fraction 0.075-0.191%.\n"
             "- **V2 1992-2002** + **V2.1 2003-2004** + **V1 pre-2014 2005-2013** — null ≤0.1% per\n"
             "  year (existing V2 convention: code 99 'Unknown/Not stated' → null, 1993+; the\n"
@@ -628,16 +628,16 @@ def build() -> nbformat.NotebookNode:
             "(codes 01-09). Both extend the 4-category bridged-race recode for harmonization\n"
             "but require residual-code mappings:\n"
             "\n"
-            "- **V3b code 7 ('Other nonwhite' residual)** maps to null per DECISION_LOG\n"
+            "- **V3b code 7 ('Other nonwhite' residual)** maps to null per \n"
             "  2026-05-12T18:30:00Z. Affects ~89 records across 1982-1988 total. Code 7 is\n"
             "  a residual catch-all that sits alongside specific API subgroups (codes 4/5/6/8)\n"
             "  and the general API code 0; mapping to any of the 4 named bridged categories\n"
             "  would be a false categorization per the §2 fail-closed principle.\n"
-            "- **V3b code 9 ('Not stated')** maps to null per same DECISION_LOG entry. Affects\n"
+            "- **V3b code 9 ('Not stated')** maps to null per same entry. Affects\n"
             "  ~18,700 records across 1982-1988 total (3-5% per year, slightly higher under\n"
             "  the canonical-filter narrowing in Section 2). 1978-revision public-use files\n"
             "  have a less-imputed race field than 1989+ resulting in this higher null fraction.\n"
-            "- **V3a code 09 ('All other Races' residual)** maps to null per DECISION_LOG\n"
+            "- **V3a code 09 ('All other Races' residual)** maps to null per \n"
             "  2026-05-12T14:30:00Z. Affects 165 records across 1989-1991 total (0.087% V3a).\n"
             "  Sibling of the existing V2 (1992+) 99 ('Unknown/Not stated') → null convention.\n"
             "\n"
@@ -672,7 +672,7 @@ def build() -> nbformat.NotebookNode:
             "**Why HVS for this analysis.** Pre-1992 NCHS NVSR race-stratified fetal-mortality\n"
             "publications are sparse (NVSR Volume 41/42/43 + NCHS Series 21 reports for\n"
             "1982-1991 ship limited cross-tabulations; cell-level L9 cheap-checking those PDFs\n"
-            "is explicit post-submission scope per DECISION_LOG). HVS makes the underlying\n"
+            "is explicit post-submission scope per ). HVS makes the underlying\n"
             "race-stratified microdata directly accessible at the public-use granularity, with\n"
             "the harmonization caveats made explicit. The 43-year cross-era panel produced by\n"
             "this notebook is, to our knowledge, not available as a single pre-computed\n"

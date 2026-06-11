@@ -32,7 +32,7 @@ output/validation/v2/
 # ...except the publication figures (which we ship as both PDF and PNG)
 !figures/*.pdf
 
-# Claude Code metadata
+# Local IDE/tool metadata
 .claude/
 
 # Python

@@ -1,8 +1,8 @@
 """DESIGN: structural-invariant-no-pins — cross-product join parity.
 
 Authored 2026-05-13 per C8.4 DO. Defends §8 F2 (cross-product join without
-canonical filter on both sides), §8 H7 (sibling-pipeline drift), §8 L4 (LLM
-forgets to propagate fix to sibling).
+canonical filter on both sides), §8 H7 (sibling-pipeline drift), §8 L4
+(sibling-pipeline fix not propagated).
 
 Convention 1 (SHAPE-not-VALUE): no count values are pinned. Each invariant
 is structural — column presence, dtype-compatibility, set-inclusion, and
@@ -30,7 +30,7 @@ Invariants tested:
    use natality microdata (per `docs/JOINT_USE_GUIDE.md` "<0.006% post-release
    re-tabulation"). The bounded-drift invariant captures the documented
    relationship; a future linked-pipeline regression that introduces a >0.01%
-   drift would surface here. See DECISION_LOG 2026-05-13 for the C8.4
+   drift would surface here. See 2026-05-13 for the C8.4
    linked-vs-natality finding consolidating this into the cross-product
    COMPARABILITY plan.
 
@@ -183,9 +183,9 @@ def test_linked_per_year_count_within_drift_tolerance_of_natality(
     years showed linked > natality by 1-228 records (max 0.0055%). NCHS
     constructs the period-/cohort-linked files from NVSR-style tabulations
     that include small post-release adjustments to the natality microdata
-    base; see DECISION_LOG 2026-05-13 for the consolidating finding.
+    base; see 2026-05-13 for the consolidating finding.
 
-    C8.18 v4 scope-correction (DECISION_LOG 2026-05-23T02:00:00Z; same
+    C8.18 v4 scope-correction (2026-05-23T02:00:00Z; same
     structural facts as the §7 cohort_num disposition + 6a-RECWT — NOT
     new judgments, the test's own "every linked BIRTH IS a natality
     birth" intent applied to the v4 envelope):

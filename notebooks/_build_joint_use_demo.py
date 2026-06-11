@@ -31,7 +31,7 @@ Per C8.3 (2026-05-12) the notebook ships four sections:
              combined perinatal-mortality cell).
 
 Per Task 2 + C8.3 PRE-FLIGHT (Convention 3 Field-value snapshot resolved
-the §15 NVSR-source ambiguities at PRE-FLIGHT time; see DECISION_LOG
+the §15 NVSR-source ambiguities at PRE-FLIGHT time; see 
 2026-05-12T23:50:00Z).
 """
 

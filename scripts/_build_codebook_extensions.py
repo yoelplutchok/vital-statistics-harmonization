@@ -12,7 +12,7 @@ For each documented harmonized variable it renders the three §15.D subsections:
   (iii) era-by-era coding-scheme diff.
 The hand-authored CODEBOOK body is never touched: the appendix is spliced
 between `<!-- C8.20-GENERATED:BEGIN … -->` / `<!-- C8.20-GENERATED:END -->`
-markers (DECISION_LOG 2026-05-23T11:00:00Z).
+markers (2026-05-23T11:00:00Z).
 
 Memory-safe: era-major streaming scan with predicate pushdown + per-batch
 `pc.value_counts` (never materialises a multi-GB parquet — soft-flag (kk)).
@@ -36,7 +36,7 @@ import pyarrow.dataset as ds
 
 REPO = Path(__file__).resolve().parents[1]
 
-# ── Canonical gate-verified parquet paths (DECISION_LOG 2026-05-23T11:00:00Z:
+# ── Canonical gate-verified parquet paths (2026-05-23T11:00:00Z:
 #    fetal-death canonical = the -build/output/harmonized/ tree, NOT the stale
 #    flat ~/Desktop/fetal-death-harmonization/ build). Env-overridable; read-only.
 FETAL = os.environ.get("HVS_FETAL_DERIVED", os.path.expanduser(

@@ -9,7 +9,7 @@ field-name family + recode set as natality V2 1990-2002 == the 5c-i
 (``father_education_cat4`` conservatively null); ``RECWT`` present
 (``record_weight`` float64; the 1989-1991 era had none); the within_era
 ICD-9 (cohort birth-year 1995-1998) vs ICD-10 (1999-2002) split keyed
-on cohort birth year (§15.D DO step 1; DECISION_LOG 2026-05-17T05:30Z +
+on cohort birth year (§15.D DO step 1; 2026-05-17T05:30Z +
 2026-05-19T11:00Z); NO ``MANNER`` (``manner_of_death`` null).
 
 §15.D DO step 5c-ii was decomposed → **5c-ii-a / 5c-ii-b** at the

@@ -1,6 +1,6 @@
 # Perinatal-record pre-join: feasibility and methodology
 
-**Status:** C8.19 deliverable, re-scoped 2026-05-23 (`NEXT_STEPS.md` §15.D `[plan-update]` block; `DECISION_LOG.md` 2026-05-23T08:00:00Z). The original C8.19 plan proposed a fifth, record-level "perinatal record" parquet. The §15.D-designed Tier-0 cheap-check proved that artifact is not constructible from public-use data. This note documents the finding, points to the two perinatal analyses that *are* supported, and records what a true perinatal record-linkage would require.
+**Status:** C8.19 deliverable, re-scoped 2026-05-23 (`NEXT_STEPS.md` §15.D `[plan-update]` block; 2026-05-23T08:00:00Z). The original C8.19 plan proposed a fifth, record-level "perinatal record" parquet. The §15.D-designed Tier-0 cheap-check proved that artifact is not constructible from public-use data. This note documents the finding, points to the two perinatal analyses that *are* supported, and records what a true perinatal record-linkage would require.
 
 All numbers below are produced by [`scripts/perinatal_feasibility_analysis.py`](../scripts/perinatal_feasibility_analysis.py) and reproduce byte-identically on re-run. No data, schema, or validation artifact is modified by this task.
 
@@ -81,8 +81,5 @@ Either path is a dedicated restricted-data study, not an extension of this publi
 
 ## Provenance and cross-references
 
-- Tier-0 cheap-check trace + §10 self-check: [`PRE_FLIGHT_LOG.md`](../PRE_FLIGHT_LOG.md) 2026-05-23T08:00:00Z (HALT) + 08:30:00Z (re-scoped deliverable).
-- Decision + §11 plan-update rationale: [`DECISION_LOG.md`](../DECISION_LOG.md) 2026-05-23T08:00:00Z.
-- Task spec + re-scope: [`NEXT_STEPS.md`](../NEXT_STEPS.md) §15.D Task C8.19 (`[plan-update]` block).
-- Receipt: `RECEIPTS/C8.19_2026-05-23T09-00-00Z.md`.
+- Decision + rationale: 2026-05-23T08:00:00Z.
 - Reproducible analysis: [`scripts/perinatal_feasibility_analysis.py`](../scripts/perinatal_feasibility_analysis.py).

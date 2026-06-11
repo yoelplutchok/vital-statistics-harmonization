@@ -14,29 +14,29 @@ Three independent verifications confirm 1982-1988 are byte-position-uniform unde
 
 3. **Per-year record-count parity with user-guide page-7 "Record count" block** (Tier-2 SMOKE pass): parser-produced row counts equal NCHS user-guide page-7 control byte-exact for all seven years:
 
-   | Year | Parsed records | User-guide page 7 "Record count" | Match |
-   |---|---:|---:|---|
-   | 1982 | 62,352 | 62,352 | ✓ |
-   | 1983 | 60,584 | 60,584 | ✓ |
-   | 1984 | 59,863 | 59,863 | ✓ |
-   | 1985 | 59,690 | 59,690 | ✓ |
-   | 1986 | 59,343 | 59,343 | ✓ |
-   | 1987 | 59,358 | 59,358 | ✓ |
-   | 1988 | 59,935 | 59,935 | ✓ |
-   | **Total V3b** | **421,125** | **421,125** | **✓** |
+ | Year | Parsed records | User-guide page 7 "Record count" | Match |
+ |---|---:|---:|---|
+ | 1982 | 62,352 | 62,352 | ✓ |
+ | 1983 | 60,584 | 60,584 | ✓ |
+ | 1984 | 59,863 | 59,863 | ✓ |
+ | 1985 | 59,690 | 59,690 | ✓ |
+ | 1986 | 59,343 | 59,343 | ✓ |
+ | 1987 | 59,358 | 59,358 | ✓ |
+ | 1988 | 59,935 | 59,935 | ✓ |
+ | **Total V3b** | **421,125** | **421,125** | **✓** |
 
 4. **Canonical-filter aggregate parity** (Tier-3 SMOKE pass): `TABFLAG=='2' AND RESTATUS!='4'` count from the parsed yearly_clean parquet equals the user-guide page-7 "20 WEEKS OR MORE: By residence" figure byte-exact for all seven years. The 1985 user guide's OCR-ambiguous `29,66I` was resolved empirically to `29,661`:
 
-   | Year | Computed (filter) | User-guide control | Match |
-   |---|---:|---:|---|
-   | 1982 | 32,694 | 32,694 | ✓ |
-   | 1983 | 30,752 | 30,752 | ✓ |
-   | 1984 | 30,099 | 30,099 | ✓ |
-   | 1985 | 29,661 | 29,661 | ✓ (OCR `29,66I` → digit-1 confirmed) |
-   | 1986 | 28,972 | 28,972 | ✓ |
-   | 1987 | 29,349 | 29,349 | ✓ |
-   | 1988 | 29,442 | 29,442 | ✓ |
-   | **Total V3b (resident, 20+wk)** | **210,969** | **210,969** | **✓** |
+ | Year | Computed (filter) | User-guide control | Match |
+ |---|---:|---:|---|
+ | 1982 | 32,694 | 32,694 | ✓ |
+ | 1983 | 30,752 | 30,752 | ✓ |
+ | 1984 | 30,099 | 30,099 | ✓ |
+ | 1985 | 29,661 | 29,661 | ✓ (OCR `29,66I` → digit-1 confirmed) |
+ | 1986 | 28,972 | 28,972 | ✓ |
+ | 1987 | 29,349 | 29,349 | ✓ |
+ | 1988 | 29,442 | 29,442 | ✓ |
+ | **Total V3b (resident, 20+wk)** | **210,969** | **210,969** | **✓** |
 
 Two independent NVSR-equivalent statistics (record count + by-residence-20wk count) match byte-exact for all seven years. This is strong evidence that the 200-byte record length, TABFLAG byte 10, RESTATUS byte 12, and the underlying byte-position assignments are all correct. Layout reconstruction is empirically valid.
 
@@ -73,7 +73,7 @@ The 1978-revision MRACE field (byte 86, **1-digit code 0-9**) uses a different c
 | 2 | 2 (Black) | Direct |
 | 3 | 3 (AIAN) | Direct |
 | 0, 4, 5, 6, 8 | 4 (API) | All API subgroups collapse into bridged-API (parallels V2 codes 18-78 → 4 mapping) |
-| **7** | **null** | "Other nonwhite" is a 1978-rev residual catch-all that doesn't fit any 4-cat bridged bucket. **Parallels V3a's 09 → null choice** (DECISION_LOG 2026-05-12T14:30Z). Mapping to any specific category would be false categorization. |
+| **7** | **null** | "Other nonwhite" is a 1978-rev residual catch-all that doesn't fit any 4-cat bridged bucket. **Parallels V3a's 09 → null choice** (2026-05-12T14:30Z). Mapping to any specific category would be false categorization. |
 | **9** | **null** | Not stated → null (same convention as V2 99 → null) |
 
 **Cross-product effect of the null-mappings**: ~89 records across 1982-1988 are code 7 (per V3b yearly_clean Tier-2 value-distribution check); ~18,700 records are code 9 (~3.0-5.4% per year). All 18,789 records receive null `maternal_race_bridged` but are otherwise preserved in the parquet for unbridged analyses (year totals, GA distributions, plurality stratifications are unaffected; only race-stratified subgroups exclude them). This is consistent with how V2/V3a Unknown-race records are handled.

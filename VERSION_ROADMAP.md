@@ -11,7 +11,7 @@ The unified U.S. Harmonized Vital Statistics (HVS) resource versions each subpro
 | Fetal death | **v2.4.0** (V2.1 + V3a + V3b + 2023–2024) | 1982–2024 | 2,427,233 | yes (unchanged v1.0.1) |
 | Matched multiples | **C8.16** (3 NCHS windows; MM-T2 **143/143** validation) | 1995–1997 + 1995–2000 + 2016–2020 | 1,665,568 | v1.0.1 parquets; **143/143** targets in v1.0.2 docs |
 
-**Unified deposit (version-of-record):** [10.5281/zenodo.20326150](https://doi.org/10.5281/zenodo.20326150). **v1.0.1** published 2026-05-21 (seven harmonized/derived parquets + docs/metadata zip + `SHA256SUMS.txt`). **v1.0.2** (docs-only; staged in-repo 2026-05-26): refresh validation comparison tables and deposit metadata to **249/249** natality, linked **100** columns (`22a4523d…`), matched multiples **143/143** — **parquets unchanged** from v1.0.1. Upload runbook: [`docs/ZENODO_v1.0.2_UPLOAD.md`](docs/ZENODO_v1.0.2_UPLOAD.md). **Public GitHub:** [yoelplutchok/vital-statistics-harmonization](https://github.com/yoelplutchok/vital-statistics-harmonization) at commit `08a2287` (v1.0.1; parquets on Zenodo, not in git).
+**Unified deposit (version-of-record):** [10.5281/zenodo.20326150](https://doi.org/10.5281/zenodo.20326150). **v1.0.1** published 2026-05-21 (seven harmonized/derived parquets + docs/metadata zip + `SHA256SUMS.txt`). **v1.0.2** (docs-only; staged in-repo 2026-05-26): refresh validation comparison tables and deposit metadata to **249/249** natality, linked **100** columns (`22a4523d…`), matched multiples **143/143** — **parquets unchanged** from v1.0.1. **Public GitHub:** [yoelplutchok/vital-statistics-harmonization](https://github.com/yoelplutchok/vital-statistics-harmonization) at commit `08a2287` (v1.0.1; parquets on Zenodo, not in git).
 
 **Superseded single-product Zenodo deposits (immutable):** natality + linked [10.5281/zenodo.19363074](https://doi.org/10.5281/zenodo.19363074); fetal death v2.0.0 (1992–2022) [10.5281/zenodo.20031571](https://doi.org/10.5281/zenodo.20031571). Legacy description-only patches on those concept DOIs are deferred per user 2026-05-21.
 
@@ -19,7 +19,7 @@ The unified U.S. Harmonized Vital Statistics (HVS) resource versions each subpro
 
 - **Fetal death V2.1** (2003–2004) + **V3a** (1989–1991) + **V3b** (1982–1988) + **v2.4.0** latest-year refresh (2023–2024) → **1982–2024**, 2,427,233 records. See [`fetal_death/ABOUT_THIS_RELEASE.md`](fetal_death/ABOUT_THIS_RELEASE.md).
 - **Joint-use convenience layer** (2026-05-11; CSV years extended 2026-05-20 D-prep.8): [`fetal_death/stratified_denominators.csv`](fetal_death/stratified_denominators.csv) (4,990 strata × **31 years: 1992–2002 + 2005–2024**), [`fetal_death/live_births_by_year.csv`](fetal_death/live_births_by_year.csv) (28 years: 1995–2002 + 2005–2024), [`docs/JOINT_USE_GUIDE.md`](docs/JOINT_USE_GUIDE.md), [`shared/helpers/canonical_join_keys.py`](shared/helpers/canonical_join_keys.py).
-- **Cross-product demos**: [`notebooks/joint_use_demo.ipynb`](notebooks/joint_use_demo.ipynb), [`notebooks/paper_companion.ipynb`](notebooks/paper_companion.ipynb), Tier-2 worked examples under [`notebooks/`](notebooks/).
+- **Cross-product demos**: [`notebooks/joint_use_demo.ipynb`](notebooks/joint_use_demo.ipynb) plus the Tier-2 worked examples under [`notebooks/`](notebooks/).
 - **Matched multiples** (C8.16): fourth HVS product — [`matched_multiples/`](matched_multiples/).
 
 ## Planned
@@ -32,7 +32,7 @@ As NCHS publishes the natality, linked, and fetal-death source files for 2025+, 
 
 ### Manuscript
 
-A Data Resource Profile manuscript covering all four products as a unified HVS resource, modeled on the Human Mortality Database paper (IJE 2015), is in active drafting. Drafts in [`paper/`](paper/). Zenodo DOI and GitHub URL in the draft cite v1.0.1 / `08a2287`.
+A Data Resource Profile manuscript covering all four products as a unified HVS resource, modeled on the Human Mortality Database paper (IJE 2015), is in active drafting. The Zenodo DOI and GitHub URL cite v1.0.1 / `08a2287`.
 
 **Status:** draft submission readiness (author markers, companion-notebook regen on build host, optional IJE Key Features template conversion).
 

@@ -51,7 +51,7 @@ position_start,position_end,length,field_name,description,applies_to,values_summ
 110,111,2,BIRWT12,Birth weight recode 12,all,"01=499g or less; 02=500-999g; 03=1000-1499g; 04=1500-1999g; 05=2000-2499g; 06=2500-2999g; 07=3000-3499g; 08=3500-3999g; 09=4000-4499g; 10=4500-4999g; 11=5000-8165g; 12=Not stated",
 112,113,2,FMAPS,5-minute APGAR score,all,"00-10=score; 99=Unknown",Not reported by all areas; see reporting flags
 114,114,1,FMAPSR,5-minute APGAR score recode,all,"1=0-3; 2=4-6; 3=7-8; 4=9-10; 5=Not stated",
-115,116,2,CLINGEST,Clinical estimate of gestation,all,"17-47=weeks; 99=Unknown","Empirically verified 2-byte at C8.16 DO sub-step 2 (resolves DECISION_LOG 2026-05-14T03:30:00Z residual risk a). 1995-1997 PDF lists 'position 115 [CLINGEST]' then 'position 116 [DELMETH]'; the 'position 116 DELMETH' entry is the descriptive umbrella header for the composite at 117-123 and does not occupy a separate byte."
+115,116,2,CLINGEST,Clinical estimate of gestation,all,"17-47=weeks; 99=Unknown","Empirically verified 2-byte at C8.16 DO sub-step 2 (resolves 2026-05-14T03:30:00Z residual risk a). 1995-1997 PDF lists 'position 115 [CLINGEST]' then 'position 116 [DELMETH]'; the 'position 116 DELMETH' entry is the descriptive umbrella header for the composite at 117-123 and does not occupy a separate byte."
 117,117,1,VAGINAL,Vaginal,all,"1=Used; 2=Not used; 8=Not on certificate; 9=Unknown",
 118,118,1,VBAC,Vaginal birth after previous C-section,all,"1=Used; 2=Not used; 8=Not on certificate; 9=Unknown",
 119,119,1,PRIMAC,Primary C-section,all,"1=Used; 2=Not used; 8=Not on certificate; 9=Unknown",

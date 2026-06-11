@@ -17,7 +17,7 @@ multiples section (3 rows; 1995-1997 + 1995-2000 + 2016-2020) was added at
 C8.16 (2026-05-14). The 22 pre-1990 natality rows (1968-1989) were added at
 C8.17 DO step 1 (2026-05-14). The 19 pre-2005 cohort-linked rows (cohort
 years 1983-1991 + 1995-2004; linked 19 -> 38) were added at C8.18 DO step 2
-(2026-05-17) under the cohort-only backward extension (DECISION_LOG
+(2026-05-17) under the cohort-only backward extension (
 2026-05-17T05:30:00Z; scope-corrected [plan-update] df0675f). This anchor
 re-pin is the expected behavior of a `tracks-current-state` harness under
 an authorized canonical-inventory extension (Convention 2 / §8 L17),

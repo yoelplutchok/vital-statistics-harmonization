@@ -18,7 +18,7 @@ Hispanic 1992-2002; Maryland Hispanic 1992-1998; Massachusetts Hispanic
 soft-flag (f) (plurality footgun; carried since C8.9 close).
 
 Per C8.15 PRE-FLIGHT 2026-05-14T00:30:00Z (PRE_FLIGHT_LOG.md +
-DECISION_LOG.md), substrate routing = `output/yearly_clean/` raw parquets
+), substrate routing = `output/yearly_clean/` raw parquets
 (user-resolved via AskUserQuestion 2026-05-14T00:30:00Z; supersedes STATUS
 line 90's framing). This is the only notebook that reads the per-year raw
 parquets directly; C.6.a-d all consume the harmonized derived parquets.
@@ -108,7 +108,7 @@ def build() -> nbformat.NotebookNode:
             "**V1 era state suppression.** OSTATE + MRSTATEPSTL are 100% blank in 2005-2024\n"
             "public-use fetal-death files (verified at C8.15 PRE-FLIGHT across years 2005,\n"
             "2010, 2013, 2014, 2022). This mirrors the C8.9 natality-side state suppression\n"
-            "(DECISION_LOG 2026-05-13T10:00:00Z dropped C.1 stratified-denominators for the\n"
+            "(2026-05-13T10:00:00Z dropped C.1 stratified-denominators for the\n"
             "same reason). Section 4's plurality '5' miscoding is documented aggregate-only;\n"
             "the COMPARABILITY note's identification as a state-level miscoding pattern\n"
             "(\"some states coded unknown plurality as '5' rather than blank\") is inferential\n"
@@ -396,7 +396,7 @@ def build() -> nbformat.NotebookNode:
             "\n"
             "Verifies that the 2005-2024 V1 era public-use fetal-death files have OSTATE +\n"
             "MRSTATEPSTL operationally suppressed (100% blank). This mirrors the natality-\n"
-            "side state suppression that drove the C8.9 C.1 drop (DECISION_LOG\n"
+            "side state suppression that drove the C8.9 C.1 drop (\n"
             "2026-05-13T10:00:00Z): NCHS removes state identifiers from public-use vital\n"
             "statistics at the V1-era boundary; per-state analyses for 2005+ require RDC\n"
             "access or alternative data sources (e.g., state-level NVSR tables).\n"

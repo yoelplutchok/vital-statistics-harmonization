@@ -15,10 +15,10 @@ Total: ~1.67 M raw records across the three windows.
 Matched-multiples records span natality + fetal-death + linked-birth-infant-death; they don't fit naturally under any single existing HVS product. NCHS publishes them as standalone files. We ship them as a 4th `matched_multiples/` subproject parallel to `natality/` and `fetal_death/`:
 
 - **Clean schema separation** — no force-fit of cross-product linkage into within-product schemas.
-- **H10 reproducibility-gate preserved** — the three other HVS gate parquets (`38e2cecb…` fetal harmonized / `185c071e…` fetal derived / `acb5c48a…` natality derived / `f630d8cf…` linked derived) are unchanged when this product is built; see [`PROVENANCE.md`](PROVENANCE.md).
+- **H10 reproducibility-gate preserved** — the three other HVS gate parquets (`38e2cecb…` fetal harmonized / `185c071e…` fetal derived / `acb5c48a…` natality derived / `22a4523d…` linked derived) are unchanged when this product is built; see [`PROVENANCE.md`](PROVENANCE.md).
 - **Easy for non-multiple-gestation users to ignore.**
 
-Architecture decision recorded in `DECISION_LOG.md` entry 2026-05-14T02:30:00Z (C8.16 PRE-FLIGHT, Option A standalone subproject) + the C8.16 DO sub-step 1 entry adding `applies_to` column to the layout CSVs.
+Architecture decision (2026-05-14T02:30:00Z; C8.16 PRE-FLIGHT, Option A standalone subproject) adding the `applies_to` column to the layout CSVs.
 
 ## Relationship between the 1995-1997 and 1995-2000 windows
 
@@ -27,19 +27,19 @@ Both files ship as distinct generations, **not as supersession**. The 1995-2000 
 ## Pipeline (shipped at C8.16)
 
 ```
-raw_data/matched_multiples/                  raw NCHS zips (3 total; SHA in docs/NCHS_SOURCE_MANIFEST.md §4)
-       │
-       ▼
-scripts/01_import/parse_matched_multiples.py   parse 3 layouts -> 3 yearly_clean parquets
-       │
-       ▼
+raw_data/matched_multiples/ raw NCHS zips (3 total; SHA in docs/NCHS_SOURCE_MANIFEST.md §4)
+ │
+ ▼
+scripts/01_import/parse_matched_multiples.py parse 3 layouts -> 3 yearly_clean parquets
+ │
+ ▼
 scripts/03_harmonize/harmonize_matched_multiples.py -> matched_multiples_harmonized.parquet (1,665,568 x 24)
-       │
-       ▼
-scripts/04_derive/derive_matched_multiples.py  -> matched_multiples_derived.parquet (optional; +3 ICD-10 cols)
-       │
-       ▼
-scripts/05_validate/                           Table 1 + Table 2a validation (109 targets)
+ │
+ ▼
+scripts/04_derive/derive_matched_multiples.py -> matched_multiples_derived.parquet (optional; +3 ICD-10 cols)
+ │
+ ▼
+scripts/05_validate/ Table 1 + Table 2a validation (109 targets)
 ```
 
 See [`PROVENANCE.md`](PROVENANCE.md) for gate SHA and [`REPRODUCING.md`](REPRODUCING.md) for rerun steps.
@@ -52,8 +52,8 @@ For analyses of US-resident multiple-delivery deaths or births:
 # 1995-X windows ship residence_status (RESTATUS@26); 2016-2020 suppresses it
 # Within-set analyses (e.g., gender combinations) should also filter by set_complete
 df_us_resident = df[
-    df['residence_status'].fillna(1).ne(4)  # exclude foreign residents where available
-    & df['set_complete'].isin([1, 2])       # complete or incomplete (exclude unmatched)
+ df['residence_status'].fillna(1).ne(4) # exclude foreign residents where available
+ & df['set_complete'].isin([1, 2]) # complete or incomplete (exclude unmatched)
 ]
 ```
 
@@ -78,7 +78,7 @@ Each PDF includes one or more published tables that the harmonized parquet shoul
 
 ## Status (C8.16-complete; in-repo)
 
-C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 (2026-05-24) extended validation to all three windows: 41 Table 1-equivalent targets + 102 Table 2a twin-set targets (34 per window; MM-T2 added 2016-2020). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets in `validation_results.csv`.
+C8.16 shipped in 3 sub-steps: scaffold + 3 record_layout CSVs (sub-step 1), parser + 3 yearly_clean parquets (sub-step 2), harmonize + validate + worked-example notebook + monorepo docs (sub-step 3). RD.2 + MM-T2 (2026-05-24–26) extended validation to all three windows: **143/143** targets in `validation_results.csv` (33 Table 1-class + 102 Table 2a + 8 row-count/structural). The harmonized parquet (1,665,568 rows × 24 cols) passes all committed targets.
 
 Pipeline artifacts:
 

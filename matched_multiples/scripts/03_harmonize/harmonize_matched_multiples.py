@@ -48,7 +48,7 @@ _WINDOWS = ("1995-1997", "1995-2000", "2016-2020")
 
 # Final harmonized column order. Aligns with harmonized_schema.csv (24 cols;
 # data_year and maternal_age_recode9 dropped at sub-step 3 as not derivable /
-# not cross-window present per DECISION_LOG sub-step 1 residual risk b).
+# not cross-window present per sub-step 1 residual risk b).
 _OUT_COLS: tuple[str, ...] = (
     "data_window",
     "record_type",

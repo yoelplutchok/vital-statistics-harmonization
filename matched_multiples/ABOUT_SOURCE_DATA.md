@@ -12,7 +12,7 @@ with companion user-guide PDFs at:
 https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/Dataset_Documentation/DVS/matched-multiples/
 ```
 
-All three were probed and validated at C8.16 PRE-FLIGHT (2026-05-14T02:30:00Z; STATUS.md + DECISION_LOG.md entries) per L1-extension (sibling-derivation discipline) and L12-extension (PDF text-layer check before assuming OCR is needed; PASS on all 87 PDF pages).
+All three were probed and validated at C8.16 PRE-FLIGHT (2026-05-14T02:30:00Z; STATUS.md + entries) per L1-extension (sibling-derivation discipline) and L12-extension (PDF text-layer check before assuming OCR is needed; PASS on all 87 PDF pages).
 
 ## File-by-file detail
 

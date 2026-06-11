@@ -42,8 +42,8 @@ inputs are fixed; reclens/field names are fixed NCHS facts; the OUT
 column COUNT is asserted as ``old + 2`` structurally, not a frozen int).
 
 Construction model (the DO step 5c-i Convention-3 snapshot,
-PRE_FLIGHT_LOG 2026-05-19T11:00:00Z + DECISION_LOG 2026-05-19T11:00:00Z;
-§15.D DO step 1 DECISION_LOG 2026-05-17T05:30:00Z): the linked cohort
+PRE_FLIGHT_LOG 2026-05-19T11:00:00Z + 2026-05-19T11:00:00Z;
+§15.D DO step 1 2026-05-17T05:30:00Z): the linked cohort
 denominator(-plus) birth section IS a birth certificate of the SAME
 revision natality already harmonizes, so the cohort birth-side map
 aliases the cohort raw names onto the natality V1-core era recodes
@@ -354,7 +354,7 @@ def test_tier1_real_1990_parse_then_harmonize():
     # imprecise (it would sweep in 1995-2002/2003/2004 survivors). This
     # `m == "1"` is era-correct AND era-independent (STRICTER, not
     # looser) — the §9-#4 fix-the-test-correctly tighten recommended by
-    # RECEIPTS/C8.18_step5c-ii-a HALT 9 / self-check #6 / DECISION_LOG
+    # RECEIPTS/C8.18_step5c-ii-a HALT 9 / self-check #6 / 
     # 2026-05-19T17:00:00Z residual-risk #6, bundled into the 5c-ii-b
     # commit (the 5c-i harness is edited anyway for the stale-pin trim;
     # PRE_FLIGHT_LOG 2026-05-19T20:00:00Z scope decision (E)). On real

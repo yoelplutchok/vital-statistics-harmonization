@@ -18,7 +18,7 @@ A single stacked Parquet file covering all 57 years of U.S. natality data, with 
 
 ### V3/v4 Linked birth-infant death (1983-2023): 149.4 million births
 
-Birth records for **1983-2023** (linked **v4.0.0**; permanent **1992-1994** NCHS-linkage gap — NCHS suspended ALL birth-infant-death linkage for those three cohorts, no cohort and no period file published), linked to infant death certificates. Adds cause of death, age at death, neonatal/postneonatal classification, and record weights — everything needed for infant mortality research. The linked file mirrors the V2 birth-side schema, plus the death-side harmonized + derived columns; the v4 backward extension added 3 within-era cohort columns (`underlying_cause_icd9` + `cause_recode_61` — ICD-9 cause-of-death for the 1983-1998 cohort years; `link_segment` — the keyless 1983-1988 den/num tag). The canonical parquet filename keeps the `natality_v3_linked_*` schema-family tag (the v3→v4 logical bump is documented in `metadata/harmonized_schema.csv` + DECISION_LOG 2026-05-23T02:00:00Z, per the Anti-Pattern #6 schema-edit-paired-with-version-bump convention).
+Birth records for **1983-2023** (linked **v4.0.0**; permanent **1992-1994** NCHS-linkage gap — NCHS suspended ALL birth-infant-death linkage for those three cohorts, no cohort and no period file published), linked to infant death certificates. Adds cause of death, age at death, neonatal/postneonatal classification, and record weights — everything needed for infant mortality research. The linked file mirrors the V2 birth-side schema, plus the death-side harmonized + derived columns; the v4 backward extension added 3 within-era cohort columns (`underlying_cause_icd9` + `cause_recode_61` — ICD-9 cause-of-death for the 1983-1998 cohort years; `link_segment` — the keyless 1983-1988 den/num tag). The canonical parquet filename keeps the `natality_v3_linked_*` schema-family tag (the v3→v4 logical bump is documented in `metadata/harmonized_schema.csv` 2026-05-23T02:00:00Z, per the Anti-Pattern #6 schema-edit-paired-with-version-bump convention).
 
 Three pre-2005 cohort specifics carry into every downstream analysis (see `docs/COMPARABILITY.md` for the full treatment):
 
@@ -44,8 +44,8 @@ Three pre-2005 cohort specifics carry into every downstream analysis (see `docs/
 - **Marital reporting flag**: `marital_reporting_flag` (2014+) distinguishes California non-reporting-state nulls from genuine unknowns starting 2017.
 - **Source-field layout corrections**: every era-boundary "does the field live here or there?" decision is encoded in `scripts/01_import/field_specs.py` with inline comments, and verified against the NCHS User Guide PDFs. Notably, 2004 `ATTEND` uses position 408 (matching 2003) rather than 410, and 2013 `FAGECOMB`/`RF_CESAR` use positions 182/324 that differ from the 2014+ positions.
 - **New "categorical fallback" columns** where NCHS removed raw fields but kept recodes:
-  - `father_age_cat_from_rec11` (2005–2013) — recovers 5-year-bucket father age from FAGEREC11 when raw single-year age is blank.
-  - `maternal_race_detail_15cat` (2014+) — 15-category mother's race recode for revised-cert rows (MRACE15).
+ - `father_age_cat_from_rec11` (2005–2013) — recovers 5-year-bucket father age from FAGEREC11 when raw single-year age is blank.
+ - `maternal_race_detail_15cat` (2014+) — 15-category mother's race recode for revised-cert rows (MRACE15).
 - **Missingness diagnostics**: per-variable per-year null rates with structural break detection (`output/validation/harmonized_missingness_by_year.csv` + `harmonized_missingness_breaks.csv`).
 - **Validation artifacts** against official NCHS tabulations (`docs/VALIDATION.md`) plus null-rate discontinuity detection in the invariant checker.
 - Automatic handling of **era-specific field positions, names, and coding** across the full set of natality record layouts spanning the 1968 / 1989 / 2003 certificate eras + 3 linked formats.
@@ -96,18 +96,18 @@ From repo root (after downloading raw inputs per the README "Quick reproduce" se
 
 ```bash
 # V2 Natality (1968-2024)
-python scripts/01_import/parse_all_pre1990_years.py --years 1968-1989   # pre-1990 (C8.17 DO 5a)
+python scripts/01_import/parse_all_pre1990_years.py --years 1968-1989 # pre-1990 (C8.17 DO 5a)
 python scripts/01_import/parse_all_v1_years.py --years 1990-2024
 python scripts/03_harmonize/harmonize_v1_core.py --years 1968-2024
 python scripts/04_derive/derive_v1_core.py
-python scripts/05_validate/compare_external_targets_v1.py                 # 249 external targets (1968-2024; pre-1989 resident_births need --yearly-parquet-dir)
+python scripts/05_validate/compare_external_targets_v1.py # 249 external targets (1968-2024; pre-1989 resident_births need --yearly-parquet-dir)
 python scripts/05_validate/validate_v1_invariants.py --years 1990-2024
 python scripts/05_validate/harmonized_missingness.py
 
 # v4 Linked pre-2005 cohort (1983-1991 keyless two-file den/num; 1995-2004 denominator-plus)
 python scripts/01_import/parse_all_linked_years.py --years 1983-1991
 python scripts/01_import/parse_all_linked_years.py --years 1995-2004
-#   (1992-1994 is the permanent NCHS linkage gap — no source file exists)
+# (1992-1994 is the permanent NCHS linkage gap — no source file exists)
 
 # v4 Linked 2005-2015 (denominator-plus format)
 python scripts/01_import/parse_all_linked_years.py --years 2005-2015
@@ -125,8 +125,8 @@ python scripts/01_import/parse_linked_cohort_year.py --zip raw_data/linked/2024P
 # v4 harmonize + derive + validate (harmonizer default --years 1983-2023 auto-skips the 1992-1994 gap)
 python scripts/03_harmonize/harmonize_linked_v3.py --years 1983-2023
 python scripts/04_derive/derive_linked_v3.py
-python scripts/05_validate/validate_linked_parquets.py --years 2005-2023        # v3 validator (2005-2023 owned surface)
-python scripts/05_validate/compare_external_targets_v3_linked.py               # 2005-2023 NVSR/linked-guide targets
+python scripts/05_validate/validate_linked_parquets.py --years 2005-2023 # v3 validator (2005-2023 owned surface)
+python scripts/05_validate/compare_external_targets_v3_linked.py # 2005-2023 NVSR/linked-guide targets
 # pre-2005 cohort years (1983-2004) are validated per-year against the NCHS cohort
 # linked-file user guides via metadata/external_validation_targets_v3_linked.csv
 

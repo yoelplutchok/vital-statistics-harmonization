@@ -1,6 +1,6 @@
 # Project Structure
 
-This document is the canonical map of the repository — written for both human readers (skim the headings) and LLM agents (every important location is named, with the purpose of each file/directory in one line).
+This document is the canonical map of the repository. Each important location is named with the purpose of that file or directory in one line.
 
 ## Top-level layout
 
@@ -19,7 +19,6 @@ vital-statistics-harmonization/
 ├── fetal_death/              Fetal death subproject
 ├── matched_multiples/        Matched-multiples subproject (4th HVS product; C8.16)
 ├── notebooks/                Cross-product worked examples
-├── paper/                    Data Resource Profile manuscript drafts
 ├── figures/                  Cross-product figures
 └── shared/helpers/           Python utilities used across products
 ```
@@ -31,7 +30,6 @@ Documentation that spans both subprojects. Each file should answer a question th
 | File | Purpose |
 |---|---|
 | `JOINT_USE_GUIDE.md` | How to compute rates that need both numerator and denominator (fetal mortality rate, perinatal mortality rate, infant mortality rate). Specifies the canonical join keys and aligned strata. |
-| `PRIOR_ART.md` | The literature gap that motivates the harmonization. Cited from the Data Resource Profile manuscript. |
 
 Subproject-specific docs (codebooks, FAQs, comparability notes) live inside `natality/docs/` and `fetal_death/` respectively.
 
@@ -124,17 +122,6 @@ Matched-multiples (twins / triplets / quadruplets with linked infant deaths and 
 
 The C8.16 release adds `notebooks/matched_multiples_demo.ipynb` (worked example reproducing the 5 PDF Table 1 *Total* cells byte-exact + the prose-level 10.14/1,000 complete-twin-set IMR byte-exact). Builder: `notebooks/_build_matched_multiples_demo.py`.
 
-## paper/
-
-Data Resource Profile manuscript drafts.
-
-| File | Status |
-|---|---|
-| `draft_v1_ipums_styled.md` | First draft, modeled on IPUMS-International (IJE 2017). Superseded. |
-| `draft_v2_hmd_styled.md` | Current preferred draft, modeled on the Human Mortality Database (IJE 2015). HMD is a much closer template because it harmonizes one class of vital-statistics data across versions. |
-
-Style and structural decisions are noted in commit messages and the agent transcript.
-
 ## csv/published_tabulations/
 
 Pre-computed top-NVSR-cited cross-tabulations (C8.22), so a reader can cite an HVS headline figure without loading a multi-GB parquet. Every cell is auto-derived by the deterministic builder `scripts/_build_published_tabulations.py` from the gate-verified derived parquets (canonical filter applied on every side; `reconciliation` column reports the NVSR comparison); re-running the builder reproduces every CSV byte-identically. There is no per-state tabulation — NCHS suppresses all sub-national geography in the public-use files (documented in the folder README and `docs/WORKED_EXAMPLE_FAQ.md`).
@@ -156,7 +143,6 @@ Cross-product worked examples. Each notebook should be runnable end-to-end again
 | Notebook | Status | Purpose |
 |---|---|---|
 | `joint_use_demo.ipynb` | Executed | Compute fetal mortality rate by maternal race using all three products jointly; reproduces *NVSR 73-09* Table 4 cells. |
-| `paper_companion.ipynb` | Executed | Reproduce the paper's numeric claims from the parquets (refresh against current parquets before submission). |
 | `matched_multiples_demo.ipynb` | C8.16 | Reproduce 5 PDF Table 1 *Total* cells (Total / Birth / Survivor / Infant death / Fetal death) byte-exact + complete-twin-set IMR (10.14/1,000) byte-exact + cross-window plurality coverage. |
 
 ## shared/helpers/
@@ -173,9 +159,9 @@ Python utilities used by both subprojects (e.g., common parsing helpers, schema 
 
 ## Where to start
 
-- **A new researcher** should read this file then `README.md` then `docs/JOINT_USE_GUIDE.md`, then load a single product following its `GETTING_STARTED.md`. For cross-product use cases, also read [`docs/WORKED_EXAMPLE_FAQ.md`](docs/WORKED_EXAMPLE_FAQ.md).
-- **An LLM agent** asked to add a feature, fix a bug, or extend coverage should grep this file for the relevant product subdirectory, read the target product's `README.md` and `scripts/` layout, then proceed.
-- **A reader of the manuscript** should map paper claims to artifacts via the validation tables in each `metadata/` directory.
+- **A new researcher** should read this file, then `README.md`, then `docs/JOINT_USE_GUIDE.md`, then load a single product following its `GETTING_STARTED.md`. For cross-product use cases, also read [`docs/WORKED_EXAMPLE_FAQ.md`](docs/WORKED_EXAMPLE_FAQ.md).
+- **To extend coverage or fix a pipeline bug**, find the relevant product subdirectory below, read that product's `README.md` and `scripts/` layout, then follow its `REPRODUCING.md`.
+- **To verify a published figure**, map claims to the validation tables in each product's `metadata/` directory and the notebooks under `notebooks/`.
 
 ## Build-order DAG
 
@@ -205,7 +191,7 @@ Cross-product joint analyses (`notebooks/joint_use_demo.ipynb`, `notebooks/mater
 
 The 02_clean_yearly (natality only) stage is empty in the current pipeline — natality's `parse_all_v1_years.py` writes the yearly clean parquets directly. The slot is preserved in the layout for symmetry with potential future per-year cleaning logic.
 
-**Reproducing end-to-end.** Drivers exist at [`scripts/_drive_fetal_death_benchmark.py`](scripts/_drive_fetal_death_benchmark.py) (43-year fetal-death chain) and [`scripts/_drive_natality_benchmark.py`](scripts/_drive_natality_benchmark.py) (natality + linked 6-stage chain). Both consume the SHA-pinned `uv.lock` environment. The C8.13 F.5 benchmark documents wall-clock per stage at [`docs/PIPELINE_TIMING_BENCHMARK.md`](docs/PIPELINE_TIMING_BENCHMARK.md). Re-running the pipelines produces byte-identical parquets (H10 reproducibility gate; validated empirically at C8.13).
+**Reproducing end-to-end.** Drivers exist at [`scripts/_drive_fetal_death_benchmark.py`](scripts/_drive_fetal_death_benchmark.py) (43-year fetal-death chain) and [`scripts/_drive_natality_benchmark.py`](scripts/_drive_natality_benchmark.py) (natality + linked 6-stage chain). Both consume the SHA-pinned `uv.lock` environment. Re-running the pipelines produces byte-identical parquets (H10 reproducibility gate; validated empirically at C8.13).
 
 ## Notebook-deps graph
 
@@ -214,7 +200,6 @@ Each notebook lists its parquet inputs and helper-module imports. All notebooks 
 | Notebook | Fetal-death derived | Natality derived | Linked derived | `shared/helpers/` | NVSR validation |
 |---|---|---|---|---|---|
 | `joint_use_demo.ipynb` | ✓ (Sections A, B, C) | ✓ (Section A denom, Section C denom) | ✓ (Section C ENN) | `canonical_join_keys` | A: 8/8 cells *NVSR 73-09* Table 4; B: 7/7 *NVSR 73-09* Table A; C: sub-components |
-| `paper_companion.ipynb` | ✓ | ✓ | ✓ | (built post-Task 4) | Reproduces every manuscript numeric |
 | `maternal_age_stratified_imr.ipynb` (C.6.a) | — | — | ✓ | (linked-only) | Per-stratum cells vs *NVSR* IMR table |
 | `preterm_outcomes_time_series.ipynb` (C.6.b) | ✓ | ✓ | ✓ | `canonical_join_keys` | Per-year preterm cells |
 | `cross_race_fetal_mortality.ipynb` (C.6.c) | ✓ | ✓ (denom) | — | (fetal + natality) | Section 1: 7/7 *NVSR 73-09* Table A 2022 race FMR cells; 1982–2024 cross-era panel |

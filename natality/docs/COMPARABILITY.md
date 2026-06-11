@@ -36,46 +36,46 @@ The harmonized `certificate_revision` column takes one of four values:
 ## Known structural breaks / constraints
 
 1. **1990–2002 → 2003 certificate transition**
-   - The 2003 revised certificate introduced new field names, coding frames, and measurement methods. Fields like education changed from years-of-schooling (0–17) to categorical codes (1–8).
-   - The harmonization maps 1990–2002 fields to the common schema via explicit crosswalks (e.g., `_dmeduc_years_to_cat4()`), but the underlying measurement differs.
+ - The 2003 revised certificate introduced new field names, coding frames, and measurement methods. Fields like education changed from years-of-schooling (0–17) to categorical codes (1–8).
+ - The harmonization maps 1990–2002 fields to the common schema via explicit crosswalks (e.g., `_dmeduc_years_to_cat4()`), but the underlying measurement differs.
 
 2. **1990–2002 race bridge is approximate**
-   - Official NCHS bridged race was introduced with the 2003 certificate. For 1990–2002, `maternal_race_bridged` uses an **approximate** crosswalk from `MRACE` detail codes (01→White, 02→Black, 03→AIAN, 04-08/18-68→Asian/PI, 09+→null).
-   - This is adequate for broad race-group tabulations but should not be treated as equivalent to the official NCHS bridged race available from 2003.
+ - Official NCHS bridged race was introduced with the 2003 certificate. For 1990–2002, `maternal_race_bridged` uses an **approximate** crosswalk from `MRACE` detail codes (01→White, 02→Black, 03→AIAN, 04-08/18-68→Asian/PI, 09+→null).
+ - This is adequate for broad race-group tabulations but should not be treated as equivalent to the official NCHS bridged race available from 2003.
 
 3. **2003 maternal age is a recode**
-   - The 2003 public-use file suppresses single-year maternal age (all 99) and provides only `MAGER41` (41-category recode, values 01–41). The harmonization converts this to approximate single-year age via `code + 13` (so 02→15, …, 41→54), with code 01 mapping to 14 (bucket "<15"). MAGER41 values of 99 or >41 map to null. Note: the 2003 recode does **not** expose any ages ≥55; they are lost to null. Distinct single years 50, 51, 52, 53, 54 ARE present (from codes 37–41) — they are NOT collapsed to 50.
+ - The 2003 public-use file suppresses single-year maternal age (all 99) and provides only `MAGER41` (41-category recode, values 01–41). The harmonization converts this to approximate single-year age via `code + 13` (so 02→15, …, 41→54), with code 01 mapping to 14 (bucket "<15"). MAGER41 values of 99 or >41 map to null. Note: the 2003 recode does **not** expose any ages ≥55; they are lost to null. Distinct single years 50, 51, 52, 53, 54 ARE present (from codes 37–41) — they are NOT collapsed to 50.
 
 4. **1990–2002 smoking: independent source fields**
-   - `smoking_any_during_pregnancy` comes from `TOBACCO` (yes/no/unknown) and `smoking_intensity_max_recode6` comes from `CIGAR6`. These are **independent** source fields, so ~429K records (428,755 verified) have smoker status with unknown intensity. From 2003 onward, `smoke_any` is derived from intensity, ensuring internal consistency.
+ - `smoking_any_during_pregnancy` comes from `TOBACCO` (yes/no/unknown) and `smoking_intensity_max_recode6` comes from `CIGAR6`. These are **independent** source fields, so ~429K records (428,755 verified) have smoker status with unknown intensity. From 2003 onward, `smoke_any` is derived from intensity, ensuring internal consistency.
 
 5. **Gestation source breaks (three eras)**
-   - 1990–2002: **LMP-only** (`DGESTAT`; source = `lmp`)
-   - 2003–2013: **combined gestation** (`COMBGEST`; source = `combined`)
-   - 2014–2024: **obstetric estimate** (`OEGEST_COMB`; source = `obstetric_estimate`)
-   - Each transition changes the preterm rate level. Do not assume gestation-based outcomes are continuous across 2003 or 2014. Use `gestational_age_weeks_source` to identify or stratify.
+ - 1990–2002: **LMP-only** (`DGESTAT`; source = `lmp`)
+ - 2003–2013: **combined gestation** (`COMBGEST`; source = `combined`)
+ - 2014–2024: **obstetric estimate** (`OEGEST_COMB`; source = `obstetric_estimate`)
+ - Each transition changes the preterm rate level. Do not assume gestation-based outcomes are continuous across 2003 or 2014. Use `gestational_age_weeks_source` to identify or stratify.
 
 6. **2009–2013 “U-only” fields are blank in the public-use files**
-   - Empirically confirmed by scanning the raw zips: unrevised-only (“U”) fields such as `DMEDUC`, `MEDUC_REC`, `MPCB`, `TOBUSE`, `CIGS`, `CIG_REC6` are **entirely blank** in 2009–2013.
-   - Consequence: **education, prenatal-care initiation, and smoking measures are effectively revised-only** in 2009–2013 and have substantial missingness for unrevised records.
+ - Empirically confirmed by scanning the raw zips: unrevised-only (“U”) fields such as `DMEDUC`, `MEDUC_REC`, `MPCB`, `TOBUSE`, `CIGS`, `CIG_REC6` are **entirely blank** in 2009–2013.
+ - Consequence: **education, prenatal-care initiation, and smoking measures are effectively revised-only** in 2009–2013 and have substantial missingness for unrevised records.
 
 7. **Race/ethnicity depends on bridged/imputed constructs**
-   - Bridged race and Hispanic-origin recodes are broadly usable, but the bridging/editing context changes over time; cross-year race/ethnicity is treated as **partial**.
-   - Starting 2020, NCHS no longer provides bridged race in the public-use natality file. `maternal_race_bridged` is null for 2020–2024. However, `maternal_race_ethnicity_5` is now **reconstructed** from `MRACE6` detail codes for 2020+ (01→NH_white, 02→NH_black, 03→NH_aian, 04/05→NH_asian_pi). Multiracial births (MRACE6=06, ~3%) remain null because they cannot be bridged to a single race group. Use `race_bridge_method` to identify the derivation era.
+ - Bridged race and Hispanic-origin recodes are broadly usable, but the bridging/editing context changes over time; cross-year race/ethnicity is treated as **partial**.
+ - Starting 2020, NCHS no longer provides bridged race in the public-use natality file. `maternal_race_bridged` is null for 2020–2024. However, `maternal_race_ethnicity_5` is now **reconstructed** from `MRACE6` detail codes for 2020+ (01→NH_white, 02→NH_black, 03→NH_aian, 04/05→NH_asian_pi). Multiracial births (MRACE6=06, ~3%) remain null because they cannot be bridged to a single race group. Use `race_bridge_method` to identify the derivation era.
 
 8. **Marital status: California stopped reporting in 2017**
-   - `marital_status` is blank (null) for ~11–12% of births starting 2017. This is exclusively from California, which ceased providing record-level marital status to NCHS due to state statutory restrictions.
-   - The data is truly absent at the source: `DMAR`, `MAR_P` (paternity acknowledged), and `MAR_IMP` (imputed flag) are all blank for affected records. NCHS does not impute these values.
-   - **Impact**: 0% missing 1990–2016; ~11–12% missing 2017–2024. Any trend analysis using `marital_status` across the 2017 boundary is affected.
-   - **Use `marital_reporting_flag`** (derived from `F_MAR_P`, available 2014+) to distinguish non-reporting-state births (flag = false) from reporting-state births with genuine unknown status.
-   - **Rule**: for Kitagawa decompositions or trend analyses, either (a) restrict to `marital_reporting_flag == true` for 2017+ years, (b) exclude `marital_status` from the model for windows spanning 2017, or (c) use only 2003–2016 for models that include marital status.
+ - `marital_status` is blank (null) for ~11–12% of births starting 2017. This is exclusively from California, which ceased providing record-level marital status to NCHS due to state statutory restrictions.
+ - The data is truly absent at the source: `DMAR`, `MAR_P` (paternity acknowledged), and `MAR_IMP` (imputed flag) are all blank for affected records. NCHS does not impute these values.
+ - **Impact**: 0% missing 1990–2016; ~11–12% missing 2017–2024. Any trend analysis using `marital_status` across the 2017 boundary is affected.
+ - **Use `marital_reporting_flag`** (derived from `F_MAR_P`, available 2014+) to distinguish non-reporting-state births (flag = false) from reporting-state births with genuine unknown status.
+ - **Rule**: for Kitagawa decompositions or trend analyses, either (a) restrict to `marital_reporting_flag == true` for 2017+ years, (b) exclude `marital_status` from the model for windows spanning 2017, or (c) use only 2003–2016 for models that include marital status.
 
 9. **Smoking missingness varies substantially across years**
-   - `smoking_any_during_pregnancy` null rates range from 0.4% (2016+) to 44% (2009), driven by two mechanisms:
-     - **2003–2008**: Item-level nonresponse (`CIG_REC6 = 6`, "not stated"), affecting 7–20% of births. Both revised and unrevised certificate records are affected.
-     - **2009–2013**: Structural missingness for unrevised-certificate records. NCHS stopped carrying forward unrevised smoking data into the CIG fields, so unrevised records have 100% null smoking. As states adopted the revised certificate, the null rate fell from 44% (2009) to 14% (2013).
-   - **2014+**: All states on revised certificate; null rate < 5% (2014) declining to < 0.5% (2016+).
-   - **Rule**: for trend analyses using smoking, be aware that the "known-smoking" population changes substantially across years. Treating unknown as a Kitagawa stratum conflates measurement coverage with population composition.
+ - `smoking_any_during_pregnancy` null rates range from 0.4% (2016+) to 44% (2009), driven by two mechanisms:
+ - **2003–2008**: Item-level nonresponse (`CIG_REC6 = 6`, "not stated"), affecting 7–20% of births. Both revised and unrevised certificate records are affected.
+ - **2009–2013**: Structural missingness for unrevised-certificate records. NCHS stopped carrying forward unrevised smoking data into the CIG fields, so unrevised records have 100% null smoking. As states adopted the revised certificate, the null rate fell from 44% (2009) to 14% (2013).
+ - **2014+**: All states on revised certificate; null rate < 5% (2014) declining to < 0.5% (2016+).
+ - **Rule**: for trend analyses using smoking, be aware that the "known-smoking" population changes substantially across years. Treating unknown as a Kitagawa stratum conflates measurement coverage with population composition.
 
 ## Pre-1990 (1968–1989) external-validation comparability
 
@@ -93,7 +93,7 @@ The 1968 public-use file carries the detailed `GESTREC` recode (Nat1968doc p6: 0
 1989 is validated on the raw 3-category `GESTAT3` (100% file, unweighted) = 10.6%; 1990+ uses the derived `preterm_lt37` built from full LMP gestation. The two are numerically close (1989 ≈ 1990 ≈ 10.6%) but are **different measurement constructs** — do not assume identical measurement across the 1989/1990 boundary.
 
 **4. LBW is more comparable across the 1990 boundary.**
-Pre-1990 LBW% = births <2,500 g ÷ resident births with *known* birthweight (`DBIRWT`/`DBWT`; 9999 = not stated, excluded), SAMPWT-weighted (1972–1988) / uniform 2× (1968–1971). This matches the 1990+ `low_birthweight` definition, and the gestation reporting-area caveat does **not** apply to LBW (birthweight was reported nationwide). Target-sourcing notes: **1968 LBW (8.2%) is an indirect cite** — no direct 1968 MVSR headline; bracketed by NCHS Series 21 No. 48 (1967 = 8.2%) and MVSR mv22_12 (1969 = 8.1%); footnote as indirect. **1971 LBW = 7.7%** from MVSR mv23_08sacc ("the same percent as in 1971"). **1973 LBW (7.6%)** carries a 0.06 pct-pt tolerance (microdata 7.55% vs the one-decimal published 7.6%). See DECISION_LOG (2026-05-25 entries).
+Pre-1990 LBW% = births <2,500 g ÷ resident births with *known* birthweight (`DBIRWT`/`DBWT`; 9999 = not stated, excluded), SAMPWT-weighted (1972–1988) / uniform 2× (1968–1971). This matches the 1990+ `low_birthweight` definition, and the gestation reporting-area caveat does **not** apply to LBW (birthweight was reported nationwide). Target-sourcing notes: **1968 LBW (8.2%) is an indirect cite** — no direct 1968 MVSR headline; bracketed by NCHS Series 21 No. 48 (1967 = 8.2%) and MVSR mv22_12 (1969 = 8.1%); footnote as indirect. **1971 LBW = 7.7%** from MVSR mv23_08sacc ("the same percent as in 1971"). **1973 LBW (7.6%)** carries a 0.06 pct-pt tolerance (microdata 7.55% vs the one-decimal published 7.6%). See (2026-05-25 entries).
 
 **Gestation-era continuity.** The pre-1990 LMP-based preterm series connects to the 1990–2002 LMP era (structural break #5 above), then breaks at 2003 (combined gestation) and 2014 (obstetric estimate). A continuous 1968–2024 preterm trend therefore spans (a) the pre-1990 reporting-area / known-gestation caveat, (b) the 1989/1990 raw-vs-derived construct change, and (c) the 2003 and 2014 source breaks. Stratify or annotate accordingly.
 
@@ -109,85 +109,85 @@ Pre-1990 LBW% = births <2,500 g ÷ resident births with *known* birthweight (`DB
 ### Partial comparability (usable with explicit rules)
 
 - **Maternal age**
-  - **Why partial**: 2003 uses `MAGER41` recode (41-category) converted to approximate single-year age. All other years have true single-year age.
-  - **Rule**: the 2003 approximation is adequate for age-group analyses but not for precise single-year-of-age work.
+ - **Why partial**: 2003 uses `MAGER41` recode (41-category) converted to approximate single-year age. All other years have true single-year age.
+ - **Rule**: the 2003 approximation is adequate for age-group analyses but not for precise single-year-of-age work.
 
 - **Race/ethnicity**
-  - **Primary construct**: `maternal_race_ethnicity_5` (derived from `maternal_hispanic` + `maternal_race_bridged` or `maternal_race_detail`)
-  - **Why partial**: three derivation methods across eras (see `race_bridge_method`): 1990–2002 uses approximate bridge from detail codes; 2003–2019 uses official NCHS bridged race; 2020–2024 reconstructs from MRACE6 detail codes (multiracial code 06, ~3% of births, maps to null).
-  - **Rule**: treat as a consistent *high-level* series, but document that bridging method differs by era. Use `race_bridge_method` to identify derivation context. For 2020+, analyses excluding nulls will drop ~3% multiracial births.
+ - **Primary construct**: `maternal_race_ethnicity_5` (derived from `maternal_hispanic` + `maternal_race_bridged` or `maternal_race_detail`)
+ - **Why partial**: three derivation methods across eras (see `race_bridge_method`): 1990–2002 uses approximate bridge from detail codes; 2003–2019 uses official NCHS bridged race; 2020–2024 reconstructs from MRACE6 detail codes (multiracial code 06, ~3% of births, maps to null).
+ - **Rule**: treat as a consistent *high-level* series, but document that bridging method differs by era. Use `race_bridge_method` to identify derivation context. For 2020+, analyses excluding nulls will drop ~3% multiracial births.
 
 - **Marital status**
-  - **Primary construct**: `marital_status`
-  - **Why partial**: California stopped reporting record-level marital status to NCHS in 2017. As a result, `marital_status` is null for ~11–12% of births from 2017 onward (0% null through 2016).
-  - **Rule**: for trend analyses spanning 2017, either (a) use `marital_reporting_flag == true` to restrict to reporting-state births (available 2014+), (b) exclude `marital_status` from models that span the 2017 boundary, or (c) use 2003–2016 as the analysis window when marital status is needed.
+ - **Primary construct**: `marital_status`
+ - **Why partial**: California stopped reporting record-level marital status to NCHS in 2017. As a result, `marital_status` is null for ~11–12% of births from 2017 onward (0% null through 2016).
+ - **Rule**: for trend analyses spanning 2017, either (a) use `marital_reporting_flag == true` to restrict to reporting-state births (available 2014+), (b) exclude `marital_status` from models that span the 2017 boundary, or (c) use 2003–2016 as the analysis window when marital status is needed.
 
 - **Education**
-  - **Primary construct**: `maternal_education_cat4`
-  - **Why partial**: 1990–2002 uses years-of-schooling→cat4 crosswalk (conceptually different from category-based education); 2003+ uses revision-specific fields; 2009–2013 is revised-only.
-  - **Rule**:
-    - 1990–2002: `_dmeduc_years_to_cat4()` maps 0–11→lt_hs, 12→hs_grad, 13–15→some_college, 16–17→ba_plus, 99→null.
-    - 2003–2008: combine revised `MEDUC` with unrevised `MEDUC_REC`.
-    - 2009–2013: revised-only → use `certificate_revision == 'revised_2003'` for consistent analysis.
+ - **Primary construct**: `maternal_education_cat4`
+ - **Why partial**: 1990–2002 uses years-of-schooling→cat4 crosswalk (conceptually different from category-based education); 2003+ uses revision-specific fields; 2009–2013 is revised-only.
+ - **Rule**:
+ - 1990–2002: `_dmeduc_years_to_cat4()` maps 0–11→lt_hs, 12→hs_grad, 13–15→some_college, 16–17→ba_plus, 99→null.
+ - 2003–2008: combine revised `MEDUC` with unrevised `MEDUC_REC`.
+ - 2009–2013: revised-only → use `certificate_revision == 'revised_2003'` for consistent analysis.
 
 - **Prenatal care initiation**
-  - **Primary constructs**: `prenatal_care_start_month`, `prenatal_care_start_trimester`
-  - **Why partial**: 1990–2002 uses `MONPRE`; 2003+ uses revision-specific fields; 2009–2013 is revised-only.
-  - **Rule**: same revised-only guidance as education for 2009–2013.
+ - **Primary constructs**: `prenatal_care_start_month`, `prenatal_care_start_trimester`
+ - **Why partial**: 1990–2002 uses `MONPRE`; 2003+ uses revision-specific fields; 2009–2013 is revised-only.
+ - **Rule**: same revised-only guidance as education for 2009–2013.
 
 - **Smoking during pregnancy**
-  - **Primary constructs**: `smoking_any_during_pregnancy`, `smoking_intensity_max_recode6`
-  - **Why partial**: 1990–2002 derives `smoke_any` from `TOBACCO` and intensity from `CIGAR6` independently (~429K records with smoker+unknown intensity). 2003+ derives `smoke_any` from intensity. 2009–2013 is revised-only.
-  - **Missingness varies substantially**: null rates range from <0.5% (2016+) to 44% (2009). Two mechanisms: (a) 2003–2008 item-level nonresponse (`CIG_REC6 = 6` "not stated", 7–20%); (b) 2009–2013 structural missingness for unrevised-certificate records (100% null on unrevised births, declining from 44% to 14% as states adopted the revised form).
-  - **Rule**: for 1990–2002, expect some inconsistency between `smoke_any` and `smoke_intensity`. For 2003–2013, use `certificate_revision == 'revised_2003'` for consistent smoking data. For decomposition analyses, be aware that treating "smoking unknown" as a population stratum conflates measurement coverage with population composition.
+ - **Primary constructs**: `smoking_any_during_pregnancy`, `smoking_intensity_max_recode6`
+ - **Why partial**: 1990–2002 derives `smoke_any` from `TOBACCO` and intensity from `CIGAR6` independently (~429K records with smoker+unknown intensity). 2003+ derives `smoke_any` from intensity. 2009–2013 is revised-only.
+ - **Missingness varies substantially**: null rates range from <0.5% (2016+) to 44% (2009). Two mechanisms: (a) 2003–2008 item-level nonresponse (`CIG_REC6 = 6` "not stated", 7–20%); (b) 2009–2013 structural missingness for unrevised-certificate records (100% null on unrevised births, declining from 44% to 14% as states adopted the revised form).
+ - **Rule**: for 1990–2002, expect some inconsistency between `smoke_any` and `smoke_intensity`. For 2003–2013, use `certificate_revision == 'revised_2003'` for consistent smoking data. For decomposition analyses, be aware that treating "smoking unknown" as a population stratum conflates measurement coverage with population composition.
 
 - **Gestation + preterm**
-  - **Primary constructs**: `gestational_age_weeks`, `preterm_recode3`, `preterm_lt37`, `very_preterm_lt32`
-  - **Why partial**: three distinct measurement sources across eras (LMP, combined, obstetric estimate). Each transition changes the preterm rate level.
-  - **Rule**: use `gestational_age_weeks_source` to stratify. Recommended gestation-era subsets:
-    - 1990–2002: `gestational_age_weeks_source == 'lmp'`
-    - 2003–2013: `gestational_age_weeks_source == 'combined'`
-    - 2014–2024: `gestational_age_weeks_source == 'obstetric_estimate'`
+ - **Primary constructs**: `gestational_age_weeks`, `preterm_recode3`, `preterm_lt37`, `very_preterm_lt32`
+ - **Why partial**: three distinct measurement sources across eras (LMP, combined, obstetric estimate). Each transition changes the preterm rate level.
+ - **Rule**: use `gestational_age_weeks_source` to stratify. Recommended gestation-era subsets:
+ - 1990–2002: `gestational_age_weeks_source == 'lmp'`
+ - 2003–2013: `gestational_age_weeks_source == 'combined'`
+ - 2014–2024: `gestational_age_weeks_source == 'obstetric_estimate'`
 
 - **Medical risk factors** (`diabetes_any`, `hypertension_chronic`, `hypertension_gestational`)
-  - **Why partial**: 1990–2002 uses individual Y/N/unknown flags (`DIABETES`, `CHYPER`, `PHYPER`); 2003+ uses combined U/R flags (`URF_DIAB`, `URF_CHYPER`, `URF_PHYPER`). Coding is harmonized (1=yes, 2=no, 9=unknown) but underlying ascertainment changed with the certificate revision.
-  - **Sentinel warning**: the value 9 (unknown) is not null and passes `IS NOT NULL` filters. Use the derived boolean versions (`diabetes_any_bool`, `hypertension_chronic_bool`, `hypertension_gestational_bool`) which map 9→null for correct complete-case analysis.
+ - **Why partial**: 1990–2002 uses individual Y/N/unknown flags (`DIABETES`, `CHYPER`, `PHYPER`); 2003+ uses combined U/R flags (`URF_DIAB`, `URF_CHYPER`, `URF_PHYPER`). Coding is harmonized (1=yes, 2=no, 9=unknown) but underlying ascertainment changed with the certificate revision.
+ - **Sentinel warning**: the value 9 (unknown) is not null and passes `IS NOT NULL` filters. Use the derived boolean versions (`diabetes_any_bool`, `hypertension_chronic_bool`, `hypertension_gestational_bool`) which map 9→null for correct complete-case analysis.
 
 - **Delivery method**
-  - **Primary construct**: `delivery_method_recode`
-  - **Why partial**: two distinct coding frames with the boundary at **2005** (not 2003):
-    - **1990–2004 (DELMETH5-style)**: 1=vaginal, 2=VBAC, 3=primary cesarean, 4=repeat cesarean, 9=not stated. In 2003–2004, the field is labeled "DMETH_REC" at position 401 but still uses DELMETH5 codes. The pipeline remaps the raw "not stated" sentinel (and rare codes 6/7, unknown-prior-CS variants) to `9` so the not-stated marker is identical across 1990–2004 and 2005+.
-    - **2005+ (DMETH_REC)**: 1=vaginal, 2=cesarean, 9=not stated.
-  - **Cesarean crosswalk**: for 1990–2004, cesarean = codes 3 + 4 among known (1–4). For 2005+, cesarean = code 2 among known (1–2). This crosswalk is validated against NVSR published cesarean rates for 1990–2024 (all within 0.07 pct-pts).
-  - **Rule**: the cesarean/vaginal binary is comparable across the full 1990–2024 range via the crosswalk above. Finer categories (primary vs repeat cesarean, VBAC) are available only for 1990–2004.
+ - **Primary construct**: `delivery_method_recode`
+ - **Why partial**: two distinct coding frames with the boundary at **2005** (not 2003):
+ - **1990–2004 (DELMETH5-style)**: 1=vaginal, 2=VBAC, 3=primary cesarean, 4=repeat cesarean, 9=not stated. In 2003–2004, the field is labeled "DMETH_REC" at position 401 but still uses DELMETH5 codes. The pipeline remaps the raw "not stated" sentinel (and rare codes 6/7, unknown-prior-CS variants) to `9` so the not-stated marker is identical across 1990–2004 and 2005+.
+ - **2005+ (DMETH_REC)**: 1=vaginal, 2=cesarean, 9=not stated.
+ - **Cesarean crosswalk**: for 1990–2004, cesarean = codes 3 + 4 among known (1–4). For 2005+, cesarean = code 2 among known (1–2). This crosswalk is validated against NVSR published cesarean rates for 1990–2024 (all within 0.07 pct-pts).
+ - **Rule**: the cesarean/vaginal binary is comparable across the full 1990–2024 range via the crosswalk above. Finer categories (primary vs repeat cesarean, VBAC) are available only for 1990–2004.
 
 - **Father's age** (`father_age`)
-  - **Why partial**: 1990–2002 uses `DFAGE`; 2003+ uses various recodes/combined age fields. `99` → null.
-  - **Rule**: usable for broad age-group analyses across all years.
+ - **Why partial**: 1990–2002 uses `DFAGE`; 2003+ uses various recodes/combined age fields. `99` → null.
+ - **Rule**: usable for broad age-group analyses across all years.
 
 - **Birth facility** (`birth_facility`)
-  - **Why partial**: 1990–2002 uses `PLDEL@8`; 2003–2013 uses `UBFACIL@42` (same coding as PLDEL); 2014+ uses `BFACIL@32` (revised-certificate coding with more facility types). Coarse 4-category mapping (hospital, birth_center, clinic_other, home) is comparable across eras.
-  - **Null-rate spike 2014–2015**: 2014 has 3.58% null (142,900 blank raw `BFACIL` bytes in `Nat2014us.zip`); 2015 has 1.74%. 2016+ is 0%. Falls below the 5 pct-pt threshold of `harmonized_missingness_breaks.csv` so it is not flagged there.
+ - **Why partial**: 1990–2002 uses `PLDEL@8`; 2003–2013 uses `UBFACIL@42` (same coding as PLDEL); 2014+ uses `BFACIL@32` (revised-certificate coding with more facility types). Coarse 4-category mapping (hospital, birth_center, clinic_other, home) is comparable across eras.
+ - **Null-rate spike 2014–2015**: 2014 has 3.58% null (142,900 blank raw `BFACIL` bytes in `Nat2014us.zip`); 2015 has 1.74%. 2016+ is 0%. Falls below the 5 pct-pt threshold of `harmonized_missingness_breaks.csv` so it is not flagged there.
 
 - **Attendant at birth** (`attendant_at_birth`)
-  - **Why partial**: coding is harmonized (1=MD, 2=DO, 3=CNM, etc.) but underlying certification/reporting context changed with the 2003 certificate.
+ - **Why partial**: coding is harmonized (1=MD, 2=DO, 3=CNM, etc.) but underlying certification/reporting context changed with the 2003 certificate.
 
 - **Prior cesarean** (`prior_cesarean`, `prior_cesarean_count`)
-  - **Availability**: `RF_CESAR` (Y/N/U) and `RF_CESARN` (0–30 count) are revised-certificate-only fields. In the 2005–2013 layout they live at bytes 324 and 325–326; in the 2014+ layout at bytes 331 and 332–333. Both are null for 1990–2004 (those public-use layouts carry no Y/N/U prior-cesarean field). Coverage on the remaining years tracks revised-cert adoption: `prior_cesarean` is populated on 30.8% of rows in 2005, 77.1% in 2010, 90.2% in 2013, and ~96–100% from 2014+; `prior_cesarean_count` follows the same pattern but is slightly lower in every year because a few thousand rows per year have known `RF_CESAR` with blank `RF_CESARN` (for example, 30.69% vs 30.75% in 2005 and 90.15% vs 90.24% in 2013).
-  - **Rule**: for 2005–2013, restrict to `certificate_revision == 'revised_2003'` (or drop nulls) for a revision-consistent subset; for 2014–2024, the field is populated on essentially every row. For a cross-era "any prior cesarean" signal before 2005, use `delivery_method_recode` codes 2/4 (VBAC / repeat-cesarean tracer for 1990–2004; no equivalent exists for 2005–2013 unrevised-cert public-use rows).
+ - **Availability**: `RF_CESAR` (Y/N/U) and `RF_CESARN` (0–30 count) are revised-certificate-only fields. In the 2005–2013 layout they live at bytes 324 and 325–326; in the 2014+ layout at bytes 331 and 332–333. Both are null for 1990–2004 (those public-use layouts carry no Y/N/U prior-cesarean field). Coverage on the remaining years tracks revised-cert adoption: `prior_cesarean` is populated on 30.8% of rows in 2005, 77.1% in 2010, 90.2% in 2013, and ~96–100% from 2014+; `prior_cesarean_count` follows the same pattern but is slightly lower in every year because a few thousand rows per year have known `RF_CESAR` with blank `RF_CESARN` (for example, 30.69% vs 30.75% in 2005 and 90.15% vs 90.24% in 2013).
+ - **Rule**: for 2005–2013, restrict to `certificate_revision == 'revised_2003'` (or drop nulls) for a revision-consistent subset; for 2014–2024, the field is populated on essentially every row. For a cross-era "any prior cesarean" signal before 2005, use `delivery_method_recode` codes 2/4 (VBAC / repeat-cesarean tracer for 1990–2004; no equivalent exists for 2005–2013 unrevised-cert public-use rows).
 
 - **Father Hispanic origin** (`father_hispanic`)
-  - **Why partial**: 1990–2002 uses `ORFATH`; 2003–2013 uses `UFHISP`; 2014+ uses `FHISP_R`. All use 0=non-Hispanic, 1–5=Hispanic coding, but reporting context and item non-response rates differ by era.
+ - **Why partial**: 1990–2002 uses `ORFATH`; 2003–2013 uses `UFHISP`; 2014+ uses `FHISP_R`. All use 0=non-Hispanic, 1–5=Hispanic coding, but reporting context and item non-response rates differ by era.
 
 - **Father race/ethnicity** (`father_race_ethnicity_5`)
-  - **Why partial**: three coding frames across eras:
-    - **1990–2002** (`ORRACEF`): 1–5 → Hispanic subcategories; 6 → `NH_white`; 7 → `NH_black`; 8 → `NH_other`; 9 → null.
-    - **2003–2013** (`FRACEHISP`, same frame as ORRACEF): same mapping as above — code 8 → `NH_other`, code 9 → null.
-    - **2014+** (`FRACEHISP`, new frame): 1 → `NH_white`; 2 → `NH_black`; 3–6 → `NH_other` (NH AIAN, NH Asian, NH NHOPI, NH Multiracial all collapse here because paternal race detail is coarser than maternal); 7 → `Hispanic`; 8 → null (origin unknown); 9 → null (unknown).
-  - **Allowed output labels** (same across all eras): `Hispanic`, `NH_white`, `NH_black`, `NH_other`, null. Note that `NH_other` is produced in all three eras — just from different source codes — which is a departure from `maternal_race_ethnicity_5`'s 5-label schema.
+ - **Why partial**: three coding frames across eras:
+ - **1990–2002** (`ORRACEF`): 1–5 → Hispanic subcategories; 6 → `NH_white`; 7 → `NH_black`; 8 → `NH_other`; 9 → null.
+ - **2003–2013** (`FRACEHISP`, same frame as ORRACEF): same mapping as above — code 8 → `NH_other`, code 9 → null.
+ - **2014+** (`FRACEHISP`, new frame): 1 → `NH_white`; 2 → `NH_black`; 3–6 → `NH_other` (NH AIAN, NH Asian, NH NHOPI, NH Multiracial all collapse here because paternal race detail is coarser than maternal); 7 → `Hispanic`; 8 → null (origin unknown); 9 → null (unknown).
+ - **Allowed output labels** (same across all eras): `Hispanic`, `NH_white`, `NH_black`, `NH_other`, null. Note that `NH_other` is produced in all three eras — just from different source codes — which is a departure from `maternal_race_ethnicity_5`'s 5-label schema.
 
 - **Father education** (`father_education_cat4`)
-  - **Why partial**: 1990–1994 uses `DFEDUC` (years-of-schooling→cat4); 2009+ uses `FEDUC` (categorical codes→cat4). **Null for 1995–2008** (field dropped from public-use files). Partial coverage 2009–2010 (2003-revision early-adopter states only; ~58–65% non-null). Full coverage 2011+.
+ - **Why partial**: 1990–1994 uses `DFEDUC` (years-of-schooling→cat4); 2009+ uses `FEDUC` (categorical codes→cat4). **Null for 1995–2008** (field dropped from public-use files). Partial coverage 2009–2010 (2003-revision early-adopter states only; ~58–65% non-null). Full coverage 2011+.
 
 ### Within-era only
 
@@ -209,16 +209,16 @@ Pre-1990 LBW% = births <2,500 g ÷ resident births with *known* birthweight (`DB
 ### Excluded
 
 - `maternal_nativity`
-  - **Reason**: `MBCNTRY` appears blank/suppressed in the 2005–2013 public-use files and `MBSTATE_REC` is a non-comparable 2014-only recode. Excluded rather than shipping a misleading within-era series.
+ - **Reason**: `MBCNTRY` appears blank/suppressed in the 2005–2013 public-use files and `MBSTATE_REC` is a non-comparable 2014-only recode. Excluded rather than shipping a misleading within-era series.
 
 ## Recommended analytic subsets
 
 - **Residents-only** (default): `is_foreign_resident == false`
 - **Revision-consistent subset** (for education/prenatal care/smoking in 2009–2013): `certificate_revision == 'revised_2003'`
 - **Gestation-era subsets**:
-  - 1990–2002: `gestational_age_weeks_source == 'lmp'`
-  - 2003–2013: `gestational_age_weeks_source == 'combined'`
-  - 2014–2024: `gestational_age_weeks_source == 'obstetric_estimate'`
+ - 1990–2002: `gestational_age_weeks_source == 'lmp'`
+ - 2003–2013: `gestational_age_weeks_source == 'combined'`
+ - 2014–2024: `gestational_age_weeks_source == 'obstetric_estimate'`
 
 ## V3/v4 Linked birth-infant death comparability (1983–2023; permanent 1992–1994 gap)
 
@@ -240,7 +240,7 @@ The 1983–2004 cohort years come from the NCHS cohort linked-file series. Four 
 - **`underlying_cause_icd10`**: ICD-10 throughout (2005-2023). Comparable, though coding rule updates occur periodically.
 - **`cause_recode_130`**: NCHS 130-cause infant death recode. Consistent across the period.
 - **`record_weight`**: populated for every row (survivors = `1.0`; deaths ≥ `1.0`). NCHS recommends **not** applying the weight for cohort analyses — use unweighted data. For 2016–2023 (period-cohort source format), survivor rows do not carry a weight field in the raw NCHS files; the pipeline explicitly fills `1.0` for survivors so the column is usable without `fill_null` guards.
-  - **Known minor quirk**: there are exactly **2 survivor rows** (1 in 2014, 1 in 2015) where `record_weight` is null. These come from the upstream NCHS denominator-plus files (not introduced by the pipeline) and are plausible ordinary births. The `record_weight_null_when_survivor` invariant in `scripts/05_validate/validate_v1_invariants.py` will report these as 2 when run against the V3 Parquet (the V2 invariants report shows 0 only because V2 natality has no `record_weight` column; the invariant silently skips). The companion invariant `record_weight_null_when_death` (added 2026-04-22) reports 0 — no death has a null weight. If you need `record_weight` non-null for downstream analysis, filter with `record_weight.fill_null(1.0)` or drop those two rows explicitly.
+ - **Known minor quirk**: there are exactly **2 survivor rows** (1 in 2014, 1 in 2015) where `record_weight` is null. These come from the upstream NCHS denominator-plus files (not introduced by the pipeline) and are plausible ordinary births. The `record_weight_null_when_survivor` invariant in `scripts/05_validate/validate_v1_invariants.py` will report these as 2 when run against the V3 Parquet (the V2 invariants report shows 0 only because V2 natality has no `record_weight` column; the invariant silently skips). The companion invariant `record_weight_null_when_death` (added 2026-04-22) reports 0 — no death has a null weight. If you need `record_weight` non-null for downstream analysis, filter with `record_weight.fill_null(1.0)` or drop those two rows explicitly.
 
 ### Linked vs natality row-count deltas
 
@@ -387,12 +387,12 @@ The 2003 public-use file suppresses single-year maternal age below 15 and expose
 - 2026-03-29 (Session 23): Rewrote delivery method section with validated cesarean crosswalk. Documented that 2003–2004 files store DELMETH5-style codes at the DMETH_REC position (boundary at 2005, not 2003). Cesarean binary (codes 3+4 pre-2005, code 2 post-2005) validated against NVSR published rates 1990–2024.
 - 2026-03-30 (Session 24): Seven improvements from LBW-IMR divergence lessons learned: (1) added `marital_reporting_flag` from F_MAR_P (2014+); (2) added unified missingness diagnostics script; (3) reconstructed `maternal_race_ethnicity_5` for 2020-2024 from MRACE6 detail codes, added `race_bridge_method`; (4) added derived nullable booleans for diabetes/HTN (sentinel 9→null); (5) added "Known pitfalls for multi-decade trend analyses" section; (6) added null-rate discontinuity detection to invariants validator; (7) added parquet versioning with SHA-256 provenance.
 - 2026-04-22: Field-position + parser-completeness corrections from a byte-level audit pass.
-  - **2004 `attendant_at_birth`**: the prior release read `ATTEND` at byte 410 (2005's position). Correct position is byte 408 (same as 2003). Fix restored 4,118,907 rows from 100% null to ~0.22% null — matches 2003/2005 exactly.
-  - **2012–2013 `father_age`**: by 2012, NCHS had blanked the public-use `UFAGECOMB@184-185` field while revised-cert rows carried `FAGECOMB@182-183`. The parser now reads both and prefers `FAGECOMB` when non-null. Fix restored ~3.1M rows for 2013; as a side effect, 2012 revised-cert rows also gained `FAGECOMB@182-183` coverage that was previously null.
-  - **`prior_cesarean` 2005–2013**: `RF_CESAR@324` and `RF_CESARN@325-326` are revised-certificate fields first present in 2005 and populated only on revised-cert rows. They were previously not parsed pre-2014, leaving `prior_cesarean` and `prior_cesarean_count` null for all 2005–2013 rows. Now populated on revised-cert rows across 2005–2013 (30.8% → 90.2% coverage, tracking cert adoption).
-  - **2016+ diabetes / hypertension source**: the `URF_DIAB`/`URF_CHYPER`/`URF_PHYPER` tail block at bytes 1331–1333 exists only in the 2014–2015 User Guides; bytes 571–1330 are `FILLER_X` in 2016+. The harmonizer now selects source fields per-year rather than per-batch: 1990–2002 → `DIABETES`/`CHYPER`/`PHYPER`; 2003–2015 → `URF_*` (which really are at 1331–1333 for 2014–2015); 2016+ → `RF_PDIAB`/`RF_GDIAB`/`RF_PHYPE`/`RF_GHYPE` at bytes 313–316.
-  - **Linked cohort merge**: 2016–2023 period-cohort files are merged on the NCHS-documented composite key `(CO_SEQNUM, CO_YOD)` rather than CO_SEQNUM alone, with an explicit assertion that same-year and next-year numerator keysets are disjoint.
-  - **New columns**: `father_age_cat_from_rec11` (categorical 5-year-bucket father age derived from `FAGEREC11`, populated 2005–2013) and `maternal_race_detail_15cat` (MRACE15 15-category mother's race, populated 2014+).
-  - **V3 linked schema** now mirrors V2 exactly (78 harmonized + 16 derived = 94, up from 76 + 16 = 92 in the prior release).
-  - **Validator hygiene**: 13 raw `pc.and_` sites in the invariants validator wrapped with `_safe_and` to prevent a null year or null cert_rev from silently suppressing violation counts. Neonatal/postneonatal booleans made three-valued: `False` for survivors, `True`/`False` for deaths with known age, `null` for deaths with unknown age (currently none).
-  - Net pipeline effect: ~49 million row-variable cells newly populated across the 2004–2013 window. All 41 internal invariants still pass with zero violations on V2 natality (V3 linked: 38 pass clean + 1 within a documented exception budget of 2 + 3 V2-only invariants skipped); V2 **249/249** and V3 linked **35/35** external targets still pass.
+ - **2004 `attendant_at_birth`**: the prior release read `ATTEND` at byte 410 (2005's position). Correct position is byte 408 (same as 2003). Fix restored 4,118,907 rows from 100% null to ~0.22% null — matches 2003/2005 exactly.
+ - **2012–2013 `father_age`**: by 2012, NCHS had blanked the public-use `UFAGECOMB@184-185` field while revised-cert rows carried `FAGECOMB@182-183`. The parser now reads both and prefers `FAGECOMB` when non-null. Fix restored ~3.1M rows for 2013; as a side effect, 2012 revised-cert rows also gained `FAGECOMB@182-183` coverage that was previously null.
+ - **`prior_cesarean` 2005–2013**: `RF_CESAR@324` and `RF_CESARN@325-326` are revised-certificate fields first present in 2005 and populated only on revised-cert rows. They were previously not parsed pre-2014, leaving `prior_cesarean` and `prior_cesarean_count` null for all 2005–2013 rows. Now populated on revised-cert rows across 2005–2013 (30.8% → 90.2% coverage, tracking cert adoption).
+ - **2016+ diabetes / hypertension source**: the `URF_DIAB`/`URF_CHYPER`/`URF_PHYPER` tail block at bytes 1331–1333 exists only in the 2014–2015 User Guides; bytes 571–1330 are `FILLER_X` in 2016+. The harmonizer now selects source fields per-year rather than per-batch: 1990–2002 → `DIABETES`/`CHYPER`/`PHYPER`; 2003–2015 → `URF_*` (which really are at 1331–1333 for 2014–2015); 2016+ → `RF_PDIAB`/`RF_GDIAB`/`RF_PHYPE`/`RF_GHYPE` at bytes 313–316.
+ - **Linked cohort merge**: 2016–2023 period-cohort files are merged on the NCHS-documented composite key `(CO_SEQNUM, CO_YOD)` rather than CO_SEQNUM alone, with an explicit assertion that same-year and next-year numerator keysets are disjoint.
+ - **New columns**: `father_age_cat_from_rec11` (categorical 5-year-bucket father age derived from `FAGEREC11`, populated 2005–2013) and `maternal_race_detail_15cat` (MRACE15 15-category mother's race, populated 2014+).
+ - **V3 linked schema** now mirrors V2 exactly (78 harmonized + 16 derived = 94, up from 76 + 16 = 92 in the prior release).
+ - **Validator hygiene**: 13 raw `pc.and_` sites in the invariants validator wrapped with `_safe_and` to prevent a null year or null cert_rev from silently suppressing violation counts. Neonatal/postneonatal booleans made three-valued: `False` for survivors, `True`/`False` for deaths with known age, `null` for deaths with unknown age (currently none).
+ - Net pipeline effect: ~49 million row-variable cells newly populated across the 2004–2013 window. All 41 internal invariants still pass with zero violations on V2 natality (V3 linked: 38 pass clean + 1 within a documented exception budget of 2 + 3 V2-only invariants skipped); V2 **249/249** and V3 linked **35/35** external targets still pass.

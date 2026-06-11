@@ -25,15 +25,14 @@ Each product is also distributed as per-year raw parquets preserving every docum
 ```
 vital-statistics-harmonization/
 ├── README.md                     ← this file
-├── PROJECT_STRUCTURE.md          ← detailed map (humans + LLMs)
+├── PROJECT_STRUCTURE.md          ← detailed repository map
 ├── VERSION_ROADMAP.md            ← V2.1, V3, joint-use layer, etc.
 ├── CITATION.cff                  ← how to cite
 ├── LICENSE                       ← CC BY 4.0 (data) / MIT (code)
 ├── docs/                         ← cross-product documentation
 │   ├── JOINT_USE_GUIDE.md        ← computing rates that need both numerator and denominator
 │   ├── COMPARABILITY.md          ← cross-product era boundaries + bilateral race-coding methodology
-│   ├── NCHS_SOURCE_MANIFEST.md   ← SHA-256 for 141 raw NCHS zips (43 fetal-death + 57 natality + 38 linked-cohort + 3 matched-multiples)
-│   └── PRIOR_ART.md              ← literature gap that motivates the harmonization
+│   └── NCHS_SOURCE_MANIFEST.md   ← SHA-256 for 141 raw NCHS zips (43 fetal-death + 57 natality + 38 linked-cohort + 3 matched-multiples)
 ├── migrations/                   ← per-subproject version-to-version migration guides
 │   ├── v2.7.0-to-v2.8.0-natality.md
 │   └── v2.0.0-to-v2.4.0-fetal-death.md
@@ -57,7 +56,6 @@ vital-statistics-harmonization/
 │   └── output/
 ├── csv/published_tabulations/    ← pre-computed top-NVSR-cited cross-tab CSVs (cite without loading the parquet)
 ├── notebooks/                    ← cross-product worked examples
-├── paper/                        ← Data Resource Profile manuscript drafts
 ├── figures/                      ← cross-product figures
 └── shared/helpers/               ← Python utilities shared across products
 ```
@@ -76,7 +74,15 @@ All four products are validated against published NCHS aggregate tables (per-yea
 
 ## Reproducibility
 
-Each subproject's pipeline is deterministic and re-runnable end-to-end from the public NCHS source files. SHA-256 checksums for every shipped artifact are committed. Re-deriving the parquets from a fresh download of the NCHS source zips produces byte-identical files. See each subproject's `REPRODUCING.md`.
+Each subproject's pipeline is deterministic and re-runnable end-to-end from the public NCHS source files. SHA-256 checksums for every shipped artifact are committed. Re-deriving the parquets from a fresh download of the NCHS source zips produces byte-identical files.
+
+You do not need to trust this harmonization to use it: every product validates cell-by-cell against NCHS's own published tables, and the parquets re-derive bit-for-bit from the public source files. Step-by-step verify-and-reproduce instructions ship with each product:
+
+- Natality + linked birth–infant death — [`natality/REPRODUCING.md`](natality/REPRODUCING.md)
+- Fetal death — [`fetal_death/REPRODUCING.md`](fetal_death/REPRODUCING.md)
+- Matched multiples — [`matched_multiples/REPRODUCING.md`](matched_multiples/REPRODUCING.md)
+
+Each walks through three levels of checking, from least to most stringent: confirm file integrity against the committed SHA-256 checksums (seconds); run the product's validation script against `external_validation_targets.csv` (about a minute); or re-derive the parquets from a fresh NCHS download and confirm a byte-identical result (the strongest check, and the one that requires no trust in the author at all).
 
 ### Pinned environment via `uv` lockfile
 
@@ -96,7 +102,7 @@ Per-subproject `requirements.txt` files are preserved as discovery pointers for 
 
 ## Companion paper
 
-A Data Resource Profile manuscript covering all four products as a unified resource is being prepared. Drafts live in [`paper/`](paper/). The current preferred draft is [`paper/draft_v2_hmd_styled.md`](paper/draft_v2_hmd_styled.md), modeled on the IJE Data Resource Profile for the Human Mortality Database.
+A Data Resource Profile manuscript covering all four products as a unified resource is in preparation.
 
 ## Citation
 

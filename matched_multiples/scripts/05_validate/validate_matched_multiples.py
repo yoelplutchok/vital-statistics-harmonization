@@ -416,7 +416,7 @@ def main() -> int:
 
     if n_fail > 0:
         print(f"*** {n_fail} FAIL row(s) detected — see {csv_path} ***", file=sys.stderr)
-        return 1
+        raise SystemExit(1)
     return 0
 
 

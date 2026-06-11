@@ -344,7 +344,7 @@ OUT_SCHEMA = pa.schema([
     # cause_icd10 is within_era there too — ICD-9/10 are NOT fabricated
     # into one cross-era column). underlying_cause_icd10 / cause_recode_130
     # go NULL for cohort birth-year 1983-1998 (the ICD-9 era; §15.D DO
-    # step 1 default-null + revision-tagged, DECISION_LOG 2026-05-17T05:30Z);
+    # step 1 default-null + revision-tagged, 2026-05-17T05:30Z);
     # these two carry the ICD-9 signal there and are NULL for 1999+.
     ("underlying_cause_icd9", pa.string()),
     ("cause_recode_61", pa.int16()),
@@ -460,7 +460,7 @@ def _bfacil_to_facility(
 # birth-side map ALIASES the cohort raw names onto the natality V1-core
 # era recodes (H7 sibling-parity — reuse, do NOT re-derive). ICD-9 (cohort
 # birth-year 1983-1998) vs ICD-10 (1999+) is a within_era split per the
-# §15.D DO step 1 default-null + revision-tagged decision (DECISION_LOG
+# §15.D DO step 1 default-null + revision-tagged decision (
 # 2026-05-17T05:30:00Z): underlying_cause_icd9 / cause_recode_61 carry the
 # ICD-9 era; underlying_cause_icd10 / cause_recode_130 are NULL there.
 #
@@ -694,7 +694,7 @@ def _harmonize_cohort_1995_2002(batch: pa.RecordBatch, year: int) -> pa.Table:
       * RECWT present (1995-2002 den-plus locs 223-230) -> record_weight
         float64 (1989-1991 had no RECWT field).
       * the within_era ICD-9/ICD-10 split keys on cohort BIRTH YEAR
-        (§15.D DO step 1; DECISION_LOG 2026-05-17T05:30Z + 2026-05-19
+        (§15.D DO step 1; 2026-05-17T05:30Z + 2026-05-19
         T11:00Z): cohort 1995-1998 = ICD-9 -> underlying_cause_icd9 /
         cause_recode_61 (UCOD / UCODR); cohort 1999-2002 = ICD-10 ->
         underlying_cause_icd10 / cause_recode_130. The other pair stays
@@ -1243,7 +1243,7 @@ def _harmonize_cohort_1983_1988(batch: pa.RecordBatch, year: int) -> pa.Table:
         NULL (no MANNER in the 1983-1988 numerator).
       * **``record_weight`` = ``float(RECWT@91)`` for year ∈
         {1983,1984}; NULL for 1985-1988** — the C8.18 DO step
-        6a-RECWT bounded root-cause fix (DECISION_LOG
+        6a-RECWT bounded root-cause fix (
         2026-05-22T02:00:00Z; the 5c-iii (A′) all-NULL is
         **SUPERSEDED for 1983-1984**, correct for 1985-1988). 1983
         and 1984 are a documented 50%-of-births-in-5-non-VSCP-areas
@@ -1431,7 +1431,7 @@ def _harmonize_cohort_1983_1988(batch: pa.RecordBatch, year: int) -> pa.Table:
     # 1983-1988 numerator.
     #
     # record_weight — the C8.18 DO step 6a-RECWT bounded root-cause fix
-    # (DECISION_LOG 2026-05-22T02:00:00Z; the 5c-iii (A′) all-NULL
+    # (2026-05-22T02:00:00Z; the 5c-iii (A′) all-NULL
     # SUPERSEDED for 1983-1984, correct for 1985-1988). 1983-1984 are
     # the documented 50%-non-VSCP weighted sample (LinkCO83/84Guide.pdf
     # p4) → record_weight = float(RECWT@91) ∈ {1.0,2.0} (guide p13 1.f

@@ -1,7 +1,0 @@
-stage,start_utc,end_utc,duration_seconds,returncode,cwd
-parse_all_v1_years,2026-05-13T21:06:34+00:00,2026-05-13T21:56:44+00:00,3009.79,0,/Users/yoelplutchok/Desktop/natality-harmonization
-parse_all_linked_years,2026-05-13T21:56:44+00:00,2026-05-13T22:18:05+00:00,1281.22,0,/Users/yoelplutchok/Desktop/natality-harmonization
-harmonize_v1_core,2026-05-13T22:18:05+00:00,2026-05-13T22:24:14+00:00,368.53,0,/Users/yoelplutchok/Desktop/natality-harmonization
-harmonize_linked_v3,2026-05-13T22:24:14+00:00,2026-05-13T22:28:21+00:00,247.33,0,/Users/yoelplutchok/Desktop/natality-harmonization
-derive_v1_core,2026-05-13T22:28:21+00:00,2026-05-13T22:32:16+00:00,234.75,0,/Users/yoelplutchok/Desktop/natality-harmonization
-derive_linked_v3,2026-05-13T22:32:16+00:00,2026-05-13T22:35:01+00:00,165.62,0,/Users/yoelplutchok/Desktop/natality-harmonization

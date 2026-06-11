@@ -14,10 +14,10 @@
 >
 > ```bash
 > shasum -a 256 \
->   /path/to/fetal_death/raw_data/*.zip \
->   /path/to/natality/raw_data/*.zip \
->   /path/to/natality/raw_data/linked/*.zip \
->   | sort
+> /path/to/fetal_death/raw_data/*.zip \
+> /path/to/natality/raw_data/*.zip \
+> /path/to/natality/raw_data/linked/*.zip \
+> | sort
 > ```
 >
 > Then compare line-by-line to the tables below (also sorted by raw_filename within each section).
@@ -150,7 +150,7 @@ Coverage envelope: 57 years contiguous. Filename convention: `Nat<YYYY>.zip` (19
 
 ## Section 3 — Linked-cohort raw zips (38; cohort years 1983-2023, permanent 1992-1994 gap)
 
-> **C8.18 DO step 2 extension (2026-05-17).** 19 pre-2005 **cohort-linked** rows added (cohort years 1983-1991 + 1995-2004) per the C8.18 cohort-only backward extension (DECISION_LOG 2026-05-17T05:30:00Z; §15.D scope-corrected `[plan-update]` `df0675f`). These zips are SHA-anchored + on disk at `raw_data/linked/` and were **harmonized into the linked v4 parquet at C8.18 DO step 6b (2026-05-23; the v3→v4 1983-2023 re-harmonize; DECISION_LOG 2026-05-23T02:00:00Z)**. The `file_inventory.csv` `imported` flag refresh false→true for these 19 pre-2005 cohort rows **was shipped at the `file-inventory-imported-flag-v4` task** (2026-05-23, commit `84a9af3`); `imported` is now uniformly `true` (95/95) across the natality inventory. (C8.18 DO step 7 itself was docs-only — zero parquet/schema/test/script/metadata-CSV mutation; the deferred `imported` flip was discharged as a separate Pre-D-cleanup task per the C8.17 DO step 7 honest-propagation precedent. See the C8.18 DO step 7 receipt's forward-looking HALTs for the original deferral framing; superseded.) Period-linked 1995-2004 (`LinkPE*US.zip`) is **out of C8.18 scope** (Option A; a separate future product). All probed HTTP 200 at the same `cohortlinkedus/` path as 2005-2015.
+> **C8.18 DO step 2 extension (2026-05-17).** 19 pre-2005 **cohort-linked** rows added (cohort years 1983-1991 + 1995-2004) per the C8.18 cohort-only backward extension (2026-05-17T05:30:00Z; §15.D scope-corrected `[plan-update]` `df0675f`). These zips are SHA-anchored + on disk at `raw_data/linked/` and were **harmonized into the linked v4 parquet at C8.18 DO step 6b (2026-05-23; the v3→v4 1983-2023 re-harmonize; 2026-05-23T02:00:00Z)**. The `file_inventory.csv` `imported` flag refresh false→true for these 19 pre-2005 cohort rows **was shipped at the `file-inventory-imported-flag-v4` task** (2026-05-23, commit `84a9af3`); `imported` is now uniformly `true` (95/95) across the natality inventory. (C8.18 DO step 7 itself was docs-only — zero parquet/schema/test/script/metadata-CSV mutation; the deferred `imported` flip was discharged as a separate Pre-D-cleanup task per the C8.17 DO step 7 honest-propagation precedent. See the C8.18 DO step 7 receipt's forward-looking HALTs for the original deferral framing; superseded.) Period-linked 1995-2004 (`LinkPE*US.zip`) is **out of C8.18 scope** (Option A; a separate future product). All probed HTTP 200 at the same `cohortlinkedus/` path as 2005-2015.
 
 Naming convention (three eras):
 - 1983-1991 (pre-1995, cohort-only): `LinkCO<YY>.zip` (2-digit cohort year, **no `US` suffix**); members `LinkCO<YY>USnum.dat` (infant-death numerator) + `LinkCO<YY>USden.dat` (birth denominator).
@@ -202,7 +202,7 @@ Each zip contains one publication-year + cohort-year pair. Inventory keys these 
 | 2022 | `2022_linked` | `2023PE2022CO.zip` | `1c2ad811a4b8c4aecded084162cfcba0ecf6d8c7dd06909aaacddd30967e3fe6` |
 | 2023 | `2023_linked` | `2024PE2023CO.zip` | `24742c158e15134383514a0516dbaa0e6f94ba49ec253fe552719ceaa5f735c8` |
 
-**Linked-file coverage.** The 19 pre-2005 cohort-linked source zips (1983-1991 + 1995-2004) are SHA-anchored in this manifest and on disk, and were **harmonized into the linked v4 parquet at C8.18 DO step 6b (2026-05-23)** — the harmonized linked parquet now covers **cohort years 1983-2023** (38 years; permanent 1992-1994 NCHS-linkage gap; linked v3→v4). The `file_inventory.csv` `imported` flag refresh false→true for these 19 pre-2005 rows **was shipped at the `file-inventory-imported-flag-v4` task** (2026-05-23, commit `84a9af3`); `imported` is now uniformly `true` (95/95) across the natality inventory. The earlier "pre-2005 NOT processed (v2.x scope deferral)" statement is **superseded** by the C8.18 cohort-only backward extension (DECISION_LOG 2026-05-17T05:30:00Z + 2026-05-23T02:00:00Z; `[plan-update]` `df0675f`); see [`natality/docs/COMPARABILITY.md`](../natality/docs/COMPARABILITY.md) § "Pre-2005 cohort backward extension". Period-linked 1995-2004 (`LinkPE*US.zip`) remains out of scope (Option A; separate future product).
+**Linked-file coverage.** The 19 pre-2005 cohort-linked source zips (1983-1991 + 1995-2004) are SHA-anchored in this manifest and on disk, and were **harmonized into the linked v4 parquet at C8.18 DO step 6b (2026-05-23)** — the harmonized linked parquet now covers **cohort years 1983-2023** (38 years; permanent 1992-1994 NCHS-linkage gap; linked v3→v4). The `file_inventory.csv` `imported` flag refresh false→true for these 19 pre-2005 rows **was shipped at the `file-inventory-imported-flag-v4` task** (2026-05-23, commit `84a9af3`); `imported` is now uniformly `true` (95/95) across the natality inventory. The earlier "pre-2005 NOT processed (v2.x scope deferral)" statement is **superseded** by the C8.18 cohort-only backward extension (2026-05-17T05:30:00Z + 2026-05-23T02:00:00Z; `[plan-update]` `df0675f`); see [`natality/docs/COMPARABILITY.md`](../natality/docs/COMPARABILITY.md) § "Pre-2005 cohort backward extension". Period-linked 1995-2004 (`LinkPE*US.zip`) remains out of scope (Option A; separate future product).
 
 **2025 cohort release.** The 2025-published cohort-2024 file (`2025PE2024CO.zip`) has not yet been released by NCHS (verified on CDC vital statistics online **2026-05-26** at LY-linked-2024 PRE-FLIGHT; first noted 2026-05-13). The 2024-period / **2023-cohort** file (`2024PE2023CO.zip`, SHA in table above) is on disk and in the v4 linked parquet. Once `2025PE2024CO.zip` publishes, append `2024_linked` to `file_inventory.csv` and run a latest-year linked ingest task.
 
@@ -236,7 +236,7 @@ Companion PDFs (also SHA-anchored in `matched_multiples/file_inventory.csv`):
 
 > **Scope.** SHA-256 for the **primary derived (or harmonized) parquets** that downstream users load for analysis. These are outputs of the harmonization pipelines, not NCHS source zips. Full per-product tables (including regression baselines and convenience variants) live in each subproject's `PROVENANCE.md`.
 >
-> **Refreshed:** 2026-05-24 (D-prep.2 `provenance-refresh-current-envelope`); monorepo commit `3926e19`.
+> **Refreshed:** 2026-05-26 (§15.G auditfix: linked derived gate post–LINK-ICD10, 100 cols).
 
 | Product | Version | File (canonical name) | Rows | SHA-256 |
 |---|---|---|---|---|
@@ -244,11 +244,11 @@ Companion PDFs (also SHA-anchored in `matched_multiples/file_inventory.csv`):
 | Fetal death | v2.4.0 | `fetal_death_harmonized.parquet` | 2,427,233 | `38e2cecb03ff4947bbf6bcecbe9a79bf4bbe58df74ed4e7809b5078899c5cf48` |
 | Natality | v3.0.0 | `natality_v2_harmonized_derived.parquet` | 201,161,456 | `acb5c48a9abf82ac78e6bf210d6be5d62cba6afae271b978b0e53ed528856974` |
 | Natality | v3.0.0 | `natality_v2_harmonized.parquet` | 201,161,456 | `c8a740eb48d4f3de66759da27eef94143c315846885bf905a88cbc0fa6237153` |
-| Linked | v4.0.0 | `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 | `f630d8cf20db72eaf5e482e856e621ff73a6ad1c932de0fc832b237546b09073` |
+| Linked | v4.0.0 | `natality_v3_linked_harmonized_derived.parquet` | 149,386,620 × 100 | `22a4523d6e62e018acd1c8648275a9f98d86ee711f61c017f885df6952b73b5e` |
 | Linked | v4.0.0 | `natality_v3_linked_harmonized.parquet` | 149,386,620 | `ea89ab3c009de00cddb88aad84aa50fde376a47f96b6865113a600fb5a0907c7` |
 | Matched multiples | C8.16 | `matched_multiples_harmonized.parquet` | 1,665,568 | `adbec1087370941fd373b933566b7dfd24dbbc2f957d998f92ac14ef45dc1549` |
 
-**Four gate SHAs** (STATUS / D-prep invariant): `38e2cecb…` (fetal harmonized), `185c071e…` (fetal derived), `acb5c48a…` (natality derived), `f630d8cf…` (linked derived).
+**Four gate SHAs** (STATUS / D-prep invariant): `38e2cecb…` (fetal harmonized), `185c071e…` (fetal derived), `acb5c48a…` (natality derived), `22a4523d…` (linked derived; pre–LINK-ICD10 97-col gate was `f630d8cf…`).
 
 Per-product detail: [`fetal_death/PROVENANCE.md`](../fetal_death/PROVENANCE.md), [`natality/PROVENANCE.md`](../natality/PROVENANCE.md), [`matched_multiples/PROVENANCE.md`](../matched_multiples/PROVENANCE.md).
 
@@ -271,7 +271,7 @@ When a new NCHS public-use file lands (e.g., 2025-published cohort-2024 linked f
 2. Compute SHA-256 on the downloaded zip: `shasum -a 256 <path>/<filename.zip>`.
 3. Append a row to the relevant section of this manifest, in year order.
 4. Update the section's row count + the cross-product envelope description.
-5. Commit as a `[plan-update]` since this is canonical-state mutation; include a DECISION_LOG entry naming the release date + NCHS canonical URL.
+5. Commit as a `[plan-update]` since this is canonical-state mutation; include a entry naming the release date + NCHS canonical URL.
 6. The downstream consumer running `shasum -a 256 -c <manifest>` (after extracting the table into a shasum-compatible format) verifies their fresh download is byte-identical to the manifest record.
 
 ---

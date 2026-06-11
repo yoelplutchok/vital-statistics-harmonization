@@ -80,7 +80,7 @@ If you need state-level vital statistics, the options are:
 - **CDC WONDER.** Pre-tabulated state × demographic cells with NCHS-applied disclosure protection (suppression of small cells). Useful for descriptive work; the underlying microdata is not user-accessible.
 - **Census-region or Census-division derivation.** HVS does not currently ship a derived `region` column. A future task could add one by mapping state-of-residence-recoded variables that ARE in some products (e.g., `restatus`-derived foreign-vs-domestic) into a coarser geography, but the resulting strata would not be state-level.
 
-For more on the geography limitation, see [`natality/docs/FAQ.md` "Is geography included?"](../natality/docs/FAQ.md) and the C8.9 [`DECISION_LOG.md` 2026-05-13T10:00:00Z](../DECISION_LOG.md) entry.
+For more on the geography limitation, see [`natality/docs/FAQ.md` "Is geography included?"](../natality/docs/FAQ.md) and the C8.9 [ 2026-05-13T10:00:00Z](../) entry.
 
 ### Q: What is the bridged-race era, and when does it end?
 
@@ -92,7 +92,7 @@ Joint race-stratified analyses crossing the bridged-era boundary need explicit h
 
 The 1985-revision (1982-1988) and 1989-revision-early (1989-1991) fetal-death files use a 1-digit MRACE code instead of the multi-digit MRACE we get in 1992+. HVS's V3a/V3b extension maps 1-digit MRACE to the 4-category bridged race for time-series continuity, but two source codes have no bridged equivalent: code 7 (Other nonwhite) and code 9 (Not stated / Unknown). Both are mapped to **null** rather than forced into one of the four categories.
 
-The consequence: for 1982-1991, ~10-15% of records have null `maternal_race_bridged`. Race-stratified rates for those years should be computed on the non-null subset, with the null proportion documented. The worked example in [`notebooks/cross_race_fetal_mortality.ipynb`](../notebooks/cross_race_fetal_mortality.ipynb) cells 8-12 demonstrates the pattern; the V3a/V3b [`DECISION_LOG.md` 2026-05-12T14:30:00Z / 2026-05-12T18:30:00Z](../DECISION_LOG.md) entries explain the mapping choice.
+The consequence: for 1982-1991, ~10-15% of records have null `maternal_race_bridged`. Race-stratified rates for those years should be computed on the non-null subset, with the null proportion documented. The worked example in [`notebooks/cross_race_fetal_mortality.ipynb`](../notebooks/cross_race_fetal_mortality.ipynb) cells 8-12 demonstrates the pattern; the V3a/V3b [ 2026-05-12T14:30:00Z / 2026-05-12T18:30:00Z](../) entries explain the mapping choice.
 
 ### Q: How do I handle the 2003 certificate-revision break?
 
@@ -131,4 +131,4 @@ The citation metadata is in [`CITATION.cff`](../CITATION.cff). Until the unified
 - Plutchok Y. *Harmonized U.S. Natality and Linked Birth–Infant Death Microdata*. Zenodo. https://doi.org/10.5281/zenodo.19363074
 - Plutchok Y. *Harmonized U.S. Fetal Death Microdata, 1992–2022*. Zenodo. https://doi.org/10.5281/zenodo.20031571
 
-The forthcoming Data Resource Profile manuscript will provide the unified citation form; it is in draft at [`paper/draft_v2_hmd_styled.md`](../paper/draft_v2_hmd_styled.md).
+The forthcoming Data Resource Profile manuscript will provide the unified citation form.

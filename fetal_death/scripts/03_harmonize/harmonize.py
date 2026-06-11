@@ -406,7 +406,7 @@ def harmonize_year(year: int, field_map: dict[str, dict[str, str]]) -> pd.DataFr
         #   1 → 1; 2 → 2; 3 → 3
         #   0, 4, 5, 6, 8 → 4 (all API subgroups)
         #   7 → "" (residual "Other nonwhite"; parallels V3a's 09 → null choice
-        #     per DECISION_LOG 2026-05-12T14:30Z — null preserves integrity rather
+        #     per 2026-05-12T14:30Z — null preserves integrity rather
         #     than false-categorizing a residual catch-all)
         #   9 → "" (Not stated; same convention as V2 99 → null)
         # Affects ~89 records across 1982-1988 for code 7; ~18.7K records for

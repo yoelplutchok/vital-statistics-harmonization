@@ -13,7 +13,7 @@ the totals themselves are tracking-state pins by design and serve as a
 release-state regression gate.
 
 The documented-drops registry is **empty** at C8.4 authoring: no documented
-per-year drops between parse/harmonize/derive in any product's DECISION_LOG
+per-year drops between parse/harmonize/derive in any product's 
 after the v2.4.0 / v2.8.0 / v3 releases. Any future task introducing a
 documented drop must extend `DOCUMENTED_DROPS` below.
 
@@ -38,17 +38,17 @@ FD_EXPECTED_YEARS = list(range(1982, 2025))  # 43 contiguous
 # Natality v3.0.0; 57 yrs 1968-2024 (C8.17 backward extension; +22 yrs
 # 1968-1989, +62,341,801 rows over the v2.8.0 35-yr 1990-2024 envelope of
 # 138,819,655). Convention 2 / L17 release-state re-pin bundled with the
-# DO step 6 canonical re-harmonize; see DECISION_LOG 2026-05-16T08:00:00Z.
+# DO step 6 canonical re-harmonize; see 2026-05-16T08:00:00Z.
 NATALITY_EXPECTED_TOTAL = 201_161_456
 NATALITY_EXPECTED_YEARS = list(range(1968, 2025))  # 57 contiguous
 
 # Linked birth-infant death (cohort-linked, v4); 38 yrs 1983-2023 with
 # the permanent 1992-1994 NCHS linkage gap. C8.18 DO step 6b re-harmonize
-# (v3->v4 backward extension; DECISION_LOG 2026-05-23T02:00:00Z). The
+# (v3->v4 backward extension; 2026-05-23T02:00:00Z). The
 # 1983-1988 keyless era stacks den+num (two segments per the 5c-iii
 # link_segment model) so the total counts den+num there, not births-only.
 # May extend to 2024-cohort at a future task when NCHS releases
-# `2025PE2024CO.zip` (DECISION_LOG 2026-05-12T22:30:00Z).
+# `2025PE2024CO.zip` (2026-05-12T22:30:00Z).
 # `tracks-current-state` (Convention 2 / L17): re-pinned in the SAME
 # commit as the v4 re-harmonize canonical mutation.
 LINKED_EXPECTED_TOTAL = 149_386_620

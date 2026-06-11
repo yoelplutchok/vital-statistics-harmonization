@@ -20,7 +20,7 @@ mixes ~100%-null unrevised records with revised records, producing a
 spurious "education gradient" driven entirely by reporting differences.
 
 Per C8.15 PRE-FLIGHT 2026-05-14T00:30:00Z (PRE_FLIGHT_LOG.md +
-DECISION_LOG.md), data product = natality+linked-only (user-resolved via
+), data product = natality+linked-only (user-resolved via
 AskUserQuestion 2026-05-14T00:30:00Z; supersedes STATUS line 90's
 column-name framing which referenced fetal-death-side columns).
 

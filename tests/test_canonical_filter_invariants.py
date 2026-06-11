@@ -181,7 +181,7 @@ def test_linked_canonical_filter_excludes_foreign(linked_derived_join_cols):
 # Tier-0 mutation tests (synthetic fixtures; the validator catches injected violations)
 # ---------------------------------------------------------------------------
 #
-# Per §8 L3 ("LLM rubber-stamps passing test") + §15 SMOKE plan ("Tier 0:
+# Per §8 L3 (rubber-stamp passing test) + §15 SMOKE plan ("Tier 0:
 # mutation tests — inject a violation; assert the harness catches each").
 # Each mutation test constructs a hand-built DataFrame, runs the invariant
 # check, and asserts it FAILs with the expected violation.

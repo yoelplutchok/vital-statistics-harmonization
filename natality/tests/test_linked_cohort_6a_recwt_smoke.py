@@ -4,7 +4,7 @@ C8.18 DO step 6a-RECWT SMOKE — the **bounded 1983-1984 RECWT
 root-cause fix** in ``harmonize_linked_v3._harmonize_cohort_1983_1988``.
 
 Background (the §7/§8-satisfied Option-A from the 6a addendum;
-DECISION_LOG 2026-05-21T12:00:00Z + 2026-05-22T02:00:00Z):
+2026-05-21T12:00:00Z + 2026-05-22T02:00:00Z):
 
   * The 1983 and 1984 cohort-linked DENOMINATOR public-use file is a
     documented 50%-of-births-in-5-non-VSCP-areas (DC/AZ/CA/DE/GA)

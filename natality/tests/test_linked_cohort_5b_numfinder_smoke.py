@@ -30,7 +30,7 @@ mutable annotation value is pinned (reclens 91/500 are fixed
 historical NCHS facts; member names are fixed NCHS file conventions).
 
 Construction model (the DO step 5b Convention-3 snapshot,
-PRE_FLIGHT_LOG 2026-05-19T08:00:00Z + DECISION_LOG 2026-05-19T08:00:00Z):
+PRE_FLIGHT_LOG 2026-05-19T08:00:00Z + 2026-05-19T08:00:00Z):
 1983-1988 carry NO record-level public-use key, so the standard NCHS
 pre-2005 cohort-IMR construction is the lossless union of the 91-byte
 births-only Denominator (the aggregate birth denominator) + the

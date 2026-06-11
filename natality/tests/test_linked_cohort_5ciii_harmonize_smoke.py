@@ -1,6 +1,6 @@
 """DESIGN: tracks-current-state
 
-[6a-RECWT update — DECISION_LOG 2026-05-22T02:00:00Z, §3
+[6a-RECWT update — 2026-05-22T02:00:00Z, §3
 append-only-supersede / §4.2.1/Convention-2/L17] The (A′) finding
 narrative below (``record_weight`` conservatively NULL for ALL
 1983-1988) is **SUPERSEDED for 1983-1984**: the 6a-RECWT re-derivation
@@ -625,7 +625,7 @@ def _assert_real_1983_1988(rows, d, year):
         f"{year}: ICD-9 underlying cause must be numeric (0 alpha-prefixed; "
         "the §15.D DO step 1 / 5c-i resolved ≤1998 shape)"
     )
-    # C8.18 DO step 6a-RECWT (DECISION_LOG 2026-05-22T02:00:00Z; the
+    # C8.18 DO step 6a-RECWT (2026-05-22T02:00:00Z; the
     # 5c-iii (A′) all-NULL SUPERSEDED for 1983-1984, correct 1985-1988).
     # 1983-1984 = the documented 50%-non-VSCP weighted sample →
     # record_weight = float(RECWT@91) ∈ {1.0,2.0} (the bounded head

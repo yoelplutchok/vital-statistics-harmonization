@@ -54,3 +54,42 @@ env/
 # Phase-E (Paper 2) Ananth-2022 replication scratch outputs — regenerable from
 # notebooks/ananth2022_*.py; the .md receipts are committed, these bulk CSVs are not.
 RECEIPTS/ananth2022_*outputs*/
+
+# ---------------------------------------------------------------------------
+# Internal working files: kept locally, excluded from the shared repo so the
+# public tree is limited to what's needed to understand, rebuild, and use the
+# four HVS products. Removing these from tracking does not affect the Zenodo
+# deposit, which carries its own copy.
+# ---------------------------------------------------------------------------
+
+# Development process logs (not needed to understand or rebuild)
+RECEIPTS/
+AUDITS/
+STATUS.md
+PRE_FLIGHT_LOG.md
+NEXT_STEPS.md
+EXPLORATION_REPORT.md
+KICKOFF.md
+FIX_LOG.md
+LESSONS.md
+
+# Manuscript drafts, outreach prep, and Paper-2 strategy (research, not product)
+paper/
+RESEARCH_USE_CASES.md
+notebooks/paper_companion.ipynb
+notebooks/_build_paper_companion.py
+notebooks/paper_companion_results.csv
+notebooks/ananth2022_*.py
+
+# Internal release/upload checklists
+docs/ZENODO_v1.0.2_UPLOAD.md
+
+# Internal version history and decision records (not needed to rebuild)
+CHANGELOG.md
+DECISION_LOG.md
+
+
+# Manuscript motivation + dev timing benchmarks (not needed to rebuild)
+docs/PRIOR_ART.md
+docs/PIPELINE_TIMING_BENCHMARK.md
+docs/PIPELINE_TIMING_BENCHMARK_*.csv

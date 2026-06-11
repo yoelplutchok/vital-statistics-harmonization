@@ -663,7 +663,7 @@ def main() -> None:
                     # and none of the 1989+/2014+ clinical fields. High-confidence
                     # anchor fields are mapped; everything not on the 1968-rev
                     # cert is conservatively null (DO step 6 refinement flags in
-                    # the DECISION_LOG). AskUserQuestion 2026-05-15 Q1/Q2 Opt A.
+                    # the ). AskUserQuestion 2026-05-15 Q1/Q2 Opt A.
                     # ============================================================
                     n = batch.num_rows
                     pre1968_s = pa.scalar("unrevised_1968", type=pa.string())

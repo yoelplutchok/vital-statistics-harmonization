@@ -264,7 +264,7 @@ def format_report(
 ) -> str:
     lines = []
     lines.append("# AUDIT-EXTERNAL Report: External Validation Against Published NCHS/NVSR Statistics")
-    lines.append("## Auditor: Claude Opus 4.6 (1M context); regenerated 2026-04-19 after B-F3 fix")
+    lines.append("## Auditor: scripts/05_validate/validate_external.py (automated)")
     lines.append("## Date: 2026-04-19")
     lines.append("")
     lines.append("---")

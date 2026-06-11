@@ -10,25 +10,25 @@
 ## Era-boundary timeline (cross-product)
 
 ```text
-NATALITY    1968 ──── 1990 ──────────────────────────────────────────────── 2024 [57 yr]
-            1968-rev (1968–1989: 1968/1969-71/1972-88/1989 layouts)──────
-                       2003-rev────────                              2014 OE────
-                                  MEDUC unbridged
-                                                                          California marital → null 2017+
-                                                                                    bridged-race → null 2020+
+NATALITY 1968 ──── 1990 ──────────────────────────────────────────────── 2024 [57 yr]
+ 1968-rev (1968–1989: 1968/1969-71/1972-88/1989 layouts)──────
+ 2003-rev──────── 2014 OE────
+ MEDUC unbridged
+ California marital → null 2017+
+ bridged-race → null 2020+
 
-LINKED      1983 ──── ││││ ──────────────────────────────────────────── 2023 [38 cohort yr]
-COHORT      1983-1988 keyless  1989-2004 denom-plus  2005-2015 denom-plus  2016-2023 period-cohort
-            (v4)      1992-1994 permanent gap (││││)         2014 OE────
-                      1983-1984 = 50%-non-VSCP RECWT-weighted sample
-                                  (self-contained birth-side + death-side; natality-joint only 1990+)
+LINKED 1983 ──── ││││ ──────────────────────────────────────────── 2023 [38 cohort yr]
+COHORT 1983-1988 keyless 1989-2004 denom-plus 2005-2015 denom-plus 2016-2023 period-cohort
+ (v4) 1992-1994 permanent gap (││││) 2014 OE────
+ 1983-1984 = 50%-non-VSCP RECWT-weighted sample
+ (self-contained birth-side + death-side; natality-joint only 1990+)
 
-FETAL_      1982 ─────────────────────────────────────────────────────── 2024 [43 yr]
-DEATH       V3b (1978-rev)──── V3a (1989-rev)── V2 (1989-rev)── V2.1 (mixed)── V1 (2003-rev mixed)──── V1 OE (2003-rev)──── COD-only (2003-rev)
-            1982-1988          1989-1991        1992-2002       2003-2004      2005-2013                2014-2017             2018-2024
-            200-byte           360-byte         360-byte        1350/1500-byte 3351-byte                3050-byte             2652-byte
-                                                                                                                    bridged-race → null 2018+
-                                                                                                                   COD only (no education) 2018+
+FETAL_ 1982 ─────────────────────────────────────────────────────── 2024 [43 yr]
+DEATH V3b (1978-rev)──── V3a (1989-rev)── V2 (1989-rev)── V2.1 (mixed)── V1 (2003-rev mixed)──── V1 OE (2003-rev)──── COD-only (2003-rev)
+ 1982-1988 1989-1991 1992-2002 2003-2004 2005-2013 2014-2017 2018-2024
+ 200-byte 360-byte 360-byte 1350/1500-byte 3351-byte 3050-byte 2652-byte
+ bridged-race → null 2018+
+ COD only (no education) 2018+
 ```
 
 **Joint-coverage envelope**: cross-product analyses joining fetal-death numerator + natality denominator can use **33 years (1992-2024)** in the V2+V1+v2.4 envelope; if including V3a/V3b backward years for fetal-death, the natality denominator is not available (natality covers 1990+, fetal-death V3a/V3b covers 1982-1991 — only 1990+1991 are joint-coverage for V3a). The linked-cohort product itself now spans **38 cohort years (1983-2023; permanent 1992-1994 gap)** as a self-contained birth-side + death-side file (linked v4, C8.18). Linked + natality *joint* analyses (using the natality file as an external denominator) span **1990-2023** (natality starts 1990; less the 1992-1994 linked gap); pre-1990 linked years are linked-only (the linked file carries its own cohort denominator).
@@ -101,9 +101,9 @@ The bridged-race column ends at different years on each product because NCHS dis
 
 The fetal-death backward extension to V3a (1989-1991) and V3b (1982-1988) is an asymmetric coverage extension — these years exist for fetal-death but **NOT for natality** (natality starts 1990; **NOT for linked**, which starts 2005-cohort).
 
-**V3a 1989-1991 (1989-revision uniform)** ([`DECISION_LOG.md` 2026-05-12T14:30Z](../DECISION_LOG.md)): MRACE 1-digit codes 1-9; B3 recode `1→1, 2→2, 3→3, 4-8→4, 9→null`. ~165 records null from code 9 across 1989-1991 (~0.087% per year).
+**V3a 1989-1991 (1989-revision uniform)** ([ 2026-05-12T14:30Z](../)): MRACE 1-digit codes 1-9; B3 recode `1→1, 2→2, 3→3, 4-8→4, 9→null`. ~165 records null from code 9 across 1989-1991 (~0.087% per year).
 
-**V3b 1982-1988 (1978-revision uniform)** ([`DECISION_LOG.md` 2026-05-12T18:30Z](../DECISION_LOG.md)): MRACE 1-digit codes 0-9; B3 recode `1→1, 2→2, 3→3, 4-6,8→4, 7→null, 9→null`. Code 7 ("Other nonwhite") + code 9 ("Not stated") each → null; total ~89 (code 7) + ~18,700 (code 9) = ~18,800 null records across 1982-1988 (~3-5% per year). The 1978-revision public-use file has a less-imputed race field than 1989+. **Hispanic origin is null for all V3b years** (1978-revision did not collect Hispanic origin systematically; first introduced in 1989-revision).
+**V3b 1982-1988 (1978-revision uniform)** ([ 2026-05-12T18:30Z](../)): MRACE 1-digit codes 0-9; B3 recode `1→1, 2→2, 3→3, 4-6,8→4, 7→null, 9→null`. Code 7 ("Other nonwhite") + code 9 ("Not stated") each → null; total ~89 (code 7) + ~18,700 (code 9) = ~18,800 null records across 1982-1988 (~3-5% per year). The 1978-revision public-use file has a less-imputed race field than 1989+. **Hispanic origin is null for all V3b years** (1978-revision did not collect Hispanic origin systematically; first introduced in 1989-revision).
 
 **Cross-product implication**: V3a + V3b years cannot be joint-analyzed with natality + linked (those products don't extend back). Use the fetal-death-only series for 1982-1989 (single-product fetal-mortality counts, not rates — there is no denominator for those years in this resource).
 
@@ -125,11 +125,11 @@ The following caveats are PRODUCT-SPECIFIC and do NOT affect cross-product analy
 
 - Cohort year vs publication year naming convention changes at cohort 2015 / publication 2016 (`LinkCO15US.zip` → `2017PE2016CO.zip`)
 - **Linked v4 spans 1983-2023** (C8.18; the pre-2005 cohort files ARE now harmonized — the prior "not processed" note is superseded). Four pre-2005 cohort caveats, all linked-cohort-only (natality + fetal-death do not extend below 1990/1982 respectively, so these years have no cross-product joint partner — single-product linked IMR only):
-  - **Keyless 1983-1988 within-era structural difference.** The 1983-1988 cohort files are a two-file den/num pair with no per-record link key. The cohort IMR there is `count(link_segment='num') / count(link_segment='den')` per stratum — **NOT** a per-birth `infant_death` filter (denominator rows: `infant_death` NULL; numerator rows: True). `age_at_death_days` is NULL for 1983-1988 (keyless numerator carries only AGER5 — use `age_at_death_recode5`). This is the documented within-era structural difference (schema `link_segment` notes + the manuscript Coverage paragraph).
-  - **1983-1984 50%-non-VSCP weighted sample.** The 1983/1984 cohort denominators are a documented 50%-of-births-in-5-non-VSCP-areas weighted sample; `record_weight` (= NCHS RECWT) is populated so weighted counts reproduce published cohort figures byte-exact (1983 weighted resident births 3,639,113 / IMR 10.90; 1984 3,669,268 / 10.44). 1985-2004 are full files.
-  - **1992-1994 permanent gap.** NCHS suspended ALL birth-infant-death linkage for the 1992, 1993, 1994 cohorts (no cohort and no period file published). Permanent; surfaced in `harmonized_schema.csv` `years_available`, CODEBOOK, ABOUT_THIS_RELEASE.md, and (at Phase D) the manuscript Coverage paragraph.
-  - **Documented numerator-file residual (3 of 19 cohort years).** For 1989, 1998, 2002 the cohort numerator-file record count differs from the denominator-linked infant-death subset by Δ +1 / +40 / −8 (≤0.15%, deterministic, bidirectional) — the SAME NCHS cohort-linked numerator-file-vs-denominator-linkage class as the 2005-2023 "2 cells differ by exactly one record from NCHS upstream null-record-weight survivors". Pinned as a per-year `tolerance_abs` + sourced notes in `external_validation_targets_v3_linked.csv`; denominator / resident-births / published IMR remain byte-exact / within ±0.02 for all 19 cohort years.
-- 2014/2015 each have 1 record with null `record_weight` (NCHS upstream survivor records); validation framing per [`paper/draft_v2_hmd_styled.md`](../paper/draft_v2_hmd_styled.md) records this as "33/35 byte-exact + 2 cells differ by exactly one record" (the manuscript Coverage re-paragraph carrying the linked v4 1983-2023 envelope + these four caveats is a Phase-D / D.4 deliverable, deferred so the manuscript Coverage paragraph is re-written once after the full data envelope settles)
+ - **Keyless 1983-1988 within-era structural difference.** The 1983-1988 cohort files are a two-file den/num pair with no per-record link key. The cohort IMR there is `count(link_segment='num') / count(link_segment='den')` per stratum — **NOT** a per-birth `infant_death` filter (denominator rows: `infant_death` NULL; numerator rows: True). `age_at_death_days` is NULL for 1983-1988 (keyless numerator carries only AGER5 — use `age_at_death_recode5`). This is the documented within-era structural difference (schema `link_segment` notes + the manuscript Coverage paragraph).
+ - **1983-1984 50%-non-VSCP weighted sample.** The 1983/1984 cohort denominators are a documented 50%-of-births-in-5-non-VSCP-areas weighted sample; `record_weight` (= NCHS RECWT) is populated so weighted counts reproduce published cohort figures byte-exact (1983 weighted resident births 3,639,113 / IMR 10.90; 1984 3,669,268 / 10.44). 1985-2004 are full files.
+ - **1992-1994 permanent gap.** NCHS suspended ALL birth-infant-death linkage for the 1992, 1993, 1994 cohorts (no cohort and no period file published). Permanent; surfaced in `harmonized_schema.csv` `years_available`, CODEBOOK, ABOUT_THIS_RELEASE.md, and (at Phase D) the manuscript Coverage paragraph.
+ - **Documented numerator-file residual (3 of 19 cohort years).** For 1989, 1998, 2002 the cohort numerator-file record count differs from the denominator-linked infant-death subset by Δ +1 / +40 / −8 (≤0.15%, deterministic, bidirectional) — the SAME NCHS cohort-linked numerator-file-vs-denominator-linkage class as the 2005-2023 "2 cells differ by exactly one record from NCHS upstream null-record-weight survivors". Pinned as a per-year `tolerance_abs` + sourced notes in `external_validation_targets_v3_linked.csv`; denominator / resident-births / published IMR remain byte-exact / within ±0.02 for all 19 cohort years.
+- 2014/2015 each have 1 record with null `record_weight` (NCHS upstream survivor records); the linked 2005-2023 validation surface records this as "33/35 byte-exact + 2 cells differ by exactly one record"
 
 ### Fetal-death-only (consult [`fetal_death/COMPARABILITY.md`](../fetal_death/COMPARABILITY.md))
 
@@ -170,7 +170,6 @@ The two existing `joint_use_demo.ipynb` (single-year fetal-mortality rate by mat
 ## See also
 
 - [`docs/JOINT_USE_GUIDE.md`](JOINT_USE_GUIDE.md) — canonical filters, join keys, worked examples
-- [`docs/PRIOR_ART.md`](PRIOR_ART.md) — literature gap motivating cross-product harmonization
 - [`docs/NCHS_SOURCE_MANIFEST.md`](NCHS_SOURCE_MANIFEST.md) — 97 raw NCHS zips with SHA-256
 - [`VERSION_ROADMAP.md`](../VERSION_ROADMAP.md) — version timeline + upcoming work
 - [`migrations/`](../migrations/) — per-subproject migration guides
